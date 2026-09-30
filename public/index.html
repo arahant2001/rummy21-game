@@ -293,7 +293,7 @@
       top: -9px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 8.5px;
+      font-size: 7.65px;
       font-weight: 800;
       letter-spacing: 0.4px;
       padding: 1.5px 6px;
@@ -964,7 +964,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="actions-grid">
       <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()"><span><b>Discard</b><small class="action-sub">selected card</small></span></button>
-      <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Drop Hand</b><small class="action-sub">before drawing</small></span></button>
+      <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Scoot</b><small class="action-sub">before drawing</small></span></button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
@@ -1235,6 +1235,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (!card) return '<div class="card" style="opacity:0.25; background: #0f172a; border: 1px dashed var(--surface-border-light); justify-content:center; align-items:center; color: var(--text-muted); font-size:11px;">Empty</div>';
     const isRed = ['♥', '♦'].includes(card.suit);
     const poochieClass = card.isPoochie ? 'poochie' : '';
+  const displayRank = card.isPoochie ? 'JOKER' : card.rank;
     const redClass = isRed ? 'red' : '';
     const suitClass = card.suit === '♠' ? 'card-suit-spade' : card.suit === '♣' ? 'card-suit-club' : 'card-suit-black';
     const selClass = selectedCardId === card.id ? 'is-selected' : '';
@@ -1281,14 +1282,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         ${tagHtml}
         <div class="card-inner">
           <div class="card-corner top-left">
-            <div class="corner-rank">${card.rank}</div>
+            <div class="corner-rank">${displayRank}</div>
             <div class="corner-suit">${card.suit}</div>
           </div>
           <div class="card-center">
             ${centerHtml}
           </div>
           <div class="card-corner bottom-right">
-            <div class="corner-rank">${card.rank}</div>
+            <div class="corner-rank">${displayRank}</div>
             <div class="corner-suit">${card.suit}</div>
           </div>
         </div>
