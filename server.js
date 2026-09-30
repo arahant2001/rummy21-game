@@ -31,6 +31,9 @@ function getSafeRoom(room) {
     cutCard: room.cutCard,
     roles: room.cutCard ? resolveJokerRoles(room.cutCard) : null,
     topDiscard: room.discardPile[room.discardPile.length - 1] || null,
+    // Keep a short, ordered history so clients can review older discards without
+    // confusing them with the current top discard.
+    discardHistory: room.discardPile.slice(Math.max(0, room.discardPile.length - 9), Math.max(0, room.discardPile.length - 1)),
     deckCount: room.deck.length,
     players: room.players.map(p => ({
       id: p.id,
