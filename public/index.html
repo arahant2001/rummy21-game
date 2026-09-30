@@ -225,6 +225,11 @@
     }
 
     /* Standard Playing Card Styling */
+    .card-suit-black { color:#111827; }
+    .card-suit-spade { color:#111827; }
+    .card-suit-club { color:#334155; }
+    .card-suit-club .pip,.card-suit-club .court-suit-top,.card-suit-club .court-suit-bottom { text-shadow:0 1px 0 #94a3b8; }
+    .card-suit-spade .pip,.card-suit-spade .court-suit-top,.card-suit-spade .court-suit-bottom { text-shadow:0 1px 0 #e2e8f0; }
     .card {
       width: var(--card-w);
       height: var(--card-h);
@@ -505,6 +510,13 @@
       font-size: 11px;
       color: var(--text-primary);
     }
+    .group-type-select { background:rgba(15,23,42,.92);color:var(--text-primary);border:1px solid var(--surface-border-light);border-radius:6px;padding:3px 6px;font-size:10px;font-weight:700;text-transform:uppercase; }
+    .show-help { margin:8px 0 10px;padding:8px 10px;border-radius:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--text-secondary);font-size:11px;line-height:1.35; }
+    .revealed-hands { margin-top:16px;padding-top:14px;border-top:1px solid var(--surface-border-light); }
+    .revealed-player { margin-top:10px;padding:9px;border:1px solid var(--surface-border);border-radius:10px;background:rgba(15,23,42,.45); }
+    .revealed-player-title { font-weight:800;font-size:12px;margin-bottom:7px; }
+    .revealed-player-cards { display:flex;flex-wrap:wrap;gap:5px; }
+    .revealed-player-cards .card { width:48px;height:70px;transform:none !important; }
     .stand-close-btn {
       width: auto !important;
       padding: 2px 7px !important;
@@ -768,7 +780,42 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   .demo-controls{align-items:center;gap:6px;flex-wrap:wrap;padding:7px 9px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13)}
   .demo-controls-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#b6c7bf;margin-right:2px}
   @media(max-width:600px){.demo-controls{display:grid!important;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
-  </style>
+  
+/* ===== COMPACT TABLE LAYOUT ===== */
+.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible}
+.stock-pile-wrapper{position:relative;z-index:8}
+.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 36px);margin:0 auto}
+.stock-with-cut #stockDeckBtn{position:relative;z-index:5}
+.cut-card-under-stock{position:absolute;left:15%;top:30px;width:var(--card-h);height:var(--card-w);transform:translateX(-50%) rotate(90deg) scale(.90);transform-origin:center;z-index:1;pointer-events:none}
+.cut-card-under-stock .card{transform:none!important;opacity:.96;box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 1px rgba(217,182,92,.2)!important}
+.discard-pile-wrapper{position:relative;z-index:9}
+.discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
+.discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30}
+.discard-history{position:absolute;left:108px;top:0;width:118px;height:108px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
+.discard-history-card{position:absolute;width:68px;height:98px;left:0;top:5px;display:block;opacity:.9;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
+.discard-history-card:active{cursor:grabbing}
+.discard-history-card .card{transform:none!important;width:68px;height:98px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
+.discard-history-card.peeked{filter:brightness(1.08);z-index:60!important;transform:translateX(calc(var(--fan-x))) translateY(-10px) rotate(0deg) scale(1.03)!important;opacity:1}
+.discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translateX(calc(var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.03)!important;opacity:1}
+.discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
+.discard-history-card.peeked ~ .discard-history-card{opacity:.72}
+@media(max-width:600px){.discard-stack-area{width:190px}.discard-stack-area #discardContainer{left:22px;top:9px}.discard-history{left:88px;width:96px}.discard-history-card{width:58px;height:84px;top:9px}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
+.discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
+.discard-history-index{top:-4px;right:-4px;pointer-events:none}
+.discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
+.discard-history-panel{display:none!important}
+.discard-history-badge{font-size:8px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:3px 6px;border-radius:999px;white-space:nowrap}
+.maal-details-popover{position:absolute;right:10px;top:54px;z-index:1000;display:none;pointer-events:auto;margin:0;width:min(500px,calc(100vw - 28px));padding:11px 12px;border:1px solid rgba(217,182,92,.22);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.98),rgba(10,20,15,.98));box-shadow:0 14px 36px rgba(0,0,0,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.maal-details-popover.is-open{display:block}
+.status-bar{position:relative;z-index:1000}
+#maalSummary{cursor:pointer;position:relative}
+#maalSummary:hover{filter:brightness(1.08)}
+#maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
+.maal-details-popover .maal-details-head{margin-bottom:8px}
+.maal-details-popover .maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:600px){.maal-details-popover{right:6px;top:52px}.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
+
+</style>
 </head>
 <body>
 
@@ -797,7 +844,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div id="turnDot" class="turn-indicator-dot"></div>
       <span id="turnNotice">Connecting...</span>
     </div>
-    <div id="maalSummary" class="maal-badge">
+    <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details">
       <span>🏆</span>
       <span id="maalPtsText">Maal: 0 pts</span>
     </div>
@@ -831,7 +878,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="playerRows"></div>
   </div>
 
-  <section class="maal-details-panel" id="maalDetailsPanel">
+  <section class="maal-details-popover" id="maalDetailsPanel" aria-label="Maal details">
     <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
     <div class="maal-detail-grid">
       <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span><span class="maal-detail-points" id="maalCutPts">0 pts</span></div>
@@ -846,36 +893,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   <!-- Center Table Felt -->
   <div class="center-board">
-    <div class="pile-wrapper">
-      <div class="pile-title">Cut Joker</div><div class="pile-action-hint">Game joker</div>
-      <div id="cutCardContainer"></div>
-    </div>
-    <div class="pile-wrapper">
+    <div class="pile-wrapper stock-pile-wrapper">
       <div class="pile-title">Stock</div><div class="pile-action-hint">Drag onto your board</div>
-      <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true" ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
-        <span class="deck-icon">🂠</span>
-        <span id="deckCountText" class="deck-count">0</span>
+      <div class="stock-with-cut">
+        <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
+        <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true" ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
+          <span class="deck-icon">🂠</span>
+          <span id="deckCountText" class="deck-count">0</span>
+        </div>
       </div>
     </div>
-    <div class="pile-wrapper">
-      <div class="pile-title">Discard</div><div class="pile-action-hint">Drag here to discard</div>
-      <div id="discardContainer" class="pile-drop-source" draggable="true"
-           ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
-           ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
-           ondrop="onDiscardPileDrop(event)"></div>
+    <div class="pile-wrapper discard-pile-wrapper">
+      <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
+      <div class="pile-action-hint">Drag here to discard • drag old cards aside to peek</div>
+      <div class="discard-stack-area">
+        <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
+        <div id="discardContainer" class="pile-drop-source" draggable="true"
+             ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
+             ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
+             ondrop="onDiscardPileDrop(event)"></div>
+      </div>
     </div>
   </div>
-
-  <section class="discard-history-panel">
-    <div class="discard-history-head">
-      <div>
-        <div class="discard-history-title">Previous Discards</div>
-        <div class="discard-history-subtitle">Newest first • the large card above is always the current discard</div>
-      </div>
-      <span class="discard-history-badge" id="discardHistoryCount">0 previous</span>
-    </div>
-    <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
-  </section>
 
   <!-- Hand Section with Multi-Stand Support -->
   <div>
@@ -911,14 +950,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         </div>
 
         <!-- Stand management buttons -->
-        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands">2 Stands</button>
-        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand">1 Stand</button>
-        <button class="tool-btn" onclick="addNewStand()" title="Add an empty stand">+ Add Stand</button>
+        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 groups">2 Groups</button><button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 groups">3 Groups</button>
+        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 group">1 Group</button>
+        <button class="tool-btn" onclick="addNewStand()" title="Add an empty show group">+ Add Group</button>
       </div>
     </div>
 
     <!-- Multi-Stand Cards Racks -->
-    <div id="standsContainer" class="stands-container"></div>
+    <div class="show-help"><strong>Show builder:</strong> choose Pure Sequence, Sequence, or Set for each group, then drag cards between groups. A valid 21-card show needs at least 3 Pure Sequences.</div><div id="standsContainer" class="stands-container"></div>
 
     <div class="action-section">
       <div class="action-label">Your Move</div>
@@ -937,7 +976,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <h2 id="winnerTitle" class="modal-winner"></h2>
     <div id="maalDetails" class="maal-breakdown"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
-    <div id="settlementList"></div>
+    <div id="settlementList"></div><div id="revealedHands" class="revealed-hands"></div>
     <button class="btn-primary" onclick="location.reload()" style="margin-top: 24px;">Play Next Hand</button>
   </div>
 </div>
@@ -946,7 +985,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let ws;
   let roomState = null;
   let myHand = [];
-  let userStands = []; // Array of card arrays representing each stand
+  let userStands = []; // Array of card arrays representing each show group
+  let standTypes = [];
   let selectedCardId = null;
   let draggedCardId = null;
   let isDemo = false;
@@ -985,6 +1025,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         renderAll(msg.yourMaal);
       }
 
+      if (msg.type === 'SHOW_INVALID') alert('Show not legal: ' + msg.reason);
+
       if (msg.type === 'SHOW_RESULT') {
         showResultsModal(msg);
       }
@@ -996,7 +1038,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (!myHand || myHand.length === 0) {
       myHand = incomingCards;
       // Initialize with 2 stands for optimal visibility
-      initDefaultStands(2);
+      initDefaultStands(3);
       return;
     }
 
@@ -1024,29 +1066,40 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function initDefaultStands(count = 2) {
     if (!myHand || myHand.length === 0) {
       userStands = [[]];
+      standTypes = ['SEQUENCE'];
       return;
     }
     if (count === 1) {
       userStands = [[...myHand]];
-      return;    }
-    // Split into 2 stands (~11 and 10 cards)
+      standTypes = ['SEQUENCE'];
+      return;
+    }
+    if (count === 3) {
+      const a = Math.ceil(myHand.length / 3);
+      const b = Math.ceil((myHand.length - a) / 2);
+      userStands = [myHand.slice(0,a), myHand.slice(a,a+b), myHand.slice(a+b)];
+      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE','PURE_SEQUENCE'];
+      return;
+    }
     const mid = Math.ceil(myHand.length / 2);
-    userStands = [
-      myHand.slice(0, mid),
-      myHand.slice(mid)
-    ];
+    userStands = [myHand.slice(0, mid), myHand.slice(mid)];
+    standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
   }
 
   function splitIntoStands(count) {
     const allCards = userStands.flat();
     if (count === 1) {
       userStands = [allCards];
+      standTypes = ['SEQUENCE'];
+    } else if (count === 3) {
+      const a = Math.ceil(allCards.length / 3);
+      const b = Math.ceil((allCards.length - a) / 2);
+      userStands = [allCards.slice(0,a), allCards.slice(a,a+b), allCards.slice(a+b)];
+      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE','PURE_SEQUENCE'];
     } else {
       const mid = Math.ceil(allCards.length / 2);
-      userStands = [
-        allCards.slice(0, mid),
-        allCards.slice(mid)
-      ];
+      userStands = [allCards.slice(0, mid), allCards.slice(mid)];
+      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
     }
     myHand = userStands.flat();
     renderAll(null);
@@ -1062,6 +1115,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     userStands.splice(standIdx, 1);
     // Put orphaned cards into the first stand
     userStands[0].push(...cardsToMove);
+    standTypes.splice(standIdx,1);
     myHand = userStands.flat();
     renderAll(null);
   }
@@ -1182,6 +1236,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const isRed = ['♥', '♦'].includes(card.suit);
     const poochieClass = card.isPoochie ? 'poochie' : '';
     const redClass = isRed ? 'red' : '';
+    const suitClass = card.suit === '♠' ? 'card-suit-spade' : card.suit === '♣' ? 'card-suit-club' : 'card-suit-black';
     const selClass = selectedCardId === card.id ? 'is-selected' : '';
     const dragAttrs = isHand ? `
       id="card-${card.id}"
@@ -1339,6 +1394,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }};
   }
 
+  function toggleMaalDetails(force) {
+    const panel=document.getElementById('maalDetailsPanel');
+    if(!panel) return;
+    const open = typeof force==='boolean' ? force : !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open',open);
+    panel.style.display = open ? 'block' : 'none';
+    document.getElementById('maalSummary')?.setAttribute('aria-expanded', String(open));
+  }
+
   function renderMaalDetails(maalData) {
     const roles=roomState?.roles||{}, cut=roomState?.cutCard;
     const data=maalData?.details ? maalData : calculateLocalMaal();
@@ -1435,8 +1499,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
              ondrop="onStandDrop(event, ${sIdx})">
           <div class="stand-header">
             <div class="stand-title-box">
-              <span>Stand ${sIdx + 1}</span>
+              <span>Group ${sIdx + 1}</span>
               <span class="stand-count-badge">${stand.length} cards</span>
+              <select class="group-type-select" onchange="setStandType(${sIdx}, this.value)" onclick="event.stopPropagation()">
+                <option value="PURE_SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="PURE_SEQUENCE"?"selected":""}>Pure Sequence</option>
+                <option value="SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="SEQUENCE"?"selected":""}>Sequence</option>
+                <option value="SET" ${(standTypes[sIdx]||"SEQUENCE")==="SET"?"selected":""}>Set</option>
+              </select>
             </div>
             ${closeBtn}
           </div>
@@ -1447,6 +1516,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       `;
     }).join('');
   }
+
+  function setStandType(idx, type) { standTypes[idx]=type; renderStands(); }
 
   function getMyPlayerId() {
     const me = roomState?.players.find(p => p.name === document.getElementById('playerName').value);
@@ -1717,15 +1788,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const history=(roomState?.discardHistory||[]).slice().reverse();
     if (countEl) countEl.innerText=`${history.length} previous`;
     if (!history.length) {
-      box.innerHTML='<div class="discard-history-empty">No previous discards yet.</div>';
+      box.innerHTML='<div class="discard-history-empty">Peekable history</div>';
       return;
     }
-    box.innerHTML=history.map((card,idx)=>`
-      <div class="discard-history-card" title="Previous discard #${idx+1}: ${card.rank}${card.suit}">
-        <span class="discard-history-index">${idx+1}</span>
-        ${renderCard(card)}
-      </div>
-    `).join('');
+    box.innerHTML=history.map((card,idx)=>{
+      const fanX = Math.min(idx * 11, 50);
+      const fanRot = Math.min(idx * 1.5, 7);
+      const z = 10 + idx;
+      return `
+        <div class="discard-history-card" draggable="true" style="--fan-x:${fanX}px;--fan-rot:${fanRot}deg;z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}"
+             ondragstart="onHistoryDragStart(event,this)" onclick="toggleHistoryPeek(this)" ondragend="onHistoryDragEnd(event,this)">
+          <span class="discard-history-index">${idx+1}</span>
+          ${renderCard(card)}
+        </div>`;
+    }).join('');
+  }
+
+  function onHistoryDragStart(e,el){
+    el.classList.add('peeked');
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain','peek-history');
+  }
+
+  function toggleHistoryPeek(el){
+    document.querySelectorAll('.discard-history-card.peeked').forEach(x => { if(x!==el) x.classList.remove('peeked'); });
+    el.classList.toggle('peeked');
+  }
+  function onHistoryDragEnd(e,el){
+    el.classList.remove('peeked');
   }
 
   function onStandDragOver(e, standIdx) {
@@ -1837,9 +1927,21 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         });
         return;
       }
-      ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId }));
+      const groups = userStands.map((stand,i) => ({type:standTypes[i]||'SEQUENCE', cardIds:stand.filter(c=>c.id!==selectedCardId).map(c=>c.id)})).filter(g=>g.cardIds.length);
+      ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId, groups }));
       selectedCardId = null;
     }
+  }
+
+  function getCardTagForRoles(card) {
+    const r = roomState?.roles;
+    if (!r) return card?.isPoochie ? 'POOCHIE' : '';
+    if (card?.isPoochie) return 'POOCHIE';
+    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'TIPLU';
+    if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
+    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'NICHLU';
+    if (card.rank === r.tipluRank) return 'JOKER';
+    return '';
   }
 
   function showResultsModal(data) {
@@ -1858,8 +1960,37 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       </div>
     `).join('');
 
+    const reveal = document.getElementById('revealedHands');
+    if (reveal) {
+      reveal.innerHTML = '<h3 style="font-size:15px;margin:0 0 8px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
+        (data.revealedHands || []).map(p => '<div class="revealed-player"><div class="revealed-player-title">' + p.name + (p.name === data.winnerName ? ' • DECLARER' : '') + '</div><div class="revealed-player-cards">' + (p.hand || []).map(card => renderCard(card, getCardTagForRoles(card), false)).join('') + '</div></div>').join('');
+    }
+
     document.getElementById('resultModal').style.display = 'flex';
   }
+
+  // Maal details: click/tap toggles the popover; clicking elsewhere closes it.
+  const maalSummaryEl=document.getElementById('maalSummary');
+  const maalPanelEl=document.getElementById('maalDetailsPanel');
+  maalSummaryEl?.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleMaalDetails();
+  });
+  maalSummaryEl?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMaalDetails();
+    }
+  });
+  maalPanelEl?.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', e => {
+    const panel=document.getElementById('maalDetailsPanel'), summary=document.getElementById('maalSummary');
+    if (panel && summary && panel.classList.contains('is-open') && !panel.contains(e.target) && !summary.contains(e.target)) {
+      toggleMaalDetails(false);
+    }
+  });
 
   // --- Offline Demo Simulation Mode ---
   function startDemoMode() {

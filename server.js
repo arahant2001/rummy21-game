@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, CONFIG } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, validateShow, CONFIG } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -176,7 +176,18 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DECLARE' && isTurn && userRoom.turnStage === 'DISCARD') {
-        const idx = activePlayer.hand.findIndex(c => c.id === data.cardId);
+        const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
+        if (finalIdx === -1) return;
+        const showHand = activePlayer.hand.filter(c => c.id !== data.cardId);
+        const validation = validateShow(data.groups, showHand, userRoom.cutCard);
+        if (!validation.valid) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason }));
+          }
+          return;
+        }
+
+        const idx = finalIdx;
         if (idx !== -1) {
           const [finalDiscard] = activePlayer.hand.splice(idx, 1);
           userRoom.discardPile.push(finalDiscard);
@@ -221,7 +232,13 @@ wss.on('connection', (ws) => {
               type: 'SHOW_RESULT',
               winnerName: activePlayer.name,
               winnerMaal,
-              results
+              results,
+              revealedHands: userRoom.players.map(p => ({
+                name: p.name,
+                id: p.id,
+                hasDropped: p.hasDropped,
+                hand: p.hand
+              }))
             }));
           }
         });
