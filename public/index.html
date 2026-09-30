@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>21 Card Open Rummy</title>
+  <style>
+    :root {
+      --bg: #143525;
+      --felt: #1a4d33;
+      --gold: #f5b041;
+      --card-w: 62px;
+      --card-h: 88px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0; padding: 10px; background: var(--bg); color: #fff; user-select: none;
+    }
+    .lobby-box {
+      max-width: 400px; margin: 40px auto; background: var(--felt);
+      padding: 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    input, button {
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px;
+      border: none; font-size: 16px; font-weight: bold;
+    }
+    button { background: var(--gold); color: #000; cursor: pointer; }
+    .table-container { display: flex; flex-direction: column; min-height: 96vh; justify-content: space-between; }
+    .status-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; font-size: 14px;
+    }
+    .center-board {
+      display: flex; gap: 16px; justify-content: center; align-items: center;
+      background: var(--felt); padding: 16px; border-radius: 14px; margin: 10px 0;
+    }
+    .pile-title { font-size: 11px; text-transform: uppercase; color: #ccc; margin-bottom: 4px; text-align: center; }
+    .card {
+      width: var(--card-w); height: var(--card-h); background: #ffffff; color: #111;
+      border-radius: 6px; display: inline-flex; flex-direction: column; justify-content: space-between;
+      padding: 6px; font-weight: 700; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      cursor: pointer; position: relative; flex-shrink: 0;
+    }
+    .card.red { color: #d32f2f; }
+    .card.poochie { background: #ffeaa7; }
+    .card.is-selected { transform: translateY(-12px); border: 3px solid var(--gold); }
+    .card-top { font-size: 15px; line-height: 1; }
+    .card-mid { font-size: 24px; align-self: center; line-height: 1; }
+    .card-role-tag {
+      font-size: 9px; background: #e67e22; color: #fff; padding: 1px 4px;
+      border-radius: 3px; position: absolute; bottom: 4px; left: 4px; right: 4px; text-align: center;
+    }
+    .hand-scroll {
+      display: flex; overflow-x: auto; gap: 6px; padding: 14px 6px;
+      background: rgba(0,0,0,0.25); border-radius: 10px; -webkit-overflow-scrolling: touch;
+    }
+    .actions-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;
+    }
+    .btn-action { background: #27ae60; color: #fff; }
+    .btn-drop { background: #c0392b; color: #fff; }
+    .btn-declare { grid-column: span 2; background: var(--gold); color: #000; font-size: 18px; }
+    .btn-disabled { opacity: 0.4; pointer-events: none; }
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      justify-content: center; align-items: center; padding: 20px; z-index: 100;
+    }
+    .modal-content {
+      background: var(--felt); max-width: 480px; width: 100%; border-radius: 12px;
+      padding: 20px; color: #fff; max-height: 90vh; overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="lobbyView" class="lobby-box">
+  <h2 style="margin-top:0;">21 Card Rummy</h2>
+  <div style="font-size: 13px; color: #ddd; margin-bottom: 15px;">
+    Open Joker Table | Winner Takes Maal
+  </div>
+  <label>Your Name</label>
+  <input id="playerName" placeholder="e.g. Raj" value="Raj" />
+  <label style="margin-top: 10px; display:block;">Room Code</label>
+  <input id="roomId" placeholder="e.g. FAMILY" value="FAMILY" />
+  <button onclick="joinRoom()" style="margin-top: 20px;">Enter Table</button>
+</div>
+
+<div id="gameView" class="table-container" style="display: none;">
+  <div class="status-bar">
+    <div id="turnNotice">Connecting...</div>
+    <div id="maalSummary" style="color: var(--gold); font-weight: bold;">Maal: 0 pts</div>
+  </div>
+
+  <div class="center-board">
+    <div>
+      <div class="pile-title">Cut Joker</div>
+      <div id="cutCardContainer"></div>
+    </div>
+    <div>
+      <div class="pile-title">Stock Deck</div>
+      <div id="stockDeckBtn" class="card" style="background: #2c3e50; color:#ecf0f1; justify-content:center; align-items:center;" onclick="drawStock()">
+        <span style="font-size: 18px;">🂠</span>
+        <span id="deckCountText" style="font-size: 11px;">0</span>
+      </div>
+    </div>
+    <div>
+      <div class="pile-title">Discard</div>
+      <div id="discardContainer" onclick="drawDiscard()"></div>
+    </div>
+  </div>
+
+  <div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px;">
+      <span style="font-size: 13px; color: #ccc;">Your Hand (<span id="handCount">21</span> cards)</span>
+      <button onclick="sortHand()" style="width: auto; padding: 4px 12px; font-size: 12px; background: #34495e; color:#fff;">Sort Suit/Rank</button>
+    </div>
+    <div id="handContainer" class="hand-scroll"></div>
+
+    <div class="actions-grid">
+      <button id="btnDrawStock" class="btn-action" onclick="drawStock()">Draw Closed</button>
+      <button id="btnDrawDiscard" class="btn-action" onclick="drawDiscard()">Pick Discard</button>
+      <button id="btnDiscard" class="btn-action" style="background:#e67e22;" onclick="discardSelected()">Discard Selected</button>
+      <button id="btnDrop" class="btn-drop" onclick="dropHand()">Drop Hand</button>
+      <button id="btnDeclare" class="btn-declare" onclick="declareShow()">Show / Declare</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Settlement Dialog -->
+<div id="resultModal" class="modal">
+  <div class="modal-content">
+    <h2 id="winnerTitle" style="color: var(--gold); margin-top:0;"></h2>
+    <div id="maalDetails" style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;"></div>
+    <h3>Settlements</h3>
+    <div id="settlementList"></div>
+    <button onclick="location.reload()" style="margin-top: 20px;">Play Next Hand</button>
+  </div>
+</div>
+
+<script>
+  let ws;
+  let roomState = null;
+  let myHand = [];
+  let selectedCardId = null;
+
+  function joinRoom() {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${proto}//${location.host}`);
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        type: 'JOIN',
+        playerName: document.getElementById('playerName').value,
+        roomId: document.getElementById('roomId').value
+      }));
+      document.getElementById('lobbyView').style.display = 'none';
+      document.getElementById('gameView').style.display = 'flex';
+    };
+
+    ws.onmessage = (evt) => {
+      const msg = JSON.parse(evt.data);
+
+      if (msg.type === 'SYNC') {
+        roomState = msg.room;
+        myHand = msg.yourHand;
+        renderAll(msg.yourMaal);
+      }
+
+      if (msg.type === 'SHOW_RESULT') {
+        showResultsModal(msg);
+      }
+    };
+  }
+
+  function renderCard(card, tag = '') {
+    if (!card) return '<div class="card" style="opacity:0.3;">Empty</div>';
+    const isRed = ['♥', '♦'].includes(card.suit);
+    const poochieClass = card.isPoochie ? 'poochie' : '';
+    const redClass = isRed ? 'red' : '';
+    const selClass = selectedCardId === card.id ? 'is-selected' : '';
+
+    return `
+      <div class="card ${redClass} ${poochieClass} ${selClass}" onclick="selectCard('${card.id}')">
+        <div class="card-top">${card.rank}</div>
+        <div class="card-mid">${card.suit}</div>
+        ${tag ? `<div class="card-role-tag">${tag}</div>` : ''}
+      </div>
+    `;
+  }
+
+  function getCardTag(card) {
+    if (!roomState || !roomState.roles) return '';
+    const r = roomState.roles;
+    if (card.isPoochie) return 'POOCHIE';
+    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'TIPLU';
+    if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
+    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'NICHLU';
+    if (card.rank === r.tipluRank) return 'JOKER';
+    return '';
+  }
+
+  function renderAll(maalData) {
+    document.getElementById('deckCountText').innerText = roomState.deckCount;
+    document.getElementById('handCount').innerText = myHand.length;
+
+    // Render Cut Joker
+    document.getElementById('cutCardContainer').innerHTML = renderCard(roomState.cutCard, 'CUT');
+
+    // Render Open Discard
+    document.getElementById('discardContainer').innerHTML = renderCard(roomState.topDiscard);
+
+    // Render Hand
+    const handBox = document.getElementById('handContainer');
+    handBox.innerHTML = myHand.map(c => renderCard(c, getCardTag(c))).join('');
+
+    // Maal Header
+    if (maalData) {
+      document.getElementById('maalSummary').innerText = `Maal: ${maalData.total} pts`;
+    }
+
+    // Turn indicator & button enforcement
+    const isMyTurn = roomState.turnPlayerId === getMyPlayerId();
+    const notice = document.getElementById('turnNotice');
+
+    if (roomState.status === 'LOBBY') {
+      notice.innerHTML = `<button onclick="startGame()" style="padding:4px 10px; font-size:12px;">Start Game (${roomState.players.length} seated)</button>`;
+    } else {
+      notice.innerText = isMyTurn ? `Your Turn (${roomState.turnStage})` : `${roomState.turnPlayerName}'s turn`;
+    }
+
+    const canDraw = isMyTurn && roomState.turnStage === 'DRAW';
+    const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD';
+
+    document.getElementById('btnDrawStock').classList.toggle('btn-disabled', !canDraw);
+    document.getElementById('btnDrawDiscard').classList.toggle('btn-disabled', !canDraw);
+    document.getElementById('btnDrop').classList.toggle('btn-disabled', !canDraw);
+    document.getElementById('btnDiscard').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
+    document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
+  }
+
+  function getMyPlayerId() {
+    const me = roomState?.players.find(p => p.name === document.getElementById('playerName').value);
+    return me ? me.id : null;
+  }
+
+  function selectCard(cardId) {
+    selectedCardId = selectedCardId === cardId ? null : cardId;
+    renderAll(null);
+  }
+
+  function sortHand() {
+    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4, '★': 5 };
+    myHand.sort((a, b) => {
+      if (a.suit !== b.suit) return (suitOrder[a.suit] || 0) - (suitOrder[b.suit] || 0);
+      return a.rankValue - b.rankValue;
+    });
+    renderAll(null);
+  }
+
+  function startGame() { ws.send(JSON.stringify({ type: 'START_GAME' })); }
+  function drawStock() { ws.send(JSON.stringify({ type: 'DRAW_STOCK' })); }
+  function drawDiscard() { ws.send(JSON.stringify({ type: 'DRAW_DISCARD' })); }
+  function dropHand() {
+    if (confirm('Are you sure you want to drop this hand?')) {
+      ws.send(JSON.stringify({ type: 'DROP' }));
+    }
+  }
+  function discardSelected() {
+    if (!selectedCardId) return;
+    ws.send(JSON.stringify({ type: 'DISCARD', cardId: selectedCardId }));
+    selectedCardId = null;
+  }
+  function declareShow() {
+    if (!selectedCardId) {
+      alert('Select the card you want to discard for the Show.');
+      return;
+    }
+    if (confirm('Declare valid show with this discard?')) {
+      ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId }));
+      selectedCardId = null;
+    }
+  }
+
+  function showResultsModal(data) {
+    document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
+    const m = data.winnerMaal.details;
+    document.getElementById('maalDetails').innerHTML = `
+      <strong>Winner Maal: ${data.winnerMaal.total} pts</strong><br>
+      • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
+      • Tiplu: ${m.tiplus} (${m.tipluPts} pts)<br>
+      • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
+      • Paplu/Nichlu: ${m.papluNichlu} (${m.papluNichluPts} pts)
+    `;
+
+    document.getElementById('settlementList').innerHTML = data.results.map(r => `
+      <div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <strong>${r.name}</strong>: ${r.net}
+      </div>
+    `).join('');
+
+    document.getElementById('resultModal').style.display = 'flex';
+  }
+</script>
+</body>
+</html>
