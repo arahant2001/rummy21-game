@@ -160,10 +160,10 @@ function rankValueForSequence(card) {
   return v > 0 ? [v] : [];
 }
 
-function isPureSequence(cards) {
+function isPureSequence(cards, cutCard) {
   if (cards.length < 3) return false;
   if (cards.length === 3 && cards.every(c => !c.isPoochie && c.rank === cards[0].rank && c.suit === cards[0].suit)) return true;
-  if (cards.some(c => c.isPoochie)) return false;
+  if (cards.some(c => isWildCard(c, cutCard))) return false;
   const suit = cards[0].suit;
   if (!cards.every(c => c.suit === suit)) return false;
   const vals = cards.map(c => rankValueForSequence(c)[0]);
@@ -176,7 +176,7 @@ function isPureSequence(cards) {
 
 function isSequence(cards, cutCard) {
   if (cards.length < 3) return false;
-  if (isPureSequence(cards)) return true;
+  if (isPureSequence(cards, cutCard)) return true;
   const wilds = cards.filter(c => isWildCard(c, cutCard));
   const naturals = cards.filter(c => !isWildCard(c, cutCard));
   if (!naturals.length) return false;
