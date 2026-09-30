@@ -923,7 +923,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         </div>
 
         <!-- Stand management buttons -->
-        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 groups">2 Groups</button>
+        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 groups">2 Groups</button><button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 groups">3 Groups</button>
         <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 group">1 Group</button>
         <button class="tool-btn" onclick="addNewStand()" title="Add an empty show group">+ Add Group</button>
       </div>
@@ -1045,13 +1045,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (count === 1) {
       userStands = [[...myHand]];
       standTypes = ['SEQUENCE'];
-      return;    }
-    // Split into 2 stands (~11 and 10 cards)
+      return;
+    }
+    if (count === 3) {
+      const a = Math.ceil(myHand.length / 3);
+      const b = Math.ceil((myHand.length - a) / 2);
+      userStands = [myHand.slice(0,a), myHand.slice(a,a+b), myHand.slice(a+b)];
+      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE','PURE_SEQUENCE'];
+      return;
+    }
     const mid = Math.ceil(myHand.length / 2);
-    userStands = [
-      myHand.slice(0, mid),
-      myHand.slice(mid)
-    ];
+    userStands = [myHand.slice(0, mid), myHand.slice(mid)];
+    standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
   }
 
   function splitIntoStands(count) {
@@ -1059,12 +1064,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (count === 1) {
       userStands = [allCards];
       standTypes = ['SEQUENCE'];
+    } else if (count === 3) {
+      const a = Math.ceil(allCards.length / 3);
+      const b = Math.ceil((allCards.length - a) / 2);
+      userStands = [allCards.slice(0,a), allCards.slice(a,a+b), allCards.slice(a+b)];
+      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE','PURE_SEQUENCE'];
     } else {
       const mid = Math.ceil(allCards.length / 2);
-      userStands = [
-        allCards.slice(0, mid),
-        allCards.slice(mid)
-      ];
+      userStands = [allCards.slice(0, mid), allCards.slice(mid)];
       standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
     }
     myHand = userStands.flat();
