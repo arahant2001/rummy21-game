@@ -14,6 +14,11 @@ const wss = new WebSocketServer({ server });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Render health check / quick deployment sanity check
+app.get('/health', (req, res) => {
+  res.status(200).json({ ok: true, service: 'rummy21-game', rooms: rooms.size });
+});
+
 const rooms = new Map();
 
 function getSafeRoom(room) {
