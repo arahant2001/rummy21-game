@@ -176,7 +176,10 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DECLARE' && isTurn && userRoom.turnStage === 'DISCARD') {
-        const validation = validateShow(data.groups, activePlayer.hand, userRoom.cutCard);
+        const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
+        if (finalIdx === -1) return;
+        const showHand = activePlayer.hand.filter(c => c.id !== data.cardId);
+        const validation = validateShow(data.groups, showHand, userRoom.cutCard);
         if (!validation.valid) {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason }));
@@ -184,7 +187,7 @@ wss.on('connection', (ws) => {
           return;
         }
 
-        const idx = activePlayer.hand.findIndex(c => c.id === data.cardId);
+        const idx = finalIdx;
         if (idx !== -1) {
           const [finalDiscard] = activePlayer.hand.splice(idx, 1);
           userRoom.discardPile.push(finalDiscard);
