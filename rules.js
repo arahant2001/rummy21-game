@@ -232,7 +232,7 @@ export function validateShow(groups, hand, cutCard) {
     } else return { valid:false, reason:'Unknown group type.' };
   }
 
-  if (used.size !== hand.length) return { valid:false, reason:\`All \${hand.length} cards must be grouped; \${hand.length-used.size} card(s) are ungrouped.\` };
-  if (pureSequences < 3) return { valid:false, reason:\`A 21-card declaration requires at least 3 Pure Sequences. You have \${pureSequences}.\` };
+  if (used.size !== hand.length) return { valid:false, reason:`All \${hand.length} cards must be grouped; \${hand.length-used.size} card(s) are ungrouped.` };
+  if (pureSequences < 3) return { valid:false, reason:`A 21-card declaration requires at least 3 Pure Sequences. You have \${pureSequences}.` };
   return { valid:true, pureSequences };
 }
