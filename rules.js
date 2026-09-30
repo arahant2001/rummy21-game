@@ -162,8 +162,8 @@ function rankValueForSequence(card) {
 
 function isPureSequence(cards, cutCard) {
   if (cards.length < 3) return false;
-  if (cards.length === 3 && cards.every(c => !c.isPoochie && c.rank === cards[0].rank && c.suit === cards[0].suit)) return true;
   if (cards.some(c => isWildCard(c, cutCard))) return false;
+  if (cards.length === 3 && cards.every(c => c.rank === cards[0].rank && c.suit === cards[0].suit)) return true;
   const suit = cards[0].suit;
   if (!cards.every(c => c.suit === suit)) return false;
   const vals = cards.map(c => rankValueForSequence(c)[0]);
