@@ -649,6 +649,9 @@
       }
     }
   
+/* ===== MAAL + DRAG UX ===== */
+.maal-details-panel{margin:8px 0 10px;padding:11px 12px;border:1px solid rgba(217,182,92,.18);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.88),rgba(10,20,15,.92));box-shadow:0 7px 20px rgba(0,0,0,.16)}.maal-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.maal-details-title{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.8px;color:#f1d27a}.maal-details-subtitle{font-size:9px;color:#789086;margin-top:2px}.maal-live-total{font-size:11px;font-weight:850;color:#f8dfa0;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);border-radius:999px;padding:5px 9px;white-space:nowrap}.maal-detail-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.maal-detail-card{min-width:0;padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(148,163,184,.10)}.maal-detail-label{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.65px;color:#70857b;font-weight:800}.maal-detail-value{display:block;margin-top:3px;font-size:11px;color:#e7eee9;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pile-draggable,.pile-drop-source{cursor:grab}.pile-draggable:active,.pile-drop-source:active{cursor:grabbing}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{border-color:#f1d27a!important;box-shadow:0 0 0 3px rgba(217,182,92,.16),0 10px 24px rgba(0,0,0,.3)!important;transform:translateY(-3px)}.pile-drop-source{display:flex;align-items:center;justify-content:center;min-height:98px}.pile-drop-source .card{pointer-events:none}.stand-rack.pile-drop-ready{border-color:#f1d27a;background:rgba(217,182,92,.09);box-shadow:0 0 0 2px rgba(217,182,92,.10)}.stage-guide.pile-mode{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.09)}.card-inner{box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 0 0 3px rgba(255,255,255,.7)}.card:not(.deck-card) .card-inner:before{content:"";position:absolute;inset:3px;border:1px solid rgba(15,23,42,.10);border-radius:5px;pointer-events:none}.pip-grid{position:relative;width:34px;height:60px;font-size:10px;line-height:1}.pip{position:absolute;display:flex;align-items:center;justify-content:center;width:10px;height:10px;font-size:12px;font-weight:700}.pip-t{left:12px;top:0}.pip-b{left:12px;bottom:0}.pip-c{left:12px;top:25px}.pip-tl{left:0;top:0}.pip-tr{right:0;top:0}.pip-ml{left:0;top:25px}.pip-mr{right:0;top:25px}.pip-bl{left:0;bottom:0}.pip-br{right:0;bottom:0}.pip-ul{left:0;top:13px}.pip-ur{right:0;top:13px}.pip-c1{left:12px;top:13px}.pip-c2{left:12px;top:38px}.pip-1{height:28px}.pip-2{height:48px}.pip-3,.pip-4,.pip-5,.pip-6,.pip-7,.pip-8,.pip-9,.pip-10{height:60px}@media(max-width:800px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.maal-details-head{align-items:flex-start}.maal-details-subtitle{max-width:240px}.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.maal-detail-value{font-size:10px}}
+
 /* ===== UI REFINEMENT ===== */
 /* ===== COMPLETE UX PASS ===== */
 .game-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid rgba(217,182,92,.16);border-radius:13px;background:linear-gradient(90deg,rgba(18,55,41,.86),rgba(7,26,18,.9));box-shadow:0 8px 24px rgba(0,0,0,.18)}
@@ -725,7 +728,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     South Indian Open Joker Table &bull; Winner Takes Maal
   </div>
   <label class="field-label">Your Name</label>
-  <input id="playerName" placeholder="e.g. Raj" value="Raj" />
+  <input id="playerName" placeholder="Enter your name" value="" autocomplete="name" />
   <label class="field-label">Room Code</label>
   <input id="roomId" placeholder="e.g. FAMILY" value="FAMILY" />
   <button class="btn-primary" onclick="joinRoom()">Enter Table</button>
@@ -777,11 +780,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="playerRows"></div>
   </div>
 
-  <div class="maal-mini" id="maalMini">
-    <div class="maal-mini-item"><div class="maal-mini-label">Maal</div><div class="maal-mini-value" id="maalMiniTotal">Round total pending</span></div></div>
-    <div class="maal-mini-item"><div class="maal-mini-label">Joker</div><div class="maal-mini-value">Tiplu / Paplu / Nichlu</div></div>
-    <div class="maal-mini-item"><div class="maal-mini-label">Special</div><div class="maal-mini-value">Poochie + Marriages</div></div>
-  </div>
+  <section class="maal-details-panel" id="maalDetailsPanel">
+    <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
+    <div class="maal-detail-grid">
+      <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Tiplu</span><span class="maal-detail-value" id="maalTiplu">—</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Paplu</span><span class="maal-detail-value" id="maalPaplu">—</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Nichlu</span><span class="maal-detail-value" id="maalNichlu">—</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Poochie</span><span class="maal-detail-value" id="maalPoochie">Special</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Marriages</span><span class="maal-detail-value" id="maalMarriages">At Show</span></div>
+    </div>
+  </section>
 
   <!-- Center Table Felt -->
   <div class="center-board">
@@ -790,15 +799,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div id="cutCardContainer"></div>
     </div>
     <div class="pile-wrapper">
-      <div class="pile-title">Draw Stock</div><div class="pile-action-hint">Tap to draw closed</div>
-      <div id="stockDeckBtn" class="card deck-card clickable-action" onclick="drawStock()">
+      <div class="pile-title">Stock</div><div class="pile-action-hint">Drag onto your board</div>
+      <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true" ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
         <span class="deck-icon">🂠</span>
         <span id="deckCountText" class="deck-count">0</span>
       </div>
     </div>
     <div class="pile-wrapper">
-      <div class="pile-title">Discard Pile</div><div class="pile-action-hint">Tap to pick open</div>
-      <div id="discardContainer" onclick="drawDiscard()"></div>
+      <div class="pile-title">Discard</div><div class="pile-action-hint">Drag onto your board</div>
+      <div id="discardContainer" class="pile-drop-source" draggable="true" ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"></div>
     </div>
   </div>
 
@@ -809,7 +818,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span class="hand-heading-title">Your Hand</span>
         <span class="hand-heading-count"><span id="handCount">21</span> cards</span>
       </div>
-      <span class="hand-heading-hint">Select a card to discard • Drag to arrange</span>
+      <span class="hand-heading-hint">Drag Stock / Discard here • Drag cards to arrange</span>
     </div>
 
     <!-- Stands Toolbar -->
@@ -849,21 +858,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div class="action-label">Your Move</div>
     </div>
     <div class="actions-grid">
-      <button id="btnDrawStock" class="btn-action btn-draw-stock" onclick="drawStock()">
-        <span><b>Draw Closed</b><small class="action-sub">from stock</small></span>
-      </button>
-      <button id="btnDrawDiscard" class="btn-action btn-draw-discard" onclick="drawDiscard()">
-        <span><b>Pick Discard</b><small class="action-sub">from open pile</small></span>
-      </button>
-      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()">
-        <span><b>Discard</b><small class="action-sub">selected card</small></span>
-      </button>
-      <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()">
-        <span><b>Drop Hand</b><small class="action-sub">fold this round</small></span>
-      </button>
-      <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()">
-        <span><b>Show / Declare</b><small class="action-sub">finish the hand</small></span>
-      </button>
+      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()"><span><b>Discard</b><small class="action-sub">selected card</small></span></button>
+      <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Drop Hand</b><small class="action-sub">before drawing</small></span></button>
+      <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
 </div>
@@ -1106,6 +1103,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return '';
   }
 
+  function renderPipLayout(rank, suit) {
+    const n = parseInt(rank, 10);
+    if (!Number.isFinite(n) || n < 1 || n > 10) return '<div class="center-pips single"><span class="center-pip-symbol">' + suit + '</span></div>';
+    const layouts={1:['c'],2:['t','b'],3:['t','c','b'],4:['tl','tr','bl','br'],5:['tl','tr','c','bl','br'],6:['tl','tr','ml','mr','bl','br'],7:['tl','tr','ml','c','mr','bl','br'],8:['tl','tr','ml','ul','ur','mr','bl','br'],9:['tl','tr','ml','ul','c','ur','mr','bl','br'],10:['tl','tr','ml','ul','c1','c2','ur','mr','bl','br']};
+    const items=layouts[n].map(p=>'<span class="pip pip-'+p+'">'+suit+'</span>').join('');
+    return '<div class="pip-grid pip-'+n+'">'+items+'</div>';
+  }
+
   function renderCard(card, tag = '', isHand = false) {
     if (!card) return '<div class="card" style="opacity:0.25; background: #0f172a; border: 1px dashed var(--surface-border-light); justify-content:center; align-items:center; color: var(--text-muted); font-size:11px;">Empty</div>';
     const isRed = ['♥', '♦'].includes(card.suit);
@@ -1134,12 +1139,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
     }
 
-    // Center display: Court SVG art for Q, K, J, PJ; clean crisp pip for number cards
+    // Center display: court art for face cards, authentic pip layouts for number cards.
     let centerHtml = '';
     if (['Q', 'K', 'J', 'PJ'].includes(card.rank)) {
       centerHtml = getCourtArtSvg(card.rank, card.suit, isRed);
     } else {
-      centerHtml = `<div class="center-pip">${card.suit}</div>`;
+      centerHtml = renderPipLayout(card.rank, card.suit);
     }
 
     return `
@@ -1218,6 +1223,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function renderAll(maalData) {
     renderPlayerStrip();
+    renderMaalDetails(maalData);
     document.getElementById('deckCountText').innerText = roomState ? roomState.deckCount : 0;
     
     // Total hand count
@@ -1232,6 +1238,19 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     // Render Multiple Stands
     renderStands();
+
+  function renderMaalDetails(maalData) {
+    const roles=roomState?.roles||{}, cut=roomState?.cutCard;
+    const fmt=card=>card?(card.rank+card.suit):'—';
+    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.innerText=value;};
+    set('maalCutCard',fmt(cut));
+    set('maalTiplu',roles.tipluRank&&roles.tipluSuit?(roles.tipluRank+roles.tipluSuit):'—');
+    set('maalPaplu',roles.papluRank&&roles.tipluSuit?(roles.papluRank+roles.tipluSuit):'—');
+    set('maalNichlu',roles.nichluRank&&roles.tipluSuit?(roles.nichluRank+roles.tipluSuit):'—');
+    set('maalPoochie','Special');
+    set('maalMarriages','At Show');
+    set('maalMiniTotal',maalData?(maalData.total+' pts'):'Pending');
+  }
 
     // Maal Header Badge
     if (maalData) {
@@ -1249,9 +1268,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (!roomState || roomState.status === 'LOBBY') {
         guide.innerHTML = '<strong>Table ready:</strong> start the game when everyone is seated.';
       } else if (isMyTurn && roomState.turnStage === 'DRAW') {
-        guide.innerHTML = '<strong>Your turn:</strong> draw from the stock or pick the open discard.';
+        guide.innerHTML = '<strong>Your turn:</strong> drag the Stock or Discard onto your board.';
       } else if (isMyTurn && roomState.turnStage === 'DISCARD') {
-        guide.innerHTML = '<strong>Your turn:</strong> select a card, then discard it or declare.';
+        guide.innerHTML = '<strong>Your turn:</strong> select a card, then Discard or Show / Declare.';
       } else {
         guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
       }
@@ -1276,12 +1295,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const canDraw = isMyTurn && roomState.turnStage === 'DRAW';
     const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD';
 
-    document.getElementById('btnDrawStock').classList.toggle('btn-disabled', !canDraw);
-    document.getElementById('btnDrawDiscard').classList.toggle('btn-disabled', !canDraw);
     document.getElementById('btnDrop').classList.toggle('btn-disabled', !canDraw);
     document.getElementById('btnDiscard').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
-    document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
-    document.getElementById('stockDeckBtn').classList.toggle('clickable-action', canDraw);
+    document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
+    document.getElementById('stockDeckBtn').classList.toggle('drag-ready', canDraw);
+    document.getElementById('discardContainer').classList.toggle('drag-ready', canDraw);
+    const guideBox=document.getElementById('stageGuide');
+    if(guideBox) guideBox.classList.toggle('pile-mode',canDraw);
 
     updateReorderControls();
   }
@@ -1463,8 +1483,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   });
 
+  // --- Drag a Stock / Discard pile onto your board ---
+  let draggedPileType=null;
+  function onPileDragStart(e,pileType){
+    const isMyTurn=roomState&&roomState.turnPlayerId===getMyPlayerId();
+    if(!isMyTurn||roomState.turnStage!=='DRAW'){e.preventDefault();return;}
+    draggedPileType=pileType;draggedCardId=null;
+    e.dataTransfer.setData('text/plain','pile:'+pileType);e.dataTransfer.effectAllowed='move';
+    document.querySelectorAll('.stand-rack').forEach(el=>el.classList.add('pile-drop-ready'));
+  }
+  function onPileDragEnd(){
+    draggedPileType=null;
+    document.querySelectorAll('.stand-rack').forEach(el=>el.classList.remove('pile-drop-ready'));
+  }
+  function completePileDrop(pileType){
+    if(pileType==='stock') drawStock();
+    if(pileType==='discard') drawDiscard();
+    onPileDragEnd();
+  }
+
   // --- HTML5 Drag & Drop Support Across Stands ---
   function onCardDragStart(e, cardId) {
+    draggedPileType = null;
     draggedCardId = cardId;
     e.dataTransfer.setData('text/plain', cardId);
     e.dataTransfer.effectAllowed = 'move';
@@ -1546,7 +1586,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onStandDrop(e, targetStandIdx) {
     e.preventDefault();
     const rack = document.getElementById('stand-rack-' + targetStandIdx);
-    if (rack) rack.classList.remove('drag-over-stand');
+    if (rack) rack.classList.remove('drag-over-stand','pile-drop-ready');
+    if (draggedPileType) {
+      const pileType=draggedPileType;
+      completePileDrop(pileType);
+      return;
+    }
     if (!draggedCardId) return;
 
     let sourceStand = null;
@@ -1571,6 +1616,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function onCardDragEnd(e) {
     draggedCardId = null;
+    draggedPileType = null;
     document.querySelectorAll('.card').forEach(el => {
       el.classList.remove('is-dragging', 'drag-over-left', 'drag-over-right');
     });
@@ -1616,7 +1662,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
   function declareShow() {
     if (!selectedCardId) {
-      alert('Select the card you want to discard for the Show.');
+      alert('Select the final card you want to discard for the Show.');
       return;
     }
     if (confirm('Declare valid show with this discard?')) {
@@ -1666,9 +1712,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       id: 'DEMO-TABLE',
       status: 'PLAYING',
       turnPlayerId: 'p_demo',
-      turnPlayerName: document.getElementById('playerName').value || 'Raj',
+      turnPlayerName: document.getElementById('playerName').value || 'You',
       turnStage: 'DRAW',
-      lastAction: 'Raj is up next',
+      lastAction: 'You are up next',
       cutCard: { id: 'c_cut', suit: '♠', rank: '7', rankValue: 7, isPoochie: false },
       roles: {
         tipluSuit: '♠',
@@ -1679,7 +1725,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       topDiscard: { id: 'c_disc', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false },
       deckCount: 134,
       players: [
-        { id: 'p_demo', name: document.getElementById('playerName').value || 'Raj', cardCount: 21, hasDropped: false },
+        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false },
         { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false },
         { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false }
       ]
@@ -1729,7 +1775,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function demoMyTurn() {
     if (!isDemo || !roomState) return;
     roomState.turnPlayerId = 'p_demo';
-    roomState.turnPlayerName = document.getElementById('playerName').value || 'Raj';
+    roomState.turnPlayerName = document.getElementById('playerName').value || 'You';
     roomState.turnStage = 'DRAW';
     renderAll({ total: 90 });
   }
@@ -1767,6 +1813,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     
     roomState.deckCount--;
     roomState.turnStage = 'DISCARD';
+    selectedCardId = newCard.id;
     renderAll({ total: 90 });
     scrollCardIntoView(newCard.id);
   }
@@ -1780,6 +1827,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     roomState.topDiscard = { id: 'c_prev', suit: '♣', rank: '9', rankValue: 9, isPoochie: false };
     roomState.turnStage = 'DISCARD';
+    selectedCardId = drawn.id;
     renderAll({ total: 90 });
     scrollCardIntoView(drawn.id);
   }
