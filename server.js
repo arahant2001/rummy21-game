@@ -181,7 +181,7 @@ wss.on('connection', (ws) => {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason }));
           }
-          continue;
+          return;
         }
 
         const idx = activePlayer.hand.findIndex(c => c.id === data.cardId);
