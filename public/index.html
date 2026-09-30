@@ -784,31 +784,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 /* ===== COMPACT TABLE LAYOUT ===== */
 .center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible}
 .stock-pile-wrapper{position:relative;z-index:8}
-.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 10px);margin:0 auto}
+.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 36px);margin:0 auto}
 .stock-with-cut #stockDeckBtn{position:relative;z-index:5}
-.cut-card-under-stock{position:absolute;left:50%;top:calc(var(--card-h) - 14px);width:var(--card-h);height:var(--card-w);transform:translateX(-50%);z-index:1;pointer-events:none}
-.cut-card-under-stock .card{transform:rotate(90deg) scale(.78);transform-origin:center;opacity:.96;box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 1px rgba(217,182,92,.2)!important}
+.cut-card-under-stock{position:absolute;left:50%;top:80px;width:var(--card-h);height:var(--card-w);transform:translateX(-50%) rotate(90deg) scale(.78);transform-origin:center;z-index:1;pointer-events:none}
+.cut-card-under-stock .card{transform:none!important;opacity:.96;box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 1px rgba(217,182,92,.2)!important}
 .discard-pile-wrapper{position:relative;z-index:9}
-.discard-stack-area{position:relative;width:118px;height:104px;margin-top:2px;display:flex;align-items:center;justify-content:center}
+.discard-stack-area{position:relative;width:190px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
 .discard-stack-area #discardContainer{position:relative;z-index:20}
 .discard-history{position:absolute;inset:0;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
-.discard-history-card{position:absolute;width:68px;height:98px;left:25px;top:3px;display:block;opacity:.86;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.discard-history-card{position:absolute;width:68px;height:98px;left:50%;margin-left:-34px;top:5px;display:block;opacity:.9;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(-50% + var(--fan-x))) rotate(var(--fan-rot));}
 .discard-history-card:active{cursor:grabbing}
 .discard-history-card .card{transform:none!important;width:68px;height:98px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
-.discard-history-card.peeked{filter:brightness(1.05);z-index:18!important}
-.discard-history-card.peeked{filter:brightness(1.05);z-index:60!important;transform:translate(18px,-8px) rotate(0deg)!important}
-.discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translate(14px,-6px) rotate(0deg)!important}
-.discard-stack-area:has(.discard-history-card:hover) #discardContainer{transform:translateX(24px);transition:transform .18s ease}
-.discard-history-card.peeked ~ .discard-history-card{opacity:.62}
-@media(max-width:600px){.discard-stack-area:has(.discard-history-card:hover) #discardContainer{transform:translateX(18px)}}
+.discard-history-card.peeked{filter:brightness(1.08);z-index:60!important;transform:translateX(calc(-50% + var(--fan-x))) translateY(-10px) rotate(0deg) scale(1.03)!important;opacity:1}
+.discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translateX(calc(-50% + var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.03)!important;opacity:1}
+.discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
+.discard-history-card.peeked ~ .discard-history-card{opacity:.72}
+@media(max-width:600px){.discard-stack-area{width:156px}.discard-history-card{width:58px;height:84px;margin-left:-29px;top:9px}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(calc(-50% + var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.02)!important}}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-index{top:-4px;right:-4px;pointer-events:none}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
 .discard-history-panel{display:none!important}
 .discard-history-badge{font-size:8px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:3px 6px;border-radius:999px;white-space:nowrap}
-.maal-details-popover{position:absolute;right:10px;top:54px;z-index:100;display:none;margin:0;width:min(500px,calc(100vw - 28px));padding:11px 12px;border:1px solid rgba(217,182,92,.22);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.98),rgba(10,20,15,.98));box-shadow:0 14px 36px rgba(0,0,0,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.maal-details-popover{position:absolute;right:10px;top:54px;z-index:1000;display:none;pointer-events:auto;margin:0;width:min(500px,calc(100vw - 28px));padding:11px 12px;border:1px solid rgba(217,182,92,.22);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.98),rgba(10,20,15,.98));box-shadow:0 14px 36px rgba(0,0,0,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .maal-details-popover.is-open{display:block}
-.status-bar{position:relative}
+.status-bar{position:relative;z-index:1000}
 #maalSummary{cursor:pointer;position:relative}
 #maalSummary:hover{filter:brightness(1.08)}
 #maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
@@ -845,7 +844,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div id="turnDot" class="turn-indicator-dot"></div>
       <span id="turnNotice">Connecting...</span>
     </div>
-    <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details" onclick="toggleMaalDetails()">
+    <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details">
       <span>🏆</span>
       <span id="maalPtsText">Maal: 0 pts</span>
     </div>
@@ -1793,11 +1792,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return;
     }
     box.innerHTML=history.map((card,idx)=>{
-      const fan = idx % 2 === 0 ? (idx/2)*5 : -(Math.ceil(idx/2))*5;
-      const y = Math.min(idx*2, 12);
+      const fanX = idx < 4 ? -14 * (idx + 1) : 14 * (idx - 3);
+      const fanRot = idx < 4 ? -3 - idx * 0.8 : 3 + (idx - 4) * 0.8;
       const z = 10 + idx;
       return `
-        <div class="discard-history-card" draggable="true" style="transform:translate(${fan}px,${y}px) rotate(${fan/2}deg);z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}"
+        <div class="discard-history-card" draggable="true" style="--fan-x:${fanX}px;--fan-rot:${fanRot}deg;z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}"
              ondragstart="onHistoryDragStart(event,this)" onclick="toggleHistoryPeek(this)" ondragend="onHistoryDragEnd(event,this)">
           <span class="discard-history-index">${idx+1}</span>
           ${renderCard(card)}
