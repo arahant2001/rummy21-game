@@ -297,8 +297,7 @@
       text-transform: uppercase;
       white-space: nowrap;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      z-index: 10;
-      pointer-events: none;
+      z-index: 10;      pointer-events: none;
     }
     .role-tiplu { background: #4f46e5; color: #ffffff; border: 1px solid #6366f1; }
     .role-paplu { background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; }
@@ -597,8 +596,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(4, 7, 13, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(4, 7, 13, 0.85);      backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       justify-content: center;
       align-items: center;
@@ -676,6 +674,25 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .modal-content{background:linear-gradient(145deg,#143728,#091b13);border-color:rgba(217,182,92,.28)}
 @media(max-width:760px){body{padding:7px}.table-container{min-height:calc(100vh - 14px)}.center-board{min-height:145px;gap:16px;padding:22px 10px 14px}.btn-action{min-height:46px;padding:10px 5px;font-size:12px}}
 @media(max-width:430px){:root{--card-w:58px;--card-h:84px}.lobby-box{margin:28px auto;padding:28px 20px 22px}.lobby-title{font-size:25px}.center-board{gap:8px}.pile-wrapper{min-width:65px}.stand-cards{gap:6px}.actions-grid{grid-template-columns:repeat(2,1fr)}.btn-declare{grid-column:span 2}}
+/* Player Status Strip */
+.player-strip{display:flex;flex-direction:column;gap:6px;margin:0 0 2px;padding:9px 10px;background:rgba(6,23,16,.88);border:1px solid rgba(217,182,92,.16);border-radius:14px;box-shadow:0 7px 20px rgba(0,0,0,.18)}
+.player-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(100px,150px);align-items:center;gap:12px;padding:8px 11px;border:1px solid rgba(255,255,255,.055);border-radius:9px;background:rgba(255,255,255,.025);transition:background .18s,border-color .18s,transform .18s}
+.player-row.me{border-color:rgba(99,214,165,.28);background:rgba(50,197,138,.07)}
+.player-row.current{border-color:rgba(241,210,122,.55);background:linear-gradient(90deg,rgba(217,182,92,.12),rgba(50,197,138,.06));box-shadow:inset 3px 0 0 var(--accent-gold-soft)}
+.player-row.dropped{opacity:.55}
+.player-name{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;font-weight:700}
+.player-avatar{width:26px;height:26px;display:grid;place-items:center;flex:0 0 26px;border-radius:50%;background:rgba(217,182,92,.13);border:1px solid rgba(217,182,92,.25);font-size:13px}
+.player-you{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--accent-emerald);font-weight:800}
+.player-count{font-size:12px;color:#b9c8c0;white-space:nowrap}
+.player-state{justify-self:end;min-width:94px;text-align:right;font-size:11px;font-weight:700;color:#83978d}
+.player-state.waiting:before{content:"●";color:#647970;margin-right:5px}
+.player-state.turn{color:var(--accent-gold-soft);font-size:11px;text-transform:uppercase;letter-spacing:.35px}
+.player-state.turn:before{content:"●";color:var(--accent-gold-soft);margin-right:5px;animation:pulse 1.4s infinite}
+.player-state.you-turn{color:#f1d27a;background:rgba(217,182,92,.10);border:1px solid rgba(217,182,92,.28);padding:5px 8px;border-radius:7px}
+.player-state.dropped-state{color:var(--accent-rose)}
+.player-strip-title{display:flex;justify-content:space-between;align-items:center;padding:1px 5px 3px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#789087}
+@media(max-width:600px){.player-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}.player-state{grid-column:1/-1;justify-self:stretch;text-align:left;margin-left:34px}.player-state.you-turn{display:inline-block;width:max-content;margin-left:34px}.player-count{font-size:11px}}
+
 
   </style>
 </head>
@@ -709,6 +726,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <span>🏆</span>
       <span id="maalPtsText">Maal: 0 pts</span>
     </div>
+  </div>
+
+  <!-- Player Status Strip -->
+  <div id="playerStrip" class="player-strip">
+    <div class="player-strip-title"><span>Players</span><span id="playerTurnSummary">Table status</span></div>
+    <div id="playerRows"></div>
   </div>
 
   <!-- Center Table Felt -->
@@ -898,7 +921,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     myHand = userStands.flat();
     renderAll(null);
   }
-
   function addNewStand() {
     userStands.push([]);
     renderAll(null);
@@ -1084,7 +1106,51 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return '';
   }
 
+  function renderPlayerStrip() {
+    const rows = document.getElementById('playerRows');
+    const summary = document.getElementById('playerTurnSummary');
+    if (!rows || !roomState || !roomState.players) return;
+
+    const me = roomState.players.find(p => p.id === getMyPlayerId());
+    const currentId = roomState.turnPlayerId;
+    const playing = roomState.status !== 'LOBBY';
+    if (summary) {
+      summary.innerText = playing
+        ? (roomState.turnPlayerName ? 'Turn: ' + roomState.turnPlayerName : 'In progress')
+        : roomState.players.length + ' seated';
+    }
+
+    rows.innerHTML = roomState.players.map(p => {
+      const isMe = p.id === getMyPlayerId();
+      const isCurrent = playing && p.id === currentId;
+      const dropped = p.hasDropped;
+      let stateText = 'Waiting';
+      let stateClass = 'waiting';
+      if (dropped) {
+        stateText = 'Dropped';
+        stateClass = 'dropped-state';
+      } else if (isCurrent && isMe) {
+        stateText = 'YOUR TURN';
+        stateClass = 'you-turn';
+      } else if (isCurrent) {
+        stateText = 'Their turn';
+        stateClass = 'turn';
+      }
+      return `
+        <div class="player-row ${isMe ? 'me' : ''} ${isCurrent ? 'current' : ''} ${dropped ? 'dropped' : ''}">
+          <div class="player-name">
+            <span class="player-avatar">🧑</span>
+            <span>${p.name}</span>
+            ${isMe ? '<span class="player-you">You</span>' : ''}
+          </div>
+          <div class="player-count">${p.cardCount ?? 0} cards</div>
+          <div class="player-state ${stateClass}">${stateText}</div>
+        </div>`;
+    }).join('');
+  }
+
   function renderAll(maalData) {
+    renderPlayerStrip();
     document.getElementById('deckCountText').innerText = roomState ? roomState.deckCount : 0;
     
     // Total hand count
@@ -1197,8 +1263,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         optionsSpan.innerHTML = userStands.map((s, idx) => {
           if (idx === currentStandIdx) return '';
           return `<button class="tool-btn" onclick="moveCardToStand('${selectedCardId}', ${idx})" title="Move to Stand ${idx + 1}">To Stand ${idx + 1}</button>`;
-        }).join('');
-      } else if (optionsSpan) {
+        }).join('');      } else if (optionsSpan) {
         optionsSpan.innerHTML = '';
       }
     } else {
@@ -1497,8 +1562,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function showResultsModal(data) {
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal.details;
-    document.getElementById('maalDetails').innerHTML = `
-      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
+    document.getElementById('maalDetails').innerHTML = `      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
       • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
       • Tiplu: ${m.tiplus} (${m.tipluPts} pts)<br>
       • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
