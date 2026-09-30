@@ -649,6 +649,24 @@
       }
     }
   
+/* ===== DISCARD HISTORY + DIRECT DISCARD UX ===== */
+.discard-drop-ready{border-color:rgba(245,158,11,.72)!important;box-shadow:0 0 0 3px rgba(245,158,11,.14),0 10px 24px rgba(0,0,0,.28)!important}
+.discard-drop-hover{border-color:#f59e0b!important;box-shadow:0 0 0 5px rgba(245,158,11,.22),0 12px 28px rgba(245,158,11,.18)!important;transform:translateY(-4px) scale(1.03)!important}
+.discard-history-panel{margin:8px 0 10px;padding:11px 12px;border:1px solid rgba(148,163,184,.12);border-radius:12px;background:rgba(10,17,29,.72);box-shadow:0 7px 20px rgba(0,0,0,.12)}
+.discard-history-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.discard-history-title{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.75px;color:#d9e2df}
+.discard-history-subtitle{font-size:9px;color:#71847e;margin-top:2px}
+.discard-history-badge{font-size:9px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.discard-history{display:flex;gap:8px;overflow-x:auto;padding:4px 3px 7px;min-height:78px;align-items:center}
+.discard-history::-webkit-scrollbar{height:4px}.discard-history::-webkit-scrollbar-thumb{background:rgba(148,163,184,.18);border-radius:2px}
+.discard-history-card{position:relative;flex:0 0 50px;width:50px;height:70px;display:flex;align-items:center;justify-content:center;opacity:.78}
+.discard-history-card .card{transform:scale(.72);transform-origin:center;box-shadow:0 2px 6px rgba(0,0,0,.28);pointer-events:none}
+.discard-history-index{position:absolute;z-index:3;top:-2px;right:-2px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#334155;color:#dbe5e2;font-size:8px;font-weight:800;border:1px solid rgba(255,255,255,.12)}
+.discard-history-empty{font-size:10px;color:#64748b;padding:14px 4px}
+.maal-detail-points{display:block;margin-top:3px;font-size:9px;color:#f1d27a;font-weight:800}
+.maal-pool-note{margin-top:7px;font-size:9px;line-height:1.35;color:#789086}
+@media(max-width:700px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.discard-history-subtitle{display:none}}
+@media(max-width:420px){.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* ===== MAAL + DRAG UX ===== */
 .maal-details-panel{margin:8px 0 10px;padding:11px 12px;border:1px solid rgba(217,182,92,.18);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.88),rgba(10,20,15,.92));box-shadow:0 7px 20px rgba(0,0,0,.16)}.maal-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.maal-details-title{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.8px;color:#f1d27a}.maal-details-subtitle{font-size:9px;color:#789086;margin-top:2px}.maal-live-total{font-size:11px;font-weight:850;color:#f8dfa0;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);border-radius:999px;padding:5px 9px;white-space:nowrap}.maal-detail-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.maal-detail-card{min-width:0;padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(148,163,184,.10)}.maal-detail-label{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.65px;color:#70857b;font-weight:800}.maal-detail-value{display:block;margin-top:3px;font-size:11px;color:#e7eee9;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pile-draggable,.pile-drop-source{cursor:grab}.pile-draggable:active,.pile-drop-source:active{cursor:grabbing}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{border-color:#f1d27a!important;box-shadow:0 0 0 3px rgba(217,182,92,.16),0 10px 24px rgba(0,0,0,.3)!important;transform:translateY(-3px)}.pile-drop-source{display:flex;align-items:center;justify-content:center;min-height:98px}.pile-drop-source .card{pointer-events:none}.stand-rack.pile-drop-ready{border-color:#f1d27a;background:rgba(217,182,92,.09);box-shadow:0 0 0 2px rgba(217,182,92,.10)}.stage-guide.pile-mode{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.09)}.card-inner{box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 0 0 3px rgba(255,255,255,.7)}.card:not(.deck-card) .card-inner:before{content:"";position:absolute;inset:3px;border:1px solid rgba(15,23,42,.10);border-radius:5px;pointer-events:none}.pip-grid{position:relative;width:34px;height:60px;font-size:10px;line-height:1}.pip{position:absolute;display:flex;align-items:center;justify-content:center;width:10px;height:10px;font-size:12px;font-weight:700}.pip-t{left:12px;top:0}.pip-b{left:12px;bottom:0}.pip-c{left:12px;top:25px}.pip-tl{left:0;top:0}.pip-tr{right:0;top:0}.pip-ml{left:0;top:25px}.pip-mr{right:0;top:25px}.pip-bl{left:0;bottom:0}.pip-br{right:0;bottom:0}.pip-ul{left:0;top:13px}.pip-ur{right:0;top:13px}.pip-c1{left:12px;top:13px}.pip-c2{left:12px;top:38px}.pip-1{height:28px}.pip-2{height:48px}.pip-3,.pip-4,.pip-5,.pip-6,.pip-7,.pip-8,.pip-9,.pip-10{height:60px}@media(max-width:800px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.maal-details-head{align-items:flex-start}.maal-details-subtitle{max-width:240px}.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.maal-detail-value{font-size:10px}}
 
@@ -783,13 +801,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   <section class="maal-details-panel" id="maalDetailsPanel">
     <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
     <div class="maal-detail-grid">
-      <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Tiplu</span><span class="maal-detail-value" id="maalTiplu">—</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Paplu</span><span class="maal-detail-value" id="maalPaplu">—</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Nichlu</span><span class="maal-detail-value" id="maalNichlu">—</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Poochie</span><span class="maal-detail-value" id="maalPoochie">Special</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Marriages</span><span class="maal-detail-value" id="maalMarriages">At Show</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span><span class="maal-detail-points" id="maalCutPts">0 pts</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Tiplu</span><span class="maal-detail-value" id="maalTiplu">—</span><span class="maal-detail-points" id="maalTipluPts">0 pts</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Paplu</span><span class="maal-detail-value" id="maalPaplu">—</span><span class="maal-detail-points" id="maalPapluPts">See P/N pool</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Nichlu</span><span class="maal-detail-value" id="maalNichlu">—</span><span class="maal-detail-points" id="maalNichluPts">See P/N pool</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Poochie</span><span class="maal-detail-value" id="maalPoochie">0</span><span class="maal-detail-points" id="maalPoochiePts">0 pts</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Marriages</span><span class="maal-detail-value" id="maalMarriages">0</span><span class="maal-detail-points" id="maalMarriagePts">0 pts</span></div>
     </div>
+    <div class="maal-pool-note" id="maalPoolNote">Paplu + Nichlu use a shared tiered point pool after marriages are counted.</div>
   </section>
 
   <!-- Center Table Felt -->
@@ -806,10 +825,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       </div>
     </div>
     <div class="pile-wrapper">
-      <div class="pile-title">Discard</div><div class="pile-action-hint">Drag onto your board</div>
-      <div id="discardContainer" class="pile-drop-source" draggable="true" ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"></div>
+      <div class="pile-title">Discard</div><div class="pile-action-hint">Drag here to discard</div>
+      <div id="discardContainer" class="pile-drop-source" draggable="true"
+           ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
+           ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
+           ondrop="onDiscardPileDrop(event)"></div>
     </div>
   </div>
+
+  <section class="discard-history-panel">
+    <div class="discard-history-head">
+      <div>
+        <div class="discard-history-title">Previous Discards</div>
+        <div class="discard-history-subtitle">Newest first • the large card above is always the current discard</div>
+      </div>
+      <span class="discard-history-badge" id="discardHistoryCount">0 previous</span>
+    </div>
+    <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
+  </section>
 
   <!-- Hand Section with Multi-Stand Support -->
   <div>
@@ -818,7 +851,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span class="hand-heading-title">Your Hand</span>
         <span class="hand-heading-count"><span id="handCount">21</span> cards</span>
       </div>
-      <span class="hand-heading-hint">Drag Stock / Discard here • Drag cards to arrange</span>
+      <span class="hand-heading-hint">Drag Stock / Discard here • Drag any card to Discard</span>
     </div>
 
     <!-- Stands Toolbar -->
@@ -1234,22 +1267,59 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('cutCardContainer').innerHTML = renderCard(roomState?.cutCard, 'CUT');
 
     // Render Open Discard
-    document.getElementById('discardContainer').innerHTML = renderCard(roomState?.topDiscard);
+    document.getElementById('discardContainer').innerHTML = roomState?.topDiscard
+      ? renderCard(roomState.topDiscard, 'LATEST')
+      : '<div class="card" style="opacity:0.25; justify-content:center; align-items:center; color:var(--text-muted); font-size:11px;">Empty</div>';
+    renderDiscardHistory();
 
     // Render Multiple Stands
     renderStands();
 
+  function calculateLocalMaal() {
+    const cut=roomState?.cutCard, roles=roomState?.roles;
+    if (!cut || !roles) return null;
+    let poochies=0,tiplus=0,paplus=0,nichlus=0;
+    for (const card of myHand) {
+      if (card.isPoochie) poochies++;
+      else if (card.suit===roles.tipluSuit && card.rank===roles.tipluRank) tiplus++;
+      else if (card.suit===roles.tipluSuit && card.rank===roles.papluRank) paplus++;
+      else if (card.suit===roles.tipluSuit && card.rank===roles.nichluRank) nichlus++;
+    }
+    const marriages=Math.min(nichlus,tiplus,paplus);
+    const remTiplus=tiplus-marriages;
+    const remPapluNichlu=(paplus-marriages)+(nichlus-marriages);
+    const tier=(count,a,b,c)=>count<=0?0:count===1?a:count===2?b:c+(count-3)*a;
+    const marriagePts=marriages*50, tipluPts=remTiplus*20;
+    const poochiePts=tier(poochies,20,50,70);
+    const papluNichluPts=tier(remPapluNichlu,10,30,50);
+    return {total:marriagePts+tipluPts+poochiePts+papluNichluPts,details:{
+      marriages,marriagePts,tiplus:remTiplus,tipluPts,poochies,poochiePts,
+      papluNichlu:remPapluNichlu,papluNichluPts
+    }};
+  }
+
   function renderMaalDetails(maalData) {
     const roles=roomState?.roles||{}, cut=roomState?.cutCard;
+    const data=maalData?.details ? maalData : calculateLocalMaal();
+    const d=data?.details||{};
     const fmt=card=>card?(card.rank+card.suit):'—';
     const set=(id,value)=>{const el=document.getElementById(id);if(el)el.innerText=value;};
     set('maalCutCard',fmt(cut));
+    set('maalCutPts','0 pts • sets joker roles');
     set('maalTiplu',roles.tipluRank&&roles.tipluSuit?(roles.tipluRank+roles.tipluSuit):'—');
+    set('maalTipluPts',`${d.tipluPts||0} pts`);
     set('maalPaplu',roles.papluRank&&roles.tipluSuit?(roles.papluRank+roles.tipluSuit):'—');
+    set('maalPapluPts',d.papluNichlu ? `${d.papluNichlu} in P/N pool` : '0 in P/N pool');
     set('maalNichlu',roles.nichluRank&&roles.tipluSuit?(roles.nichluRank+roles.tipluSuit):'—');
-    set('maalPoochie','Special');
-    set('maalMarriages','At Show');
-    set('maalMiniTotal',maalData?(maalData.total+' pts'):'Pending');
+    set('maalNichluPts',d.papluNichlu ? `${d.papluNichluPts||0} pts P/N pool` : '0 pts');
+    set('maalPoochie',`${d.poochies||0}`);
+    set('maalPoochiePts',`${d.poochiePts||0} pts`);
+    set('maalMarriages',`${d.marriages||0}`);
+    set('maalMarriagePts',`${d.marriagePts||0} pts`);
+    set('maalPoolNote',d.papluNichlu
+      ? `Paplu + Nichlu: ${d.papluNichlu} remaining card(s) = ${d.papluNichluPts||0} pts. This is a shared tiered pool, so it is not double-counted between the two cards.`
+      : 'Paplu + Nichlu have no remaining cards after marriages.');
+    set('maalMiniTotal',data?(data.total+' pts'):'Pending');
   }
 
     // Maal Header Badge
@@ -1300,6 +1370,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
     document.getElementById('stockDeckBtn').classList.toggle('drag-ready', canDraw);
     document.getElementById('discardContainer').classList.toggle('drag-ready', canDraw);
+    document.getElementById('discardContainer').classList.toggle('discard-drop-ready', canDiscard);
     const guideBox=document.getElementById('stageGuide');
     if(guideBox) guideBox.classList.toggle('pile-mode',canDraw);
 
@@ -1570,6 +1641,50 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     myHand = userStands.flat();
     renderAll(null);
     scrollCardIntoView(card.id);
+  }
+
+  function onDiscardPileDragOver(e) {
+    if (!draggedCardId || draggedPileType) return;
+    const isMyTurn=roomState && roomState.turnPlayerId===getMyPlayerId();
+    if (!isMyTurn || roomState.turnStage!=='DISCARD') return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect='move';
+    document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
+  }
+
+  function onDiscardPileDragLeave(e) {
+    document.getElementById('discardContainer')?.classList.remove('discard-drop-hover');
+  }
+
+  function onDiscardPileDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('discardContainer')?.classList.remove('discard-drop-hover');
+    if (!draggedCardId || draggedPileType) return;
+    const isMyTurn=roomState && roomState.turnPlayerId===getMyPlayerId();
+    if (!isMyTurn || roomState.turnStage!=='DISCARD') return;
+    const cardId=draggedCardId;
+    selectedCardId=cardId;
+    discardSelected();
+    draggedCardId=null;
+  }
+
+  function renderDiscardHistory() {
+    const box=document.getElementById('discardHistory');
+    const countEl=document.getElementById('discardHistoryCount');
+    if (!box) return;
+    const history=(roomState?.discardHistory||[]).slice().reverse();
+    if (countEl) countEl.innerText=`${history.length} previous`;
+    if (!history.length) {
+      box.innerHTML='<div class="discard-history-empty">No previous discards yet.</div>';
+      return;
+    }
+    box.innerHTML=history.map((card,idx)=>`
+      <div class="discard-history-card" title="Previous discard #${idx+1}: ${card.rank}${card.suit}">
+        <span class="discard-history-index">${idx+1}</span>
+        ${renderCard(card)}
+      </div>
+    `).join('');
   }
 
   function onStandDragOver(e, standIdx) {
