@@ -835,13 +835,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
     <div class="maal-detail-grid">
       <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span><span class="maal-detail-points" id="maalCutPts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Tiplu</span><span class="maal-detail-value" id="maalTiplu">—</span><span class="maal-detail-points" id="maalTipluPts">0 pts</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Joker</span><span class="maal-detail-value" id="maalTiplu">—</span><span class="maal-detail-points" id="maalTipluPts">0 pts</span></div>
       <div class="maal-detail-card"><span class="maal-detail-label">Paplu</span><span class="maal-detail-value" id="maalPaplu">—</span><span class="maal-detail-points" id="maalPapluPts">See P/N pool</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Nichlu</span><span class="maal-detail-value" id="maalNichlu">—</span><span class="maal-detail-points" id="maalNichluPts">See P/N pool</span></div>
+      <div class="maal-detail-card"><span class="maal-detail-label">Tuplu</span><span class="maal-detail-value" id="maalNichlu">—</span><span class="maal-detail-points" id="maalNichluPts">See P/N pool</span></div>
       <div class="maal-detail-card"><span class="maal-detail-label">Poochie</span><span class="maal-detail-value" id="maalPoochie">0</span><span class="maal-detail-points" id="maalPoochiePts">0 pts</span></div>
       <div class="maal-detail-card"><span class="maal-detail-label">Marriages</span><span class="maal-detail-value" id="maalMarriages">0</span><span class="maal-detail-points" id="maalMarriagePts">0 pts</span></div>
     </div>
-    <div class="maal-pool-note" id="maalPoolNote">Paplu + Nichlu use a shared tiered point pool after marriages are counted.</div>
+    <div class="maal-pool-note" id="maalPoolNote">Paplu + Tuplu use a shared tiered point pool after marriages are counted.</div>
   </section>
 
   <!-- Center Table Felt -->
@@ -891,7 +891,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div class="stands-toolbar">
       <div class="toolbar-left">
         <span class="hand-toolbar-label">Arrange</span>
-        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move all Jokers, Tiplu, Paplu, Nichlu & Poochies to the start">
+        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move all Jokers, Paplu, Tuplu & Poochies to the start">
           <span>🃏</span> Jokers to Start
         </button>
         <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank">
@@ -1073,9 +1073,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     function getJokerRank(c) {
       if (c.isPoochie) return 4;
       if (r) {
-        if (c.suit === r.tipluSuit && c.rank === r.tipluRank) return 1; // Tiplu
+        if (c.suit === r.tipluSuit && c.rank === r.tipluRank) return 1; // Joker
         if (c.suit === r.tipluSuit && c.rank === r.papluRank) return 2; // Paplu
-        if (c.suit === r.tipluSuit && c.rank === r.nichluRank) return 3; // Nichlu
+        if (c.suit === r.tipluSuit && c.rank === r.nichluRank) return 3; // Tuplu
         if (c.rank === r.tipluRank) return 5; // Ordinary Joker
       }
       return 99;
@@ -1197,9 +1197,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     let tagHtml = '';
     if (tag) {
       let tagClass = 'role-joker';
-      if (tag === 'TIPLU') tagClass = 'role-tiplu';
+      if (tag === 'TIPLU') { tagClass = 'role-tiplu'; tag = 'JOKER'; }
       else if (tag === 'PAPLU') tagClass = 'role-paplu';
-      else if (tag === 'NICHLU') tagClass = 'role-nichlu';
+      else if (tag === 'NICHLU') { tagClass = 'role-nichlu'; tag = 'TUPLU'; }
       else if (tag === 'POOCHIE') tagClass = 'role-poochie';
       else if (tag === 'CUT') tagClass = 'role-cut';
       tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
@@ -1358,8 +1358,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     set('maalMarriages',`${d.marriages||0}`);
     set('maalMarriagePts',`${d.marriagePts||0} pts`);
     set('maalPoolNote',d.papluNichlu
-      ? `Paplu + Nichlu: ${d.papluNichlu} remaining card(s) = ${d.papluNichluPts||0} pts. This is a shared tiered pool, so it is not double-counted between the two cards.`
-      : 'Paplu + Nichlu have no remaining cards after marriages.');
+      ? `Paplu + Tuplu: ${d.papluNichlu} remaining card(s) = ${d.papluNichluPts||0} pts. This is a shared tiered pool, so it is not double-counted between the two cards.`
+      : 'Paplu + Tuplu have no remaining cards after marriages.');
     set('maalMiniTotal',data?(data.total+' pts'):'Pending');
   }
 
@@ -1847,9 +1847,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const m = data.winnerMaal.details;
     document.getElementById('maalDetails').innerHTML = `      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
       • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
-      • Tiplu: ${m.tiplus} (${m.tipluPts} pts)<br>
+      • Joker: ${m.tiplus} (${m.tipluPts} pts)<br>
       • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
-      • Paplu / Nichlu: ${m.papluNichlu} (${m.papluNichluPts} pts)
+      • Paplu / Tuplu: ${m.papluNichlu} (${m.papluNichluPts} pts)
     `;
 
     document.getElementById('settlementList').innerHTML = data.results.map(r => `
@@ -1894,9 +1894,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     };
 
     myHand = [
-      { id: 'c_1', suit: '♠', rank: '7', rankValue: 7, isPoochie: false }, // Tiplu
+      { id: 'c_1', suit: '♠', rank: '7', rankValue: 7, isPoochie: false }, // Joker
       { id: 'c_2', suit: '♠', rank: '8', rankValue: 8, isPoochie: false }, // Paplu
-      { id: 'c_3', suit: '♠', rank: '6', rankValue: 6, isPoochie: false }, // Nichlu
+      { id: 'c_3', suit: '♠', rank: '6', rankValue: 6, isPoochie: false }, // Tuplu
       { id: 'c_4', suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true },  // Poochie
       { id: 'c_5', suit: '♠', rank: 'A', rankValue: 1, isPoochie: false },
       { id: 'c_6', suit: '♠', rank: '2', rankValue: 2, isPoochie: false },
