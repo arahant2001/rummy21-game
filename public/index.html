@@ -650,6 +650,25 @@
     }
   
 /* ===== UI REFINEMENT ===== */
+/* ===== COMPLETE UX PASS ===== */
+.game-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid rgba(217,182,92,.16);border-radius:13px;background:linear-gradient(90deg,rgba(18,55,41,.86),rgba(7,26,18,.9));box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.game-hero-copy{min-width:0}.game-kicker{font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#7f998e;font-weight:800}.game-title{margin:2px 0 0;font-size:17px;letter-spacing:-.2px}.game-subtitle{font-size:11px;color:#91a69c;margin-top:2px}
+.connection-pill{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 9px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;border:1px solid rgba(50,197,138,.25);color:#8ee6bf;background:rgba(50,197,138,.08)}
+.connection-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:#32c58a;box-shadow:0 0 8px rgba(50,197,138,.75)}
+.stage-guide{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13);color:#b6c7bf;font-size:11px}
+.stage-guide strong{color:#f1d27a}.stage-icon{font-size:14px}.stage-guide .hint{margin-left:auto;color:#758c81;font-size:10px}
+.center-board .pile-wrapper{position:relative}.pile-action-hint{font-size:9px;color:#71887d;margin-top:4px;text-align:center;min-height:11px}
+.pile-wrapper.active-pile .pile-title{color:#f1d27a}.pile-wrapper.active-pile .card,.pile-wrapper.active-pile .deck-card{box-shadow:0 0 0 2px rgba(241,210,122,.42),0 10px 24px rgba(0,0,0,.38)}
+.hand-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 7px}.hand-heading-main{display:flex;align-items:center;gap:8px}.hand-heading-title{font-size:13px;font-weight:800}.hand-heading-count{font-size:10px;color:#9db0a7;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);padding:3px 7px;border-radius:999px}.hand-heading-hint{font-size:10px;color:#71877d}
+.stand-rack:first-child{border-color:rgba(217,182,92,.20)}.stand-rack:hover{border-color:rgba(217,182,92,.30)}
+.stand-title-box:before{content:"";width:6px;height:6px;border-radius:50%;background:#5d766b;display:inline-block}.stand-rack:first-child .stand-title-box:before{background:#d9b65c;box-shadow:0 0 7px rgba(217,182,92,.45)}
+.action-section{margin-top:3px}.action-label{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:#71877d;font-weight:800;margin:7px 3px 5px}.actions-grid .btn-action{position:relative}.btn-action .action-sub{display:block;font-size:9px;font-weight:600;opacity:.7;margin-top:2px}
+.btn-draw-stock:after,.btn-draw-discard:after,.btn-discard:after,.btn-drop:after,.btn-declare:after{content:"";position:absolute;inset:auto 12px 4px;height:2px;border-radius:2px;background:rgba(255,255,255,.13);opacity:.0;transition:opacity .15s}.btn-action:hover:after{opacity:1}
+.maal-mini{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0 1px}.maal-mini-item{flex:1 1 120px;min-width:0;padding:7px 9px;border-radius:9px;background:rgba(8,27,19,.68);border:1px solid rgba(217,182,92,.12)}.maal-mini-label{font-size:8px;text-transform:uppercase;letter-spacing:.8px;color:#71877d}.maal-mini-value{font-size:11px;font-weight:800;color:#dfe9e3;margin-top:2px}
+.modal-content{border-top:3px solid #d9b65c}.settlement-row strong{color:#e7efe9}.settlement-row:last-child{border-bottom:0}
+@media(max-width:760px){.game-hero{padding:10px 11px}.game-title{font-size:15px}.connection-pill{font-size:9px}.stage-guide .hint{display:none}.hand-heading-hint{display:none}}
+@media(max-width:520px){.game-hero-copy{max-width:72%}.player-strip{padding:7px}.player-row{padding:7px 8px}.center-board{margin:6px 0;padding-top:24px}.pile-action-hint{font-size:8px}.maal-mini-item{flex-basis:calc(50% - 6px)}}
+
 :root{--bg-base:#07110d;--bg-gradient:radial-gradient(circle at 50% 0%,#163c2c 0%,#0a1b14 45%,#050b08 100%);--surface-felt:rgba(16,45,34,.94);--surface-board:#0b2a1d;--surface-panel:rgba(8,27,19,.92);--surface-stand:rgba(7,20,15,.92);--surface-border:rgba(217,182,92,.18);--surface-border-light:rgba(217,182,92,.34);--accent-blue:#63d6a5;--accent-blue-hover:#45bf8b;--accent-blue-glow:rgba(99,214,165,.25);--accent-gold:#d9b65c;--accent-gold-soft:#f1d27a;--accent-emerald:#32c58a;--accent-rose:#f06b78;--card-w:72px;--card-h:104px}
 body{padding:12px;background-image:radial-gradient(circle at 50% 35%,rgba(32,117,79,.13),transparent 38%),var(--bg-gradient)}
 .lobby-box{max-width:460px;margin:min(10vh,70px) auto;padding:34px 30px 30px;background:linear-gradient(145deg,rgba(19,54,41,.97),rgba(8,24,17,.97));border:1px solid rgba(217,182,92,.28);border-radius:20px;box-shadow:0 28px 70px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.06)}
@@ -726,39 +745,66 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
   </div>
 
+  <div class="game-hero">
+    <div class="game-hero-copy">
+      <div class="game-kicker">Family Table</div>
+      <div class="game-title">21 Card Rummy</div>
+      <div class="game-subtitle">Open Joker • Winner Takes Maal</div>
+    </div>
+    <div class="connection-pill" id="connectionStatus">Live Table</div>
+  </div>
+
+  <div id="stageGuide" class="stage-guide">
+    <span class="stage-icon">🎴</span>
+    <span id="stageGuideText"><strong>Your turn:</strong> draw a card to begin.</span>
+    <span class="hint">Tap a card to select it</span>
+  </div>
+
   <!-- Player Status Strip -->
   <div id="playerStrip" class="player-strip">
     <div class="player-strip-title"><span>Players</span><span id="playerTurnSummary">Table status</span></div>
     <div id="playerRows"></div>
   </div>
 
+  <div class="maal-mini" id="maalMini">
+    <div class="maal-mini-item"><div class="maal-mini-label">Maal</div><div class="maal-mini-value" id="maalMiniTotal">90 pts</div></div>
+    <div class="maal-mini-item"><div class="maal-mini-label">Joker</div><div class="maal-mini-value">Tiplu / Paplu / Nichlu</div></div>
+    <div class="maal-mini-item"><div class="maal-mini-label">Special</div><div class="maal-mini-value">Poochie + Marriages</div></div>
+  </div>
+
   <!-- Center Table Felt -->
   <div class="center-board">
     <div class="pile-wrapper">
-      <div class="pile-title">Cut Joker</div>
+      <div class="pile-title">Cut Joker</div><div class="pile-action-hint">Game joker</div>
       <div id="cutCardContainer"></div>
     </div>
     <div class="pile-wrapper">
-      <div class="pile-title">Draw Stock</div>
+      <div class="pile-title">Draw Stock</div><div class="pile-action-hint">Tap to draw closed</div>
       <div id="stockDeckBtn" class="card deck-card clickable-action" onclick="drawStock()">
         <span class="deck-icon">🂠</span>
         <span id="deckCountText" class="deck-count">0</span>
       </div>
     </div>
     <div class="pile-wrapper">
-      <div class="pile-title">Discard Pile</div>
+      <div class="pile-title">Discard Pile</div><div class="pile-action-hint">Tap to pick open</div>
       <div id="discardContainer" onclick="drawDiscard()"></div>
     </div>
   </div>
 
   <!-- Hand Section with Multi-Stand Support -->
   <div>
+    <div class="hand-heading">
+      <div class="hand-heading-main">
+        <span class="hand-heading-title">Your Hand</span>
+        <span class="hand-heading-count"><span id="handCount">21</span> cards</span>
+      </div>
+      <span class="hand-heading-hint">Select a card to discard • Drag to arrange</span>
+    </div>
+
     <!-- Stands Toolbar -->
     <div class="stands-toolbar">
       <div class="toolbar-left">
-        <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">
-          Your Hand (<span id="handCount">21</span> cards)
-        </span>
+        <span class="hand-toolbar-label">Arrange</span>
         <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move all Jokers, Tiplu, Paplu, Nichlu & Poochies to the start">
           <span>🃏</span> Jokers to Start
         </button>
@@ -788,22 +834,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <!-- Multi-Stand Cards Racks -->
     <div id="standsContainer" class="stands-container"></div>
 
-    <!-- Action Buttons -->
+    <div class="action-section">
+      <div class="action-label">Your Move</div>
+    </div>
     <div class="actions-grid">
       <button id="btnDrawStock" class="btn-action btn-draw-stock" onclick="drawStock()">
-        <span>Draw Closed</span>
+        <span><b>Draw Closed</b><small class="action-sub">from stock</small></span>
       </button>
       <button id="btnDrawDiscard" class="btn-action btn-draw-discard" onclick="drawDiscard()">
-        <span>Pick Discard</span>
+        <span><b>Pick Discard</b><small class="action-sub">from open pile</small></span>
       </button>
       <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()">
-        <span>Discard Selected</span>
+        <span><b>Discard</b><small class="action-sub">selected card</small></span>
       </button>
       <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()">
-        <span>Drop Hand</span>
+        <span><b>Drop Hand</b><small class="action-sub">fold this round</small></span>
       </button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()">
-        <span>Show / Declare</span>
+        <span><b>Show / Declare</b><small class="action-sub">finish the hand</small></span>
       </button>
     </div>
   </div>
@@ -1166,6 +1214,20 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     // Maal Header Badge
     if (maalData) {
       document.getElementById('maalPtsText').innerText = `Maal: ${maalData.total} pts`;
+    }
+
+    // Contextual turn guidance
+    const guide = document.getElementById('stageGuideText');
+    if (guide) {
+      if (!roomState || roomState.status === 'LOBBY') {
+        guide.innerHTML = '<strong>Table ready:</strong> start the game when everyone is seated.';
+      } else if (isMyTurn && roomState.turnStage === 'DRAW') {
+        guide.innerHTML = '<strong>Your turn:</strong> draw from the stock or pick the open discard.';
+      } else if (isMyTurn && roomState.turnStage === 'DISCARD') {
+        guide.innerHTML = '<strong>Your turn:</strong> select a card, then discard it or declare.';
+      } else {
+        guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
+      }
     }
 
     // Turn indicator & button state enforcement
@@ -1582,6 +1644,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       turnPlayerId: 'p_demo',
       turnPlayerName: document.getElementById('playerName').value || 'Raj',
       turnStage: 'DRAW',
+      lastAction: 'Raj is up next',
       cutCard: { id: 'c_cut', suit: '♠', rank: '7', rankValue: 7, isPoochie: false },
       roles: {
         tipluSuit: '♠',
