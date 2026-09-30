@@ -146,3 +146,93 @@ export function calculateDeadwood(hand, cutCard) {
   }
   return Math.min(points, CONFIG.maxDeadwood);
 }
+
+export function isWildCard(card, cutCard) {
+  if (!card || !cutCard) return false;
+  const roles = resolveJokerRoles(cutCard);
+  return Boolean(card.isPoochie || card.rank === roles.tipluRank ||
+    (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank)));
+}
+
+function rankValueForSequence(card) {
+  if (card.rank === 'A') return [1, 14];
+  const v = RANKS.indexOf(card.rank) + 1;
+  return v > 0 ? [v] : [];
+}
+
+function isPureSequence(cards) {
+  if (cards.length < 3) return false;
+  if (cards.length === 3 && cards.every(c => !c.isPoochie && c.rank === cards[0].rank && c.suit === cards[0].suit)) return true;
+  if (cards.some(c => c.isPoochie)) return false;
+  const suit = cards[0].suit;
+  if (!cards.every(c => c.suit === suit)) return false;
+  const vals = cards.map(c => rankValueForSequence(c)[0]);
+  if (new Set(vals).size !== vals.length) return false;
+  const low = [...vals].sort((a,b)=>a-b);
+  if (low.every((v,i)=>i===0 || v===low[i-1]+1)) return true;
+  const high = cards.map(c => c.rank === 'A' ? 14 : rankValueForSequence(c)[0]).sort((a,b)=>a-b);
+  return new Set(high).size === high.length && high.every((v,i)=>i===0 || v===high[i-1]+1);
+}
+
+function isSequence(cards, cutCard) {
+  if (cards.length < 3) return false;
+  if (isPureSequence(cards)) return true;
+  const wilds = cards.filter(c => isWildCard(c, cutCard));
+  const naturals = cards.filter(c => !isWildCard(c, cutCard));
+  if (!naturals.length) return false;
+  const suit = naturals[0].suit;
+  if (!naturals.every(c => c.suit === suit)) return false;
+  const n = cards.length;
+  for (let start = 1; start <= 14 - n; start++) {
+    const target = new Set(Array.from({length:n}, (_,i)=>start+i));
+    const actual = [];
+    let ok = true;
+    for (const options of naturals.map(c => rankValueForSequence(c))) {
+      const match = options.find(v => target.has(v));
+      if (match === undefined || actual.includes(match)) { ok = false; break; }
+      actual.push(match);
+    }
+    if (ok && wilds.length === n - naturals.length) return true;
+  }
+  return false;
+}
+
+function isSet(cards, cutCard) {
+  if (cards.length < 3 || cards.length > 4) return false;
+  const naturals = cards.filter(c => !isWildCard(c, cutCard));
+  if (!naturals.length) return false;
+  const rank = naturals[0].rank;
+  if (!naturals.every(c => c.rank === rank)) return false;
+  const suits = naturals.map(c => c.suit);
+  return new Set(suits).size === suits.length;
+}
+
+export function validateShow(groups, hand, cutCard) {
+  if (!Array.isArray(groups) || !Array.isArray(hand) || !cutCard) return { valid:false, reason:'Show groups are missing.' };
+  const handIds = new Set(hand.map(c=>c.id));
+  const used = new Set();
+  let pureSequences = 0;
+
+  for (const group of groups) {
+    if (!group || !Array.isArray(group.cardIds) || group.cardIds.length < 3) return { valid:false, reason:'Every group must contain at least 3 cards.' };
+    const cards = [];
+    for (const id of group.cardIds) {
+      if (!handIds.has(id) || used.has(id)) return { valid:false, reason:'Each card must appear in exactly one group.' };
+      used.add(id);
+      cards.push(hand.find(c=>c.id===id));
+    }
+    const type = group.type || 'SEQUENCE';
+    if (type === 'PURE_SEQUENCE') {
+      if (!isPureSequence(cards)) return { valid:false, reason:'A Pure Sequence must be 3+ consecutive cards of one suit with no joker substitution.' };
+      pureSequences++;
+    } else if (type === 'SEQUENCE') {
+      if (!isSequence(cards, cutCard)) return { valid:false, reason:'That sequence is not a valid run.' };
+    } else if (type === 'SET') {
+      if (!isSet(cards, cutCard)) return { valid:false, reason:'A set needs 3–4 cards of the same rank with different natural suits.' };
+    } else return { valid:false, reason:'Unknown group type.' };
+  }
+
+  if (used.size !== hand.length) return { valid:false, reason:\`All \${hand.length} cards must be grouped; \${hand.length-used.size} card(s) are ungrouped.\` };
+  if (pureSequences < 3) return { valid:false, reason:\`A 21-card declaration requires at least 3 Pure Sequences. You have \${pureSequences}.\` };
+  return { valid:true, pureSequences };
+}
