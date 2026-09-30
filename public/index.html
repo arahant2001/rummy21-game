@@ -1871,6 +1871,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   }
 
+  function getCardTagForRoles(card) {
+    const r = roomState?.roles;
+    if (!r) return card?.isPoochie ? 'POOCHIE' : '';
+    if (card?.isPoochie) return 'POOCHIE';
+    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'TIPLU';
+    if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
+    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'NICHLU';
+    if (card.rank === r.tipluRank) return 'JOKER';
+    return '';
+  }
+
   function showResultsModal(data) {
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal.details;
@@ -1886,6 +1897,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <strong>${r.name}</strong>: ${r.net}
       </div>
     `).join('');
+
+    const reveal = document.getElementById('revealedHands');
+    if (reveal) {
+      reveal.innerHTML = '<h3 style="font-size:15px;margin:0 0 8px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
+        (data.revealedHands || []).map(p => '<div class="revealed-player"><div class="revealed-player-title">' + p.name + (p.name === data.winnerName ? ' • DECLARER' : '') + '</div><div class="revealed-player-cards">' + (p.hand || []).map(card => renderCard(card, getCardTagForRoles(card), false)).join('') + '</div></div>').join('');
+    }
 
     document.getElementById('resultModal').style.display = 'flex';
   }
