@@ -887,8 +887,19 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         playerName: document.getElementById('playerName').value,
         roomId: document.getElementById('roomId').value
       }));
+      const connectionStatus = document.getElementById('connectionStatus');
+      if (connectionStatus) connectionStatus.innerText = 'Live Table';
       document.getElementById('lobbyView').style.display = 'none';
       document.getElementById('gameView').style.display = 'flex';
+    };
+
+    ws.onclose = () => {
+      const connectionStatus = document.getElementById('connectionStatus');
+      if (connectionStatus) {
+        connectionStatus.innerText = 'Reconnecting';
+        connectionStatus.style.color = '#f1a7ad';
+        connectionStatus.style.borderColor = 'rgba(240,107,120,.28)';
+      }
     };
 
     ws.onmessage = (evt) => {
@@ -1216,6 +1227,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       document.getElementById('maalPtsText').innerText = `Maal: ${maalData.total} pts`;
     }
 
+    // Turn indicator & button state enforcement
+    const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
+
     // Contextual turn guidance
     const guide = document.getElementById('stageGuideText');
     if (guide) {
@@ -1229,9 +1243,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
       }
     }
-
-    // Turn indicator & button state enforcement
-    const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
     const notice = document.getElementById('turnNotice');
     const dot = document.getElementById('turnDot');
 
@@ -1690,6 +1701,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     document.getElementById('lobbyView').style.display = 'none';
     document.getElementById('gameView').style.display = 'flex';
+    const connectionStatus = document.getElementById('connectionStatus');
+    if (connectionStatus) {
+      connectionStatus.innerText = 'Demo Preview';
+      connectionStatus.style.color = '#f1d27a';
+      connectionStatus.style.borderColor = 'rgba(217,182,92,.30)';
+    }
 
     renderAll({ total: 90 });
   }
