@@ -1957,7 +1957,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('resultModal').style.display = 'flex';
   }
 
-  document.getElementById('maalSummary')?.addEventListener('keydown', e => {
+  let maalCloseTimer=null;
+  const maalSummaryEl=document.getElementById('maalSummary');
+  const maalPanelEl=document.getElementById('maalDetailsPanel');
+  maalSummaryEl?.addEventListener('mouseenter', () => { clearTimeout(maalCloseTimer); toggleMaalDetails(true); });
+  maalSummaryEl?.addEventListener('mouseleave', () => { maalCloseTimer=setTimeout(() => toggleMaalDetails(false), 180); });
+  maalPanelEl?.addEventListener('mouseenter', () => clearTimeout(maalCloseTimer));
+  maalPanelEl?.addEventListener('mouseleave', () => { maalCloseTimer=setTimeout(() => toggleMaalDetails(false), 180); });
+  maalSummaryEl?.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaalDetails(); }
   });
   document.addEventListener('click', e => {
