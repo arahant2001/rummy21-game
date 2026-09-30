@@ -349,7 +349,40 @@
     .court-art {
       display: block;
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
+    }    /* Physical playing-card finish */
+    .card{
+      background:#f7f5ef !important;
+      border:1px solid rgba(20,25,30,.35) !important;
+      border-radius:9px !important;
+      box-shadow:0 4px 10px rgba(0,0,0,.24),0 1px 2px rgba(0,0,0,.18),inset 0 0 0 1px rgba(255,255,255,.9) !important;
+      color:#111827;
     }
+    .card::after{
+      content:'';position:absolute;inset:3px;border:1px solid rgba(30,41,59,.08);
+      border-radius:6px;pointer-events:none;
+    }
+    .card-inner{
+      background:linear-gradient(135deg,#fffefb 0%,#f8f7f2 100%) !important;
+      border:0 !important;
+      border-radius:7px !important;
+    }
+    .card.red .card-inner{color:#b91c1c}
+    .card:not(.red) .card-inner{color:#172033}
+    .classic-court-card{
+      width:42px;height:54px;border:1px solid rgba(15,23,42,.18);border-radius:5px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:linear-gradient(145deg,#fff 0%,#f7f7f5 100%);
+      box-shadow:inset 0 0 0 2px rgba(15,23,42,.04);
+      position:relative;
+    }
+    .classic-court-card::before,.classic-court-card::after{
+      content:'';position:absolute;left:5px;right:5px;height:1px;background:rgba(15,23,42,.10);
+    }
+    .classic-court-card::before{top:5px}.classic-court-card::after{bottom:5px}
+    .court-rank{font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:900;line-height:.9;letter-spacing:-1px}
+    .court-suit-top,.court-suit-bottom{font-size:13px;line-height:1}
+    .court-suit-top{margin-bottom:3px}.court-suit-bottom{margin-top:3px;transform:rotate(180deg)}
+
 
     /* Deck Card */
     .deck-card {
@@ -1172,10 +1205,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
     }
 
-    // Center display: court art for face cards, authentic pip layouts for number cards.
+    // Standard-deck presentation: no custom face artwork.
+    // Number cards use familiar pip layouts; J/Q/K use a clean classic court-card
+    // treatment with large rank + suit, matching the visual language of a normal deck.
     let centerHtml = '';
     if (['Q', 'K', 'J', 'PJ'].includes(card.rank)) {
-      centerHtml = getCourtArtSvg(card.rank, card.suit, isRed);
+      const courtRank = card.rank === 'PJ' ? 'JOKER' : card.rank;
+      centerHtml = `
+        <div class="classic-court-card">
+          <div class="court-suit-top">${card.suit}</div>
+          <div class="court-rank">${courtRank}</div>
+          <div class="court-suit-bottom">${card.suit}</div>
+        </div>`;
     } else {
       centerHtml = renderPipLayout(card.rank, card.suit);
     }
