@@ -767,7 +767,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   </div>
 
   <div class="maal-mini" id="maalMini">
-    <div class="maal-mini-item"><div class="maal-mini-label">Maal</div><div class="maal-mini-value" id="maalMiniTotal">90 pts</div></div>
+    <div class="maal-mini-item"><div class="maal-mini-label">Maal</div><div class="maal-mini-value" id="maalMiniTotal">Round total pending</span></div></div>
     <div class="maal-mini-item"><div class="maal-mini-label">Joker</div><div class="maal-mini-value">Tiplu / Paplu / Nichlu</div></div>
     <div class="maal-mini-item"><div class="maal-mini-label">Special</div><div class="maal-mini-value">Poochie + Marriages</div></div>
   </div>
@@ -1225,6 +1225,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     // Maal Header Badge
     if (maalData) {
       document.getElementById('maalPtsText').innerText = `Maal: ${maalData.total} pts`;
+      const mini = document.getElementById('maalMiniTotal');
+      if (mini) mini.innerText = `${maalData.total} pts`;
     }
 
     // Turn indicator & button state enforcement
