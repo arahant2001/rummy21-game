@@ -6,123 +6,759 @@
   <title>21 Card Open Rummy</title>
   <style>
     :root {
-      --bg: #143525;
-      --felt: #1a4d33;
-      --gold: #f5b041;
-      --card-w: 62px;
-      --card-h: 88px;
+      /* Muted, Refined Blue Palette */
+      --bg-base: #090e17;
+      --bg-gradient: radial-gradient(circle at 50% 15%, #15243d 0%, #0a0f1d 75%, #050811 100%);
+      --surface-felt: #131d2e;
+      --surface-board: #0e1624;
+      --surface-panel: rgba(19, 29, 46, 0.85);
+      --surface-stand: rgba(14, 22, 36, 0.85);
+      --surface-border: rgba(148, 163, 184, 0.16);
+      --surface-border-light: rgba(148, 163, 184, 0.28);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      --accent-blue: #38bdf8;
+      --accent-blue-hover: #0ea5e9;
+      --accent-blue-glow: rgba(56, 189, 248, 0.25);
+      --accent-indigo: #6366f1;
+      --accent-gold: #f59e0b;
+      --accent-gold-soft: #fbbf24;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      
+      /* Card dimensions */
+      --card-w: 68px;
+      --card-h: 98px;
+      --card-radius: 8px;
     }
-    * { box-sizing: border-box; }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0; padding: 10px; background: var(--bg); color: #fff; user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      min-height: 100vh;
+      background: var(--bg-base);
+      background-image: var(--bg-gradient);
+      color: var(--text-primary);
+      user-select: none;
+      -webkit-user-select: none;
+      display: flex;
+      flex-direction: column;
     }
+
+    /* Lobby */
     .lobby-box {
-      max-width: 400px; margin: 40px auto; background: var(--felt);
-      padding: 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      max-width: 440px;
+      margin: 40px auto;
+      background: var(--surface-felt);
+      border: 1px solid var(--surface-border-light);
+      padding: 32px 28px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.05) inset;
     }
-    input, button {
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px;
-      border: none; font-size: 16px; font-weight: bold;
+    .lobby-title {
+      margin: 0 0 6px 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
     }
-    button { background: var(--gold); color: #000; cursor: pointer; }
-    .table-container { display: flex; flex-direction: column; min-height: 96vh; justify-content: space-between; }
+    .lobby-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--surface-border);
+      background: #0b1322;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 500;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px var(--accent-blue-glow);
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      margin-top: 20px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+    }
+    .btn-demo {
+      width: 100%;
+      padding: 11px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--surface-border-light);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-demo:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+    }
+
+    /* Main Table Container */
+    .table-container {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 20px);
+      justify-content: space-between;
+      max-width: 1060px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Status Bar */
     .status-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px; font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface-panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--surface-border);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
     }
+    .turn-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .turn-indicator-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+    .turn-indicator-dot.active {
+      background: var(--accent-blue);
+      box-shadow: 0 0 10px var(--accent-blue);
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+    .maal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: var(--accent-gold-soft);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* Center Board Felt */
     .center-board {
-      display: flex; gap: 16px; justify-content: center; align-items: center;
-      background: var(--felt); padding: 16px; border-radius: 14px; margin: 10px 0;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      align-items: center;
+      background: var(--surface-board);
+      border: 1px solid var(--surface-border);
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin: 10px 0;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.04);
     }
-    .pile-title { font-size: 11px; text-transform: uppercase; color: #ccc; margin-bottom: 4px; text-align: center; }
+    .pile-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pile-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    /* Standard Playing Card Styling */
     .card {
-      width: var(--card-w); height: var(--card-h); background: #ffffff; color: #111;
-      border-radius: 6px; display: inline-flex; flex-direction: column; justify-content: space-between;
-      padding: 6px; font-weight: 700; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-      cursor: pointer; position: relative; flex-shrink: 0;
+      width: var(--card-w);
+      height: var(--card-h);
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: var(--card-radius);
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s, opacity 0.15s;
+      overflow: visible;
     }
-    .card.red { color: #d32f2f; }
-    .card.poochie { background: #ffeaa7; }
-    .card.is-selected { transform: translateY(-12px); border: 3px solid var(--gold); }
-    .card-top { font-size: 15px; line-height: 1; }
-    .card-mid { font-size: 24px; align-self: center; line-height: 1; }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    }
+    .card.is-selected {
+      transform: translateY(-14px) !important;
+      box-shadow: 0 0 0 3px var(--accent-blue), 0 12px 24px rgba(56, 189, 248, 0.4) !important;
+    }
+    .card.is-dragging {
+      opacity: 0.35;
+      transform: scale(0.92);
+      border: 2px dashed var(--accent-blue);
+    }
+    .card.drag-over-left {
+      box-shadow: -5px 0 0 0 var(--accent-blue), 0 4px 10px rgba(0, 0, 0, 0.3);
+      transform: translateX(5px);
+    }
+    .card.drag-over-right {
+      box-shadow: 5px 0 0 0 var(--accent-blue), 0 4px 10px rgba(0, 0, 0, 0.3);
+      transform: translateX(-5px);
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      padding: 5px 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      border-radius: var(--card-radius);
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .card.red .card-inner {
+      color: #dc2626;
+    }
+    .card.poochie .card-inner {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1px solid #fde68a;
+      color: #b45309;
+    }
+
+    /* Floating Role Badge (NEVER Obscures Suit or Rank) */
     .card-role-tag {
-      font-size: 9px; background: #e67e22; color: #fff; padding: 1px 4px;
-      border-radius: 3px; position: absolute; bottom: 4px; left: 4px; right: 4px; text-align: center;
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      padding: 1.5px 6px;
+      border-radius: 10px;
+      text-align: center;
+      text-transform: uppercase;
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      z-index: 10;
+      pointer-events: none;
     }
-    .hand-scroll {
-      display: flex; overflow-x: auto; gap: 6px; padding: 14px 6px;
-      background: rgba(0,0,0,0.25); border-radius: 10px; -webkit-overflow-scrolling: touch;
+    .role-tiplu { background: #4f46e5; color: #ffffff; border: 1px solid #6366f1; }
+    .role-paplu { background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; }
+    .role-nichlu { background: #0369a1; color: #ffffff; border: 1px solid #0284c7; }
+    .role-poochie { background: #d97706; color: #ffffff; border: 1px solid #f59e0b; }
+    .role-joker { background: #475569; color: #ffffff; border: 1px solid #64748b; }
+    .role-cut { background: #059669; color: #ffffff; border: 1px solid #10b981; }
+
+    /* Corner Indices */
+    .card-corner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+      width: 14px;
+      z-index: 1;
     }
+    .card-corner.top-left {
+      align-self: flex-start;
+    }
+    .card-corner.bottom-right {
+      align-self: flex-end;
+      transform: rotate(180deg);
+    }
+    .corner-rank {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .corner-suit {
+      font-size: 11px;
+      margin-top: 1px;
+    }
+
+    /* Card Center (Court SVG Art or Large Suit Pip) */
+    .card-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+    .center-pip {
+      font-size: 26px;
+      line-height: 1;
+    }
+    .court-art {
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
+    }
+
+    /* Deck Card */
+    .deck-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94a3b8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+    .deck-card.clickable-action:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 14px var(--accent-blue-glow);
+    }
+    .deck-icon {
+      font-size: 22px;
+      color: var(--accent-blue);
+    }
+    .deck-count {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    /* Stands Architecture */
+    .stands-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      width: auto !important;
+      padding: 6px 11px !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      margin-top: 0 !important;
+      background: #1e293b !important;
+      color: #f1f5f9 !important;
+      border: 1px solid var(--surface-border-light) !important;
+      border-radius: 6px !important;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .tool-btn:hover {
+      background: #334155 !important;
+      border-color: var(--accent-blue) !important;
+    }
+    .tool-btn:active {
+      transform: scale(0.96);
+    }
+    .tool-btn-highlight {
+      background: linear-gradient(135deg, #1e293b 0%, #25334d 100%) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+      color: var(--accent-blue) !important;
+    }
+    .tool-btn-highlight:hover {
+      background: #25334d !important;
+      border-color: var(--accent-blue) !important;
+    }
+
+    .stands-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stand-rack {
+      background: var(--surface-stand);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 8px 10px 8px 10px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .stand-rack.drag-over-stand {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+    }
+    .stand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      padding: 0 4px;
+    }
+    .stand-title-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stand-count-badge {
+      background: rgba(148, 163, 184, 0.15);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+      color: var(--text-primary);
+    }
+    .stand-close-btn {
+      width: auto !important;
+      padding: 2px 7px !important;
+      font-size: 11px !important;
+      margin: 0 !important;
+      background: transparent !important;
+      color: var(--text-muted) !important;
+      border: 1px solid transparent !important;
+      border-radius: 4px !important;
+      cursor: pointer;
+    }
+    .stand-close-btn:hover {
+      color: var(--accent-rose) !important;
+      background: rgba(244, 63, 94, 0.1) !important;
+      border-color: rgba(244, 63, 94, 0.2) !important;
+    }
+    .stand-cards {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 12px 6px 6px 6px;
+      min-height: 116px;
+      align-items: center;
+      -webkit-overflow-scrolling: touch;
+    }
+    .stand-cards::-webkit-scrollbar {
+      height: 4px;
+    }
+    .stand-cards::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 2px;
+    }
+
+    /* Selected Card Reorder Control Bar */
+    .reorder-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+    .reorder-hint {
+      font-size: 11px;
+      color: var(--accent-blue);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    /* Action Grid */
     .actions-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 6px;
     }
-    .btn-action { background: #27ae60; color: #fff; }
-    .btn-drop { background: #c0392b; color: #fff; }
-    .btn-declare { grid-column: span 2; background: var(--gold); color: #000; font-size: 18px; }
-    .btn-disabled { opacity: 0.4; pointer-events: none; }
+    .btn-action {
+      padding: 12px 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-action:hover:not(.btn-disabled) {
+      transform: translateY(-1px);
+    }
+    .btn-action:active:not(.btn-disabled) {
+      transform: translateY(0);
+    }
+    .btn-draw-stock {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+    .btn-draw-discard {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+    }
+    .btn-discard {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+    }
+    .btn-drop {
+      background: #1e293b;
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+    .btn-drop:hover:not(.btn-disabled) {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: #f87171;
+    }
+    .btn-declare {
+      grid-column: span 4;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #111827;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 13px;
+      border-radius: 10px;
+      margin-top: 4px;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    }
+    .btn-disabled {
+      opacity: 0.35 !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    /* Modal Settlements */
     .modal {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-      justify-content: center; align-items: center; padding: 20px; z-index: 100;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 13, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
     }
     .modal-content {
-      background: var(--felt); max-width: 480px; width: 100%; border-radius: 12px;
-      padding: 20px; color: #fff; max-height: 90vh; overflow-y: auto;
+      background: #16243d;
+      border: 1px solid var(--surface-border-light);
+      max-width: 480px;
+      width: 100%;
+      border-radius: 16px;
+      padding: 28px 24px;
+      color: var(--text-primary);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    }
+    .modal-winner {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-gold-soft);
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    .maal-breakdown {
+      background: rgba(11, 19, 34, 0.6);
+      border: 1px solid var(--surface-border);
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .settlement-row {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--surface-border);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --card-w: 60px;
+        --card-h: 88px;
+      }
+      .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .btn-declare {
+        grid-column: span 2;
+      }
     }
   </style>
 </head>
 <body>
 
+<!-- Lobby View -->
 <div id="lobbyView" class="lobby-box">
-  <h2 style="margin-top:0;">21 Card Rummy</h2>
-  <div style="font-size: 13px; color: #ddd; margin-bottom: 15px;">
-    Open Joker Table | Winner Takes Maal
+  <h2 class="lobby-title">21 Card Rummy</h2>
+  <div class="lobby-subtitle">
+    South Indian Open Joker Table &bull; Winner Takes Maal
   </div>
-  <label>Your Name</label>
+  <label class="field-label">Your Name</label>
   <input id="playerName" placeholder="e.g. Raj" value="Raj" />
-  <label style="margin-top: 10px; display:block;">Room Code</label>
+  <label class="field-label">Room Code</label>
   <input id="roomId" placeholder="e.g. FAMILY" value="FAMILY" />
-  <button onclick="joinRoom()" style="margin-top: 20px;">Enter Table</button>
+  <button class="btn-primary" onclick="joinRoom()">Enter Table</button>
+  <button type="button" class="btn-demo" onclick="startDemoMode()">
+    Preview UI in Demo Mode (No Server Required)
+  </button>
 </div>
 
+<!-- Main Game View -->
 <div id="gameView" class="table-container" style="display: none;">
+  <!-- Header Status Bar -->
   <div class="status-bar">
-    <div id="turnNotice">Connecting...</div>
-    <div id="maalSummary" style="color: var(--gold); font-weight: bold;">Maal: 0 pts</div>
+    <div class="turn-chip">
+      <div id="turnDot" class="turn-indicator-dot"></div>
+      <span id="turnNotice">Connecting...</span>
+    </div>
+    <div id="maalSummary" class="maal-badge">
+      <span>🏆</span>
+      <span id="maalPtsText">Maal: 0 pts</span>
+    </div>
   </div>
 
+  <!-- Center Table Felt -->
   <div class="center-board">
-    <div>
+    <div class="pile-wrapper">
       <div class="pile-title">Cut Joker</div>
       <div id="cutCardContainer"></div>
     </div>
-    <div>
+    <div class="pile-wrapper">
       <div class="pile-title">Stock Deck</div>
-      <div id="stockDeckBtn" class="card" style="background: #2c3e50; color:#ecf0f1; justify-content:center; align-items:center;" onclick="drawStock()">
-        <span style="font-size: 18px;">🂠</span>
-        <span id="deckCountText" style="font-size: 11px;">0</span>
+      <div id="stockDeckBtn" class="card deck-card clickable-action" onclick="drawStock()">
+        <span class="deck-icon">🂠</span>
+        <span id="deckCountText" class="deck-count">0</span>
       </div>
     </div>
-    <div>
-      <div class="pile-title">Discard</div>
+    <div class="pile-wrapper">
+      <div class="pile-title">Discard Pile</div>
       <div id="discardContainer" onclick="drawDiscard()"></div>
     </div>
   </div>
 
+  <!-- Hand Section with Multi-Stand Support -->
   <div>
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px;">
-      <span style="font-size: 13px; color: #ccc;">Your Hand (<span id="handCount">21</span> cards)</span>
-      <button onclick="sortHand()" style="width: auto; padding: 4px 12px; font-size: 12px; background: #34495e; color:#fff;">Sort Suit/Rank</button>
-    </div>
-    <div id="handContainer" class="hand-scroll"></div>
+    <!-- Stands Toolbar -->
+    <div class="stands-toolbar">
+      <div class="toolbar-left">
+        <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">
+          Your Hand (<span id="handCount">21</span> cards)
+        </span>
+        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move all Jokers, Tiplu, Paplu, Nichlu & Poochies to the start">
+          <span>🃏</span> Jokers to Start
+        </button>
+        <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank">
+          <span>↕</span> Sort Suit/Rank
+        </button>
+      </div>
 
+      <div class="toolbar-right">
+        <!-- Reorder controls when card is selected -->
+        <div id="reorderBar" class="reorder-bar" style="display: none;">
+          <span class="reorder-hint">Card <strong id="selectedCardLabel"></strong>:</span>
+          <button class="tool-btn" onclick="moveSelectedCardToStart()" title="Move to Front">⏮</button>
+          <button class="tool-btn" onclick="moveSelectedCard(-1)" title="Move Left">◀</button>
+          <button class="tool-btn" onclick="moveSelectedCard(1)" title="Move Right">▶</button>
+          <button class="tool-btn" onclick="moveSelectedCardToEnd()" title="Move to End">⏭</button>
+          <span id="standMoveOptions" style="display: flex; gap: 4px; margin-left: 4px;"></span>
+        </div>
+
+        <!-- Stand management buttons -->
+        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands">2 Stands</button>
+        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand">1 Stand</button>
+        <button class="tool-btn" onclick="addNewStand()" title="Add an empty stand">+ Add Stand</button>
+      </div>
+    </div>
+
+    <!-- Multi-Stand Cards Racks -->
+    <div id="standsContainer" class="stands-container"></div>
+
+    <!-- Action Buttons -->
     <div class="actions-grid">
-      <button id="btnDrawStock" class="btn-action" onclick="drawStock()">Draw Closed</button>
-      <button id="btnDrawDiscard" class="btn-action" onclick="drawDiscard()">Pick Discard</button>
-      <button id="btnDiscard" class="btn-action" style="background:#e67e22;" onclick="discardSelected()">Discard Selected</button>
-      <button id="btnDrop" class="btn-drop" onclick="dropHand()">Drop Hand</button>
-      <button id="btnDeclare" class="btn-declare" onclick="declareShow()">Show / Declare</button>
+      <button id="btnDrawStock" class="btn-action btn-draw-stock" onclick="drawStock()">
+        <span>Draw Closed</span>
+      </button>
+      <button id="btnDrawDiscard" class="btn-action btn-draw-discard" onclick="drawDiscard()">
+        <span>Pick Discard</span>
+      </button>
+      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()">
+        <span>Discard Selected</span>
+      </button>
+      <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()">
+        <span>Drop Hand</span>
+      </button>
+      <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()">
+        <span>Show / Declare</span>
+      </button>
     </div>
   </div>
 </div>
@@ -130,11 +766,11 @@
 <!-- Modal Settlement Dialog -->
 <div id="resultModal" class="modal">
   <div class="modal-content">
-    <h2 id="winnerTitle" style="color: var(--gold); margin-top:0;"></h2>
-    <div id="maalDetails" style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;"></div>
-    <h3>Settlements</h3>
+    <h2 id="winnerTitle" class="modal-winner"></h2>
+    <div id="maalDetails" class="maal-breakdown"></div>
+    <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
     <div id="settlementList"></div>
-    <button onclick="location.reload()" style="margin-top: 20px;">Play Next Hand</button>
+    <button class="btn-primary" onclick="location.reload()" style="margin-top: 24px;">Play Next Hand</button>
   </div>
 </div>
 
@@ -142,7 +778,10 @@
   let ws;
   let roomState = null;
   let myHand = [];
+  let userStands = []; // Array of card arrays representing each stand
   let selectedCardId = null;
+  let draggedCardId = null;
+  let isDemo = false;
 
   function joinRoom() {
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -163,7 +802,7 @@
 
       if (msg.type === 'SYNC') {
         roomState = msg.room;
-        myHand = msg.yourHand;
+        syncIncomingHand(msg.yourHand);
         renderAll(msg.yourMaal);
       }
 
@@ -173,18 +812,238 @@
     };
   }
 
-  function renderCard(card, tag = '') {
-    if (!card) return '<div class="card" style="opacity:0.3;">Empty</div>';
+  // Preserve user custom card arrangement and stands on WebSocket sync
+  function syncIncomingHand(incomingCards) {
+    if (!myHand || myHand.length === 0) {
+      myHand = incomingCards;
+      // Initialize with 2 stands for optimal visibility
+      initDefaultStands(2);
+      return;
+    }
+
+    const incomingMap = new Map(incomingCards.map(c => [c.id, c]));
+    
+    // Update existing cards and remove discarded ones across stands
+    userStands = userStands.map(stand => 
+      stand.filter(c => incomingMap.has(c.id)).map(c => incomingMap.get(c.id))
+    );
+
+    // Identify any newly drawn card
+    const existingIds = new Set(userStands.flatMap(stand => stand.map(c => c.id)));
+    const newCards = incomingCards.filter(c => !existingIds.has(c.id));
+
+    // Place new cards at the end of the last stand (or stand 1)
+    if (newCards.length > 0) {
+      if (userStands.length === 0) userStands.push([]);
+      userStands[userStands.length - 1].push(...newCards);
+    }
+
+    // Flatten back to myHand
+    myHand = userStands.flat();
+  }
+
+  function initDefaultStands(count = 2) {
+    if (!myHand || myHand.length === 0) {
+      userStands = [[]];
+      return;
+    }
+    if (count === 1) {
+      userStands = [[...myHand]];
+      return;
+    }
+    // Split into 2 stands (~11 and 10 cards)
+    const mid = Math.ceil(myHand.length / 2);
+    userStands = [
+      myHand.slice(0, mid),
+      myHand.slice(mid)
+    ];
+  }
+
+  function splitIntoStands(count) {
+    const allCards = userStands.flat();
+    if (count === 1) {
+      userStands = [allCards];
+    } else {
+      const mid = Math.ceil(allCards.length / 2);
+      userStands = [
+        allCards.slice(0, mid),
+        allCards.slice(mid)
+      ];
+    }
+    myHand = userStands.flat();
+    renderAll(null);
+  }
+
+  function addNewStand() {
+    userStands.push([]);
+    renderAll(null);
+  }
+
+  function removeStand(standIdx) {
+    if (userStands.length <= 1) return;
+    const cardsToMove = userStands[standIdx];
+    userStands.splice(standIdx, 1);
+    // Put orphaned cards into the first stand
+    userStands[0].push(...cardsToMove);
+    myHand = userStands.flat();
+    renderAll(null);
+  }
+
+  // --- Move All Jokers to Start ---
+  function moveJokersToFront() {
+    const r = roomState?.roles;
+
+    function getJokerRank(c) {
+      if (c.isPoochie) return 4;
+      if (r) {
+        if (c.suit === r.tipluSuit && c.rank === r.tipluRank) return 1; // Tiplu
+        if (c.suit === r.tipluSuit && c.rank === r.papluRank) return 2; // Paplu
+        if (c.suit === r.tipluSuit && c.rank === r.nichluRank) return 3; // Nichlu
+        if (c.rank === r.tipluRank) return 5; // Ordinary Joker
+      }
+      return 99;
+    }
+
+    const allCards = userStands.flat();
+    const jokers = allCards.filter(c => getJokerRank(c) < 99);
+    const nonJokers = allCards.filter(c => getJokerRank(c) === 99);
+
+    jokers.sort((a, b) => getJokerRank(a) - getJokerRank(b));
+    const reordered = [...jokers, ...nonJokers];
+
+    // Re-populate stands preserving stand card counts
+    let offset = 0;
+    userStands = userStands.map(stand => {
+      const count = stand.length;
+      const slice = reordered.slice(offset, offset + count);
+      offset += count;
+      return slice;
+    });
+
+    myHand = userStands.flat();
+    renderAll(null);
+  }
+
+  // Standard Court Card Vector Graphics
+  function getCourtArtSvg(rank, suit, isRed) {
+    const suitColor = isRed ? '#dc2626' : '#1e293b';
+    const gold = '#f59e0b';
+    
+    if (rank === 'Q') {
+      return `
+        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
+          <circle cx="25" cy="30" r="22" fill="#f8fafc" stroke="${suitColor}" stroke-width="1.5" opacity="0.12"/>
+          <path d="M15,22 L17,14 L22,18 L25,11 L28,18 L33,14 L35,22 Z" fill="${gold}" stroke="#b45309" stroke-width="1"/>
+          <circle cx="25" cy="11" r="1.5" fill="${suitColor}"/>
+          <circle cx="17" cy="14" r="1.5" fill="${suitColor}"/>
+          <circle cx="33" cy="14" r="1.5" fill="${suitColor}"/>
+          <path d="M17,23 Q25,21 33,23 Q35,32 32,38 Q25,43 18,38 Q15,32 17,23 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+          <ellipse cx="21" cy="29" rx="1.2" ry="1.8" fill="#334155"/>
+          <ellipse cx="29" cy="29" rx="1.2" ry="1.8" fill="#334155"/>
+          <path d="M22,34 Q25,37 28,34" stroke="${suitColor}" stroke-width="1.2" fill="none"/>
+          <path d="M16,40 Q25,37 34,40 L37,54 L13,54 Z" fill="${suitColor}" opacity="0.85"/>
+          <path d="M25,40 L25,54" stroke="${gold}" stroke-width="2"/>
+        </svg>
+      `;
+    } else if (rank === 'K') {
+      return `
+        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
+          <circle cx="25" cy="30" r="22" fill="#f8fafc" stroke="${suitColor}" stroke-width="1.5" opacity="0.12"/>
+          <path d="M13,20 L16,11 L21,17 L25,8 L29,17 L34,11 L37,20 Z" fill="${gold}" stroke="#b45309" stroke-width="1.2"/>
+          <path d="M16,21 Q25,19 34,21 L35,35 Q35,45 25,47 Q15,45 15,35 Z" fill="#fde68a" stroke="#b45309" stroke-width="1"/>
+          <path d="M17,33 Q25,46 33,33 Q30,42 25,44 Q20,42 17,33 Z" fill="#94a3b8"/>
+          <circle cx="21" cy="28" r="1.5" fill="#1e293b"/>
+          <circle cx="29" cy="28" r="1.5" fill="#1e293b"/>
+          <path d="M18,33 Q25,31 32,33" stroke="#475569" stroke-width="1.5" fill="none"/>
+          <path d="M12,47 Q25,43 38,47 L41,56 L9,56 Z" fill="${suitColor}" opacity="0.9"/>
+        </svg>
+      `;
+    } else if (rank === 'J') {
+      return `
+        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
+          <circle cx="25" cy="30" r="22" fill="#f8fafc" stroke="${suitColor}" stroke-width="1.5" opacity="0.12"/>
+          <path d="M13,20 Q25,15 37,20 L35,16 Q25,11 15,16 Z" fill="${suitColor}"/>
+          <path d="M33,18 Q42,8 38,2 Q30,8 34,16" fill="${gold}"/>
+          <path d="M17,21 Q25,19 33,21 L34,36 Q25,42 16,36 Z" fill="#fde68a" stroke="#b45309" stroke-width="1"/>
+          <circle cx="21" cy="28" r="1.4" fill="#1e293b"/>
+          <circle cx="29" cy="28" r="1.4" fill="#1e293b"/>
+          <path d="M22,34 Q25,37 28,34" stroke="#b45309" stroke-width="1" fill="none"/>
+          <path d="M14,40 L25,45 L36,40 L39,56 L11,56 Z" fill="${suitColor}" opacity="0.85"/>
+          <polygon points="25,45 22,54 28,54" fill="${gold}"/>
+        </svg>
+      `;
+    } else if (rank === 'PJ') {
+      return `
+        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
+          <path d="M11,22 Q7,10 14,7 Q21,11 18,21" fill="#ef4444"/>
+          <circle cx="14" cy="7" r="2" fill="${gold}"/>
+          <path d="M18,21 Q25,8 25,6 Q25,8 32,21" fill="${gold}"/>
+          <circle cx="25" cy="6" r="2" fill="#ef4444"/>
+          <path d="M32,21 Q29,11 36,7 Q43,10 39,22" fill="#3b82f6"/>
+          <circle cx="36" cy="7" r="2" fill="${gold}"/>
+          <ellipse cx="25" cy="29" rx="11" ry="10" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+          <circle cx="21" cy="28" r="1.5" fill="#1e293b"/>
+          <circle cx="29" cy="28" r="1.5" fill="#1e293b"/>
+          <path d="M19,34 Q25,40 31,34" stroke="#dc2626" stroke-width="1.8" fill="none"/>
+          <polygon points="12,41 18,48 25,43 32,48 38,41 25,44" fill="${gold}" stroke="#b45309" stroke-width="1"/>
+        </svg>
+      `;
+    }
+    return '';
+  }
+
+  function renderCard(card, tag = '', isHand = false) {
+    if (!card) return '<div class="card" style="opacity:0.25; background: #0f172a; border: 1px dashed var(--surface-border-light); justify-content:center; align-items:center; color: var(--text-muted); font-size:11px;">Empty</div>';
     const isRed = ['♥', '♦'].includes(card.suit);
     const poochieClass = card.isPoochie ? 'poochie' : '';
     const redClass = isRed ? 'red' : '';
     const selClass = selectedCardId === card.id ? 'is-selected' : '';
+    const dragAttrs = isHand ? `
+      id="card-${card.id}"
+      draggable="true"
+      ondragstart="onCardDragStart(event, '${card.id}')"
+      ondragover="onCardDragOver(event, '${card.id}')"
+      ondragleave="onCardDragLeave(event, '${card.id}')"
+      ondrop="onCardDrop(event, '${card.id}')"
+      ondragend="onCardDragEnd(event)"
+    ` : '';
+
+    // Floating Role Tag (positioned top-center outside card corners - NEVER obscures suit or rank)
+    let tagHtml = '';
+    if (tag) {
+      let tagClass = 'role-joker';
+      if (tag === 'TIPLU') tagClass = 'role-tiplu';
+      else if (tag === 'PAPLU') tagClass = 'role-paplu';
+      else if (tag === 'NICHLU') tagClass = 'role-nichlu';
+      else if (tag === 'POOCHIE') tagClass = 'role-poochie';
+      else if (tag === 'CUT') tagClass = 'role-cut';
+      tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
+    }
+
+    // Center display: Court SVG art for Q, K, J, PJ; clean crisp pip for number cards
+    let centerHtml = '';
+    if (['Q', 'K', 'J', 'PJ'].includes(card.rank)) {
+      centerHtml = getCourtArtSvg(card.rank, card.suit, isRed);
+    } else {
+      centerHtml = `<div class="center-pip">${card.suit}</div>`;
+    }
 
     return `
-      <div class="card ${redClass} ${poochieClass} ${selClass}" onclick="selectCard('${card.id}')">
-        <div class="card-top">${card.rank}</div>
-        <div class="card-mid">${card.suit}</div>
-        ${tag ? `<div class="card-role-tag">${tag}</div>` : ''}
+      <div class="card ${redClass} ${poochieClass} ${selClass}" ${dragAttrs} onclick="selectCard('${card.id}')">
+        ${tagHtml}
+        <div class="card-inner">
+          <div class="card-corner top-left">
+            <div class="corner-rank">${card.rank}</div>
+            <div class="corner-suit">${card.suit}</div>
+          </div>
+          <div class="card-center">
+            ${centerHtml}
+          </div>
+          <div class="card-corner bottom-right">
+            <div class="corner-rank">${card.rank}</div>
+            <div class="corner-suit">${card.suit}</div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -201,32 +1060,43 @@
   }
 
   function renderAll(maalData) {
-    document.getElementById('deckCountText').innerText = roomState.deckCount;
-    document.getElementById('handCount').innerText = myHand.length;
+    document.getElementById('deckCountText').innerText = roomState ? roomState.deckCount : 0;
+    
+    // Total hand count
+    const totalCount = userStands.reduce((sum, s) => sum + s.length, 0);
+    document.getElementById('handCount').innerText = totalCount;
 
     // Render Cut Joker
-    document.getElementById('cutCardContainer').innerHTML = renderCard(roomState.cutCard, 'CUT');
+    document.getElementById('cutCardContainer').innerHTML = renderCard(roomState?.cutCard, 'CUT');
 
     // Render Open Discard
-    document.getElementById('discardContainer').innerHTML = renderCard(roomState.topDiscard);
+    document.getElementById('discardContainer').innerHTML = renderCard(roomState?.topDiscard);
 
-    // Render Hand
-    const handBox = document.getElementById('handContainer');
-    handBox.innerHTML = myHand.map(c => renderCard(c, getCardTag(c))).join('');
+    // Render Multiple Stands
+    renderStands();
 
-    // Maal Header
+    // Maal Header Badge
     if (maalData) {
-      document.getElementById('maalSummary').innerText = `Maal: ${maalData.total} pts`;
+      document.getElementById('maalPtsText').innerText = `Maal: ${maalData.total} pts`;
     }
 
-    // Turn indicator & button enforcement
-    const isMyTurn = roomState.turnPlayerId === getMyPlayerId();
+    // Turn indicator & button state enforcement
+    const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
     const notice = document.getElementById('turnNotice');
+    const dot = document.getElementById('turnDot');
 
-    if (roomState.status === 'LOBBY') {
-      notice.innerHTML = `<button onclick="startGame()" style="padding:4px 10px; font-size:12px;">Start Game (${roomState.players.length} seated)</button>`;
+    if (!roomState || roomState.status === 'LOBBY') {
+      const count = roomState ? roomState.players.length : 1;
+      notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} seated)</button>`;
+      dot.classList.remove('active');
     } else {
-      notice.innerText = isMyTurn ? `Your Turn (${roomState.turnStage})` : `${roomState.turnPlayerName}'s turn`;
+      if (isMyTurn) {
+        dot.classList.add('active');
+        notice.innerText = roomState.turnStage === 'DRAW' ? 'Your Turn: Draw a card' : 'Your Turn: Discard a card';
+      } else {
+        dot.classList.remove('active');
+        notice.innerText = `Waiting for ${roomState.turnPlayerName}...`;
+      }
     }
 
     const canDraw = isMyTurn && roomState.turnStage === 'DRAW';
@@ -237,6 +1107,40 @@
     document.getElementById('btnDrop').classList.toggle('btn-disabled', !canDraw);
     document.getElementById('btnDiscard').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
+
+    document.getElementById('stockDeckBtn').classList.toggle('clickable-action', canDraw);
+
+    updateReorderControls();
+  }
+
+  function renderStands() {
+    const container = document.getElementById('standsContainer');
+    if (!userStands || userStands.length === 0) {
+      userStands = [myHand];
+    }
+
+    container.innerHTML = userStands.map((stand, sIdx) => {
+      const closeBtn = userStands.length > 1 ? 
+        `<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx + 1} with Stand 1">✕ Close</button>` : '';
+
+      return `
+        <div class="stand-rack" id="stand-rack-${sIdx}" 
+             ondragover="onStandDragOver(event, ${sIdx})" 
+             ondragleave="onStandDragLeave(event, ${sIdx})"
+             ondrop="onStandDrop(event, ${sIdx})">
+          <div class="stand-header">
+            <div class="stand-title-box">
+              <span>Stand ${sIdx + 1}</span>
+              <span class="stand-count-badge">${stand.length} cards</span>
+            </div>
+            ${closeBtn}
+          </div>
+          <div class="stand-cards">
+            ${stand.map(c => renderCard(c, getCardTag(c), true)).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function getMyPlayerId() {
@@ -249,25 +1153,293 @@
     renderAll(null);
   }
 
+  function updateReorderControls() {
+    const reorderBox = document.getElementById('reorderBar');
+    const labelSpan = document.getElementById('selectedCardLabel');
+    const optionsSpan = document.getElementById('standMoveOptions');
+    if (!reorderBox) return;
+
+    if (selectedCardId) {
+      const card = userStands.flat().find(c => c.id === selectedCardId);
+      reorderBox.style.display = 'flex';
+      if (labelSpan && card) {
+        labelSpan.innerText = `${card.rank} ${card.suit}`;
+      }
+
+      // Quick move to other stands buttons
+      if (optionsSpan && userStands.length > 1) {
+        const currentStandIdx = userStands.findIndex(s => s.some(c => c.id === selectedCardId));
+        optionsSpan.innerHTML = userStands.map((s, idx) => {
+          if (idx === currentStandIdx) return '';
+          return `<button class="tool-btn" onclick="moveCardToStand('${selectedCardId}', ${idx})" title="Move to Stand ${idx + 1}">To Stand ${idx + 1}</button>`;
+        }).join('');
+      } else if (optionsSpan) {
+        optionsSpan.innerHTML = '';
+      }
+    } else {
+      reorderBox.style.display = 'none';
+      if (optionsSpan) optionsSpan.innerHTML = '';
+    }
+  }
+
+  function moveCardToStand(cardId, targetStandIdx) {
+    let sourceStandIdx = -1;
+    let cardIdx = -1;
+    for (let i = 0; i < userStands.length; i++) {
+      const idx = userStands[i].findIndex(c => c.id === cardId);
+      if (idx !== -1) {
+        sourceStandIdx = i;
+        cardIdx = idx;
+        break;
+      }
+    }
+    if (sourceStandIdx === -1 || targetStandIdx >= userStands.length) return;
+    const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
+    userStands[targetStandIdx].push(card);
+    myHand = userStands.flat();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  // --- Manual Card Reordering within Stand ---
+  function moveSelectedCard(offset) {
+    if (!selectedCardId) return;
+    let targetStand = null;
+    let cardIdx = -1;
+
+    for (const stand of userStands) {
+      cardIdx = stand.findIndex(c => c.id === selectedCardId);
+      if (cardIdx !== -1) {
+        targetStand = stand;
+        break;
+      }
+    }
+    if (!targetStand) return;
+    const newIdx = cardIdx + offset;
+    if (newIdx < 0 || newIdx >= targetStand.length) return;
+
+    const [card] = targetStand.splice(cardIdx, 1);
+    targetStand.splice(newIdx, 0, card);
+    myHand = userStands.flat();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  function moveSelectedCardToStart() {
+    if (!selectedCardId) return;
+    let targetStand = null;
+    let cardIdx = -1;
+    for (const stand of userStands) {
+      cardIdx = stand.findIndex(c => c.id === selectedCardId);
+      if (cardIdx !== -1) {
+        targetStand = stand;
+        break;
+      }
+    }
+    if (!targetStand || cardIdx === 0) return;
+    const [card] = targetStand.splice(cardIdx, 1);
+    targetStand.unshift(card);
+    myHand = userStands.flat();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  function moveSelectedCardToEnd() {
+    if (!selectedCardId) return;
+    let targetStand = null;
+    let cardIdx = -1;
+    for (const stand of userStands) {
+      cardIdx = stand.findIndex(c => c.id === selectedCardId);
+      if (cardIdx !== -1) {
+        targetStand = stand;
+        break;
+      }
+    }
+    if (!targetStand || cardIdx === targetStand.length - 1) return;
+    const [card] = targetStand.splice(cardIdx, 1);
+    targetStand.push(card);
+    myHand = userStands.flat();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  function scrollCardIntoView(cardId) {
+    setTimeout(() => {
+      const el = document.getElementById('card-' + cardId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }, 10);
+  }
+
+  // Keyboard Navigation
+  window.addEventListener('keydown', (e) => {
+    if (!selectedCardId) return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      moveSelectedCard(-1);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      moveSelectedCard(1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      moveSelectedCardToStart();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      moveSelectedCardToEnd();
+    } else if (e.key === 'Escape') {
+      selectedCardId = null;
+      renderAll(null);
+    }
+  });
+
+  // --- HTML5 Drag & Drop Support Across Stands ---
+  function onCardDragStart(e, cardId) {
+    draggedCardId = cardId;
+    e.dataTransfer.setData('text/plain', cardId);
+    e.dataTransfer.effectAllowed = 'move';
+    const el = document.getElementById('card-' + cardId);
+    if (el) setTimeout(() => el.classList.add('is-dragging'), 0);
+  }
+
+  function onCardDragOver(e, cardId) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!draggedCardId || draggedCardId === cardId) return;
+    e.dataTransfer.dropEffect = 'move';
+    const el = document.getElementById('card-' + cardId);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    if (e.clientX < rect.left + rect.width / 2) {
+      el.classList.add('drag-over-left');
+      el.classList.remove('drag-over-right');
+    } else {
+      el.classList.add('drag-over-right');
+      el.classList.remove('drag-over-left');
+    }
+  }
+
+  function onCardDragLeave(e, cardId) {
+    const el = document.getElementById('card-' + cardId);
+    if (el) el.classList.remove('drag-over-left', 'drag-over-right');
+  }
+
+  function onCardDrop(e, targetCardId) {
+    e.preventDefault();
+    e.stopPropagation();
+    const targetEl = document.getElementById('card-' + targetCardId);
+    if (targetEl) targetEl.classList.remove('drag-over-left', 'drag-over-right');
+    if (!draggedCardId || draggedCardId === targetCardId) return;
+
+    let sourceStand = null, targetStand = null;
+    let fromIdx = -1, toIdx = -1;
+
+    for (const s of userStands) {
+      if (fromIdx === -1) {
+        fromIdx = s.findIndex(c => c.id === draggedCardId);
+        if (fromIdx !== -1) sourceStand = s;
+      }
+      if (toIdx === -1) {
+        toIdx = s.findIndex(c => c.id === targetCardId);
+        if (toIdx !== -1) targetStand = s;
+      }
+    }
+
+    if (!sourceStand || !targetStand) return;
+
+    const [card] = sourceStand.splice(fromIdx, 1);
+    const rect = targetEl ? targetEl.getBoundingClientRect() : null;
+    const insertAfter = rect && (e.clientX >= rect.left + rect.width / 2);
+
+    let insertIdx = targetStand.findIndex(c => c.id === targetCardId);
+    if (insertAfter) insertIdx += 1;
+    targetStand.splice(insertIdx, 0, card);
+
+    draggedCardId = null;
+    selectedCardId = card.id;
+    myHand = userStands.flat();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  function onStandDragOver(e, standIdx) {
+    e.preventDefault();
+    const rack = document.getElementById('stand-rack-' + standIdx);
+    if (rack) rack.classList.add('drag-over-stand');
+  }
+
+  function onStandDragLeave(e, standIdx) {
+    const rack = document.getElementById('stand-rack-' + standIdx);
+    if (rack) rack.classList.remove('drag-over-stand');
+  }
+
+  function onStandDrop(e, targetStandIdx) {
+    e.preventDefault();
+    const rack = document.getElementById('stand-rack-' + targetStandIdx);
+    if (rack) rack.classList.remove('drag-over-stand');
+    if (!draggedCardId) return;
+
+    let sourceStand = null;
+    let fromIdx = -1;
+    for (const s of userStands) {
+      fromIdx = s.findIndex(c => c.id === draggedCardId);
+      if (fromIdx !== -1) {
+        sourceStand = s;
+        break;
+      }
+    }
+    if (!sourceStand) return;
+
+    const [card] = sourceStand.splice(fromIdx, 1);
+    userStands[targetStandIdx].push(card);
+    draggedCardId = null;
+    selectedCardId = card.id;
+    myHand = userStands.flat();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  function onCardDragEnd(e) {
+    draggedCardId = null;
+    document.querySelectorAll('.card').forEach(el => {
+      el.classList.remove('is-dragging', 'drag-over-left', 'drag-over-right');
+    });
+    document.querySelectorAll('.stand-rack').forEach(el => {
+      el.classList.remove('drag-over-stand');
+    });
+  }
+
   function sortHand() {
     const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4, '★': 5 };
-    myHand.sort((a, b) => {
+    const sortFn = (a, b) => {
       if (a.suit !== b.suit) return (suitOrder[a.suit] || 0) - (suitOrder[b.suit] || 0);
       return a.rankValue - b.rankValue;
-    });
+    };
+    // Sort cards within each stand
+    userStands = userStands.map(s => s.sort(sortFn));
+    myHand = userStands.flat();
     renderAll(null);
   }
 
-  function startGame() { ws.send(JSON.stringify({ type: 'START_GAME' })); }
-  function drawStock() { ws.send(JSON.stringify({ type: 'DRAW_STOCK' })); }
-  function drawDiscard() { ws.send(JSON.stringify({ type: 'DRAW_DISCARD' })); }
+  function startGame() { 
+    if (isDemo) return;
+    ws.send(JSON.stringify({ type: 'START_GAME' })); 
+  }
+  function drawStock() { 
+    if (isDemo) { simulateDrawStock(); return; }
+    ws.send(JSON.stringify({ type: 'DRAW_STOCK' })); 
+  }
+  function drawDiscard() { 
+    if (isDemo) { simulateDrawDiscard(); return; }
+    ws.send(JSON.stringify({ type: 'DRAW_DISCARD' })); 
+  }
   function dropHand() {
     if (confirm('Are you sure you want to drop this hand?')) {
+      if (isDemo) { alert('Hand dropped in demo mode.'); return; }
       ws.send(JSON.stringify({ type: 'DROP' }));
     }
   }
   function discardSelected() {
     if (!selectedCardId) return;
+    if (isDemo) { simulateDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DISCARD', cardId: selectedCardId }));
     selectedCardId = null;
   }
@@ -277,6 +1449,21 @@
       return;
     }
     if (confirm('Declare valid show with this discard?')) {
+      if (isDemo) {
+        showResultsModal({
+          winnerName: roomState.turnPlayerName,
+          winnerMaal: {
+            total: 90,
+            details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, papluNichlu: 1, papluNichluPts: 20 }
+          },
+          results: [
+            { name: roomState.turnPlayerName, net: 'Won + collects 90 Maal from each loser' },
+            { name: 'Player 2', net: 'Pays 132 pts (42 deadwood + 90 winner maal)' },
+            { name: 'Player 3', net: 'Pays flat drop penalty: 30 pts' }
+          ]
+        });
+        return;
+      }
       ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId }));
       selectedCardId = null;
     }
@@ -286,20 +1473,127 @@
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal.details;
     document.getElementById('maalDetails').innerHTML = `
-      <strong>Winner Maal: ${data.winnerMaal.total} pts</strong><br>
+      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
       • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
       • Tiplu: ${m.tiplus} (${m.tipluPts} pts)<br>
       • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
-      • Paplu/Nichlu: ${m.papluNichlu} (${m.papluNichluPts} pts)
+      • Paplu / Nichlu: ${m.papluNichlu} (${m.papluNichluPts} pts)
     `;
 
     document.getElementById('settlementList').innerHTML = data.results.map(r => `
-      <div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+      <div class="settlement-row">
         <strong>${r.name}</strong>: ${r.net}
       </div>
     `).join('');
 
     document.getElementById('resultModal').style.display = 'flex';
+  }
+
+  // --- Offline Demo Simulation Mode ---
+  function startDemoMode() {
+    isDemo = true;
+    roomState = {
+      id: 'DEMO-TABLE',
+      status: 'PLAYING',
+      turnPlayerId: 'p_demo',
+      turnPlayerName: document.getElementById('playerName').value || 'Raj',
+      turnStage: 'DRAW',
+      cutCard: { id: 'c_cut', suit: '♠', rank: '7', rankValue: 7, isPoochie: false },
+      roles: {
+        tipluSuit: '♠',
+        tipluRank: '7',
+        papluRank: '8',
+        nichluRank: '6'
+      },
+      topDiscard: { id: 'c_disc', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false },
+      deckCount: 134,
+      players: [
+        { id: 'p_demo', name: document.getElementById('playerName').value || 'Raj', cardCount: 21, hasDropped: false },
+        { id: 'p_2', name: 'Player 2', cardCount: 21, hasDropped: false },
+        { id: 'p_3', name: 'Player 3', cardCount: 21, hasDropped: false }
+      ]
+    };
+
+    myHand = [
+      { id: 'c_1', suit: '♠', rank: '7', rankValue: 7, isPoochie: false }, // Tiplu
+      { id: 'c_2', suit: '♠', rank: '8', rankValue: 8, isPoochie: false }, // Paplu
+      { id: 'c_3', suit: '♠', rank: '6', rankValue: 6, isPoochie: false }, // Nichlu
+      { id: 'c_4', suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true },  // Poochie
+      { id: 'c_5', suit: '♠', rank: 'A', rankValue: 1, isPoochie: false },
+      { id: 'c_6', suit: '♠', rank: '2', rankValue: 2, isPoochie: false },
+      { id: 'c_7', suit: '♠', rank: '3', rankValue: 3, isPoochie: false },
+      { id: 'c_8', suit: '♥', rank: '9', rankValue: 9, isPoochie: false },
+      { id: 'c_9', suit: '♥', rank: '10', rankValue: 10, isPoochie: false },
+      { id: 'c_10', suit: '♥', rank: 'J', rankValue: 11, isPoochie: false }, // Jack
+      { id: 'c_11', suit: '♥', rank: 'Q', rankValue: 12, isPoochie: false }, // Queen
+      { id: 'c_12', suit: '♣', rank: '4', rankValue: 4, isPoochie: false },
+      { id: 'c_13', suit: '♣', rank: '5', rankValue: 5, isPoochie: false },
+      { id: 'c_14', suit: '♣', rank: '6', rankValue: 6, isPoochie: false },
+      { id: 'c_15', suit: '♦', rank: '2', rankValue: 2, isPoochie: false },
+      { id: 'c_16', suit: '♦', rank: '3', rankValue: 3, isPoochie: false },
+      { id: 'c_17', suit: '♦', rank: '4', rankValue: 4, isPoochie: false },
+      { id: 'c_18', suit: '♦', rank: '10', rankValue: 10, isPoochie: false },
+      { id: 'c_19', suit: '♦', rank: 'J', rankValue: 11, isPoochie: false },
+      { id: 'c_20', suit: '♦', rank: 'Q', rankValue: 12, isPoochie: false },
+      { id: 'c_21', suit: '♥', rank: 'K', rankValue: 13, isPoochie: false }  // King
+    ];
+
+    // Split into 2 stands by default
+    initDefaultStands(2);
+
+    document.getElementById('lobbyView').style.display = 'none';
+    document.getElementById('gameView').style.display = 'flex';
+
+    renderAll({ total: 90 });
+  }
+
+  function simulateDrawStock() {
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const suits = ['♠', '♥', '♣', '♦'];
+    const r = ranks[Math.floor(Math.random() * ranks.length)];
+    const s = suits[Math.floor(Math.random() * suits.length)];
+    const newCard = { id: 'c_' + Date.now(), suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false };
+    
+    // Add to the last stand
+    if (userStands.length === 0) userStands.push([]);
+    userStands[userStands.length - 1].push(newCard);
+    myHand = userStands.flat();
+    
+    roomState.deckCount--;
+    roomState.turnStage = 'DISCARD';
+    renderAll({ total: 90 });
+    scrollCardIntoView(newCard.id);
+  }
+
+  function simulateDrawDiscard() {
+    if (!roomState.topDiscard) return;
+    const drawn = roomState.topDiscard;
+    if (userStands.length === 0) userStands.push([]);
+    userStands[userStands.length - 1].push(drawn);
+    myHand = userStands.flat();
+
+    roomState.topDiscard = { id: 'c_prev', suit: '♣', rank: '9', rankValue: 9, isPoochie: false };
+    roomState.turnStage = 'DISCARD';
+    renderAll({ total: 90 });
+    scrollCardIntoView(drawn.id);
+  }
+
+  function simulateDiscard() {
+    if (!selectedCardId) return;
+    let card = null;
+    for (const stand of userStands) {
+      const idx = stand.findIndex(c => c.id === selectedCardId);
+      if (idx !== -1) {
+        [card] = stand.splice(idx, 1);
+        break;
+      }
+    }
+    if (!card) return;
+    myHand = userStands.flat();
+    roomState.topDiscard = card;
+    selectedCardId = null;
+    roomState.turnStage = 'DRAW';
+    renderAll({ total: 90 });
   }
 </script>
 </body>
