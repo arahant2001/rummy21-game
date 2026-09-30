@@ -14,6 +14,11 @@ const wss = new WebSocketServer({ server });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Render health check / quick deployment sanity check
+app.get('/health', (req, res) => {
+  res.status(200).json({ ok: true, service: 'rummy21-game', rooms: rooms.size });
+});
+
 const rooms = new Map();
 
 function getSafeRoom(room) {
@@ -26,6 +31,9 @@ function getSafeRoom(room) {
     cutCard: room.cutCard,
     roles: room.cutCard ? resolveJokerRoles(room.cutCard) : null,
     topDiscard: room.discardPile[room.discardPile.length - 1] || null,
+    // Keep a short, ordered history so clients can review older discards without
+    // confusing them with the current top discard.
+    discardHistory: room.discardPile.slice(Math.max(0, room.discardPile.length - 9), Math.max(0, room.discardPile.length - 1)),
     deckCount: room.deck.length,
     players: room.players.map(p => ({
       id: p.id,
