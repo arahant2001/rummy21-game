@@ -711,6 +711,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 @media(max-width:600px){.player-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}.player-state{grid-column:1/-1;justify-self:stretch;text-align:left;margin-left:34px}.player-state.you-turn{display:inline-block;width:max-content;margin-left:34px}.player-count{font-size:11px}}
 
 
+  .demo-controls{align-items:center;gap:6px;flex-wrap:wrap;padding:7px 9px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13)}
+  .demo-controls-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#b6c7bf;margin-right:2px}
+  @media(max-width:600px){.demo-controls{display:grid!important;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
   </style>
 </head>
 <body>
@@ -727,8 +730,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   <input id="roomId" placeholder="e.g. FAMILY" value="FAMILY" />
   <button class="btn-primary" onclick="joinRoom()">Enter Table</button>
   <button type="button" class="btn-demo" onclick="startDemoMode()">
-    Preview UI in Demo Mode (No Server Required)
+    🧪 Open Test Table (No Server Required)
   </button>
+  <div style="margin-top:8px;text-align:center;font-size:10px;color:var(--text-muted);">Test the full UI without needing other players or devices.</div>
 </div>
 
 <!-- Main Game View -->
@@ -758,6 +762,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <span class="stage-icon">🎴</span>
     <span id="stageGuideText"><strong>Your turn:</strong> draw a card to begin.</span>
     <span class="hint">Tap a card to select it</span>
+  </div>
+  <div id="demoControls" class="demo-controls" style="display:none">
+    <span class="demo-controls-title">🧪 Test Controls</span>
+    <button class="tool-btn" onclick="demoMyTurn()">My Turn</button>
+    <button class="tool-btn" onclick="demoOpponentTurn('Kavita')">Kavita's Turn</button>
+    <button class="tool-btn" onclick="demoOpponentTurn('Sonia')">Sonia's Turn</button>
+    <button class="tool-btn" onclick="demoReset()">Reset</button>
   </div>
 
   <!-- Player Status Strip -->
@@ -1711,6 +1722,35 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
 
     renderAll({ total: 90 });
+    const demoControls = document.getElementById('demoControls');
+    if (demoControls) demoControls.style.display = 'flex';
+  }
+
+  function demoMyTurn() {
+    if (!isDemo || !roomState) return;
+    roomState.turnPlayerId = 'p_demo';
+    roomState.turnPlayerName = document.getElementById('playerName').value || 'Raj';
+    roomState.turnStage = 'DRAW';
+    renderAll({ total: 90 });
+  }
+
+  function demoOpponentTurn(name) {
+    if (!isDemo || !roomState) return;
+    const p = roomState.players.find(x => x.name === name);
+    roomState.turnPlayerId = p ? p.id : name.toLowerCase();
+    roomState.turnPlayerName = name;
+    roomState.turnStage = 'DRAW';
+    renderAll({ total: 90 });
+  }
+
+  function demoReset() {
+    if (!isDemo) return;
+    startDemoMode();
+  }
+
+  // Allow a Render URL such as /?test=1 to open the UI test table directly.
+  if (new URLSearchParams(location.search).get('test') === '1') {
+    setTimeout(startDemoMode, 0);
   }
 
   function simulateDrawStock() {
