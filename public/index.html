@@ -1872,7 +1872,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         });
         return;
       }
-      const groups = userStands.map((stand,i) => ({type:standTypes[i]||'SEQUENCE', cardIds:stand.map(c=>c.id)}));
+      const groups = userStands.map((stand,i) => ({type:standTypes[i]||'SEQUENCE', cardIds:stand.filter(c=>c.id!==selectedCardId).map(c=>c.id)})).filter(g=>g.cardIds.length);
       ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId, groups }));
       selectedCardId = null;
     }
