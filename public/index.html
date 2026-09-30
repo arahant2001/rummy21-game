@@ -998,6 +998,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         renderAll(msg.yourMaal);
       }
 
+      if (msg.type === 'SHOW_INVALID') alert('Show not legal: ' + msg.reason);
+
       if (msg.type === 'SHOW_RESULT') {
         showResultsModal(msg);
       }
@@ -1037,10 +1039,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function initDefaultStands(count = 2) {
     if (!myHand || myHand.length === 0) {
       userStands = [[]];
+      standTypes = ['SEQUENCE'];
       return;
     }
     if (count === 1) {
       userStands = [[...myHand]];
+      standTypes = ['SEQUENCE'];
       return;    }
     // Split into 2 stands (~11 and 10 cards)
     const mid = Math.ceil(myHand.length / 2);
@@ -1054,12 +1058,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const allCards = userStands.flat();
     if (count === 1) {
       userStands = [allCards];
+      standTypes = ['SEQUENCE'];
     } else {
       const mid = Math.ceil(allCards.length / 2);
       userStands = [
         allCards.slice(0, mid),
         allCards.slice(mid)
       ];
+      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
     }
     myHand = userStands.flat();
     renderAll(null);
@@ -1075,6 +1081,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     userStands.splice(standIdx, 1);
     // Put orphaned cards into the first stand
     userStands[0].push(...cardsToMove);
+    standTypes.splice(standIdx,1);
     myHand = userStands.flat();
     renderAll(null);
   }
@@ -1195,6 +1202,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const isRed = ['♥', '♦'].includes(card.suit);
     const poochieClass = card.isPoochie ? 'poochie' : '';
     const redClass = isRed ? 'red' : '';
+    const suitClass = card.suit === '♠' ? 'card-suit-spade' : card.suit === '♣' ? 'card-suit-club' : 'card-suit-black';
     const selClass = selectedCardId === card.id ? 'is-selected' : '';
     const dragAttrs = isHand ? `
       id="card-${card.id}"
@@ -1448,8 +1456,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
              ondrop="onStandDrop(event, ${sIdx})">
           <div class="stand-header">
             <div class="stand-title-box">
-              <span>Stand ${sIdx + 1}</span>
+              <span>Group ${sIdx + 1}</span>
               <span class="stand-count-badge">${stand.length} cards</span>
+              <select class="group-type-select" onchange="setStandType(${sIdx}, this.value)" onclick="event.stopPropagation()">
+                <option value="PURE_SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="PURE_SEQUENCE"?"selected":""}>Pure Sequence</option>
+                <option value="SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="SEQUENCE"?"selected":""}>Sequence</option>
+                <option value="SET" ${(standTypes[sIdx]||"SEQUENCE")==="SET"?"selected":""}>Set</option>
+              </select>
             </div>
             ${closeBtn}
           </div>
@@ -1460,6 +1473,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       `;
     }).join('');
   }
+
+  function setStandType(idx, type) { standTypes[idx]=type; renderStands(); }
 
   function getMyPlayerId() {
     const me = roomState?.players.find(p => p.name === document.getElementById('playerName').value);
@@ -1850,7 +1865,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         });
         return;
       }
-      ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId }));
+      const groups = userStands.map((stand,i) => ({type:standTypes[i]||'SEQUENCE', cardIds:stand.map(c=>c.id)}));
+      ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId, groups }));
       selectedCardId = null;
     }
   }
