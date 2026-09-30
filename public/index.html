@@ -780,7 +780,36 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   .demo-controls{align-items:center;gap:6px;flex-wrap:wrap;padding:7px 9px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13)}
   .demo-controls-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#b6c7bf;margin-right:2px}
   @media(max-width:600px){.demo-controls{display:grid!important;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
-  </style>
+  
+/* ===== COMPACT TABLE LAYOUT ===== */
+.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible}
+.cut-under-stock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;pointer-events:none}
+.cut-under-stock #cutCardContainer .card{transform:rotate(90deg) scale(.78);transform-origin:center;opacity:.96;box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 1px rgba(217,182,92,.2)!important}
+.stock-pile-wrapper{position:relative;z-index:8}
+.discard-pile-wrapper{position:relative;z-index:9}
+.discard-stack-area{position:relative;width:118px;height:104px;margin-top:2px;display:flex;align-items:center;justify-content:center}
+.discard-stack-area #discardContainer{position:relative;z-index:20}
+.discard-history{position:absolute;inset:0;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
+.discard-history-card{position:absolute;width:68px;height:98px;left:25px;top:3px;display:block;opacity:.86;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.discard-history-card:active{cursor:grabbing}
+.discard-history-card .card{transform:none!important;width:68px;height:98px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
+.discard-history-card.peeked{filter:brightness(1.05);z-index:18!important}
+.discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
+.discard-history-index{top:-4px;right:-4px;pointer-events:none}
+.discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
+.discard-history-panel{display:none!important}
+.discard-history-badge{font-size:8px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:3px 6px;border-radius:999px;white-space:nowrap}
+.maal-details-popover{position:absolute;right:10px;top:54px;z-index:100;display:none;margin:0;width:min(500px,calc(100vw - 28px));padding:11px 12px;border:1px solid rgba(217,182,92,.22);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.98),rgba(10,20,15,.98));box-shadow:0 14px 36px rgba(0,0,0,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.maal-details-popover.is-open{display:block}
+.status-bar{position:relative}
+#maalSummary{cursor:pointer;position:relative}
+#maalSummary:hover{filter:brightness(1.08)}
+#maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
+.maal-details-popover .maal-details-head{margin-bottom:8px}
+.maal-details-popover .maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:600px){.maal-details-popover{right:6px;top:52px}.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
+
+</style>
 </head>
 <body>
 
@@ -809,7 +838,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div id="turnDot" class="turn-indicator-dot"></div>
       <span id="turnNotice">Connecting...</span>
     </div>
-    <div id="maalSummary" class="maal-badge">
+    <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details" onclick="toggleMaalDetails()">
       <span>🏆</span>
       <span id="maalPtsText">Maal: 0 pts</span>
     </div>
@@ -843,7 +872,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="playerRows"></div>
   </div>
 
-  <section class="maal-details-panel" id="maalDetailsPanel">
+  <section class="maal-details-popover" id="maalDetailsPanel" aria-label="Maal details">
     <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
     <div class="maal-detail-grid">
       <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span><span class="maal-detail-points" id="maalCutPts">0 pts</span></div>
@@ -858,36 +887,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   <!-- Center Table Felt -->
   <div class="center-board">
-    <div class="pile-wrapper">
-      <div class="pile-title">Cut Joker</div><div class="pile-action-hint">Game joker</div>
+    <div class="pile-wrapper cut-under-stock" aria-label="Cut Joker">
       <div id="cutCardContainer"></div>
     </div>
-    <div class="pile-wrapper">
+    <div class="pile-wrapper stock-pile-wrapper">
       <div class="pile-title">Stock</div><div class="pile-action-hint">Drag onto your board</div>
       <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true" ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
         <span class="deck-icon">🂠</span>
         <span id="deckCountText" class="deck-count">0</span>
       </div>
     </div>
-    <div class="pile-wrapper">
-      <div class="pile-title">Discard</div><div class="pile-action-hint">Drag here to discard</div>
-      <div id="discardContainer" class="pile-drop-source" draggable="true"
-           ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
-           ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
-           ondrop="onDiscardPileDrop(event)"></div>
+    <div class="pile-wrapper discard-pile-wrapper">
+      <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
+      <div class="pile-action-hint">Drag here to discard • drag old cards aside to peek</div>
+      <div class="discard-stack-area">
+        <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
+        <div id="discardContainer" class="pile-drop-source" draggable="true"
+             ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
+             ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
+             ondrop="onDiscardPileDrop(event)"></div>
+      </div>
     </div>
   </div>
-
-  <section class="discard-history-panel">
-    <div class="discard-history-head">
-      <div>
-        <div class="discard-history-title">Previous Discards</div>
-        <div class="discard-history-subtitle">Newest first • the large card above is always the current discard</div>
-      </div>
-      <span class="discard-history-badge" id="discardHistoryCount">0 previous</span>
-    </div>
-    <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
-  </section>
 
   <!-- Hand Section with Multi-Stand Support -->
   <div>
@@ -1367,6 +1388,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }};
   }
 
+  function toggleMaalDetails(force) {
+    const panel=document.getElementById('maalDetailsPanel');
+    if(!panel) return;
+    const open = typeof force==='boolean' ? force : !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open',open);
+    document.getElementById('maalSummary')?.setAttribute('aria-expanded', String(open));
+  }
+
   function renderMaalDetails(maalData) {
     const roles=roomState?.roles||{}, cut=roomState?.cutCard;
     const data=maalData?.details ? maalData : calculateLocalMaal();
@@ -1752,15 +1781,29 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const history=(roomState?.discardHistory||[]).slice().reverse();
     if (countEl) countEl.innerText=`${history.length} previous`;
     if (!history.length) {
-      box.innerHTML='<div class="discard-history-empty">No previous discards yet.</div>';
+      box.innerHTML='<div class="discard-history-empty">Peekable history</div>';
       return;
     }
-    box.innerHTML=history.map((card,idx)=>`
-      <div class="discard-history-card" title="Previous discard #${idx+1}: ${card.rank}${card.suit}">
-        <span class="discard-history-index">${idx+1}</span>
-        ${renderCard(card)}
-      </div>
-    `).join('');
+    box.innerHTML=history.map((card,idx)=>{
+      const fan = idx % 2 === 0 ? (idx/2)*5 : -(Math.ceil(idx/2))*5;
+      const y = Math.min(idx*2, 12);
+      const z = 10 + idx;
+      return `
+        <div class="discard-history-card" draggable="true" style="transform:translate(${fan}px,${y}px) rotate(${fan/2}deg);z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}"
+             ondragstart="onHistoryDragStart(event,this)" ondragend="onHistoryDragEnd(event,this)">
+          <span class="discard-history-index">${idx+1}</span>
+          ${renderCard(card)}
+        </div>`;
+    }).join('');
+  }
+
+  function onHistoryDragStart(e,el){
+    el.classList.add('peeked');
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain','peek-history');
+  }
+  function onHistoryDragEnd(e,el){
+    el.classList.remove('peeked');
   }
 
   function onStandDragOver(e, standIdx) {
@@ -1913,6 +1956,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     document.getElementById('resultModal').style.display = 'flex';
   }
+
+  document.getElementById('maalSummary')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaalDetails(); }
+  });
+  document.addEventListener('click', e => {
+    const panel=document.getElementById('maalDetailsPanel'), summary=document.getElementById('maalSummary');
+    if (panel && summary && panel.classList.contains('is-open') && !panel.contains(e.target) && !summary.contains(e.target)) toggleMaalDetails(false);
+  });
 
   // --- Offline Demo Simulation Mode ---
   function startDemoMode() {
