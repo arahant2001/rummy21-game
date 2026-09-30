@@ -297,8 +297,7 @@
       text-transform: uppercase;
       white-space: nowrap;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      z-index: 10;      pointer-events: none;
-    }
+      z-index: 10;      pointer-events: none;    }
     .role-tiplu { background: #4f46e5; color: #ffffff; border: 1px solid #6366f1; }
     .role-paplu { background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; }
     .role-nichlu { background: #0369a1; color: #ffffff; border: 1px solid #0284c7; }
@@ -597,8 +596,7 @@
       position: fixed;
       inset: 0;
       background: rgba(4, 7, 13, 0.85);      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      justify-content: center;
+      -webkit-backdrop-filter: blur(8px);      justify-content: center;
       align-items: center;
       padding: 20px;
       z-index: 100;
@@ -897,8 +895,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     if (count === 1) {
       userStands = [[...myHand]];
-      return;
-    }
+      return;    }
     // Split into 2 stands (~11 and 10 cards)
     const mid = Math.ceil(myHand.length / 2);
     userStands = [
@@ -1198,7 +1195,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('btnDrop').classList.toggle('btn-disabled', !canDraw);
     document.getElementById('btnDiscard').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
-
     document.getElementById('stockDeckBtn').classList.toggle('clickable-action', canDraw);
 
     updateReorderControls();
@@ -1497,8 +1493,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     });
   }
 
-  function sortHand() {
-    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4, '★': 5 };
+  function sortHand() {    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4, '★': 5 };
     const sortFn = (a, b) => {
       if (a.suit !== b.suit) return (suitOrder[a.suit] || 0) - (suitOrder[b.suit] || 0);
       return a.rankValue - b.rankValue;
@@ -1598,8 +1593,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       deckCount: 134,
       players: [
         { id: 'p_demo', name: document.getElementById('playerName').value || 'Raj', cardCount: 21, hasDropped: false },
-        { id: 'p_2', name: 'Player 2', cardCount: 21, hasDropped: false },
-        { id: 'p_3', name: 'Player 3', cardCount: 21, hasDropped: false }
+        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false },
+        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false }
       ]
     };
 
