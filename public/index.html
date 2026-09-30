@@ -225,6 +225,11 @@
     }
 
     /* Standard Playing Card Styling */
+    .card-suit-black { color:#111827; }
+    .card-suit-spade { color:#111827; }
+    .card-suit-club { color:#334155; }
+    .card-suit-club .pip,.card-suit-club .court-suit-top,.card-suit-club .court-suit-bottom { text-shadow:0 1px 0 #94a3b8; }
+    .card-suit-spade .pip,.card-suit-spade .court-suit-top,.card-suit-spade .court-suit-bottom { text-shadow:0 1px 0 #e2e8f0; }
     .card {
       width: var(--card-w);
       height: var(--card-h);
@@ -505,6 +510,13 @@
       font-size: 11px;
       color: var(--text-primary);
     }
+    .group-type-select { background:rgba(15,23,42,.92);color:var(--text-primary);border:1px solid var(--surface-border-light);border-radius:6px;padding:3px 6px;font-size:10px;font-weight:700;text-transform:uppercase; }
+    .show-help { margin:8px 0 10px;padding:8px 10px;border-radius:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--text-secondary);font-size:11px;line-height:1.35; }
+    .revealed-hands { margin-top:16px;padding-top:14px;border-top:1px solid var(--surface-border-light); }
+    .revealed-player { margin-top:10px;padding:9px;border:1px solid var(--surface-border);border-radius:10px;background:rgba(15,23,42,.45); }
+    .revealed-player-title { font-weight:800;font-size:12px;margin-bottom:7px; }
+    .revealed-player-cards { display:flex;flex-wrap:wrap;gap:5px; }
+    .revealed-player-cards .card { width:48px;height:70px;transform:none !important; }
     .stand-close-btn {
       width: auto !important;
       padding: 2px 7px !important;
@@ -911,14 +923,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         </div>
 
         <!-- Stand management buttons -->
-        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands">2 Stands</button>
-        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand">1 Stand</button>
-        <button class="tool-btn" onclick="addNewStand()" title="Add an empty stand">+ Add Stand</button>
+        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 groups">2 Groups</button>
+        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 group">1 Group</button>
+        <button class="tool-btn" onclick="addNewStand()" title="Add an empty show group">+ Add Group</button>
       </div>
     </div>
 
     <!-- Multi-Stand Cards Racks -->
-    <div id="standsContainer" class="stands-container"></div>
+    <div class="show-help"><strong>Show builder:</strong> choose Pure Sequence, Sequence, or Set for each group, then drag cards between groups. A valid 21-card show needs at least 3 Pure Sequences.</div><div id="standsContainer" class="stands-container"></div>
 
     <div class="action-section">
       <div class="action-label">Your Move</div>
@@ -937,7 +949,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <h2 id="winnerTitle" class="modal-winner"></h2>
     <div id="maalDetails" class="maal-breakdown"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
-    <div id="settlementList"></div>
+    <div id="settlementList"></div><div id="revealedHands" class="revealed-hands"></div>
     <button class="btn-primary" onclick="location.reload()" style="margin-top: 24px;">Play Next Hand</button>
   </div>
 </div>
@@ -946,7 +958,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let ws;
   let roomState = null;
   let myHand = [];
-  let userStands = []; // Array of card arrays representing each stand
+  let userStands = []; // Array of card arrays representing each show group
+  let standTypes = [];
   let selectedCardId = null;
   let draggedCardId = null;
   let isDemo = false;
@@ -996,7 +1009,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (!myHand || myHand.length === 0) {
       myHand = incomingCards;
       // Initialize with 2 stands for optimal visibility
-      initDefaultStands(2);
+      initDefaultStands(3);
       return;
     }
 
