@@ -1838,6 +1838,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         nichluRank: '6'
       },
       topDiscard: { id: 'c_disc', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false },
+      discardHistory: [
+        { id: 'c_h1', suit: '♣', rank: '4', rankValue: 4, isPoochie: false },
+        { id: 'c_h2', suit: '♥', rank: '9', rankValue: 9, isPoochie: false },
+        { id: 'c_h3', suit: '♠', rank: 'Q', rankValue: 12, isPoochie: false },
+        { id: 'c_h4', suit: '♦', rank: '2', rankValue: 2, isPoochie: false }
+      ],
       deckCount: 134,
       players: [
         { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false },
@@ -1959,6 +1965,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     if (!card) return;
     myHand = userStands.flat();
+    if (!roomState.discardHistory) roomState.discardHistory = [];
+    if (roomState.topDiscard) roomState.discardHistory.push(roomState.topDiscard);
+    roomState.discardHistory = roomState.discardHistory.slice(-8);
     roomState.topDiscard = card;
     selectedCardId = null;
     roomState.turnStage = 'DRAW';
