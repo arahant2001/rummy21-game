@@ -1970,19 +1970,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('resultModal').style.display = 'flex';
   }
 
-  let maalCloseTimer=null;
+  // Maal details: click/tap toggles the popover; clicking elsewhere closes it.
   const maalSummaryEl=document.getElementById('maalSummary');
   const maalPanelEl=document.getElementById('maalDetailsPanel');
-  maalSummaryEl?.addEventListener('mouseenter', () => { clearTimeout(maalCloseTimer); toggleMaalDetails(true); });
-  maalSummaryEl?.addEventListener('mouseleave', () => { maalCloseTimer=setTimeout(() => toggleMaalDetails(false), 180); });
-  maalPanelEl?.addEventListener('mouseenter', () => clearTimeout(maalCloseTimer));
-  maalPanelEl?.addEventListener('mouseleave', () => { maalCloseTimer=setTimeout(() => toggleMaalDetails(false), 180); });
-  maalSummaryEl?.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaalDetails(); }
+  maalSummaryEl?.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleMaalDetails();
   });
+  maalSummaryEl?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMaalDetails();
+    }
+  });
+  maalPanelEl?.addEventListener('click', e => e.stopPropagation());
   document.addEventListener('click', e => {
     const panel=document.getElementById('maalDetailsPanel'), summary=document.getElementById('maalSummary');
-    if (panel && summary && panel.classList.contains('is-open') && !panel.contains(e.target) && !summary.contains(e.target)) toggleMaalDetails(false);
+    if (panel && summary && panel.classList.contains('is-open') && !panel.contains(e.target) && !summary.contains(e.target)) {
+      toggleMaalDetails(false);
+    }
   });
 
   // --- Offline Demo Simulation Mode ---
