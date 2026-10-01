@@ -35,11 +35,15 @@ function getSafeRoom(room) {
     // confusing them with the current top discard.
     discardHistory: room.discardPile.slice(Math.max(0, room.discardPile.length - 9), Math.max(0, room.discardPile.length - 1)),
     deckCount: room.deck.length,
+    lastAction: room.lastAction || '',
     players: room.players.map(p => ({
       id: p.id,
       name: p.name,
       cardCount: p.hand.length,
-      hasDropped: p.hasDropped
+      hasDropped: Boolean(p.hasDropped),
+      hasForfeited: Boolean(p.hasForfeited),
+      dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? 'SCOOT' : null),
+      dropPenalty: p.dropPenalty || 0
     }))
   };
 }
@@ -59,6 +63,60 @@ function broadcastRoom(room) {
 }
 
 function advanceTurn(room) {
+  const activePlayers = room.players.filter(p => !p.hasDropped);
+  if (activePlayers.length <= 1 && room.players.length > 1) {
+    const soleWinner = activePlayers[0] || room.players[0];
+    room.status = 'ROUND_OVER';
+    room.turnStage = 'WAITING';
+    const winnerMaal = calculateMaal(soleWinner.hand, room.cutCard);
+    const results = room.players.map(p => {
+      if (p.id === soleWinner.id) {
+        return {
+          name: p.name,
+          status: 'WINNER',
+          points: 0,
+          maalCollected: winnerMaal.total,
+          net: `Won (all opponents folded) + collects ${winnerMaal.total} Maal from each loser`
+        };
+      }
+      const drop = p.dropPenalty || CONFIG.firstDrop || 30;
+      const totalPay = drop + winnerMaal.total;
+      return {
+        name: p.name,
+        status: p.hasForfeited ? 'FORFEITED' : 'DROPPED',
+        points: totalPay,
+        dropPenalty: drop,
+        maalOwed: winnerMaal.total,
+        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'} penalty + ${winnerMaal.total} winner Maal)`
+      };
+    });
+
+    room.players.forEach(p => {
+      if (p.ws.readyState === WebSocket.OPEN) {
+        p.ws.send(JSON.stringify({
+          type: 'SHOW_RESULT',
+          winnerName: soleWinner.name,
+          winnerMaal,
+          results,
+          revealedHands: room.players.map(pl => ({
+            name: pl.name,
+            id: pl.id,
+            hasDropped: pl.hasDropped,
+            hand: pl.hand
+          }))
+        }));
+      }
+    });
+
+    setTimeout(() => {
+      if (room && rooms.get(room.id) === room && room.players.length) {
+        dealNextHand(room);
+        broadcastRoom(room);
+      }
+    }, 4000);
+    return;
+  }
+
   let attempts = 0;
   do {
     room.turnIndex = (room.turnIndex + 1) % room.players.length;
@@ -75,6 +133,8 @@ function dealNextHand(room) {
   room.players.forEach(p => {
     p.hand = deck.splice(0, 21);
     p.hasDropped = false;
+    p.hasForfeited = false;
+    p.dropType = null;
     p.dropPenalty = 0;
     p.turnsTaken = 0;
   });
@@ -85,6 +145,7 @@ function dealNextHand(room) {
   room.status = 'PLAYING';
   room.turnIndex = 0;
   room.turnStage = 'DRAW';
+  room.lastAction = 'New hand dealt. Game on!';
 }
 
 wss.on('connection', (ws) => {
@@ -133,6 +194,12 @@ wss.on('connection', (ws) => {
 
       if (!userRoom) return;
 
+      if (data.type === 'NEXT_HAND' && userRoom) {
+        dealNextHand(userRoom);
+        broadcastRoom(userRoom);
+        return;
+      }
+
       if (data.type === 'START_GAME' && userRoom.status === 'LOBBY') {
         const deck = createDeck();
         userRoom.players.forEach(p => {
@@ -155,6 +222,7 @@ wss.on('connection', (ws) => {
       const isTurn = activePlayer && activePlayer.id === playerId;
 
       if (data.type === 'DRAW_STOCK' && isTurn && userRoom.turnStage === 'DRAW') {
+        if (activePlayer.hand.length >= 22) return;
         if (userRoom.deck.length === 0) {
           // Recycle discard pile if stock runs dry
           const top = userRoom.discardPile.pop();
@@ -168,6 +236,7 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DRAW_DISCARD' && isTurn && userRoom.turnStage === 'DRAW') {
+        if (activePlayer.hand.length >= 22) return;
         if (userRoom.discardPile.length > 0) {
           activePlayer.hand.push(userRoom.discardPile.pop());
           userRoom.turnStage = 'DISCARD';
@@ -182,7 +251,7 @@ wss.on('connection', (ws) => {
           const [discarded] = activePlayer.hand.splice(idx, 1);
           userRoom.discardPile.push(discarded);
           activePlayer.turnsTaken++;
-          userRoom.lastAction = 'DISCARD';
+          userRoom.lastAction = `${activePlayer.name} discarded`;
           advanceTurn(userRoom);
           broadcastRoom(userRoom);
         }
@@ -190,8 +259,10 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'DROP' && isTurn && userRoom.turnStage === 'DRAW') {
         activePlayer.hasDropped = true;
+        activePlayer.dropType = 'SCOOT';
         const penalty = activePlayer.turnsTaken === 0 ? CONFIG.firstDrop : CONFIG.middleDrop;
         activePlayer.dropPenalty = penalty;
+        userRoom.lastAction = `${activePlayer.name} scooted / dropped (${penalty} pts)`;
 
         advanceTurn(userRoom);
         broadcastRoom(userRoom);
@@ -199,7 +270,10 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'FORFEIT_DECLARATION' && isTurn && userRoom.turnStage === 'DISCARD') {
         activePlayer.hasDropped = true;
+        activePlayer.hasForfeited = true;
+        activePlayer.dropType = 'FORFEIT';
         activePlayer.dropPenalty = 100;
+        userRoom.lastAction = `${activePlayer.name} forfeited declaration (100 pts)`;
         advanceTurn(userRoom);
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify({ type: 'DECLARATION_FORFEITED', penalty: 100 }));
@@ -214,7 +288,10 @@ wss.on('connection', (ws) => {
         const validation = validateShow(data.groups, showHand, userRoom.cutCard);
         if (!validation.valid) {
           activePlayer.hasDropped = true;
+          activePlayer.hasForfeited = true;
+          activePlayer.dropType = 'FORFEIT';
           activePlayer.dropPenalty = 100;
+          userRoom.lastAction = `${activePlayer.name} made invalid show (100 pts penalty)`;
           advanceTurn(userRoom);
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason, penalty: 100 }));
@@ -244,14 +321,15 @@ wss.on('connection', (ws) => {
             };
           }
           if (p.hasDropped) {
-            const totalPay = p.dropPenalty + winnerMaal.total;
+            const drop = p.dropPenalty || CONFIG.firstDrop || 30;
+            const totalPay = drop + winnerMaal.total;
             return {
               name: p.name,
               status: 'DROPPED',
               points: totalPay,
-              dropPenalty: p.dropPenalty,
+              dropPenalty: drop,
               maalOwed: winnerMaal.total,
-              net: `Pays ${totalPay} pts (${p.dropPenalty} drop penalty + ${winnerMaal.total} winner Maal)`
+              net: `Pays ${totalPay} pts (${drop} drop penalty + ${winnerMaal.total} winner Maal)`
             };
           }
           const deadwood = calculateDeadwood(p.hand, userRoom.cutCard);

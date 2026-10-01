@@ -583,7 +583,7 @@
     /* Action Grid */
     .actions-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 8px;
       margin-top: 6px;
     }
@@ -726,7 +726,7 @@
 @media(max-width:700px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.discard-history-subtitle{display:none}}
 @media(max-width:420px){.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* ===== MAAL + DRAG UX ===== */
-.maal-details-panel{margin:8px 0 10px;padding:11px 12px;border:1px solid rgba(217,182,92,.18);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.88),rgba(10,20,15,.92));box-shadow:0 7px 20px rgba(0,0,0,.16)}.maal-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.maal-details-title{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.8px;color:#f1d27a}.maal-details-subtitle{font-size:9px;color:#789086;margin-top:2px}.maal-live-total{font-size:11px;font-weight:850;color:#f8dfa0;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);border-radius:999px;padding:5px 9px;white-space:nowrap}.maal-detail-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.maal-detail-card{min-width:0;padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(148,163,184,.10)}.maal-detail-label{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.65px;color:#70857b;font-weight:800}.maal-detail-value{display:block;margin-top:3px;font-size:11px;color:#e7eee9;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pile-draggable,.pile-drop-source{cursor:grab}.pile-draggable:active,.pile-drop-source:active{cursor:grabbing}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{border-color:#f1d27a!important;box-shadow:0 0 0 3px rgba(217,182,92,.16),0 10px 24px rgba(0,0,0,.3)!important;transform:translateY(-3px)}.pile-drop-source{display:flex;align-items:center;justify-content:center;min-height:98px}.pile-drop-source .card{pointer-events:none}.stand-rack.pile-drop-ready{border-color:#f1d27a;background:rgba(217,182,92,.09);box-shadow:0 0 0 2px rgba(217,182,92,.10)}.stage-guide.pile-mode{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.09)}.card-inner{box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 0 0 3px rgba(255,255,255,.7)}.card:not(.deck-card) .card-inner:before{content:"";position:absolute;inset:3px;border:1px solid rgba(15,23,42,.10);border-radius:5px;pointer-events:none}.pip-grid{position:relative;width:34px;height:60px;font-size:10px;line-height:1}.pip{position:absolute;display:flex;align-items:center;justify-content:center;width:10px;height:10px;font-size:12px;font-weight:700}.pip-t{left:12px;top:0}.pip-b{left:12px;bottom:0}.pip-c{left:12px;top:25px}.pip-tl{left:0;top:0}.pip-tr{right:0;top:0}.pip-ml{left:0;top:25px}.pip-mr{right:0;top:25px}.pip-bl{left:0;bottom:0}.pip-br{right:0;bottom:0}.pip-ul{left:0;top:13px}.pip-ur{right:0;top:13px}.pip-c1{left:12px;top:13px}.pip-c2{left:12px;top:38px}.pip-1{height:28px}.pip-2{height:48px}.pip-3,.pip-4,.pip-5,.pip-6,.pip-7,.pip-8,.pip-9,.pip-10{height:60px}@media(max-width:800px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.maal-details-head{align-items:flex-start}.maal-details-subtitle{max-width:240px}.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.maal-detail-value{font-size:10px}}
+.maal-details-panel{margin:8px 0 10px;padding:11px 12px;border:1px solid rgba(217,182,92,.18);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.88),rgba(10,20,15,.92));box-shadow:0 7px 20px rgba(0,0,0,.16)}.maal-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.maal-details-title{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.8px;color:#f1d27a}.maal-details-subtitle{font-size:9px;color:#789086;margin-top:2px}.maal-live-total{font-size:11px;font-weight:850;color:#f8dfa0;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);border-radius:999px;padding:5px 9px;white-space:nowrap}.maal-detail-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.maal-detail-card{min-width:0;padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(148,163,184,.10)}.maal-detail-label{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.65px;color:#70857b;font-weight:800}.maal-detail-value{display:block;margin-top:3px;font-size:11px;color:#e7eee9;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pile-draggable:not(.drag-ready){cursor:default!important}.pile-drop-source:not(.drag-ready):not(.discard-drop-ready){cursor:default}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{cursor:grab!important}.pile-draggable.drag-ready:active,.pile-drop-source.drag-ready:active{cursor:grabbing!important}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{border-color:#f1d27a!important;box-shadow:0 0 0 3px rgba(217,182,92,.16),0 10px 24px rgba(0,0,0,.3)!important;transform:translateY(-3px)}.pile-drop-source{display:flex;align-items:center;justify-content:center;min-height:98px}.pile-drop-source .card{pointer-events:none}.stand-rack.pile-drop-ready{border-color:#f1d27a;background:rgba(217,182,92,.09);box-shadow:0 0 0 2px rgba(217,182,92,.10)}.stage-guide.pile-mode{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.09)}.card-inner{box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 0 0 3px rgba(255,255,255,.7)}.card:not(.deck-card) .card-inner:before{content:"";position:absolute;inset:3px;border:1px solid rgba(15,23,42,.10);border-radius:5px;pointer-events:none}.pip-grid{position:relative;width:34px;height:60px;font-size:10px;line-height:1}.pip{position:absolute;display:flex;align-items:center;justify-content:center;width:10px;height:10px;font-size:12px;font-weight:700}.pip-t{left:12px;top:0}.pip-b{left:12px;bottom:0}.pip-c{left:12px;top:25px}.pip-tl{left:0;top:0}.pip-tr{right:0;top:0}.pip-ml{left:0;top:25px}.pip-mr{right:0;top:25px}.pip-bl{left:0;bottom:0}.pip-br{right:0;bottom:0}.pip-ul{left:0;top:13px}.pip-ur{right:0;top:13px}.pip-c1{left:12px;top:13px}.pip-c2{left:12px;top:38px}.pip-1{height:28px}.pip-2{height:48px}.pip-3,.pip-4,.pip-5,.pip-6,.pip-7,.pip-8,.pip-9,.pip-10{height:60px}@media(max-width:800px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.maal-details-head{align-items:flex-start}.maal-details-subtitle{max-width:240px}.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.maal-detail-value{font-size:10px}}
 
 /* ===== UI REFINEMENT ===== */
 /* ===== COMPLETE UX PASS ===== */
@@ -770,8 +770,35 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .modal-content{background:linear-gradient(145deg,#143728,#091b13);border-color:rgba(217,182,92,.28)}
 @media(max-width:760px){body{padding:7px}.table-container{min-height:calc(100vh - 14px)}.center-board{min-height:145px;gap:16px;padding:22px 10px 14px}.btn-action{min-height:46px;padding:10px 5px;font-size:12px}}
 @media(max-width:430px){.lobby-box{margin:28px auto;padding:28px 20px 22px}.lobby-title{font-size:25px}.center-board{gap:8px}.pile-wrapper{min-width:78px}.stand-cards{gap:6px}.actions-grid{grid-template-columns:repeat(2,1fr)}.btn-declare{grid-column:span 2}}
-.declare-panel{display:none;margin:8px 0 10px;padding:12px;border:1px solid rgba(217,182,92,.30);border-radius:12px;background:linear-gradient(180deg,rgba(27,54,41,.96),rgba(8,25,17,.96));box-shadow:0 8px 24px rgba(0,0,0,.20)}
-.declare-panel.is-open{display:block}.declare-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.declare-title{font-size:13px;font-weight:850;color:#f1d27a}.declare-subtitle{font-size:10px;color:#9db0a7;margin-top:3px;line-height:1.35}.declare-stats{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.declare-stat{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);font-size:10px;color:#c6d2cc;font-weight:750}.declare-stat strong{color:#f1d27a}.declare-buttons{display:flex;gap:6px;flex-wrap:wrap}.declare-buttons .tool-btn{flex:1 1 120px}.declare-buttons .tool-btn:disabled{opacity:.35;cursor:not-allowed}.declare-discard{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:8px;background:rgba(240,107,120,.06);border:1px solid rgba(240,107,120,.16);font-size:10px;color:#b9c8c0}.declare-discard strong{color:#f1a7ad}.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
+.declare-panel{display:none;margin:8px 0 12px;padding:14px;border:1px solid rgba(217,182,92,.35);border-radius:14px;background:linear-gradient(180deg,rgba(16,40,29,.98),rgba(7,22,15,.98));box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.declare-panel.is-open{display:block;animation:slideDown .22s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.declare-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:10px}
+.declare-title{font-size:14px;font-weight:900;color:#f1d27a;display:flex;align-items:center;gap:6px}
+.declare-subtitle{font-size:11px;color:#9db0a7;margin-top:3px;line-height:1.4}
+.declare-checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.checklist-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);font-size:11px;color:#b9c8c0}
+.checklist-item.done{border-color:rgba(50,197,138,.40);background:rgba(50,197,138,.09);color:#7eedba}
+.checklist-item.pending{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.06);color:#f1d27a}
+.checklist-icon{font-size:14px}
+.declare-smart-box{margin-bottom:10px}
+.btn-declare-smart{width:100%;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;transition:all .18s;border:1px solid transparent}
+.btn-declare-smart.btn-declare-valid{background:linear-gradient(135deg,#1f8b65,#106042);border-color:rgba(99,214,165,.60);color:#fff;box-shadow:0 0 16px rgba(50,197,138,.35)}
+.btn-declare-smart.btn-declare-valid:hover{transform:translateY(-1px);box-shadow:0 0 22px rgba(50,197,138,.55)}
+.btn-declare-smart.btn-declare-invalid{background:rgba(40,20,24,.75);border-color:rgba(240,107,120,.30);color:#f1a7ad;cursor:not-allowed;opacity:.85}
+.btn-declare-smart.btn-declare-hint{background:rgba(217,182,92,.06);border-color:rgba(217,182,92,.22);color:#dcd6be;cursor:default}
+.declare-btn-sub{font-size:10px;font-weight:500;opacity:.85;margin-top:2px}
+.declare-actions-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px;margin-bottom:10px}
+.btn-group-type{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 6px;min-height:46px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);color:#cfdad4;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
+.btn-group-type:hover:not(:disabled){background:rgba(255,255,255,.08);border-color:rgba(99,214,165,.40)}
+.btn-group-type.is-eligible{background:rgba(50,197,138,.14);border-color:rgba(50,197,138,.50);color:#7eedba;box-shadow:0 0 10px rgba(50,197,138,.25)}
+.btn-group-type:disabled{opacity:.35;cursor:not-allowed}
+.btn-group-sub{font-size:8.5px;color:#8ba096;margin-top:2px;font-weight:500}
+.declare-banner-ready{padding:10px 14px;border-radius:9px;background:linear-gradient(90deg,rgba(217,182,92,.18),rgba(50,197,138,.14));border:1px solid rgba(217,182,92,.45);color:#f1d27a;font-size:12px;font-weight:800;text-align:center;margin-bottom:10px;animation:pulse 2s infinite}
+.declare-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#7e9389}
+.btn-forfeit-danger{background:rgba(240,107,120,.09);border:1px solid rgba(240,107,120,.26);color:#f87171;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
+.btn-forfeit-danger:hover{background:rgba(240,107,120,.20);border-color:rgba(240,107,120,.45);color:#fca5a5}
+.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
 .fanfare{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(4,12,8,.30);animation:fanfareFade 2.8s ease forwards}.fanfare-card{padding:22px 28px;border-radius:18px;border:1px solid rgba(241,210,122,.55);background:linear-gradient(145deg,rgba(22,58,42,.98),rgba(7,24,16,.98));box-shadow:0 20px 70px rgba(0,0,0,.55),0 0 40px rgba(217,182,92,.18);text-align:center;transform:scale(.72);animation:fanfarePop .55s cubic-bezier(.2,1.4,.4,1) forwards}.fanfare-icon{font-size:34px}.fanfare-title{margin-top:6px;font-size:24px;font-weight:900;color:#f1d27a}.fanfare-sub{margin-top:4px;font-size:11px;color:#b9c8c0}@keyframes fanfarePop{to{transform:scale(1)}}@keyframes fanfareFade{0%,75%{opacity:1}100%{opacity:0}}
 
 /* Player Status Strip */
@@ -789,7 +816,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .player-state.turn{color:var(--accent-gold-soft);font-size:11px;text-transform:uppercase;letter-spacing:.35px}
 .player-state.turn:before{content:"●";color:var(--accent-gold-soft);margin-right:5px;animation:pulse 1.4s infinite}
 .player-state.you-turn{color:#f1d27a;background:rgba(217,182,92,.10);border:1px solid rgba(217,182,92,.28);padding:5px 8px;border-radius:7px}
-.player-state.dropped-state{color:var(--accent-rose)}
+.player-state.dropped-state{color:var(--accent-rose);background:rgba(244,63,94,.09);border:1px solid rgba(244,63,94,.22);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:750}
+.player-state.forfeited-state{color:#f87171;background:rgba(248,113,113,.14);border:1px solid rgba(248,113,113,.30);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800}
+.player-row.forfeited{opacity:.50;border-color:rgba(248,113,113,.22)}
 .player-strip-title{display:flex;justify-content:space-between;align-items:center;padding:1px 5px 3px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#789087}
 @media(max-width:600px){.player-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}.player-state{grid-column:1/-1;justify-self:stretch;text-align:left;margin-left:34px}.player-state.you-turn{display:inline-block;width:max-content;margin-left:34px}.player-count{font-size:11px}}
 
@@ -799,8 +828,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   @media(max-width:600px){.demo-controls{display:grid;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
   
 /* ===== COMPACT TABLE LAYOUT ===== */
-.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible}
-.stock-pile-wrapper{position:relative;z-index:8}
+.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible;user-select:none;-webkit-user-select:none;}
+.stock-pile-wrapper{position:relative;z-index:8;user-select:none;-webkit-user-select:none;}
 .stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 36px);margin:0 auto}
 .stock-with-cut #stockDeckBtn{position:relative;z-index:5}
 .cut-card-under-stock{position:absolute;left:15%;top:30px;width:var(--card-h);height:var(--card-w);transform:translateX(-50%) rotate(90deg) scale(.90);transform-origin:center;z-index:1;pointer-events:none}
@@ -822,15 +851,170 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
 .discard-history-panel{display:none!important}
 .discard-history-badge{font-size:8px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:3px 6px;border-radius:999px;white-space:nowrap}
-.maal-details-popover{position:absolute;right:10px;top:54px;z-index:1000;display:none;pointer-events:auto;margin:0;width:min(500px,calc(100vw - 28px));padding:11px 12px;border:1px solid rgba(217,182,92,.22);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.98),rgba(10,20,15,.98));box-shadow:0 14px 36px rgba(0,0,0,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.maal-details-popover.is-open{display:block}
-.status-bar{position:relative;z-index:1000}
+/* Maal Calculation Details Modal */
+.maal-modal-content {
+  max-width: 560px;
+  width: 95vw;
+  background: linear-gradient(145deg, #143728, #0a1c14);
+  border: 1px solid rgba(217, 182, 92, 0.35);
+  border-top: 4px solid #d9b65c;
+  padding: 24px 22px;
+  border-radius: 16px;
+}
+.maal-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.maal-modal-title-group {
+  min-width: 0;
+}
+.maal-modal-subtitle {
+  display: block;
+  font-size: 11px;
+  color: #a7bbb1;
+  margin-top: 3px;
+}
+.maal-modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.maal-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: scale(1.08);
+}
+.maal-total-banner {
+  background: rgba(217, 182, 92, 0.12);
+  border: 1px solid rgba(217, 182, 92, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.maal-total-label {
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #d9b65c;
+}
+.maal-total-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: #f8dfa0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.maal-formula-bar {
+  font-family: monospace;
+  font-size: 11px;
+  color: #f1d27a;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 9px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  text-align: center;
+  border: 1px dashed rgba(217, 182, 92, 0.28);
+  line-height: 1.45;
+  word-break: break-word;
+}
+.maal-cut-info-banner {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-top: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+.maal-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+@media (max-width: 520px) {
+  .maal-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.maal-item-card {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.maal-held-section {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.maal-held-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #a7bbb1;
+}
+.maal-held-list {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  min-height: 24px;
+  align-items: center;
+}
+.maal-held-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: rgba(217, 182, 92, 0.12);
+  border: 1px solid rgba(217, 182, 92, 0.3);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.maal-rules-guide {
+  margin-top: 12px;
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+.maal-rules-guide ul {
+  margin: 5px 0 0 16px;
+  padding: 0;
+}
+.maal-rules-guide li {
+  margin-bottom: 3px;
+}
+.status-bar{position:relative;z-index:100}
 #maalSummary{cursor:pointer;position:relative}
-#maalSummary:hover{filter:brightness(1.08)}
+#maalSummary:hover{filter:brightness(1.15);transform:translateY(-1px);transition:all 0.15s;}
 #maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
-.maal-details-popover .maal-details-head{margin-bottom:8px}
-.maal-details-popover .maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:600px){.maal-details-popover{right:6px;top:52px}.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
+@media(max-width:600px){.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
 
 </style>
 </head>
@@ -895,26 +1079,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="playerRows"></div>
   </div>
 
-  <section class="maal-details-popover" id="maalDetailsPanel" aria-label="Maal details">
-    <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
-    <div class="maal-detail-grid">
-      <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span><span class="maal-detail-points" id="maalCutPts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Joker</span><span class="maal-detail-value" id="maalTiplu">—</span><span class="maal-detail-points" id="maalTipluPts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Paplu</span><span class="maal-detail-value" id="maalPaplu">—</span><span class="maal-detail-points" id="maalPapluPts">See P/N pool</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Tuplu</span><span class="maal-detail-value" id="maalNichlu">—</span><span class="maal-detail-points" id="maalNichluPts">See P/N pool</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Poochie</span><span class="maal-detail-value" id="maalPoochie">0</span><span class="maal-detail-points" id="maalPoochiePts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Marriages</span><span class="maal-detail-value" id="maalMarriages">0</span><span class="maal-detail-points" id="maalMarriagePts">0 pts</span></div>
-    </div>
-    <div class="maal-pool-note" id="maalPoolNote">Paplu + Tuplu use a shared tiered point pool after marriages are counted.</div>
-  </section>
-
   <!-- Center Table Felt -->
   <div class="center-board">
     <div class="pile-wrapper stock-pile-wrapper">
-      <div class="pile-title">Stock</div><div class="pile-action-hint">Drag onto your board</div>
+      <div class="pile-title">Stock</div><div class="pile-action-hint">Double-click to draw • or drag onto board</div>
       <div class="stock-with-cut">
         <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
-        <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true" ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
+        <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
+             onclick="onStockClick(event)"
+             ondblclick="onStockDoubleClick(event)"
+             ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
           <span class="deck-icon">🂠</span>
           <span id="deckCountText" class="deck-count">0</span>
         </div>
@@ -922,10 +1096,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="pile-wrapper discard-pile-wrapper">
       <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
-      <div class="pile-action-hint">Drag here to discard • drag old cards aside to peek</div>
+      <div class="pile-action-hint">Double-click to pick up • Drag card here to discard</div>
       <div class="discard-stack-area">
         <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
         <div id="discardContainer" class="pile-drop-source" draggable="true"
+             onclick="onDiscardContainerClick(event)"
+             ondblclick="onDiscardDoubleClick(event)"
              ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
              ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
              ondrop="onDiscardPileDrop(event)"></div>
@@ -940,17 +1116,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span class="hand-heading-title">Your Hand</span>
         <span class="hand-heading-count"><span id="handCount">21</span> cards</span>
       </div>
-      <span class="hand-heading-hint">Drag Stock / Discard here • Drag any card to Discard</span>
+      <span class="hand-heading-hint">Drag Stock / Discard here • Drag card to Discard pile to discard</span>
     </div>
 
     <!-- Stands Toolbar -->
     <div class="stands-toolbar">
       <div class="toolbar-left">
         <span class="hand-toolbar-label">Arrange</span>
-        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move all Jokers, Paplu, Tuplu & Poochies to the start">
+        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move Poochies to the start">
           <span>🃏</span> Jokers to Start
         </button>
-        <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank">
+        <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank (Poochies to start)">
           <span>↕</span> Sort Suit/Rank
         </button>
       </div>
@@ -980,8 +1156,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div class="action-label">Your Move</div>
     </div>
     <div class="actions-grid">
-      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()"><span><b>Discard</b><small class="action-sub">selected card</small></span></button>
       <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Scoot</b><small class="action-sub">before drawing</small></span></button>
+      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()" style="display:none;"><span><b>Discard Card</b><small class="action-sub">selected card</small></span></button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
@@ -1003,7 +1179,83 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   </div>
 </div>
 
+<!-- Maal Points Calculation Details Modal -->
+<div id="maalModal" class="modal" onclick="if(event.target===this) closeMaalModal()">
+  <div class="modal-content maal-modal-content">
+    <div class="maal-modal-header">
+      <div class="maal-modal-title-group">
+        <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+          <span>🏆</span> Maal Points Breakdown
+        </h2>
+        <span class="maal-modal-subtitle">Comprehensive calculation for your hand</span>
+      </div>
+      <button class="maal-modal-close" onclick="closeMaalModal()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Total Score Highlight -->
+    <div id="maalModalTotalBanner" class="maal-total-banner">
+      <span class="maal-total-label">Total Maal Points</span>
+      <span id="maalModalTotalPoints" class="maal-total-value">0 pts</span>
+    </div>
+
+    <!-- Cut Card Roles Banner -->
+    <div id="maalCutInfoBanner" class="maal-cut-info-banner"></div>
+
+    <!-- Formula Summary -->
+    <div id="maalFormulaBar" class="maal-formula-bar"></div>
+
+    <!-- Table of 4 Categories -->
+    <div id="maalModalCardsBreakdown" class="maal-modal-grid"></div>
+
+    <!-- Contributing Cards Held in Hand -->
+    <div class="maal-held-section">
+      <div class="maal-held-title">Maal Cards in Your Hand (<span id="maalHeldCount">0</span>)</div>
+      <div id="maalHeldCardsList" class="maal-held-list"></div>
+    </div>
+
+    <!-- Rules Reference -->
+    <div class="maal-rules-guide">
+      <strong>Scoring Rules:</strong>
+      <ul>
+        <li><strong>Marriage (50 pts):</strong> 1 Tuplu + 1 Cut Joker + 1 Paplu together in the cut card's suit.</li>
+        <li><strong>Cut Joker (20 pts each):</strong> Joker card matching both rank and suit of the cut card.</li>
+        <li><strong>Poochie (Tiered):</strong> Printed joker — 1 = 20 pts, 2 = 50 pts, 3 = 70 pts (+20 each).</li>
+        <li><strong>Paplu / Tuplu (Tiered pool):</strong> Same suit as cut card (+1 rank and -1 rank) remaining after marriages — 1 = 10 pts, 2 = 30 pts, 3 = 50 pts.</li>
+        <li><strong>Settlement &amp; Drops:</strong> Every loser—including players who drop/scoot (30 pts drop penalty)—must pay the winner's total Maal points.</li>
+      </ul>
+    </div>
+
+    <div style="margin-top:18px; display:flex; justify-content:center;">
+      <button class="btn-action btn-declare" style="min-height:40px; padding:8px 32px;" onclick="closeMaalModal()">
+        <span><b>Close</b></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Safe In-App Notification Toast for sandboxed environments -->
+<div id="gameToast" style="display:none; position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:999999; max-width:92vw; width:440px; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:16px 20px; border-radius:12px; box-shadow:0 12px 35px rgba(0,0,0,0.75); font-family:inherit; font-size:13.5px; line-height:1.5; text-align:center;">
+  <div id="gameToastMessage" style="white-space:pre-wrap; margin-bottom:12px;"></div>
+  <button onclick="document.getElementById('gameToast').style.display='none'" style="background:#38bdf8; color:#090e17; font-weight:700; border:none; padding:7px 20px; border-radius:6px; cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Dismiss</button>
+</div>
+
 <script>
+  window.alert = function(msg) {
+    const toast = document.getElementById('gameToast');
+    const toastMsg = document.getElementById('gameToastMessage');
+    if (toast && toastMsg) {
+      toastMsg.innerText = String(msg);
+      toast.style.display = 'block';
+      setTimeout(() => {
+        if (toast.style.display === 'block') {
+          toast.style.display = 'none';
+        }
+      }, 7000);
+    } else {
+      console.warn('Game Alert:', msg);
+    }
+  };
+
   let ws;
   let roomState = null;
   let myHand = [];
@@ -1212,27 +1464,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     renderAll(null);
   }
 
-  // --- Move All Jokers to Start ---
+  // --- Move Only Poochies to Start ---
   function moveJokersToFront() {
-    const r = roomState?.roles;
-
-    function getJokerRank(c) {
-      if (c.isPoochie) return 4;
-      if (r) {
-        if (c.suit === r.tipluSuit && c.rank === r.tipluRank) return 1; // Joker
-        if (c.suit === r.tipluSuit && c.rank === r.papluRank) return 2; // Paplu
-        if (c.suit === r.tipluSuit && c.rank === r.nichluRank) return 3; // Tuplu
-        if (c.rank === r.tipluRank) return 5; // Ordinary Joker
-      }
-      return 99;
-    }
-
     const allCards = userStands.flat();
-    const jokers = allCards.filter(c => getJokerRank(c) < 99);
-    const nonJokers = allCards.filter(c => getJokerRank(c) === 99);
+    const poochies = allCards.filter(c => c.isPoochie || c.suit === '★');
+    const nonPoochies = allCards.filter(c => !c.isPoochie && c.suit !== '★');
 
-    jokers.sort((a, b) => getJokerRank(a) - getJokerRank(b));
-    const reordered = [...jokers, ...nonJokers];
+    const reordered = [...poochies, ...nonPoochies];
 
     // Re-populate stands preserving stand card counts
     let offset = 0;
@@ -1400,44 +1638,87 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return '';
   }
 
+  function getHandCount() {
+    if (Array.isArray(userStands) && userStands.length > 0) {
+      return userStands.reduce((sum, s) => sum + (Array.isArray(s) ? s.length : 0), 0);
+    }
+    return Array.isArray(myHand) ? myHand.length : 0;
+  }
+
+  function isCurrentPlayerMe() {
+    if (!roomState) return false;
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myP = roomState.players?.find(p => p.id === myId);
+    if (myP?.hasDropped || myP?.hasForfeited) return false;
+    return roomState.turnPlayerId === myId;
+  }
+
+  function canPlayerDraw() {
+    if (!isCurrentPlayerMe() || !roomState || roomState.turnStage !== 'DRAW') return false;
+    if (getHandCount() >= 22) return false;
+    return true;
+  }
+
   function renderPlayerStrip() {
     const rows = document.getElementById('playerRows');
     const summary = document.getElementById('playerTurnSummary');
     if (!rows || !roomState || !roomState.players) return;
 
-    const me = roomState.players.find(p => p.id === getMyPlayerId());
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const me = roomState.players.find(p => p.id === myId);
     const currentId = roomState.turnPlayerId;
     const playing = roomState.status !== 'LOBBY';
+    const isMyTurn = isCurrentPlayerMe();
+    const myCount = getHandCount();
+    const myForfeited = Boolean(me && (me.hasForfeited || me.dropType === 'FORFEIT'));
+    const myDropped = Boolean(me && me.hasDropped);
+
     if (summary) {
-      summary.innerText = playing
-        ? (roomState.turnPlayerName ? 'Turn: ' + roomState.turnPlayerName : 'In progress')
-        : roomState.players.length + ' seated';
+      if (!playing) {
+        summary.innerText = roomState.players.length + ' seated';
+      } else if (myForfeited) {
+        summary.innerText = `You forfeited (100 pts) • Turn: ${roomState.turnPlayerName || 'Next player'}`;
+      } else if (myDropped) {
+        summary.innerText = `You scooted / dropped • Turn: ${roomState.turnPlayerName || 'Next player'}`;
+      } else if (isMyTurn) {
+        summary.innerText = roomState.turnStage === 'DRAW' && myCount < 22
+          ? `Your turn: Draw card (${myCount}/21)`
+          : `Your turn: Discard card (${myCount}/22)`;
+      } else {
+        const lastActionText = roomState.lastAction ? ` • ${roomState.lastAction}` : '';
+        summary.innerText = roomState.turnPlayerName ? `Turn: ${roomState.turnPlayerName}${lastActionText}` : 'In progress';
+      }
     }
 
     rows.innerHTML = roomState.players.map(p => {
-      const isMe = p.id === getMyPlayerId();
+      const isMe = p.id === myId;
       const isCurrent = playing && p.id === currentId;
-      const dropped = p.hasDropped;
+      const forfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
+      const dropped = Boolean(p.hasDropped);
       let stateText = 'Waiting';
       let stateClass = 'waiting';
-      if (dropped) {
-        stateText = 'Dropped';
+      if (forfeited) {
+        stateText = 'Forfeited (100 pts)';
+        stateClass = 'forfeited-state';
+      } else if (dropped) {
+        stateText = p.dropType === 'SCOOT' ? 'Scooted (30 pts)' : 'Dropped (30 pts)';
         stateClass = 'dropped-state';
       } else if (isCurrent && isMe) {
-        stateText = 'YOUR TURN';
+        stateText = roomState.turnStage === 'DRAW' && myCount < 22 ? 'YOUR TURN (DRAW)' : 'YOUR TURN (DISCARD)';
         stateClass = 'you-turn';
       } else if (isCurrent) {
-        stateText = 'Their turn';
+        stateText = roomState.turnStage === 'DRAW' ? 'Their Turn (Draw)' : 'Their Turn (Discard)';
         stateClass = 'turn';
       }
+      const count = isMe ? myCount : (p.cardCount ?? 0);
       return `
-        <div class="player-row ${isMe ? 'me' : ''} ${isCurrent ? 'current' : ''} ${dropped ? 'dropped' : ''}">
+        <div class="player-row ${isMe ? 'me' : ''} ${isCurrent ? 'current' : ''} ${dropped ? 'dropped' : ''} ${forfeited ? 'forfeited' : ''}">
           <div class="player-name">
             <span class="player-avatar">🧑</span>
             <span>${p.name}</span>
             ${isMe ? '<span class="player-you">You</span>' : ''}
           </div>
-          <div class="player-count">${p.cardCount ?? 0} cards</div>
+          <div class="player-count">${count} cards</div>
           <div class="player-state ${stateClass}">${stateText}</div>
         </div>`;
     }).join('');
@@ -1449,7 +1730,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('deckCountText').innerText = roomState ? roomState.deckCount : 0;
     
     // Total hand count
-    const totalCount = userStands.reduce((sum, s) => sum + s.length, 0);
+    const totalCount = getHandCount();
     document.getElementById('handCount').innerText = totalCount;
 
     // Render Cut Joker
@@ -1464,83 +1745,42 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     // Render Multiple Stands
     renderStands();
 
-  function calculateLocalMaal() {
-    const cut=roomState?.cutCard, roles=roomState?.roles;
-    if (!cut || !roles) return null;
-    let poochies=0,tiplus=0,paplus=0,nichlus=0;
-    for (const card of myHand) {
-      if (card.isPoochie) poochies++;
-      else if (card.suit===roles.tipluSuit && card.rank===roles.tipluRank) tiplus++;
-      else if (card.suit===roles.tipluSuit && card.rank===roles.papluRank) paplus++;
-      else if (card.suit===roles.tipluSuit && card.rank===roles.nichluRank) nichlus++;
-    }
-    const marriages=Math.min(nichlus,tiplus,paplus);
-    const remTiplus=tiplus-marriages;
-    const remPapluNichlu=(paplus-marriages)+(nichlus-marriages);
-    const tier=(count,a,b,c)=>count<=0?0:count===1?a:count===2?b:c+(count-3)*a;
-    const marriagePts=marriages*50, tipluPts=remTiplus*20;
-    const poochiePts=tier(poochies,20,50,70);
-    const papluNichluPts=tier(remPapluNichlu,10,30,50);
-    return {total:marriagePts+tipluPts+poochiePts+papluNichluPts,details:{
-      marriages,marriagePts,tiplus:remTiplus,tipluPts,poochies,poochiePts,
-      papluNichlu:remPapluNichlu,papluNichluPts
-    }};
-  }
-
-  function toggleMaalDetails(force) {
-    const panel=document.getElementById('maalDetailsPanel');
-    if(!panel) return;
-    const open = typeof force==='boolean' ? force : !panel.classList.contains('is-open');
-    panel.classList.toggle('is-open',open);
-    panel.style.display = open ? 'block' : 'none';
-    document.getElementById('maalSummary')?.setAttribute('aria-expanded', String(open));
-  }
-
-  function renderMaalDetails(maalData) {
-    const roles=roomState?.roles||{}, cut=roomState?.cutCard;
-    const data=maalData?.details ? maalData : calculateLocalMaal();
-    const d=data?.details||{};
-    const fmt=card=>card?(card.rank+card.suit):'—';
-    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.innerText=value;};
-    set('maalCutCard',fmt(cut));
-    set('maalCutPts','0 pts • sets joker roles');
-    set('maalTiplu',roles.tipluRank&&roles.tipluSuit?(roles.tipluRank+roles.tipluSuit):'—');
-    set('maalTipluPts',`${d.tipluPts||0} pts`);
-    set('maalPaplu',roles.papluRank&&roles.tipluSuit?(roles.papluRank+roles.tipluSuit):'—');
-    set('maalPapluPts',d.papluNichlu ? `${d.papluNichlu} in P/N pool` : '0 in P/N pool');
-    set('maalNichlu',roles.nichluRank&&roles.tipluSuit?(roles.nichluRank+roles.tipluSuit):'—');
-    set('maalNichluPts',d.papluNichlu ? `${d.papluNichluPts||0} pts P/N pool` : '0 pts');
-    set('maalPoochie',`${d.poochies||0}`);
-    set('maalPoochiePts',`${d.poochiePts||0} pts`);
-    set('maalMarriages',`${d.marriages||0}`);
-    set('maalMarriagePts',`${d.marriagePts||0} pts`);
-    set('maalPoolNote',d.papluNichlu
-      ? `Paplu + Tuplu: ${d.papluNichlu} remaining card(s) = ${d.papluNichluPts||0} pts. This is a shared tiered pool, so it is not double-counted between the two cards.`
-      : 'Paplu + Tuplu have no remaining cards after marriages.');
-    set('maalMiniTotal',data?(data.total+' pts'):'Pending');
-  }
-
     // Maal Header Badge
-    if (maalData) {
-      document.getElementById('maalPtsText').innerText = `Maal: ${maalData.total} pts`;
-      const mini = document.getElementById('maalMiniTotal');
-      if (mini) mini.innerText = `${maalData.total} pts`;
+    const data = maalData?.details ? maalData : calculateLocalMaal();
+    const total = data ? data.total : 0;
+    const maalText = document.getElementById('maalPtsText');
+    if (maalText) {
+      maalText.innerText = `Maal: ${total} pts`;
     }
+    const mini = document.getElementById('maalMiniTotal');
+    if (mini) mini.innerText = `${total} pts`;
 
     // Turn indicator & button state enforcement
-    const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myPlayer = roomState?.players?.find(p => p.id === myId);
+    const myForfeited = Boolean(myPlayer && (myPlayer.hasForfeited || myPlayer.dropType === 'FORFEIT'));
+    const myDropped = Boolean(myPlayer && myPlayer.hasDropped);
+    const isMyTurn = isCurrentPlayerMe();
+    const myCount = totalCount;
+    const canDraw = canPlayerDraw();
+    const canDiscard = isMyTurn && (roomState.turnStage === 'DISCARD' || myCount >= 22);
 
     // Contextual turn guidance
     const guide = document.getElementById('stageGuideText');
     if (guide) {
       if (!roomState || roomState.status === 'LOBBY') {
         guide.innerHTML = '<strong>Table ready:</strong> start the game when everyone is seated.';
-      } else if (isMyTurn && roomState.turnStage === 'DRAW') {
-        guide.innerHTML = '<strong>Your turn:</strong> drag the Stock or Discard onto your board.';
-      } else if (isMyTurn && roomState.turnStage === 'DISCARD') {
-        guide.innerHTML = '<strong>Your turn:</strong> select a card, then Discard or Show / Declare.';
+      } else if (myForfeited) {
+        guide.innerHTML = `<strong>You forfeited (100 pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
+      } else if (myDropped) {
+        guide.innerHTML = `<strong>You scooted / dropped:</strong> Hand folded (30 pts penalty). Watching ${roomState.turnPlayerName || 'other players'} finish.`;
+      } else if (isMyTurn && canDraw) {
+        guide.innerHTML = '<strong>Your turn:</strong> Double-click or drag Stock/Discard to draw your 22nd card.';
+      } else if (isMyTurn && canDiscard) {
+        guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Drag a card to Discard pile (or tap Discard Card), or Show / Declare.`;
       } else {
-        guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
+        const actionInfo = roomState.lastAction ? `[${roomState.lastAction}] ` : '';
+        guide.innerHTML = `<strong>Waiting:</strong> ${actionInfo}Watch the table while ${roomState.turnPlayerName || 'another player'} plays.`;
       }
     }
     const notice = document.getElementById('turnNotice');
@@ -1550,49 +1790,439 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const count = roomState ? roomState.players.length : 1;
       notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} seated)</button>`;
       dot.classList.remove('active');
+    } else if (myForfeited) {
+      dot.classList.remove('active');
+      notice.innerText = `Forfeited (100 pts) • Turn: ${roomState.turnPlayerName}`;
+    } else if (myDropped) {
+      dot.classList.remove('active');
+      notice.innerText = `Scooted (30 pts) • Turn: ${roomState.turnPlayerName}`;
+    } else if (isMyTurn) {
+      dot.classList.add('active');
+      notice.innerText = canDraw
+        ? `Your Turn: Draw a card (${myCount}/21)`
+        : `Your Turn: Discard a card (${myCount}/22)`;
     } else {
-      if (isMyTurn) {
-        dot.classList.add('active');
-        notice.innerText = roomState.turnStage === 'DRAW' ? 'Your Turn: Draw a card' : 'Your Turn: Discard a card';
-      } else {
-        dot.classList.remove('active');
-        notice.innerText = `Waiting for ${roomState.turnPlayerName}...`;
-      }
+      dot.classList.remove('active');
+      const actionPrefix = roomState.lastAction ? `${roomState.lastAction} • ` : '';
+      notice.innerText = `${actionPrefix}Turn: ${roomState.turnPlayerName}`;
     }
 
-    const canDraw = isMyTurn && roomState.turnStage === 'DRAW';
-    const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD';
-
-    document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw);
-    document.getElementById('btnDiscard').classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
-    document.getElementById('btnDiscard').style.display = declarationMode ? 'none' : '';
-    document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
-    const declareBtn=document.getElementById('btnDeclare');
-    if(declareBtn){
-      declareBtn.querySelector('b').innerText=declarationMode?'Submit Declaration':'Show / Declare';
-      const sub=declareBtn.querySelector('.action-sub'); if(sub)sub.innerText=declarationMode?'21 cards grouped + 1 discard':'opens grouping mode';
+    document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw || myDropped || myForfeited);
+    const btnDiscard = document.getElementById('btnDiscard');
+    if (btnDiscard) {
+      btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId || myDropped || myForfeited);
+      btnDiscard.style.display = canDiscard ? 'inline-flex' : 'none';
     }
-    const dp=document.getElementById('declarationPanel');
-    if(dp){
-      dp.classList.toggle('is-open',declarationMode);
-      if(declarationMode){
-        const grouped=declarationGroups.flatMap(g=>g.cards).length;
-        const pure=declarationGroups.filter(g=>g.type==='PURE_SEQUENCE').length;
-        const selected=declarationSelectedIds.size;
-        dp.innerHTML=`<div class="declare-panel-head"><div><div class="declare-title">Declare: group your 21-card show</div><div class="declare-subtitle">Tap cards to highlight them. Group each selection as a Pure Sequence, Sequence, or Set. The last ungrouped card becomes your final discard.</div></div><button class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button></div>
-          <div class="declare-stats"><span class="declare-stat"><strong>${grouped}</strong>/21 grouped</span><span class="declare-stat"><strong>${pure}</strong> Pure Sequences</span><span class="declare-stat"><strong>${selected}</strong> selected</span><span class="declare-stat"><strong>${declarationGroups.flatMap(g=>g.cards).length===21?'1':'0'}</strong> finish card</span></div>
-          <div class="declare-buttons"><button class="tool-btn" onclick="groupSelectedCards('PURE_SEQUENCE')" ${selected<3?'disabled':''}>Pure Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SEQUENCE')" ${selected<3?'disabled':''}>Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SET')" ${selected<3?'disabled':''}>Set</button><button class="tool-btn tool-btn-highlight" onclick="forfeitDeclaration()">Forfeit / Give Up</button></div>
-          <div class="declare-discard"><span>Group 21 cards. The one remaining card is automatically your final discard.</span><strong>Auto</strong></div>`;
+    const declareBtn = document.getElementById('btnDeclare');
+    if (declareBtn) {
+      declareBtn.classList.toggle('btn-disabled', !isMyTurn || myDropped || myForfeited);
+      declareBtn.querySelector('b').innerText = declarationMode ? 'Submit Declaration' : 'Show / Declare';
+      const sub = declareBtn.querySelector('.action-sub');
+      if (sub) {
+        sub.innerText = declarationMode
+          ? 'submit your 21-card show'
+          : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare'));
       }
     }
-    document.getElementById('stockDeckBtn').classList.toggle('drag-ready', canDraw);
-    document.getElementById('discardContainer').classList.toggle('drag-ready', canDraw);
-    document.getElementById('discardContainer').classList.toggle('discard-drop-ready', canDiscard);
+    const dp = document.getElementById('declarationPanel');
+    if (dp) {
+      dp.classList.toggle('is-open', declarationMode);
+      if (declarationMode) {
+        const groupedCards = declarationGroups.flatMap(g => g.cards);
+        const grouped = groupedCards.length;
+        const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+        const selectedCards = myHand.filter(c => declarationSelectedIds.has(c.id));
+        const selected = selectedCards.length;
+        const groupedIds = new Set(groupedCards.map(c => c.id));
+        const remaining = myHand.filter(c => !groupedIds.has(c.id));
+
+        const isPureValid = declarationPure(selectedCards);
+        const isSeqValid = declarationSequence(selectedCards);
+        const isSetValid = declarationSet(selectedCards);
+        const detected = detectBestGroupType(selectedCards);
+
+        const isShowReady = grouped === 21 && pure >= 3 && remaining.length === 1;
+
+        let smartButtonHtml = '';
+        if (detected) {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-valid" onclick="autoGroupSelected()">
+              <span>${detected.icon} <b>Form ${detected.verb}</b> (${selected} cards)</span>
+              <small class="declare-btn-sub">${detected.badge} • Click to lock this group</small>
+            </button>`;
+        } else if (selected >= 3) {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-invalid" disabled>
+              <span>⚠️ <b>Not a Valid Run or Set</b> (${selected} cards selected)</span>
+              <small class="declare-btn-sub">Cards must be consecutive in same suit, or 3-4 cards of same rank</small>
+            </button>`;
+        } else if (selected === 0) {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-hint" disabled>
+              <span>👆 <b>Tap 3+ cards in "Cards to Group" below</b></span>
+              <small class="declare-btn-sub">Cards highlight in gold as you select them</small>
+            </button>`;
+        } else {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-hint" disabled>
+              <span>👆 <b>Select at least ${3 - selected} more card${3 - selected > 1 ? 's' : ''}</b> (${selected}/3 min)</span>
+              <small class="declare-btn-sub">Sequences and sets require a minimum of 3 cards</small>
+            </button>`;
+        }
+
+        dp.innerHTML = `
+          <div class="declare-panel-head">
+            <div>
+              <div class="declare-title">
+                <span>🏆</span> Declare 21-Card Show
+              </div>
+              <div class="declare-subtitle">
+                Group 21 cards into sequences &amp; sets. The 1 remaining card automatically serves as your final discard.
+              </div>
+            </div>
+            <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
+          </div>
+
+          <div class="declare-checklist">
+            <div class="checklist-item ${pure >= 3 ? 'done' : 'pending'}">
+              <span class="checklist-icon">${pure >= 3 ? '✅' : '⏳'}</span>
+              <div>
+                <div><strong>${pure} / 3</strong> Pure Sequences</div>
+                <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 required'}</div>
+              </div>
+            </div>
+            <div class="checklist-item ${grouped === 21 ? 'done' : 'pending'}">
+              <span class="checklist-icon">${grouped === 21 ? '✅' : '⏳'}</span>
+              <div>
+                <div><strong>${grouped} / 21</strong> Cards Grouped</div>
+                <div style="font-size:9px; opacity:0.85;">${grouped === 21 ? 'Complete (21 cards)' : `${21 - grouped} left to group`}</div>
+              </div>
+            </div>
+            <div class="checklist-item ${remaining.length === 1 ? 'done' : 'pending'}">
+              <span class="checklist-icon">${remaining.length === 1 ? '🎴' : '⏳'}</span>
+              <div>
+                <div><strong>${remaining.length === 1 ? (remaining[0].rank + remaining[0].suit) : `${remaining.length} cards`}</strong> Finish Discard</div>
+                <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected discard' : '1 card must remain'}</div>
+              </div>
+            </div>
+          </div>
+
+          ${isShowReady ? `
+            <div class="declare-banner-ready">
+              ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
+            </div>` : ''}
+
+          <div class="declare-smart-box">
+            ${smartButtonHtml}
+          </div>
+
+          <div class="declare-actions-row">
+            <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Sequence: Consecutive natural cards in the same suit with NO jokers">
+              <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
+              <span class="btn-group-sub">No Jokers • Min 3</span>
+            </button>
+            <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Sequence: Consecutive cards in the same suit, jokers allowed">
+              <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
+              <span class="btn-group-sub">Wilds Allowed • Min 3</span>
+            </button>
+            <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of the same rank in different suits">
+              <span>👑 Set ${isSetValid ? '✓' : ''}</span>
+              <span class="btn-group-sub">Same Rank • 3-4 Cards</span>
+            </button>
+            <button type="button" class="btn-group-type" onclick="autoGroupFromStands()" title="Automatically convert any valid sequences or sets from your racks">
+              <span>⚡ From Stands</span>
+              <span class="btn-group-sub">Auto-fill from racks</span>
+            </button>
+          </div>
+
+          <div class="declare-footer">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span>Wrong arrangement?</span>
+              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+            </div>
+            <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
+              ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
+            </button>
+          </div>`;
+      }
+    }
+    const stockBtn = document.getElementById('stockDeckBtn');
+    if (stockBtn) {
+      stockBtn.classList.toggle('drag-ready', canDraw);
+      stockBtn.setAttribute('draggable', canDraw ? 'true' : 'false');
+    }
+    const discardBtn = document.getElementById('discardContainer');
+    if (discardBtn) {
+      discardBtn.classList.toggle('drag-ready', canDraw);
+      discardBtn.classList.toggle('discard-drop-ready', canDiscard);
+      discardBtn.setAttribute('draggable', canDraw ? 'true' : 'false');
+    }
     const guideBox=document.getElementById('stageGuide');
     if(guideBox) guideBox.classList.toggle('pile-mode',canDraw);
 
     updateReorderControls();
   }
+
+  function calculateLocalMaal() {
+    const cut = roomState?.cutCard, roles = roomState?.roles;
+    if (!cut || !roles) return null;
+    let poochies = 0, tiplus = 0, paplus = 0, nichlus = 0;
+    for (const card of myHand) {
+      if (card.isPoochie || card.suit === '★') poochies++;
+      else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) tiplus++;
+      else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) paplus++;
+      else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) nichlus++;
+    }
+    const marriages = Math.min(nichlus, tiplus, paplus);
+    const remTiplus = tiplus - marriages;
+    const remPapluNichlu = (paplus - marriages) + (nichlus - marriages);
+    const tier = (count, a, b, c) => count <= 0 ? 0 : count === 1 ? a : count === 2 ? b : c + (count - 3) * a;
+    const marriagePts = marriages * 50;
+    const tipluPts = remTiplus * 20;
+    const poochiePts = tier(poochies, 20, 50, 70);
+    const papluNichluPts = tier(remPapluNichlu, 10, 30, 50);
+    return {
+      total: marriagePts + tipluPts + poochiePts + papluNichluPts,
+      details: {
+        marriages,
+        marriagePts,
+        tiplus: remTiplus,
+        tipluPts,
+        poochies,
+        poochiePts,
+        papluNichlu: remPapluNichlu,
+        papluNichluPts
+      }
+    };
+  }
+
+  function openMaalModal() {
+    const roles = roomState?.roles || {};
+    const cut = roomState?.cutCard;
+    const data = calculateLocalMaal();
+    const d = data?.details || {
+      marriages: 0,
+      marriagePts: 0,
+      tiplus: 0,
+      tipluPts: 0,
+      poochies: 0,
+      poochiePts: 0,
+      papluNichlu: 0,
+      papluNichluPts: 0
+    };
+    const total = data ? data.total : 0;
+
+    const totalEl = document.getElementById('maalModalTotalPoints');
+    if (totalEl) totalEl.innerText = `${total} pts`;
+
+    // Formula summary
+    const formulaEl = document.getElementById('maalFormulaBar');
+    if (formulaEl) {
+      formulaEl.innerText = `${d.marriagePts || 0} pts (Marriage) + ${d.tipluPts || 0} pts (Cut Joker) + ${d.poochiePts || 0} pts (Poochie) + ${d.papluNichluPts || 0} pts (Paplu/Tuplu) = ${total} pts Total`;
+    }
+
+    const cutName = cut ? (cut.isPoochie ? '★ PJ (Printed Joker)' : `${cut.rank}${cut.suit}`) : 'Not cut yet';
+    const tipluName = roles.tipluRank ? `${roles.tipluRank}${roles.tipluSuit}` : '—';
+    const papluName = roles.papluRank ? `${roles.papluRank}${roles.tipluSuit}` : '—';
+    const tupluName = roles.nichluRank ? `${roles.nichluRank}${roles.tipluSuit}` : '—';
+
+    // Cut Card role info banner
+    const cutBanner = document.getElementById('maalCutInfoBanner');
+    if (cutBanner) {
+      cutBanner.innerHTML = `
+        <span style="color:#f1d27a; font-weight:800;">Cut Card: ${cutName}</span> &bull; 
+        <span>Cut Joker: <strong>${tipluName}</strong></span> &bull; 
+        <span>Paplu: <strong>${papluName}</strong></span> &bull; 
+        <span>Tuplu: <strong>${tupluName}</strong></span> &bull; 
+        <span>Poochie: <strong>★ PJ</strong></span>
+      `;
+    }
+
+    // Grid breakdown
+    const grid = document.getElementById('maalModalCardsBreakdown');
+    if (grid) {
+      grid.innerHTML = `
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Marriages (50 pts each)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.marriagePts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Full sets of Tuplu (${tupluName}) + Cut Joker (${tipluName}) + Paplu (${papluName})
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.marriages || 0} set(s) held = ${d.marriagePts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Cut Joker (20 pts each)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tipluPts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Matches suit &amp; rank of cut card: <strong>${tipluName}</strong> (remaining after marriages)
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.tiplus || 0} card(s) held = ${d.tipluPts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Poochie (Tiered: 20/50/70)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.poochiePts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Printed Jokers (★ PJ): 1st = 20 pts, 2nd = 50 pts, 3rd = 70 pts (+20 each)
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.poochies || 0} card(s) held = ${d.poochiePts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Paplu &amp; Tuplu Pool</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.papluNichluPts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Remaining ${papluName} and ${tupluName} after marriages: 1st=10, 2nd=30, 3rd=50 pts
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.papluNichlu || 0} card(s) held = ${d.papluNichluPts || 0} pts
+          </div>
+        </div>
+      `;
+    }
+
+    // Find all cards in hand that earned Maal
+    const contributing = [];
+    if (cut && roles.tipluRank) {
+      for (const card of myHand) {
+        if (card.isPoochie || card.suit === '★') {
+          contributing.push({ card, role: 'Poochie' });
+        } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
+          contributing.push({ card, role: 'Cut Joker' });
+        } else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) {
+          contributing.push({ card, role: 'Paplu' });
+        } else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) {
+          contributing.push({ card, role: 'Tuplu' });
+        }
+      }
+    }
+
+    const heldCountEl = document.getElementById('maalHeldCount');
+    if (heldCountEl) heldCountEl.innerText = String(contributing.length);
+
+    const heldListEl = document.getElementById('maalHeldCardsList');
+    if (heldListEl) {
+      if (contributing.length === 0) {
+        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Maal cards in your hand currently. Draw Poochies or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Maal!</span>';
+      } else {
+        heldListEl.innerHTML = contributing.map(({card, role}) => {
+          const isRed = card.suit === '♥' || card.suit === '♦';
+          const color = card.isPoochie ? '#fbbf24' : (isRed ? '#f87171' : '#f8fafc');
+          const label = card.isPoochie ? '★ PJ' : `${card.rank}${card.suit}`;
+          return `
+            <span class="maal-held-chip">
+              <span style="color:${color}; font-size:13px;">${label}</span>
+              <span style="font-size:10px; color:#94a3b8; font-weight:normal;">(${role})</span>
+            </span>
+          `;
+        }).join('');
+      }
+    }
+
+    const modal = document.getElementById('maalModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeMaalModal() {
+    const modal = document.getElementById('maalModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function toggleMaalDetails(force) {
+    const modal = document.getElementById('maalModal');
+    if (typeof force === 'boolean') {
+      if (force) openMaalModal();
+      else closeMaalModal();
+    } else {
+      if (modal && modal.style.display === 'flex') closeMaalModal();
+      else openMaalModal();
+    }
+  }
+
+  function renderMaalDetails(maalData) {
+    const data = maalData?.details ? maalData : calculateLocalMaal();
+    const total = data ? data.total : 0;
+    const maalText = document.getElementById('maalPtsText');
+    if (maalText) {
+      maalText.innerText = `Maal: ${total} pts`;
+    }
+    const mini = document.getElementById('maalMiniTotal');
+    if (mini) mini.innerText = `${total} pts`;
+  }
+
+  let lastDrawActionTime = 0;
+  let lastStockClickTime = 0;
+  let lastDiscardClickTime = 0;
+
+  function onStockClick(e) {
+    if (!canPlayerDraw()) return;
+    const now = Date.now();
+    if (now - lastStockClickTime < 380) {
+      onStockDoubleClick(e);
+      lastStockClickTime = 0;
+    } else {
+      lastStockClickTime = now;
+    }
+  }
+
+  function onStockDoubleClick(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastDrawActionTime < 450) return;
+    if (!canPlayerDraw()) return;
+    lastDrawActionTime = now;
+    drawStock();
+  }
+
+  function onDiscardContainerClick(e) {
+    if (!canPlayerDraw()) return;
+    const now = Date.now();
+    if (now - lastDiscardClickTime < 380) {
+      onDiscardDoubleClick(e);
+      lastDiscardClickTime = 0;
+    } else {
+      lastDiscardClickTime = now;
+    }
+  }
+
+  function onDiscardDoubleClick(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastDrawActionTime < 450) return;
+    if (!canPlayerDraw()) return;
+    if (!roomState.topDiscard && !isDemo) return;
+    lastDrawActionTime = now;
+    drawDiscard();
+  }
+
+  window.openMaalModal = openMaalModal;
+  window.closeMaalModal = closeMaalModal;
+  window.toggleMaalDetails = toggleMaalDetails;
+  window.onStockClick = onStockClick;
+  window.onStockDoubleClick = onStockDoubleClick;
+  window.onDiscardContainerClick = onDiscardContainerClick;
+  window.onDiscardDoubleClick = onDiscardDoubleClick;
 
   function renderStands() {
     const container=document.getElementById('standsContainer');
@@ -1611,13 +2241,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const groupedIds=new Set(declarationGroups.flatMap(g=>g.cards.map(c=>c.id)));
     const remaining=myHand.filter(c=>!groupedIds.has(c.id));
     const selectable=remaining;
+    const selCount = declarationSelectedIds.size;
     const groups=declarationGroups.map((g,i)=>`<div class="stand-rack declaration-group locked">
       <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span></div>
-      <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo</button></div>
+      <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
       <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`).join('');
     container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
-      <div class="stand-title-box"><span>Cards to Group</span><span class="stand-count-badge">${selectable.length} cards</span></div>
-      <button class="stand-close-btn" onclick="clearDeclarationSelection()">Clear Selection</button></div>
+      <div class="stand-title-box">
+        <span>Cards to Group (${selectable.length} remaining)</span>
+        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards to select'}</span>
+      </div>
+      ${selCount > 0 ? '<button class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear Selection</button>' : ''}</div>
       <div class="stand-cards">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>${groups}`;
   }
   function setStandType(idx,type){standTypes[idx]=type;renderStands();}
@@ -1675,6 +2309,98 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return naturals.every(c=>c.rank===rank) && new Set(naturals.map(c=>c.suit)).size===naturals.length;
   }
   function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':'Set';}
+
+  function detectBestGroupType(cards) {
+    if (!cards || cards.length < 3) return null;
+    if (declarationPure(cards)) {
+      return {
+        type: 'PURE_SEQUENCE',
+        label: 'Pure Sequence',
+        verb: 'Pure Run',
+        badge: 'Natural (No Jokers)',
+        icon: '💎'
+      };
+    }
+    if (declarationSequence(cards)) {
+      return {
+        type: 'SEQUENCE',
+        label: 'Sequence',
+        verb: 'Run with Joker',
+        badge: 'Wilds Allowed',
+        icon: '🃏'
+      };
+    }
+    if (declarationSet(cards)) {
+      return {
+        type: 'SET',
+        label: 'Set',
+        verb: 'Set (Trips/Quads)',
+        badge: 'Same Rank, Diff Suits',
+        icon: '👑'
+      };
+    }
+    return null;
+  }
+
+  function autoGroupSelected() {
+    if (!declarationMode) return;
+    const cards = myHand.filter(c => declarationSelectedIds.has(c.id));
+    if (cards.length < 3) {
+      alert('Please select at least 3 cards to form a group.');
+      return;
+    }
+    const detected = detectBestGroupType(cards);
+    if (!detected) {
+      alert('Selected cards do not form a valid Pure Sequence, Sequence, or Set. Check ranks, suits, or jokers.');
+      return;
+    }
+    declarationGroups.push({
+      type: detected.type,
+      typeLabel: detected.label,
+      cards
+    });
+    cards.forEach(c => declarationSelectedIds.delete(c.id));
+    renderAll(null);
+  }
+
+  function autoGroupFromStands() {
+    if (!declarationMode) return;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+
+    const usedCardIds = new Set();
+    const newGroups = [];
+    if (Array.isArray(userStands)) {
+      for (const stand of userStands) {
+        if (Array.isArray(stand) && stand.length >= 3) {
+          const detected = detectBestGroupType(stand);
+          if (detected) {
+            newGroups.push({
+              type: detected.type,
+              typeLabel: detected.label,
+              cards: [...stand]
+            });
+            stand.forEach(c => usedCardIds.add(c.id));
+          }
+        }
+      }
+    }
+    declarationGroups = newGroups;
+    renderAll(null);
+
+    const pureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const totalGrouped = newGroups.flatMap(g => g.cards).length;
+    if (newGroups.length > 0) {
+      if (totalGrouped === 21 && pureCount >= 3) {
+        alert(`Great! Auto-detected ${newGroups.length} valid groups (${pureCount} Pure Sequences). All 21 cards are grouped and ready to declare!`);
+      } else {
+        alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards. Select remaining cards below to finish your show.`);
+      }
+    } else {
+      alert('None of your table stands formed a complete valid run or set yet. Tap cards below to group them manually.');
+    }
+  }
+
   function groupSelectedCards(type) {
     if(!declarationMode) return;
     const cards=myHand.filter(c=>declarationSelectedIds.has(c.id));
@@ -1687,14 +2413,46 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
   function clearDeclarationSelection(){declarationSelectedIds.clear();renderAll(null);}
   function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);renderAll(null);}
-  function cancelDeclaration(){declarationMode=false;declarationGroups=[];declarationSelectedIds.clear();renderAll(null);}
+  let forfeitConfirming = false;
+  function cancelDeclaration() {
+    declarationMode = false;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    forfeitConfirming = false;
+    renderAll(null);
+  }
 
   function forfeitDeclaration() {
-    if(!declarationMode) return;
-    if(!confirm('Are you sure you want to forfeit this declaration?\\n\\nYou will receive a 100-point penalty and the other players will continue the hand.')) return;
-    if(isDemo){ declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); renderAll(null); alert('Declaration forfeited. Penalty: 100 points. Play continues.'); return; }
-    ws.send(JSON.stringify({type:'FORFEIT_DECLARATION'}));
-    declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); renderAll(null);
+    if (!declarationMode) return;
+    if (!forfeitConfirming) {
+      forfeitConfirming = true;
+      renderAll(null);
+      setTimeout(() => {
+        forfeitConfirming = false;
+        renderAll(null);
+      }, 4500);
+      return;
+    }
+    forfeitConfirming = false;
+    declarationMode = false;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+
+    if (isDemo) {
+      const meP = roomState?.players?.find(p => p.id === 'p_demo');
+      if (meP) {
+        meP.hasDropped = true;
+        meP.hasForfeited = true;
+        meP.dropType = 'FORFEIT';
+        meP.dropPenalty = 100;
+      }
+      roomState.lastAction = `${meP?.name || 'You'} forfeited declaration (100 pts)`;
+      passDemoTurn();
+      window.alert('Declaration forfeited (100 points penalty). Turn passed to ' + roomState.turnPlayerName + '. Play continues.');
+      return;
+    }
+    ws.send(JSON.stringify({ type: 'FORFEIT_DECLARATION' }));
+    renderAll(null);
   }
   function getMyPlayerId() {
     const me = roomState?.players.find(p => p.name === document.getElementById('playerName').value);
@@ -1852,8 +2610,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   // --- Drag a Stock / Discard pile onto your board ---
   let draggedPileType=null;
   function onPileDragStart(e,pileType){
-    const isMyTurn=roomState&&roomState.turnPlayerId===getMyPlayerId();
-    if(!isMyTurn||roomState.turnStage!=='DRAW'){e.preventDefault();return;}
+    if(!canPlayerDraw()){e.preventDefault();return;}
     draggedPileType=pileType;draggedCardId=null;
     e.dataTransfer.setData('text/plain','pile:'+pileType);e.dataTransfer.effectAllowed='move';
     document.querySelectorAll('.stand-rack').forEach(el=>el.classList.add('pile-drop-ready'));
@@ -1863,6 +2620,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.querySelectorAll('.stand-rack').forEach(el=>el.classList.remove('pile-drop-ready'));
   }
   function completePileDrop(pileType){
+    if(!canPlayerDraw()){
+      onPileDragEnd();
+      return;
+    }
     if(pileType==='stock') drawStock();
     if(pileType==='discard') drawDiscard();
     onPileDragEnd();
@@ -2054,13 +2815,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     });
   }
 
-  function sortHand() {    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4, '★': 5 };
-    const sortFn = (a, b) => {
-      if (a.suit !== b.suit) return (suitOrder[a.suit] || 0) - (suitOrder[b.suit] || 0);
-      return a.rankValue - b.rankValue;
-    };
-    // Sort cards within each stand
-    userStands = userStands.map(s => s.sort(sortFn));
+  function sortHand() {
+    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4 };
+    const allCards = userStands.flat();
+    const poochies = allCards.filter(c => c.isPoochie || c.suit === '★');
+    const regular = allCards.filter(c => !c.isPoochie && c.suit !== '★');
+
+    regular.sort((a, b) => {
+      const sA = suitOrder[a.suit] || 99;
+      const sB = suitOrder[b.suit] || 99;
+      if (sA !== sB) return sA - sB;
+      return (a.rankValue || 0) - (b.rankValue || 0);
+    });
+
+    const reordered = [...poochies, ...regular];
+
+    // Re-populate stands preserving stand card counts
+    let offset = 0;
+    userStands = userStands.map(stand => {
+      const count = stand.length;
+      const slice = reordered.slice(offset, offset + count);
+      offset += count;
+      return slice;
+    });
+
     myHand = userStands.flat();
     renderAll(null);
   }
@@ -2070,46 +2848,115 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     ws.send(JSON.stringify({ type: 'START_GAME' })); 
   }
   function drawStock() { 
+    if (!canPlayerDraw()) return;
     if (isDemo) { simulateDrawStock(); return; }
     ws.send(JSON.stringify({ type: 'DRAW_STOCK' })); 
   }
   function drawDiscard() { 
+    if (!canPlayerDraw()) return;
     if (isDemo) { simulateDrawDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DRAW_DISCARD' })); 
   }
+  let dropConfirming = false;
   function dropHand() {
-    if (confirm('Are you sure you want to drop this hand?')) {
-      if (isDemo) { alert('Hand dropped in demo mode.'); return; }
-      ws.send(JSON.stringify({ type: 'DROP' }));
+    if (!dropConfirming) {
+      dropConfirming = true;
+      const btn = document.getElementById('btnDrop');
+      if (btn) btn.querySelector('b').innerText = 'Confirm Scoot?';
+      setTimeout(() => {
+        dropConfirming = false;
+        if (btn) btn.querySelector('b').innerText = 'Scoot';
+      }, 4500);
+      return;
     }
+    dropConfirming = false;
+    const btn = document.getElementById('btnDrop');
+    if (btn) btn.querySelector('b').innerText = 'Scoot';
+    if (isDemo) {
+      const meP = roomState?.players?.find(p => p.id === 'p_demo');
+      if (meP) {
+        meP.hasDropped = true;
+        meP.dropType = 'SCOOT';
+        meP.dropPenalty = 30;
+      }
+      roomState.lastAction = `${meP?.name || 'You'} scooted / dropped (30 pts)`;
+      passDemoTurn();
+      window.alert("Hand dropped / Scoot (30 pts drop penalty + winner's Maal points will be owed). Turn passed to " + roomState.turnPlayerName + ".");
+      return;
+    }
+    ws.send(JSON.stringify({ type: 'DROP' }));
   }
+
   function discardSelected() {
     if (!selectedCardId) return;
     if (isDemo) { simulateDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DISCARD', cardId: selectedCardId }));
     selectedCardId = null;
   }
+
   function declareShow() {
-    if(!declarationMode){
-      if(!roomState||roomState.turnStage!=='DISCARD')return;
-      if(!confirm('Are you sure you want to declare?\\n\\nYou will enter grouping mode. If you cannot complete a valid 21-card show, you can Forfeit.')) return;
-      declarationMode=true; declarationGroups=[]; declarationSelectedIds.clear(); selectedCardId=null; renderAll(null); return;
+    const isMyTurn = isCurrentPlayerMe();
+    if (!isMyTurn) {
+      window.alert('You can only declare on your turn.');
+      return;
     }
-    const grouped=declarationGroups.flatMap(g=>g.cards);
-    const unique=new Set(grouped.map(c=>c.id));
-    const remaining=myHand.filter(c=>!unique.has(c.id));
-    if(unique.size!==21 || remaining.length!==1){ alert(`You have grouped ${unique.size} cards. Group exactly 21 cards; the one remaining card will be your final discard.`); return; }
-    const pure=declarationGroups.filter(g=>g.type==='PURE_SEQUENCE').length;
-    if(pure<3){ alert(`You have ${pure} Pure Sequences. At least 3 are required.`); return; }
-    if(!confirm('Submit this declaration?\\n\\n21 cards are grouped with at least 3 Pure Sequences. The remaining card will be discarded to finish the hand.')) return;
-    const groups=declarationGroups.map(g=>({type:g.type,cardIds:g.cards.map(c=>c.id)}));
-    const finalDiscardId=remaining[0].id;
-    if(isDemo){
-      const demoData={winnerName:roomState.turnPlayerName,winnerMaal:{total:90,details:{marriages:1,marriagePts:50,tiplus:0,tipluPts:0,poochies:1,poochiePts:20,papluNichlu:1,papluNichluPts:20}},results:[{name:roomState.turnPlayerName,net:'Won + collects 90 Maal from each loser'},{name:'Player 2',net:'Pays 132 pts (42 deadwood + 90 winner maal)',deadwood:42},{name:'Player 3',net:'Pays flat drop penalty: 30 pts'}],revealedHands:[{name:roomState.turnPlayerName,hand:myHand}]};
-      showWinnerFanfare(demoData); setTimeout(()=>showResultsModal(demoData),900); return;
+
+    if (!declarationMode) {
+      if (!roomState || (roomState.turnStage !== 'DISCARD' && getHandCount() < 22)) {
+        window.alert('Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard).');
+        return;
+      }
+      declarationMode = true;
+      declarationGroups = [];
+      declarationSelectedIds.clear();
+      selectedCardId = null;
+      renderAll(null);
+      setTimeout(() => {
+        const dp = document.getElementById('declarationPanel');
+        if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+      return;
     }
-    ws.send(JSON.stringify({type:'DECLARE',cardId:finalDiscardId,groups}));
-    declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); renderAll(null);
+
+    const grouped = declarationGroups.flatMap(g => g.cards);
+    const unique = new Set(grouped.map(c => c.id));
+    const remaining = myHand.filter(c => !unique.has(c.id));
+    if (unique.size !== 21 || remaining.length !== 1) {
+      window.alert(`You have grouped ${unique.size}/21 cards. Please group exactly 21 cards; the 1 remaining card will automatically be your final discard.`);
+      return;
+    }
+    const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    if (pure < 3) {
+      window.alert(`You currently have ${pure} Pure Sequence(s). At least 3 Pure Sequences are required for a valid 21-card declaration.`);
+      return;
+    }
+
+    const groups = declarationGroups.map(g => ({ type: g.type, cardIds: g.cards.map(c => c.id) }));
+    const finalDiscardId = remaining[0].id;
+    if (isDemo) {
+      const demoData = {
+        winnerName: roomState.turnPlayerName || 'You',
+        winnerMaal: { total: 90, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, papluNichlu: 1, papluNichluPts: 20 } },
+        results: [
+          { name: roomState.turnPlayerName || 'You', net: 'Won + collects 90 Maal from each loser' },
+          { name: 'Player 2', net: 'Pays 132 pts (42 deadwood + 90 winner maal)', deadwood: 42, maalOwed: 90 },
+          { name: 'Player 3', net: 'Pays 120 pts (30 drop penalty + 90 winner Maal)', dropPenalty: 30, maalOwed: 90 }
+        ],
+        revealedHands: [{ name: roomState.turnPlayerName || 'You', hand: myHand }]
+      };
+      declarationMode = false;
+      declarationGroups = [];
+      declarationSelectedIds.clear();
+      renderAll(null);
+      showWinnerFanfare(demoData);
+      setTimeout(() => showResultsModal(demoData), 900);
+      return;
+    }
+    ws.send(JSON.stringify({ type: 'DECLARE', cardId: finalDiscardId, groups }));
+    declarationMode = false;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    renderAll(null);
   }
 
   function getCardTagForRoles(card) {
@@ -2132,33 +2979,32 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function continueFromResults() {
     const modal = document.getElementById('resultModal');
-    if (!isDemo) {
-      // The server already schedules the next deal. Continue simply closes
-      // the settlement screen immediately; the SYNC handler will keep it
-      // closed once the new hand arrives.
-      modal.style.display = 'none';
-      return;
-    }
+    if (modal) modal.style.display = 'none';
 
-    // Demo mode has no server timer, so give the user a fresh demo hand.
-    modal.style.display = 'none';
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
     selectedCardId = null;
-    if (typeof startDemo === 'function') {
-      startDemo();
-    } else {
-      location.reload();
+
+    if (!isDemo) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'NEXT_HAND' }));
+      }
+      return;
     }
+
+    // In demo mode, start the next hand seamlessly without returning to lobby
+    startDemoMode();
   }
+
+  window.startDemo = startDemoMode;
 
   function showResultsModal(data) {
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal.details;
     document.getElementById('maalDetails').innerHTML = `      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
       • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
-      • Joker: ${m.tiplus} (${m.tipluPts} pts)<br>
+      • Cut Joker: ${m.tiplus} (${m.tipluPts} pts)<br>
       • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
       • Paplu / Tuplu: ${m.papluNichlu} (${m.papluNichluPts} pts)
     `;
@@ -2182,26 +3028,23 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('resultModal').style.display = 'flex';
   }
 
-  // Maal details: click/tap toggles the popover; clicking elsewhere closes it.
-  const maalSummaryEl=document.getElementById('maalSummary');
-  const maalPanelEl=document.getElementById('maalDetailsPanel');
+  // Maal details: click/tap opens the calculation details modal
+  const maalSummaryEl = document.getElementById('maalSummary');
   maalSummaryEl?.addEventListener('click', e => {
     e.preventDefault();
     e.stopPropagation();
-    toggleMaalDetails();
+    openMaalModal();
   });
   maalSummaryEl?.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       e.stopPropagation();
-      toggleMaalDetails();
+      openMaalModal();
     }
   });
-  maalPanelEl?.addEventListener('click', e => e.stopPropagation());
-  document.addEventListener('click', e => {
-    const panel=document.getElementById('maalDetailsPanel'), summary=document.getElementById('maalSummary');
-    if (panel && summary && panel.classList.contains('is-open') && !panel.contains(e.target) && !summary.contains(e.target)) {
-      toggleMaalDetails(false);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeMaalModal();
     }
   });
 
@@ -2231,9 +3074,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       ],
       deckCount: 134,
       players: [
-        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false },
-        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false },
-        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false }
+        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 },
+        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 },
+        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 }
       ]
     };
 
@@ -2278,11 +3121,49 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (demoControls) demoControls.style.display = 'flex';
   }
 
+  function passDemoTurn() {
+    if (!isDemo || !roomState || !roomState.players.length) return;
+    const currentIndex = roomState.players.findIndex(p => p.id === roomState.turnPlayerId);
+    let nextIndex = currentIndex === -1 ? 0 : currentIndex;
+    let attempts = 0;
+    do {
+      nextIndex = (nextIndex + 1) % roomState.players.length;
+      attempts++;
+    } while (roomState.players[nextIndex].hasDropped && attempts < roomState.players.length);
+
+    const activeRemaining = roomState.players.filter(p => !p.hasDropped);
+    if (activeRemaining.length <= 1) {
+      const winner = activeRemaining[0] || roomState.players[0];
+      const demoData = {
+        winnerName: winner.name,
+        winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, papluNichlu: 0, papluNichluPts: 0 } },
+        results: roomState.players.map(p => {
+          if (p.id === winner.id) {
+            return { name: p.name, net: 'Won (opponents folded) + collects 50 Maal from each loser' };
+          }
+          const pen = p.hasForfeited ? 100 : 30;
+          return { name: p.name, net: `Pays ${pen + 50} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + 50 winner Maal)` };
+        }),
+        revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
+      };
+      renderAll(null);
+      showWinnerFanfare(demoData);
+      setTimeout(() => showResultsModal(demoData), 900);
+      return;
+    }
+
+    const nextPlayer = roomState.players[nextIndex];
+    roomState.turnPlayerId = nextPlayer.id;
+    roomState.turnPlayerName = nextPlayer.name;
+    roomState.turnStage = 'DRAW';
+    renderAll(null);
+  }
+
   function demoMyTurn() {
     if (!isDemo || !roomState) return;
     roomState.turnPlayerId = 'p_demo';
     roomState.turnPlayerName = document.getElementById('playerName').value || 'You';
-    roomState.turnStage = 'DRAW';
+    roomState.turnStage = getHandCount() >= 22 ? 'DISCARD' : 'DRAW';
     renderAll({ total: 90 });
   }
 
@@ -2306,6 +3187,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function simulateDrawStock() {
+    if (!canPlayerDraw()) return;
     const sourceFlight = captureCardFlight(document.getElementById('stockDeckBtn'));
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const suits = ['♠', '♥', '♣', '♦'];
@@ -2317,6 +3199,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (userStands.length === 0) userStands.push([]);
     userStands[userStands.length - 1].push(newCard);
     myHand = userStands.flat();
+
+    const meP = roomState.players.find(p => p.id === 'p_demo');
+    if (meP) meP.cardCount = myHand.length;
     
     roomState.deckCount--;
     roomState.turnStage = 'DISCARD';
@@ -2327,12 +3212,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function simulateDrawDiscard() {
+    if (!canPlayerDraw()) return;
     const sourceFlight = captureCardFlight(document.getElementById('discardContainer'));
     if (!roomState.topDiscard) return;
     const drawn = roomState.topDiscard;
     if (userStands.length === 0) userStands.push([]);
     userStands[userStands.length - 1].push(drawn);
     myHand = userStands.flat();
+
+    const meP = roomState.players.find(p => p.id === 'p_demo');
+    if (meP) meP.cardCount = myHand.length;
 
     roomState.topDiscard = { id: 'c_prev', suit: '♣', rank: '9', rankValue: 9, isPoochie: false };
     roomState.turnStage = 'DISCARD';
@@ -2355,13 +3244,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     if (!card) return;
     myHand = userStands.flat();
+
+    const meP = roomState.players.find(p => p.id === 'p_demo');
+    if (meP) meP.cardCount = myHand.length;
+
     if (!roomState.discardHistory) roomState.discardHistory = [];
     if (roomState.topDiscard) roomState.discardHistory.push(roomState.topDiscard);
     roomState.discardHistory = roomState.discardHistory.slice(-8);
     roomState.topDiscard = card;
     selectedCardId = null;
-    roomState.turnStage = 'DRAW';
-    renderAll({ total: 90 });
+    roomState.lastAction = `${meP?.name || 'You'} discarded`;
+    passDemoTurn();
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('discardContainer')));
   }
 </script>
