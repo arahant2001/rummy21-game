@@ -981,7 +981,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="maalDetails" class="maal-breakdown"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
     <div id="settlementList"></div><div id="revealedHands" class="revealed-hands"></div>
-    <button class="btn-primary" onclick="location.reload()" style="margin-top: 24px;">Play Next Hand</button>
+    <div style="margin-top:24px; color:var(--text-secondary); font-size:13px;">Next hand will be dealt automatically…</div>
   </div>
 </div>
 
@@ -1028,6 +1028,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       if (msg.type === 'SYNC') {
         roomState = msg.room;
+        if (roomState.status === 'PLAYING') document.getElementById('resultModal').style.display = 'none';
         syncIncomingHand(msg.yourHand);
         renderAll(msg.yourMaal);
       }
