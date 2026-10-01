@@ -770,8 +770,35 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .modal-content{background:linear-gradient(145deg,#143728,#091b13);border-color:rgba(217,182,92,.28)}
 @media(max-width:760px){body{padding:7px}.table-container{min-height:calc(100vh - 14px)}.center-board{min-height:145px;gap:16px;padding:22px 10px 14px}.btn-action{min-height:46px;padding:10px 5px;font-size:12px}}
 @media(max-width:430px){.lobby-box{margin:28px auto;padding:28px 20px 22px}.lobby-title{font-size:25px}.center-board{gap:8px}.pile-wrapper{min-width:78px}.stand-cards{gap:6px}.actions-grid{grid-template-columns:repeat(2,1fr)}.btn-declare{grid-column:span 2}}
-.declare-panel{display:none;margin:8px 0 10px;padding:12px;border:1px solid rgba(217,182,92,.30);border-radius:12px;background:linear-gradient(180deg,rgba(27,54,41,.96),rgba(8,25,17,.96));box-shadow:0 8px 24px rgba(0,0,0,.20)}
-.declare-panel.is-open{display:block}.declare-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.declare-title{font-size:13px;font-weight:850;color:#f1d27a}.declare-subtitle{font-size:10px;color:#9db0a7;margin-top:3px;line-height:1.35}.declare-stats{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.declare-stat{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);font-size:10px;color:#c6d2cc;font-weight:750}.declare-stat strong{color:#f1d27a}.declare-buttons{display:flex;gap:6px;flex-wrap:wrap}.declare-buttons .tool-btn{flex:1 1 120px}.declare-buttons .tool-btn:disabled{opacity:.35;cursor:not-allowed}.declare-discard{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:8px;background:rgba(240,107,120,.06);border:1px solid rgba(240,107,120,.16);font-size:10px;color:#b9c8c0}.declare-discard strong{color:#f1a7ad}.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
+.declare-panel{display:none;margin:8px 0 12px;padding:14px;border:1px solid rgba(217,182,92,.35);border-radius:14px;background:linear-gradient(180deg,rgba(16,40,29,.98),rgba(7,22,15,.98));box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.declare-panel.is-open{display:block;animation:slideDown .22s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.declare-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:10px}
+.declare-title{font-size:14px;font-weight:900;color:#f1d27a;display:flex;align-items:center;gap:6px}
+.declare-subtitle{font-size:11px;color:#9db0a7;margin-top:3px;line-height:1.4}
+.declare-checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.checklist-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);font-size:11px;color:#b9c8c0}
+.checklist-item.done{border-color:rgba(50,197,138,.40);background:rgba(50,197,138,.09);color:#7eedba}
+.checklist-item.pending{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.06);color:#f1d27a}
+.checklist-icon{font-size:14px}
+.declare-smart-box{margin-bottom:10px}
+.btn-declare-smart{width:100%;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;transition:all .18s;border:1px solid transparent}
+.btn-declare-smart.btn-declare-valid{background:linear-gradient(135deg,#1f8b65,#106042);border-color:rgba(99,214,165,.60);color:#fff;box-shadow:0 0 16px rgba(50,197,138,.35)}
+.btn-declare-smart.btn-declare-valid:hover{transform:translateY(-1px);box-shadow:0 0 22px rgba(50,197,138,.55)}
+.btn-declare-smart.btn-declare-invalid{background:rgba(40,20,24,.75);border-color:rgba(240,107,120,.30);color:#f1a7ad;cursor:not-allowed;opacity:.85}
+.btn-declare-smart.btn-declare-hint{background:rgba(217,182,92,.06);border-color:rgba(217,182,92,.22);color:#dcd6be;cursor:default}
+.declare-btn-sub{font-size:10px;font-weight:500;opacity:.85;margin-top:2px}
+.declare-actions-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px;margin-bottom:10px}
+.btn-group-type{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 6px;min-height:46px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);color:#cfdad4;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
+.btn-group-type:hover:not(:disabled){background:rgba(255,255,255,.08);border-color:rgba(99,214,165,.40)}
+.btn-group-type.is-eligible{background:rgba(50,197,138,.14);border-color:rgba(50,197,138,.50);color:#7eedba;box-shadow:0 0 10px rgba(50,197,138,.25)}
+.btn-group-type:disabled{opacity:.35;cursor:not-allowed}
+.btn-group-sub{font-size:8.5px;color:#8ba096;margin-top:2px;font-weight:500}
+.declare-banner-ready{padding:10px 14px;border-radius:9px;background:linear-gradient(90deg,rgba(217,182,92,.18),rgba(50,197,138,.14));border:1px solid rgba(217,182,92,.45);color:#f1d27a;font-size:12px;font-weight:800;text-align:center;margin-bottom:10px;animation:pulse 2s infinite}
+.declare-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#7e9389}
+.btn-forfeit-danger{background:rgba(240,107,120,.09);border:1px solid rgba(240,107,120,.26);color:#f87171;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
+.btn-forfeit-danger:hover{background:rgba(240,107,120,.20);border-color:rgba(240,107,120,.45);color:#fca5a5}
+.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
 .fanfare{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(4,12,8,.30);animation:fanfareFade 2.8s ease forwards}.fanfare-card{padding:22px 28px;border-radius:18px;border:1px solid rgba(241,210,122,.55);background:linear-gradient(145deg,rgba(22,58,42,.98),rgba(7,24,16,.98));box-shadow:0 20px 70px rgba(0,0,0,.55),0 0 40px rgba(217,182,92,.18);text-align:center;transform:scale(.72);animation:fanfarePop .55s cubic-bezier(.2,1.4,.4,1) forwards}.fanfare-icon{font-size:34px}.fanfare-title{margin-top:6px;font-size:24px;font-weight:900;color:#f1d27a}.fanfare-sub{margin-top:4px;font-size:11px;color:#b9c8c0}@keyframes fanfarePop{to{transform:scale(1)}}@keyframes fanfareFade{0%,75%{opacity:1}100%{opacity:0}}
 
 /* Player Status Strip */
@@ -1801,13 +1828,122 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (dp) {
       dp.classList.toggle('is-open', declarationMode);
       if (declarationMode) {
-        const grouped = declarationGroups.flatMap(g => g.cards).length;
+        const groupedCards = declarationGroups.flatMap(g => g.cards);
+        const grouped = groupedCards.length;
         const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-        const selected = declarationSelectedIds.size;
-        dp.innerHTML = `<div class="declare-panel-head"><div><div class="declare-title">Declare: group your 21-card show</div><div class="declare-subtitle">Tap cards to highlight them. Group each selection as a Pure Sequence, Sequence, or Set. The last ungrouped card becomes your final discard.</div></div><button class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button></div>
-          <div class="declare-stats"><span class="declare-stat"><strong>${grouped}</strong>/21 grouped</span><span class="declare-stat"><strong>${pure}</strong> Pure Sequences</span><span class="declare-stat"><strong>${selected}</strong> selected</span><span class="declare-stat"><strong>${declarationGroups.flatMap(g => g.cards).length === 21 ? '1' : '0'}</strong> finish card</span></div>
-          <div class="declare-buttons"><button class="tool-btn" onclick="groupSelectedCards('PURE_SEQUENCE')" ${selected < 3 ? 'disabled' : ''}>Pure Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SEQUENCE')" ${selected < 3 ? 'disabled' : ''}>Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SET')" ${selected < 3 ? 'disabled' : ''}>Set</button><button class="tool-btn tool-btn-highlight" onclick="forfeitDeclaration()">${forfeitConfirming ? 'Confirm Forfeit (100 pts)?' : 'Forfeit / Give Up'}</button></div>
-          <div class="declare-discard"><span>Group 21 cards. The one remaining card is automatically your final discard.</span><strong>Auto</strong></div>`;
+        const selectedCards = myHand.filter(c => declarationSelectedIds.has(c.id));
+        const selected = selectedCards.length;
+        const groupedIds = new Set(groupedCards.map(c => c.id));
+        const remaining = myHand.filter(c => !groupedIds.has(c.id));
+
+        const isPureValid = declarationPure(selectedCards);
+        const isSeqValid = declarationSequence(selectedCards);
+        const isSetValid = declarationSet(selectedCards);
+        const detected = detectBestGroupType(selectedCards);
+
+        const isShowReady = grouped === 21 && pure >= 3 && remaining.length === 1;
+
+        let smartButtonHtml = '';
+        if (detected) {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-valid" onclick="autoGroupSelected()">
+              <span>${detected.icon} <b>Form ${detected.verb}</b> (${selected} cards)</span>
+              <small class="declare-btn-sub">${detected.badge} • Click to lock this group</small>
+            </button>`;
+        } else if (selected >= 3) {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-invalid" disabled>
+              <span>⚠️ <b>Not a Valid Run or Set</b> (${selected} cards selected)</span>
+              <small class="declare-btn-sub">Cards must be consecutive in same suit, or 3-4 cards of same rank</small>
+            </button>`;
+        } else if (selected === 0) {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-hint" disabled>
+              <span>👆 <b>Tap 3+ cards in "Cards to Group" below</b></span>
+              <small class="declare-btn-sub">Cards highlight in gold as you select them</small>
+            </button>`;
+        } else {
+          smartButtonHtml = `
+            <button type="button" class="btn-declare-smart btn-declare-hint" disabled>
+              <span>👆 <b>Select at least ${3 - selected} more card${3 - selected > 1 ? 's' : ''}</b> (${selected}/3 min)</span>
+              <small class="declare-btn-sub">Sequences and sets require a minimum of 3 cards</small>
+            </button>`;
+        }
+
+        dp.innerHTML = `
+          <div class="declare-panel-head">
+            <div>
+              <div class="declare-title">
+                <span>🏆</span> Declare 21-Card Show
+              </div>
+              <div class="declare-subtitle">
+                Group 21 cards into sequences &amp; sets. The 1 remaining card automatically serves as your final discard.
+              </div>
+            </div>
+            <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
+          </div>
+
+          <div class="declare-checklist">
+            <div class="checklist-item ${pure >= 3 ? 'done' : 'pending'}">
+              <span class="checklist-icon">${pure >= 3 ? '✅' : '⏳'}</span>
+              <div>
+                <div><strong>${pure} / 3</strong> Pure Sequences</div>
+                <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 required'}</div>
+              </div>
+            </div>
+            <div class="checklist-item ${grouped === 21 ? 'done' : 'pending'}">
+              <span class="checklist-icon">${grouped === 21 ? '✅' : '⏳'}</span>
+              <div>
+                <div><strong>${grouped} / 21</strong> Cards Grouped</div>
+                <div style="font-size:9px; opacity:0.85;">${grouped === 21 ? 'Complete (21 cards)' : `${21 - grouped} left to group`}</div>
+              </div>
+            </div>
+            <div class="checklist-item ${remaining.length === 1 ? 'done' : 'pending'}">
+              <span class="checklist-icon">${remaining.length === 1 ? '🎴' : '⏳'}</span>
+              <div>
+                <div><strong>${remaining.length === 1 ? (remaining[0].rank + remaining[0].suit) : `${remaining.length} cards`}</strong> Finish Discard</div>
+                <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected discard' : '1 card must remain'}</div>
+              </div>
+            </div>
+          </div>
+
+          ${isShowReady ? `
+            <div class="declare-banner-ready">
+              ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
+            </div>` : ''}
+
+          <div class="declare-smart-box">
+            ${smartButtonHtml}
+          </div>
+
+          <div class="declare-actions-row">
+            <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Sequence: Consecutive natural cards in the same suit with NO jokers">
+              <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
+              <span class="btn-group-sub">No Jokers • Min 3</span>
+            </button>
+            <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Sequence: Consecutive cards in the same suit, jokers allowed">
+              <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
+              <span class="btn-group-sub">Wilds Allowed • Min 3</span>
+            </button>
+            <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of the same rank in different suits">
+              <span>👑 Set ${isSetValid ? '✓' : ''}</span>
+              <span class="btn-group-sub">Same Rank • 3-4 Cards</span>
+            </button>
+            <button type="button" class="btn-group-type" onclick="autoGroupFromStands()" title="Automatically convert any valid sequences or sets from your racks">
+              <span>⚡ From Stands</span>
+              <span class="btn-group-sub">Auto-fill from racks</span>
+            </button>
+          </div>
+
+          <div class="declare-footer">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span>Wrong arrangement?</span>
+              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+            </div>
+            <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
+              ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
+            </button>
+          </div>`;
       }
     }
     const stockBtn = document.getElementById('stockDeckBtn');
@@ -2105,13 +2241,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const groupedIds=new Set(declarationGroups.flatMap(g=>g.cards.map(c=>c.id)));
     const remaining=myHand.filter(c=>!groupedIds.has(c.id));
     const selectable=remaining;
+    const selCount = declarationSelectedIds.size;
     const groups=declarationGroups.map((g,i)=>`<div class="stand-rack declaration-group locked">
       <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span></div>
-      <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo</button></div>
+      <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
       <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`).join('');
     container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
-      <div class="stand-title-box"><span>Cards to Group</span><span class="stand-count-badge">${selectable.length} cards</span></div>
-      <button class="stand-close-btn" onclick="clearDeclarationSelection()">Clear Selection</button></div>
+      <div class="stand-title-box">
+        <span>Cards to Group (${selectable.length} remaining)</span>
+        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards to select'}</span>
+      </div>
+      ${selCount > 0 ? '<button class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear Selection</button>' : ''}</div>
       <div class="stand-cards">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>${groups}`;
   }
   function setStandType(idx,type){standTypes[idx]=type;renderStands();}
@@ -2169,6 +2309,98 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return naturals.every(c=>c.rank===rank) && new Set(naturals.map(c=>c.suit)).size===naturals.length;
   }
   function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':'Set';}
+
+  function detectBestGroupType(cards) {
+    if (!cards || cards.length < 3) return null;
+    if (declarationPure(cards)) {
+      return {
+        type: 'PURE_SEQUENCE',
+        label: 'Pure Sequence',
+        verb: 'Pure Run',
+        badge: 'Natural (No Jokers)',
+        icon: '💎'
+      };
+    }
+    if (declarationSequence(cards)) {
+      return {
+        type: 'SEQUENCE',
+        label: 'Sequence',
+        verb: 'Run with Joker',
+        badge: 'Wilds Allowed',
+        icon: '🃏'
+      };
+    }
+    if (declarationSet(cards)) {
+      return {
+        type: 'SET',
+        label: 'Set',
+        verb: 'Set (Trips/Quads)',
+        badge: 'Same Rank, Diff Suits',
+        icon: '👑'
+      };
+    }
+    return null;
+  }
+
+  function autoGroupSelected() {
+    if (!declarationMode) return;
+    const cards = myHand.filter(c => declarationSelectedIds.has(c.id));
+    if (cards.length < 3) {
+      alert('Please select at least 3 cards to form a group.');
+      return;
+    }
+    const detected = detectBestGroupType(cards);
+    if (!detected) {
+      alert('Selected cards do not form a valid Pure Sequence, Sequence, or Set. Check ranks, suits, or jokers.');
+      return;
+    }
+    declarationGroups.push({
+      type: detected.type,
+      typeLabel: detected.label,
+      cards
+    });
+    cards.forEach(c => declarationSelectedIds.delete(c.id));
+    renderAll(null);
+  }
+
+  function autoGroupFromStands() {
+    if (!declarationMode) return;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+
+    const usedCardIds = new Set();
+    const newGroups = [];
+    if (Array.isArray(userStands)) {
+      for (const stand of userStands) {
+        if (Array.isArray(stand) && stand.length >= 3) {
+          const detected = detectBestGroupType(stand);
+          if (detected) {
+            newGroups.push({
+              type: detected.type,
+              typeLabel: detected.label,
+              cards: [...stand]
+            });
+            stand.forEach(c => usedCardIds.add(c.id));
+          }
+        }
+      }
+    }
+    declarationGroups = newGroups;
+    renderAll(null);
+
+    const pureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const totalGrouped = newGroups.flatMap(g => g.cards).length;
+    if (newGroups.length > 0) {
+      if (totalGrouped === 21 && pureCount >= 3) {
+        alert(`Great! Auto-detected ${newGroups.length} valid groups (${pureCount} Pure Sequences). All 21 cards are grouped and ready to declare!`);
+      } else {
+        alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards. Select remaining cards below to finish your show.`);
+      }
+    } else {
+      alert('None of your table stands formed a complete valid run or set yet. Tap cards below to group them manually.');
+    }
+  }
+
   function groupSelectedCards(type) {
     if(!declarationMode) return;
     const cards=myHand.filter(c=>declarationSelectedIds.has(c.id));
