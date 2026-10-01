@@ -223,7 +223,7 @@ export function validateShow(groups, hand, cutCard) {
     }
     const type = group.type || 'SEQUENCE';
     if (type === 'PURE_SEQUENCE') {
-      if (!isPureSequence(cards)) return { valid:false, reason:'A Pure Sequence must be 3+ consecutive cards of one suit with no joker substitution.' };
+      if (!isPureSequence(cards, cutCard)) return { valid:false, reason:'A Pure Sequence must be 3+ consecutive cards of one suit with no joker substitution.' };
       pureSequences++;
     } else if (type === 'SEQUENCE') {
       if (!isSequence(cards, cutCard)) return { valid:false, reason:'That sequence is not a valid run.' };
