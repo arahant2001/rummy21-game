@@ -1485,6 +1485,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw);
     document.getElementById('btnDiscard').classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
+    document.getElementById('btnDiscard').style.display = declarationMode ? 'none' : '';
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
     const declareBtn=document.getElementById('btnDeclare');
     if(declareBtn){
