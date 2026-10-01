@@ -1067,7 +1067,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="pile-wrapper discard-pile-wrapper">
       <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
-      <div class="pile-action-hint">Double-click to pick up • Drag or select &amp; tap to discard</div>
+      <div class="pile-action-hint">Double-click to pick up • Drag card here to discard</div>
       <div class="discard-stack-area">
         <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
         <div id="discardContainer" class="pile-drop-source" draggable="true"
@@ -1087,7 +1087,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span class="hand-heading-title">Your Hand</span>
         <span class="hand-heading-count"><span id="handCount">21</span> cards</span>
       </div>
-      <span class="hand-heading-hint">Drag Stock / Discard here • Drag or tap Discard pile to discard</span>
+      <span class="hand-heading-hint">Drag Stock / Discard here • Drag card to Discard pile to discard</span>
     </div>
 
     <!-- Stands Toolbar -->
@@ -1128,6 +1128,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="actions-grid">
       <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Scoot</b><small class="action-sub">before drawing</small></span></button>
+      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()" style="display:none;"><span><b>Discard Card</b><small class="action-sub">selected card</small></span></button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
@@ -1719,7 +1720,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       } else if (isMyTurn && canDraw) {
         guide.innerHTML = '<strong>Your turn:</strong> Double-click or drag Stock/Discard to draw your 22nd card.';
       } else if (isMyTurn && canDiscard) {
-        guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Drag a card to Discard pile (or select &amp; tap it) to discard, or Show / Declare.`;
+        guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Drag a card to Discard pile (or tap Discard Card), or Show / Declare.`;
       } else {
         guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
       }
@@ -1747,7 +1748,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const btnDiscard = document.getElementById('btnDiscard');
     if (btnDiscard) {
       btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
-      btnDiscard.style.display = 'none';
+      btnDiscard.style.display = canDiscard ? 'inline-flex' : 'none';
     }
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
     const declareBtn=document.getElementById('btnDeclare');
@@ -2015,21 +2016,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function onDiscardContainerClick(e) {
-    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
-    if (!roomState) return;
-
-    if (roomState.turnStage === 'DISCARD' || getHandCount() >= 22) {
-      if (isMyTurn && selectedCardId) {
-        discardSelected();
-      }
-    } else if (canPlayerDraw()) {
-      const now = Date.now();
-      if (now - lastDiscardClickTime < 380) {
-        onDiscardDoubleClick(e);
-        lastDiscardClickTime = 0;
-      } else {
-        lastDiscardClickTime = now;
-      }
+    if (!canPlayerDraw()) return;
+    const now = Date.now();
+    if (now - lastDiscardClickTime < 380) {
+      onDiscardDoubleClick(e);
+      lastDiscardClickTime = 0;
+    } else {
+      lastDiscardClickTime = now;
     }
   }
 
