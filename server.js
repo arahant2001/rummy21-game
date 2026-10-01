@@ -155,6 +155,7 @@ wss.on('connection', (ws) => {
       const isTurn = activePlayer && activePlayer.id === playerId;
 
       if (data.type === 'DRAW_STOCK' && isTurn && userRoom.turnStage === 'DRAW') {
+        if (activePlayer.hand.length >= 22) return;
         if (userRoom.deck.length === 0) {
           // Recycle discard pile if stock runs dry
           const top = userRoom.discardPile.pop();
@@ -168,6 +169,7 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DRAW_DISCARD' && isTurn && userRoom.turnStage === 'DRAW') {
+        if (activePlayer.hand.length >= 22) return;
         if (userRoom.discardPile.length > 0) {
           activePlayer.hand.push(userRoom.discardPile.pop());
           userRoom.turnStage = 'DISCARD';
