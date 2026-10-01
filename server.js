@@ -163,6 +163,7 @@ wss.on('connection', (ws) => {
         }
         activePlayer.hand.push(userRoom.deck.pop());
         userRoom.turnStage = 'DISCARD';
+        userRoom.lastAction = 'DRAW_STOCK';
         broadcastRoom(userRoom);
       }
 
@@ -170,6 +171,7 @@ wss.on('connection', (ws) => {
         if (userRoom.discardPile.length > 0) {
           activePlayer.hand.push(userRoom.discardPile.pop());
           userRoom.turnStage = 'DISCARD';
+          userRoom.lastAction = 'DRAW_DISCARD';
           broadcastRoom(userRoom);
         }
       }
@@ -180,6 +182,7 @@ wss.on('connection', (ws) => {
           const [discarded] = activePlayer.hand.splice(idx, 1);
           userRoom.discardPile.push(discarded);
           activePlayer.turnsTaken++;
+          userRoom.lastAction = 'DISCARD';
           advanceTurn(userRoom);
           broadcastRoom(userRoom);
         }
