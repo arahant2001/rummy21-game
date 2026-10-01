@@ -181,9 +181,13 @@ wss.on('connection', (ws) => {
         const showHand = activePlayer.hand.filter(c => c.id !== data.cardId);
         const validation = validateShow(data.groups, showHand, userRoom.cutCard);
         if (!validation.valid) {
+          activePlayer.hasDropped = true;
+          activePlayer.dropPenalty = 100;
+          advanceTurn(userRoom);
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason }));
+            ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason, penalty: 100 }));
           }
+          broadcastRoom(userRoom);
           return;
         }
 
