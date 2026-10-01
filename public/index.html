@@ -384,7 +384,7 @@
       content:'';position:absolute;left:5px;right:5px;height:1px;background:rgba(15,23,42,.10);
     }
     .classic-court-card::before{top:5px}.classic-court-card::after{bottom:5px}
-    .court-rank{font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:900;line-height:.9;letter-spacing:-1px}
+    .court-rank{font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:900;line-height:.9;letter-spacing:-1px}.card.poochie .corner-rank{font-size:10px;letter-spacing:-.7px}.card.poochie .court-rank{font-size:18px;letter-spacing:-1.4px}
     .court-suit-top,.court-suit-bottom{font-size:13px;line-height:1}
     .court-suit-top{margin-bottom:3px}.court-suit-bottom{margin-top:3px;transform:rotate(180deg)}
 
@@ -757,6 +757,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .modal-content{background:linear-gradient(145deg,#143728,#091b13);border-color:rgba(217,182,92,.28)}
 @media(max-width:760px){body{padding:7px}.table-container{min-height:calc(100vh - 14px)}.center-board{min-height:145px;gap:16px;padding:22px 10px 14px}.btn-action{min-height:46px;padding:10px 5px;font-size:12px}}
 @media(max-width:430px){.lobby-box{margin:28px auto;padding:28px 20px 22px}.lobby-title{font-size:25px}.center-board{gap:8px}.pile-wrapper{min-width:78px}.stand-cards{gap:6px}.actions-grid{grid-template-columns:repeat(2,1fr)}.btn-declare{grid-column:span 2}}
+.declare-panel{display:none;margin:8px 0 10px;padding:12px;border:1px solid rgba(217,182,92,.30);border-radius:12px;background:linear-gradient(180deg,rgba(27,54,41,.96),rgba(8,25,17,.96));box-shadow:0 8px 24px rgba(0,0,0,.20)}
+.declare-panel.is-open{display:block}.declare-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.declare-title{font-size:13px;font-weight:850;color:#f1d27a}.declare-subtitle{font-size:10px;color:#9db0a7;margin-top:3px;line-height:1.35}.declare-stats{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.declare-stat{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);font-size:10px;color:#c6d2cc;font-weight:750}.declare-stat strong{color:#f1d27a}.declare-buttons{display:flex;gap:6px;flex-wrap:wrap}.declare-buttons .tool-btn{flex:1 1 120px}.declare-buttons .tool-btn:disabled{opacity:.35;cursor:not-allowed}.declare-discard{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:8px;background:rgba(240,107,120,.06);border:1px solid rgba(240,107,120,.16);font-size:10px;color:#b9c8c0}.declare-discard strong{color:#f1a7ad}.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
+.fanfare{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(4,12,8,.30);animation:fanfareFade 2.8s ease forwards}.fanfare-card{padding:22px 28px;border-radius:18px;border:1px solid rgba(241,210,122,.55);background:linear-gradient(145deg,rgba(22,58,42,.98),rgba(7,24,16,.98));box-shadow:0 20px 70px rgba(0,0,0,.55),0 0 40px rgba(217,182,92,.18);text-align:center;transform:scale(.72);animation:fanfarePop .55s cubic-bezier(.2,1.4,.4,1) forwards}.fanfare-icon{font-size:34px}.fanfare-title{margin-top:6px;font-size:24px;font-weight:900;color:#f1d27a}.fanfare-sub{margin-top:4px;font-size:11px;color:#b9c8c0}@keyframes fanfarePop{to{transform:scale(1)}}@keyframes fanfareFade{0%,75%{opacity:1}100%{opacity:0}}
+
 /* Player Status Strip */
 .player-strip{display:flex;flex-direction:column;gap:6px;margin:0 0 2px;padding:9px 10px;background:rgba(6,23,16,.88);border:1px solid rgba(217,182,92,.16);border-radius:14px;box-shadow:0 7px 20px rgba(0,0,0,.18)}
 .player-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(100px,150px);align-items:center;gap:12px;padding:8px 11px;border:1px solid rgba(255,255,255,.055);border-radius:9px;background:rgba(255,255,255,.025);transition:background .18s,border-color .18s,transform .18s}
@@ -957,7 +961,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
 
     <!-- Multi-Stand Cards Racks -->
-    <div class="show-help"><strong>Show builder:</strong> choose Pure Sequence, Sequence, or Set for each group, then drag cards between groups. A valid 21-card show needs at least 3 Pure Sequences.</div><div id="standsContainer" class="stands-container"></div>
+    <div class="show-help"><strong>Show builder:</strong> arrange your cards into groups. A valid 21-card show needs at least 3 Pure Sequences.</div><div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container"></div>
 
     <div class="action-section">
       <div class="action-label">Your Move</div>
@@ -990,6 +994,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let selectedCardId = null;
   let draggedCardId = null;
   let isDemo = false;
+  let declarationMode = false;
+  let declarationGroups = [];
+  let declarationSelectedIds = new Set();
+  let declarationDiscardId = null;
 
   function joinRoom() {
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -1025,10 +1033,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         renderAll(msg.yourMaal);
       }
 
-      if (msg.type === 'SHOW_INVALID') alert('Show not legal: ' + msg.reason);
+      if (msg.type === 'SHOW_INVALID') {
+        declarationMode = false; declarationGroups = []; declarationSelectedIds.clear(); declarationDiscardId = null;
+        alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\\n\\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
+        renderAll(null);
+      }
 
       if (msg.type === 'SHOW_RESULT') {
-        showResultsModal(msg);
+        showWinnerFanfare(msg);
+        setTimeout(() => showResultsModal(msg), 900);
       }
     };
   }
@@ -1238,7 +1251,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   const displayRank = card.isPoochie ? 'JOKER' : card.rank;
     const redClass = isRed ? 'red' : '';
     const suitClass = card.suit === '♠' ? 'card-suit-spade' : card.suit === '♣' ? 'card-suit-club' : 'card-suit-black';
-    const selClass = selectedCardId === card.id ? 'is-selected' : '';
+    const selClass = declarationMode ? (declarationSelectedIds.has(card.id) ? 'is-selected' : '') : (selectedCardId === card.id ? 'is-selected' : '');
     const dragAttrs = isHand ? `
       id="card-${card.id}"
       draggable="true"
@@ -1471,9 +1484,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const canDraw = isMyTurn && roomState.turnStage === 'DRAW';
     const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD';
 
-    document.getElementById('btnDrop').classList.toggle('btn-disabled', !canDraw);
-    document.getElementById('btnDiscard').classList.toggle('btn-disabled', !canDiscard || !selectedCardId);
+    document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw);
+    document.getElementById('btnDiscard').classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
+    const declareBtn=document.getElementById('btnDeclare');
+    if(declareBtn){
+      declareBtn.querySelector('b').innerText=declarationMode?'Submit Declaration':'Show / Declare';
+      const sub=declareBtn.querySelector('.action-sub'); if(sub)sub.innerText=declarationMode?'21 cards grouped + 1 discard':'opens grouping mode';
+    }
+    const dp=document.getElementById('declarationPanel');
+    if(dp){
+      dp.classList.toggle('is-open',declarationMode);
+      if(declarationMode){
+        const grouped=declarationGroups.flatMap(g=>g.cards).length;
+        const pure=declarationGroups.filter(g=>g.type==='PURE_SEQUENCE').length;
+        const selected=declarationSelectedIds.size;
+        dp.innerHTML=`<div class="declare-panel-head"><div><div class="declare-title">Declare: group your 21-card show</div><div class="declare-subtitle">Tap cards to highlight them. Group each selection as a Pure Sequence, Sequence, or Set. The last ungrouped card becomes your final discard.</div></div><button class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button></div>
+          <div class="declare-stats"><span class="declare-stat"><strong>${grouped}</strong>/21 grouped</span><span class="declare-stat"><strong>${pure}</strong> Pure Sequences</span><span class="declare-stat"><strong>${selected}</strong> selected</span><span class="declare-stat"><strong>${declarationDiscardId?'1':'0'}</strong> discard</span></div>
+          <div class="declare-buttons"><button class="tool-btn" onclick="groupSelectedCards('PURE_SEQUENCE')" ${selected<3?'disabled':''}>Pure Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SEQUENCE')" ${selected<3?'disabled':''}>Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SET')" ${selected<3?'disabled':''}>Set</button><button class="tool-btn tool-btn-highlight" onclick="setDeclarationDiscard()" ${selected!==1?'disabled':''}>Set Final Discard</button></div>
+          <div class="declare-discard">${declarationDiscardId?'<span>Final discard selected.</span><strong>1 card</strong>':'<span>Select one ungrouped card for the final discard.</span><strong>Required</strong>'}</div>`;
+      }
+    }
     document.getElementById('stockDeckBtn').classList.toggle('drag-ready', canDraw);
     document.getElementById('discardContainer').classList.toggle('drag-ready', canDraw);
     document.getElementById('discardContainer').classList.toggle('discard-drop-ready', canDiscard);
@@ -1484,41 +1515,112 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function renderStands() {
-    const container = document.getElementById('standsContainer');
-    if (!userStands || userStands.length === 0) {
-      userStands = [myHand];
+    const container=document.getElementById('standsContainer');
+    if(!container)return;
+    if(!declarationMode){
+      if(!userStands||userStands.length===0)userStands=[myHand];
+      container.innerHTML=userStands.map((stand,sIdx)=>{
+        const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close</button>`:'';
+        return `<div class="stand-rack" id="stand-rack-${sIdx}" ondragover="onStandDragOver(event,${sIdx})" ondragleave="onStandDragLeave(event,${sIdx})" ondrop="onStandDrop(event,${sIdx})">
+          <div class="stand-header"><div class="stand-title-box"><span>Group ${sIdx+1}</span><span class="stand-count-badge">${stand.length} cards</span>
+          <select class="group-type-select" onchange="setStandType(${sIdx},this.value)" onclick="event.stopPropagation()">
+          <option value="PURE_SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="PURE_SEQUENCE"?"selected":""}>Pure Sequence</option>
+          <option value="SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="SEQUENCE"?"selected":""}>Sequence</option>
+          <option value="SET" ${(standTypes[sIdx]||"SEQUENCE")==="SET"?"selected":""}>Set</option></select></div>${closeBtn}</div>
+          <div class="stand-cards">${stand.map(c=>renderCard(c,getCardTag(c),true)).join('')}</div></div>`;
+      }).join('');
+      return;
     }
-
-    container.innerHTML = userStands.map((stand, sIdx) => {
-      const closeBtn = userStands.length > 1 ? 
-        `<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx + 1} with Stand 1">✕ Close</button>` : '';
-
-      return `
-        <div class="stand-rack" id="stand-rack-${sIdx}" 
-             ondragover="onStandDragOver(event, ${sIdx})" 
-             ondragleave="onStandDragLeave(event, ${sIdx})"
-             ondrop="onStandDrop(event, ${sIdx})">
-          <div class="stand-header">
-            <div class="stand-title-box">
-              <span>Group ${sIdx + 1}</span>
-              <span class="stand-count-badge">${stand.length} cards</span>
-              <select class="group-type-select" onchange="setStandType(${sIdx}, this.value)" onclick="event.stopPropagation()">
-                <option value="PURE_SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="PURE_SEQUENCE"?"selected":""}>Pure Sequence</option>
-                <option value="SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="SEQUENCE"?"selected":""}>Sequence</option>
-                <option value="SET" ${(standTypes[sIdx]||"SEQUENCE")==="SET"?"selected":""}>Set</option>
-              </select>
-            </div>
-            ${closeBtn}
-          </div>
-          <div class="stand-cards">
-            ${stand.map(c => renderCard(c, getCardTag(c), true)).join('')}
-          </div>
-        </div>
-      `;
-    }).join('');
+    const groupedIds=new Set(declarationGroups.flatMap(g=>g.cards.map(c=>c.id)));
+    const remaining=myHand.filter(c=>!groupedIds.has(c.id));
+    const selectable=remaining.filter(c=>c.id!==declarationDiscardId);
+    const groups=declarationGroups.map((g,i)=>`<div class="stand-rack declaration-group locked">
+      <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span></div>
+      <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo</button></div>
+      <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`).join('');
+    const discard=declarationDiscardId?myHand.find(c=>c.id===declarationDiscardId):null;
+    const discardHtml=discard?`<div class="stand-rack declaration-group" style="border-color:rgba(240,107,120,.28)">
+      <div class="stand-header"><div class="stand-title-box"><span>Final Discard</span><span class="stand-count-badge">1 card</span></div>
+      <button class="stand-close-btn" onclick="clearDeclarationDiscard()">↩ Undo</button></div>
+      <div class="stand-cards">${renderCard(discard,getCardTag(discard),false)}</div></div>`:'';
+    container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
+      <div class="stand-title-box"><span>Cards to Group</span><span class="stand-count-badge">${selectable.length} cards</span></div>
+      <button class="stand-close-btn" onclick="clearDeclarationSelection()">Clear Selection</button></div>
+      <div class="stand-cards">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>${groups}${discardHtml}`;
   }
-
+  function setStandType(idx,type){standTypes[idx]=type;renderStands();}
   function setStandType(idx, type) { standTypes[idx]=type; renderStands(); }
+
+  function declarationRankOptions(card) {
+    if (card.rank === 'A') return [1,14];
+    const v = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'].indexOf(card.rank) + 1;
+    return v > 0 ? [v] : [];
+  }
+  function declarationIsWild(card) {
+    const r=roomState?.roles;
+    return Boolean(card && r && (card.isPoochie || card.rank===r.tipluRank || (card.suit===r.tipluSuit && (card.rank===r.papluRank || card.rank===r.nichluRank))));
+  }
+  function declarationPure(cards) {
+    if(cards.length<3 || cards.some(declarationIsWild)) return false;
+    if(cards.length===3 && cards.every(c=>c.rank===cards[0].rank && c.suit===cards[0].suit)) return true;
+    const suit=cards[0].suit;
+    if(!cards.every(c=>c.suit===suit)) return false;
+    const vals=cards.map(c=>declarationRankOptions(c)[0]);
+    if(new Set(vals).size!==vals.length) return false;
+    const low=[...vals].sort((a,b)=>a-b);
+    if(low.every((v,i)=>i===0||v===low[i-1]+1)) return true;
+    const high=cards.map(c=>c.rank==='A'?14:declarationRankOptions(c)[0]).sort((a,b)=>a-b);
+    return new Set(high).size===high.length && high.every((v,i)=>i===0||v===high[i-1]+1);
+  }
+  function declarationSequence(cards) {
+    if(cards.length<3) return false;
+    if(declarationPure(cards)) return true;
+    const wilds=cards.filter(declarationIsWild), naturals=cards.filter(c=>!declarationIsWild(c));
+    if(!naturals.length) return false;
+    const suit=naturals[0].suit;
+    if(!naturals.every(c=>c.suit===suit)) return false;
+    const n=cards.length;
+    for(let start=1;start<=14-n;start++){
+      const target=new Set(Array.from({length:n},(_,i)=>start+i)), used=[];
+      let ok=true;
+      for(const opts of naturals.map(declarationRankOptions)){
+        const match=opts.find(v=>target.has(v));
+        if(match===undefined||used.includes(match)){ok=false;break;}
+        used.push(match);
+      }
+      if(ok&&wilds.length===n-naturals.length) return true;
+    }
+    return false;
+  }
+  function declarationSet(cards) {
+    if(cards.length<3||cards.length>4) return false;
+    const naturals=cards.filter(c=>!declarationIsWild(c));
+    if(!naturals.length) return false;
+    const rank=naturals[0].rank;
+    return naturals.every(c=>c.rank===rank) && new Set(naturals.map(c=>c.suit)).size===naturals.length;
+  }
+  function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':'Set';}
+  function groupSelectedCards(type) {
+    if(!declarationMode) return;
+    const cards=myHand.filter(c=>declarationSelectedIds.has(c.id) && c.id!==declarationDiscardId);
+    if(cards.length<3){alert('Select at least 3 cards.');return;}
+    const valid=type==='PURE_SEQUENCE'?declarationPure(cards):type==='SEQUENCE'?declarationSequence(cards):declarationSet(cards);
+    if(!valid){alert(`${declarationTypeLabel(type)} is not valid for the selected cards. Try a different group type or adjust the selection.`);return;}
+    declarationGroups.push({type,typeLabel:declarationTypeLabel(type),cards});
+    cards.forEach(c=>declarationSelectedIds.delete(c.id));
+    renderAll(null);
+  }
+  function setDeclarationDiscard() {
+    if(!declarationMode)return;
+    if(declarationSelectedIds.size!==1){alert('Select exactly one card to use as the final discard.');return;}
+    declarationDiscardId=[...declarationSelectedIds][0];
+    declarationSelectedIds.clear();
+    renderAll(null);
+  }
+  function clearDeclarationDiscard(){declarationDiscardId=null;renderAll(null);}
+  function clearDeclarationSelection(){declarationSelectedIds.clear();renderAll(null);}
+  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);renderAll(null);}
+  function cancelDeclaration(){declarationMode=false;declarationGroups=[];declarationSelectedIds.clear();declarationDiscardId=null;renderAll(null);}
 
   function getMyPlayerId() {
     const me = roomState?.players.find(p => p.name === document.getElementById('playerName').value);
@@ -1526,6 +1628,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function selectCard(cardId) {
+    if (declarationMode) {
+      if (declarationDiscardId === cardId) declarationDiscardId = null;
+      if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
+      else declarationSelectedIds.add(cardId);
+      renderAll(null);
+      return;
+    }
     selectedCardId = selectedCardId === cardId ? null : cardId;
     renderAll(null);
   }
@@ -1908,30 +2017,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     selectedCardId = null;
   }
   function declareShow() {
-    if (!selectedCardId) {
-      alert('Select the final card you want to discard for the Show.');
-      return;
+    if(!declarationMode){
+      if(!roomState||roomState.turnStage!=='DISCARD')return;
+      declarationMode=true; declarationGroups=[]; declarationSelectedIds.clear(); declarationDiscardId=null; selectedCardId=null; renderAll(null); return;
     }
-    if (confirm('Declare valid show with this discard?')) {
-      if (isDemo) {
-        showResultsModal({
-          winnerName: roomState.turnPlayerName,
-          winnerMaal: {
-            total: 90,
-            details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, papluNichlu: 1, papluNichluPts: 20 }
-          },
-          results: [
-            { name: roomState.turnPlayerName, net: 'Won + collects 90 Maal from each loser' },
-            { name: 'Player 2', net: 'Pays 132 pts (42 deadwood + 90 winner maal)' },
-            { name: 'Player 3', net: 'Pays flat drop penalty: 30 pts' }
-          ]
-        });
-        return;
-      }
-      const groups = userStands.map((stand,i) => ({type:standTypes[i]||'SEQUENCE', cardIds:stand.filter(c=>c.id!==selectedCardId).map(c=>c.id)})).filter(g=>g.cardIds.length);
-      ws.send(JSON.stringify({ type: 'DECLARE', cardId: selectedCardId, groups }));
-      selectedCardId = null;
+    const grouped=declarationGroups.flatMap(g=>g.cards), unique=new Set(grouped.map(c=>c.id));
+    if(!declarationDiscardId){alert('Group your 21 cards, then select one remaining card as the final discard.');return;}
+    if(unique.size!==21){alert(`You have grouped ${unique.size} cards. A valid declaration needs all 21 cards grouped.`);return;}
+    const remaining=myHand.filter(c=>!unique.has(c.id));
+    if(remaining.length!==1||remaining[0].id!==declarationDiscardId){alert('The final discard must be the one ungrouped card.');return;}
+    const pure=declarationGroups.filter(g=>g.type==='PURE_SEQUENCE').length;
+    if(pure<3){alert(`You have ${pure} Pure Sequences. At least 3 are required.`);return;}
+    const groups=declarationGroups.map(g=>({type:g.type,cardIds:g.cards.map(c=>c.id)}));
+    if(isDemo){
+      const demoData={winnerName:roomState.turnPlayerName,winnerMaal:{total:90,details:{marriages:1,marriagePts:50,tiplus:0,tipluPts:0,poochies:1,poochiePts:20,papluNichlu:1,papluNichluPts:20}},results:[{name:roomState.turnPlayerName,net:'Won + collects 90 Maal from each loser'},{name:'Player 2',net:'Pays 132 pts (42 deadwood + 90 winner maal)',deadwood:42},{name:'Player 3',net:'Pays flat drop penalty: 30 pts'}],revealedHands:[{name:roomState.turnPlayerName,hand:myHand}]};
+      showWinnerFanfare(demoData); setTimeout(()=>showResultsModal(demoData),900); return;
     }
+    ws.send(JSON.stringify({type:'DECLARE',cardId:declarationDiscardId,groups}));
+    declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); declarationDiscardId=null; renderAll(null);
   }
 
   function getCardTagForRoles(card) {
@@ -1943,6 +2046,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'NICHLU';
     if (card.rank === r.tipluRank) return 'JOKER';
     return '';
+  }
+
+  function showWinnerFanfare(data){
+    const old=document.getElementById('winnerFanfare'); if(old)old.remove();
+    const el=document.createElement('div'); el.id='winnerFanfare'; el.className='fanfare';
+    el.innerHTML=`<div class="fanfare-card"><div class="fanfare-icon">🏆 ✨ 🎉</div><div class="fanfare-title">${data.winnerName} DECLARES!</div><div class="fanfare-sub">Valid 21-card show • 3+ Pure Sequences</div></div>`;
+    document.body.appendChild(el); setTimeout(()=>el.remove(),2900);
   }
 
   function showResultsModal(data) {
