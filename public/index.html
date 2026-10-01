@@ -583,7 +583,7 @@
     /* Action Grid */
     .actions-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 8px;
       margin-top: 6px;
     }
@@ -822,15 +822,170 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
 .discard-history-panel{display:none!important}
 .discard-history-badge{font-size:8px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:3px 6px;border-radius:999px;white-space:nowrap}
-.maal-details-popover{position:absolute;right:10px;top:54px;z-index:1000;display:none;pointer-events:auto;margin:0;width:min(500px,calc(100vw - 28px));padding:11px 12px;border:1px solid rgba(217,182,92,.22);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.98),rgba(10,20,15,.98));box-shadow:0 14px 36px rgba(0,0,0,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.maal-details-popover.is-open{display:block}
-.status-bar{position:relative;z-index:1000}
+/* Maal Calculation Details Modal */
+.maal-modal-content {
+  max-width: 560px;
+  width: 95vw;
+  background: linear-gradient(145deg, #143728, #0a1c14);
+  border: 1px solid rgba(217, 182, 92, 0.35);
+  border-top: 4px solid #d9b65c;
+  padding: 24px 22px;
+  border-radius: 16px;
+}
+.maal-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.maal-modal-title-group {
+  min-width: 0;
+}
+.maal-modal-subtitle {
+  display: block;
+  font-size: 11px;
+  color: #a7bbb1;
+  margin-top: 3px;
+}
+.maal-modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.maal-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: scale(1.08);
+}
+.maal-total-banner {
+  background: rgba(217, 182, 92, 0.12);
+  border: 1px solid rgba(217, 182, 92, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.maal-total-label {
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #d9b65c;
+}
+.maal-total-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: #f8dfa0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.maal-formula-bar {
+  font-family: monospace;
+  font-size: 11px;
+  color: #f1d27a;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 9px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  text-align: center;
+  border: 1px dashed rgba(217, 182, 92, 0.28);
+  line-height: 1.45;
+  word-break: break-word;
+}
+.maal-cut-info-banner {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-top: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+.maal-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+@media (max-width: 520px) {
+  .maal-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.maal-item-card {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.maal-held-section {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.maal-held-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #a7bbb1;
+}
+.maal-held-list {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  min-height: 24px;
+  align-items: center;
+}
+.maal-held-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: rgba(217, 182, 92, 0.12);
+  border: 1px solid rgba(217, 182, 92, 0.3);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.maal-rules-guide {
+  margin-top: 12px;
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+.maal-rules-guide ul {
+  margin: 5px 0 0 16px;
+  padding: 0;
+}
+.maal-rules-guide li {
+  margin-bottom: 3px;
+}
+.status-bar{position:relative;z-index:100}
 #maalSummary{cursor:pointer;position:relative}
-#maalSummary:hover{filter:brightness(1.08)}
+#maalSummary:hover{filter:brightness(1.15);transform:translateY(-1px);transition:all 0.15s;}
 #maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
-.maal-details-popover .maal-details-head{margin-bottom:8px}
-.maal-details-popover .maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:600px){.maal-details-popover{right:6px;top:52px}.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
+@media(max-width:600px){.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
 
 </style>
 </head>
@@ -895,19 +1050,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="playerRows"></div>
   </div>
 
-  <section class="maal-details-popover" id="maalDetailsPanel" aria-label="Maal details">
-    <div class="maal-details-head"><div><div class="maal-details-title">Maal Details</div><div class="maal-details-subtitle">Joker relationships and special Maal markers for this hand</div></div><div class="maal-live-total" id="maalMiniTotal">Pending</div></div>
-    <div class="maal-detail-grid">
-      <div class="maal-detail-card"><span class="maal-detail-label">Cut Joker</span><span class="maal-detail-value" id="maalCutCard">—</span><span class="maal-detail-points" id="maalCutPts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Joker</span><span class="maal-detail-value" id="maalTiplu">—</span><span class="maal-detail-points" id="maalTipluPts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Paplu</span><span class="maal-detail-value" id="maalPaplu">—</span><span class="maal-detail-points" id="maalPapluPts">See P/N pool</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Tuplu</span><span class="maal-detail-value" id="maalNichlu">—</span><span class="maal-detail-points" id="maalNichluPts">See P/N pool</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Poochie</span><span class="maal-detail-value" id="maalPoochie">0</span><span class="maal-detail-points" id="maalPoochiePts">0 pts</span></div>
-      <div class="maal-detail-card"><span class="maal-detail-label">Marriages</span><span class="maal-detail-value" id="maalMarriages">0</span><span class="maal-detail-points" id="maalMarriagePts">0 pts</span></div>
-    </div>
-    <div class="maal-pool-note" id="maalPoolNote">Paplu + Tuplu use a shared tiered point pool after marriages are counted.</div>
-  </section>
-
   <!-- Center Table Felt -->
   <div class="center-board">
     <div class="pile-wrapper stock-pile-wrapper">
@@ -922,10 +1064,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="pile-wrapper discard-pile-wrapper">
       <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
-      <div class="pile-action-hint">Drag here to discard • drag old cards aside to peek</div>
+      <div class="pile-action-hint">Drag card here or select &amp; tap to discard • drag old cards aside to peek</div>
       <div class="discard-stack-area">
         <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
         <div id="discardContainer" class="pile-drop-source" draggable="true"
+             onclick="onDiscardContainerClick(event)"
              ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
              ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
              ondrop="onDiscardPileDrop(event)"></div>
@@ -940,17 +1083,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span class="hand-heading-title">Your Hand</span>
         <span class="hand-heading-count"><span id="handCount">21</span> cards</span>
       </div>
-      <span class="hand-heading-hint">Drag Stock / Discard here • Drag any card to Discard</span>
+      <span class="hand-heading-hint">Drag Stock / Discard here • Drag or tap Discard pile to discard</span>
     </div>
 
     <!-- Stands Toolbar -->
     <div class="stands-toolbar">
       <div class="toolbar-left">
         <span class="hand-toolbar-label">Arrange</span>
-        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move all Jokers, Paplu, Tuplu & Poochies to the start">
+        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move Poochies to the start">
           <span>🃏</span> Jokers to Start
         </button>
-        <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank">
+        <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank (Poochies to start)">
           <span>↕</span> Sort Suit/Rank
         </button>
       </div>
@@ -980,7 +1123,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div class="action-label">Your Move</div>
     </div>
     <div class="actions-grid">
-      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()"><span><b>Discard</b><small class="action-sub">selected card</small></span></button>
       <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Scoot</b><small class="action-sub">before drawing</small></span></button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
@@ -1003,7 +1145,82 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   </div>
 </div>
 
+<!-- Maal Points Calculation Details Modal -->
+<div id="maalModal" class="modal" onclick="if(event.target===this) closeMaalModal()">
+  <div class="modal-content maal-modal-content">
+    <div class="maal-modal-header">
+      <div class="maal-modal-title-group">
+        <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+          <span>🏆</span> Maal Points Breakdown
+        </h2>
+        <span class="maal-modal-subtitle">Comprehensive calculation for your hand</span>
+      </div>
+      <button class="maal-modal-close" onclick="closeMaalModal()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Total Score Highlight -->
+    <div id="maalModalTotalBanner" class="maal-total-banner">
+      <span class="maal-total-label">Total Maal Points</span>
+      <span id="maalModalTotalPoints" class="maal-total-value">0 pts</span>
+    </div>
+
+    <!-- Cut Card Roles Banner -->
+    <div id="maalCutInfoBanner" class="maal-cut-info-banner"></div>
+
+    <!-- Formula Summary -->
+    <div id="maalFormulaBar" class="maal-formula-bar"></div>
+
+    <!-- Table of 4 Categories -->
+    <div id="maalModalCardsBreakdown" class="maal-modal-grid"></div>
+
+    <!-- Contributing Cards Held in Hand -->
+    <div class="maal-held-section">
+      <div class="maal-held-title">Maal Cards in Your Hand (<span id="maalHeldCount">0</span>)</div>
+      <div id="maalHeldCardsList" class="maal-held-list"></div>
+    </div>
+
+    <!-- Rules Reference -->
+    <div class="maal-rules-guide">
+      <strong>Scoring Rules:</strong>
+      <ul>
+        <li><strong>Marriage (50 pts):</strong> 1 Tuplu + 1 Tiplu + 1 Paplu together in the cut card's suit.</li>
+        <li><strong>Tiplu (20 pts each):</strong> Joker card matching both rank and suit of the cut card.</li>
+        <li><strong>Poochie (Tiered):</strong> Printed joker — 1 = 20 pts, 2 = 50 pts, 3 = 70 pts (+20 each).</li>
+        <li><strong>Paplu / Tuplu (Tiered pool):</strong> Same suit as cut card (+1 rank and -1 rank) remaining after marriages — 1 = 10 pts, 2 = 30 pts, 3 = 50 pts.</li>
+      </ul>
+    </div>
+
+    <div style="margin-top:18px; display:flex; justify-content:center;">
+      <button class="btn-action btn-declare" style="min-height:40px; padding:8px 32px;" onclick="closeMaalModal()">
+        <span><b>Close</b></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Safe In-App Notification Toast for sandboxed environments -->
+<div id="gameToast" style="display:none; position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:999999; max-width:92vw; width:440px; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:16px 20px; border-radius:12px; box-shadow:0 12px 35px rgba(0,0,0,0.75); font-family:inherit; font-size:13.5px; line-height:1.5; text-align:center;">
+  <div id="gameToastMessage" style="white-space:pre-wrap; margin-bottom:12px;"></div>
+  <button onclick="document.getElementById('gameToast').style.display='none'" style="background:#38bdf8; color:#090e17; font-weight:700; border:none; padding:7px 20px; border-radius:6px; cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Dismiss</button>
+</div>
+
 <script>
+  window.alert = function(msg) {
+    const toast = document.getElementById('gameToast');
+    const toastMsg = document.getElementById('gameToastMessage');
+    if (toast && toastMsg) {
+      toastMsg.innerText = String(msg);
+      toast.style.display = 'block';
+      setTimeout(() => {
+        if (toast.style.display === 'block') {
+          toast.style.display = 'none';
+        }
+      }, 7000);
+    } else {
+      console.warn('Game Alert:', msg);
+    }
+  };
+
   let ws;
   let roomState = null;
   let myHand = [];
@@ -1212,27 +1429,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     renderAll(null);
   }
 
-  // --- Move All Jokers to Start ---
+  // --- Move Only Poochies to Start ---
   function moveJokersToFront() {
-    const r = roomState?.roles;
-
-    function getJokerRank(c) {
-      if (c.isPoochie) return 4;
-      if (r) {
-        if (c.suit === r.tipluSuit && c.rank === r.tipluRank) return 1; // Joker
-        if (c.suit === r.tipluSuit && c.rank === r.papluRank) return 2; // Paplu
-        if (c.suit === r.tipluSuit && c.rank === r.nichluRank) return 3; // Tuplu
-        if (c.rank === r.tipluRank) return 5; // Ordinary Joker
-      }
-      return 99;
-    }
-
     const allCards = userStands.flat();
-    const jokers = allCards.filter(c => getJokerRank(c) < 99);
-    const nonJokers = allCards.filter(c => getJokerRank(c) === 99);
+    const poochies = allCards.filter(c => c.isPoochie || c.suit === '★');
+    const nonPoochies = allCards.filter(c => !c.isPoochie && c.suit !== '★');
 
-    jokers.sort((a, b) => getJokerRank(a) - getJokerRank(b));
-    const reordered = [...jokers, ...nonJokers];
+    const reordered = [...poochies, ...nonPoochies];
 
     // Re-populate stands preserving stand card counts
     let offset = 0;
@@ -1464,68 +1667,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     // Render Multiple Stands
     renderStands();
 
-  function calculateLocalMaal() {
-    const cut=roomState?.cutCard, roles=roomState?.roles;
-    if (!cut || !roles) return null;
-    let poochies=0,tiplus=0,paplus=0,nichlus=0;
-    for (const card of myHand) {
-      if (card.isPoochie) poochies++;
-      else if (card.suit===roles.tipluSuit && card.rank===roles.tipluRank) tiplus++;
-      else if (card.suit===roles.tipluSuit && card.rank===roles.papluRank) paplus++;
-      else if (card.suit===roles.tipluSuit && card.rank===roles.nichluRank) nichlus++;
-    }
-    const marriages=Math.min(nichlus,tiplus,paplus);
-    const remTiplus=tiplus-marriages;
-    const remPapluNichlu=(paplus-marriages)+(nichlus-marriages);
-    const tier=(count,a,b,c)=>count<=0?0:count===1?a:count===2?b:c+(count-3)*a;
-    const marriagePts=marriages*50, tipluPts=remTiplus*20;
-    const poochiePts=tier(poochies,20,50,70);
-    const papluNichluPts=tier(remPapluNichlu,10,30,50);
-    return {total:marriagePts+tipluPts+poochiePts+papluNichluPts,details:{
-      marriages,marriagePts,tiplus:remTiplus,tipluPts,poochies,poochiePts,
-      papluNichlu:remPapluNichlu,papluNichluPts
-    }};
-  }
-
-  function toggleMaalDetails(force) {
-    const panel=document.getElementById('maalDetailsPanel');
-    if(!panel) return;
-    const open = typeof force==='boolean' ? force : !panel.classList.contains('is-open');
-    panel.classList.toggle('is-open',open);
-    panel.style.display = open ? 'block' : 'none';
-    document.getElementById('maalSummary')?.setAttribute('aria-expanded', String(open));
-  }
-
-  function renderMaalDetails(maalData) {
-    const roles=roomState?.roles||{}, cut=roomState?.cutCard;
-    const data=maalData?.details ? maalData : calculateLocalMaal();
-    const d=data?.details||{};
-    const fmt=card=>card?(card.rank+card.suit):'—';
-    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.innerText=value;};
-    set('maalCutCard',fmt(cut));
-    set('maalCutPts','0 pts • sets joker roles');
-    set('maalTiplu',roles.tipluRank&&roles.tipluSuit?(roles.tipluRank+roles.tipluSuit):'—');
-    set('maalTipluPts',`${d.tipluPts||0} pts`);
-    set('maalPaplu',roles.papluRank&&roles.tipluSuit?(roles.papluRank+roles.tipluSuit):'—');
-    set('maalPapluPts',d.papluNichlu ? `${d.papluNichlu} in P/N pool` : '0 in P/N pool');
-    set('maalNichlu',roles.nichluRank&&roles.tipluSuit?(roles.nichluRank+roles.tipluSuit):'—');
-    set('maalNichluPts',d.papluNichlu ? `${d.papluNichluPts||0} pts P/N pool` : '0 pts');
-    set('maalPoochie',`${d.poochies||0}`);
-    set('maalPoochiePts',`${d.poochiePts||0} pts`);
-    set('maalMarriages',`${d.marriages||0}`);
-    set('maalMarriagePts',`${d.marriagePts||0} pts`);
-    set('maalPoolNote',d.papluNichlu
-      ? `Paplu + Tuplu: ${d.papluNichlu} remaining card(s) = ${d.papluNichluPts||0} pts. This is a shared tiered pool, so it is not double-counted between the two cards.`
-      : 'Paplu + Tuplu have no remaining cards after marriages.');
-    set('maalMiniTotal',data?(data.total+' pts'):'Pending');
-  }
-
     // Maal Header Badge
-    if (maalData) {
-      document.getElementById('maalPtsText').innerText = `Maal: ${maalData.total} pts`;
-      const mini = document.getElementById('maalMiniTotal');
-      if (mini) mini.innerText = `${maalData.total} pts`;
+    const data = maalData?.details ? maalData : calculateLocalMaal();
+    const total = data ? data.total : 0;
+    const maalText = document.getElementById('maalPtsText');
+    if (maalText) {
+      maalText.innerText = `Maal: ${total} pts`;
     }
+    const mini = document.getElementById('maalMiniTotal');
+    if (mini) mini.innerText = `${total} pts`;
 
     // Turn indicator & button state enforcement
     const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
@@ -1538,7 +1688,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       } else if (isMyTurn && roomState.turnStage === 'DRAW') {
         guide.innerHTML = '<strong>Your turn:</strong> drag the Stock or Discard onto your board.';
       } else if (isMyTurn && roomState.turnStage === 'DISCARD') {
-        guide.innerHTML = '<strong>Your turn:</strong> select a card, then Discard or Show / Declare.';
+        guide.innerHTML = '<strong>Your turn:</strong> drag a card to Discard pile (or select &amp; tap it) to discard, or Show / Declare.';
       } else {
         guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
       }
@@ -1564,8 +1714,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD';
 
     document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw);
-    document.getElementById('btnDiscard').classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
-    document.getElementById('btnDiscard').style.display = declarationMode ? 'none' : '';
+    const btnDiscard = document.getElementById('btnDiscard');
+    if (btnDiscard) {
+      btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
+      btnDiscard.style.display = 'none';
+    }
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
     const declareBtn=document.getElementById('btnDeclare');
     if(declareBtn){
@@ -1593,6 +1746,220 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     updateReorderControls();
   }
+
+  function calculateLocalMaal() {
+    const cut = roomState?.cutCard, roles = roomState?.roles;
+    if (!cut || !roles) return null;
+    let poochies = 0, tiplus = 0, paplus = 0, nichlus = 0;
+    for (const card of myHand) {
+      if (card.isPoochie || card.suit === '★') poochies++;
+      else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) tiplus++;
+      else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) paplus++;
+      else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) nichlus++;
+    }
+    const marriages = Math.min(nichlus, tiplus, paplus);
+    const remTiplus = tiplus - marriages;
+    const remPapluNichlu = (paplus - marriages) + (nichlus - marriages);
+    const tier = (count, a, b, c) => count <= 0 ? 0 : count === 1 ? a : count === 2 ? b : c + (count - 3) * a;
+    const marriagePts = marriages * 50;
+    const tipluPts = remTiplus * 20;
+    const poochiePts = tier(poochies, 20, 50, 70);
+    const papluNichluPts = tier(remPapluNichlu, 10, 30, 50);
+    return {
+      total: marriagePts + tipluPts + poochiePts + papluNichluPts,
+      details: {
+        marriages,
+        marriagePts,
+        tiplus: remTiplus,
+        tipluPts,
+        poochies,
+        poochiePts,
+        papluNichlu: remPapluNichlu,
+        papluNichluPts
+      }
+    };
+  }
+
+  function openMaalModal() {
+    const roles = roomState?.roles || {};
+    const cut = roomState?.cutCard;
+    const data = calculateLocalMaal();
+    const d = data?.details || {
+      marriages: 0,
+      marriagePts: 0,
+      tiplus: 0,
+      tipluPts: 0,
+      poochies: 0,
+      poochiePts: 0,
+      papluNichlu: 0,
+      papluNichluPts: 0
+    };
+    const total = data ? data.total : 0;
+
+    const totalEl = document.getElementById('maalModalTotalPoints');
+    if (totalEl) totalEl.innerText = `${total} pts`;
+
+    // Formula summary
+    const formulaEl = document.getElementById('maalFormulaBar');
+    if (formulaEl) {
+      formulaEl.innerText = `${d.marriagePts || 0} pts (Marriage) + ${d.tipluPts || 0} pts (Tiplu) + ${d.poochiePts || 0} pts (Poochie) + ${d.papluNichluPts || 0} pts (Paplu/Tuplu) = ${total} pts Total`;
+    }
+
+    const cutName = cut ? (cut.isPoochie ? '★ PJ (Printed Joker)' : `${cut.rank}${cut.suit}`) : 'Not cut yet';
+    const tipluName = roles.tipluRank ? `${roles.tipluRank}${roles.tipluSuit}` : '—';
+    const papluName = roles.papluRank ? `${roles.papluRank}${roles.tipluSuit}` : '—';
+    const tupluName = roles.nichluRank ? `${roles.nichluRank}${roles.tipluSuit}` : '—';
+
+    // Cut Card role info banner
+    const cutBanner = document.getElementById('maalCutInfoBanner');
+    if (cutBanner) {
+      cutBanner.innerHTML = `
+        <span style="color:#f1d27a; font-weight:800;">Cut Card: ${cutName}</span> &bull; 
+        <span>Tiplu: <strong>${tipluName}</strong></span> &bull; 
+        <span>Paplu: <strong>${papluName}</strong></span> &bull; 
+        <span>Tuplu: <strong>${tupluName}</strong></span> &bull; 
+        <span>Poochie: <strong>★ PJ</strong></span>
+      `;
+    }
+
+    // Grid breakdown
+    const grid = document.getElementById('maalModalCardsBreakdown');
+    if (grid) {
+      grid.innerHTML = `
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Marriages (50 pts each)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.marriagePts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Full sets of Tuplu (${tupluName}) + Tiplu (${tipluName}) + Paplu (${papluName})
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.marriages || 0} set(s) held = ${d.marriagePts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Tiplu (20 pts each)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tipluPts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Cut-suit joker: <strong>${tipluName}</strong> (remaining after marriages)
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.tiplus || 0} card(s) held = ${d.tipluPts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Poochie (Tiered: 20/50/70)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.poochiePts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Printed Jokers (★ PJ): 1st = 20 pts, 2nd = 50 pts, 3rd = 70 pts (+20 each)
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.poochies || 0} card(s) held = ${d.poochiePts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Paplu &amp; Tuplu Pool</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.papluNichluPts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Remaining ${papluName} and ${tupluName} after marriages: 1st=10, 2nd=30, 3rd=50 pts
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.papluNichlu || 0} card(s) held = ${d.papluNichluPts || 0} pts
+          </div>
+        </div>
+      `;
+    }
+
+    // Find all cards in hand that earned Maal
+    const contributing = [];
+    if (cut && roles.tipluRank) {
+      for (const card of myHand) {
+        if (card.isPoochie || card.suit === '★') {
+          contributing.push({ card, role: 'Poochie' });
+        } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
+          contributing.push({ card, role: 'Tiplu' });
+        } else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) {
+          contributing.push({ card, role: 'Paplu' });
+        } else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) {
+          contributing.push({ card, role: 'Tuplu' });
+        }
+      }
+    }
+
+    const heldCountEl = document.getElementById('maalHeldCount');
+    if (heldCountEl) heldCountEl.innerText = String(contributing.length);
+
+    const heldListEl = document.getElementById('maalHeldCardsList');
+    if (heldListEl) {
+      if (contributing.length === 0) {
+        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Maal cards in your hand currently. Draw Poochies or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Maal!</span>';
+      } else {
+        heldListEl.innerHTML = contributing.map(({card, role}) => {
+          const isRed = card.suit === '♥' || card.suit === '♦';
+          const color = card.isPoochie ? '#fbbf24' : (isRed ? '#f87171' : '#f8fafc');
+          const label = card.isPoochie ? '★ PJ' : `${card.rank}${card.suit}`;
+          return `
+            <span class="maal-held-chip">
+              <span style="color:${color}; font-size:13px;">${label}</span>
+              <span style="font-size:10px; color:#94a3b8; font-weight:normal;">(${role})</span>
+            </span>
+          `;
+        }).join('');
+      }
+    }
+
+    const modal = document.getElementById('maalModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeMaalModal() {
+    const modal = document.getElementById('maalModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function toggleMaalDetails(force) {
+    const modal = document.getElementById('maalModal');
+    if (typeof force === 'boolean') {
+      if (force) openMaalModal();
+      else closeMaalModal();
+    } else {
+      if (modal && modal.style.display === 'flex') closeMaalModal();
+      else openMaalModal();
+    }
+  }
+
+  function renderMaalDetails(maalData) {
+    const data = maalData?.details ? maalData : calculateLocalMaal();
+    const total = data ? data.total : 0;
+    const maalText = document.getElementById('maalPtsText');
+    if (maalText) {
+      maalText.innerText = `Maal: ${total} pts`;
+    }
+    const mini = document.getElementById('maalMiniTotal');
+    if (mini) mini.innerText = `${total} pts`;
+  }
+
+  function onDiscardContainerClick(e) {
+    const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
+    if (isMyTurn && roomState.turnStage === 'DISCARD' && selectedCardId) {
+      discardSelected();
+    }
+  }
+
+  window.openMaalModal = openMaalModal;
+  window.closeMaalModal = closeMaalModal;
+  window.toggleMaalDetails = toggleMaalDetails;
+  window.onDiscardContainerClick = onDiscardContainerClick;
 
   function renderStands() {
     const container=document.getElementById('standsContainer');
@@ -2054,13 +2421,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     });
   }
 
-  function sortHand() {    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4, '★': 5 };
-    const sortFn = (a, b) => {
-      if (a.suit !== b.suit) return (suitOrder[a.suit] || 0) - (suitOrder[b.suit] || 0);
-      return a.rankValue - b.rankValue;
-    };
-    // Sort cards within each stand
-    userStands = userStands.map(s => s.sort(sortFn));
+  function sortHand() {
+    const suitOrder = { '♠': 1, '♥': 2, '♣': 3, '♦': 4 };
+    const allCards = userStands.flat();
+    const poochies = allCards.filter(c => c.isPoochie || c.suit === '★');
+    const regular = allCards.filter(c => !c.isPoochie && c.suit !== '★');
+
+    regular.sort((a, b) => {
+      const sA = suitOrder[a.suit] || 99;
+      const sB = suitOrder[b.suit] || 99;
+      if (sA !== sB) return sA - sB;
+      return (a.rankValue || 0) - (b.rankValue || 0);
+    });
+
+    const reordered = [...poochies, ...regular];
+
+    // Re-populate stands preserving stand card counts
+    let offset = 0;
+    userStands = userStands.map(stand => {
+      const count = stand.length;
+      const slice = reordered.slice(offset, offset + count);
+      offset += count;
+      return slice;
+    });
+
     myHand = userStands.flat();
     renderAll(null);
   }
@@ -2182,26 +2566,23 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('resultModal').style.display = 'flex';
   }
 
-  // Maal details: click/tap toggles the popover; clicking elsewhere closes it.
-  const maalSummaryEl=document.getElementById('maalSummary');
-  const maalPanelEl=document.getElementById('maalDetailsPanel');
+  // Maal details: click/tap opens the calculation details modal
+  const maalSummaryEl = document.getElementById('maalSummary');
   maalSummaryEl?.addEventListener('click', e => {
     e.preventDefault();
     e.stopPropagation();
-    toggleMaalDetails();
+    openMaalModal();
   });
   maalSummaryEl?.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       e.stopPropagation();
-      toggleMaalDetails();
+      openMaalModal();
     }
   });
-  maalPanelEl?.addEventListener('click', e => e.stopPropagation());
-  document.addEventListener('click', e => {
-    const panel=document.getElementById('maalDetailsPanel'), summary=document.getElementById('maalSummary');
-    if (panel && summary && panel.classList.contains('is-open') && !panel.contains(e.target) && !summary.contains(e.target)) {
-      toggleMaalDetails(false);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeMaalModal();
     }
   });
 
