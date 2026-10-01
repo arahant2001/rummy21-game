@@ -175,6 +175,16 @@ wss.on('connection', (ws) => {
         broadcastRoom(userRoom);
       }
 
+      if (data.type === 'FORFEIT_DECLARATION' && isTurn && userRoom.turnStage === 'DISCARD') {
+        activePlayer.hasDropped = true;
+        activePlayer.dropPenalty = 100;
+        advanceTurn(userRoom);
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'DECLARATION_FORFEITED', penalty: 100 }));
+        }
+        broadcastRoom(userRoom);
+      }
+
       if (data.type === 'DECLARE' && isTurn && userRoom.turnStage === 'DISCARD') {
         const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
         if (finalIdx === -1) return;
