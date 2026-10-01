@@ -1183,8 +1183,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div class="maal-rules-guide">
       <strong>Scoring Rules:</strong>
       <ul>
-        <li><strong>Marriage (50 pts):</strong> 1 Tuplu + 1 Tiplu + 1 Paplu together in the cut card's suit.</li>
-        <li><strong>Tiplu (20 pts each):</strong> Joker card matching both rank and suit of the cut card.</li>
+        <li><strong>Marriage (50 pts):</strong> 1 Tuplu + 1 Cut Joker + 1 Paplu together in the cut card's suit.</li>
+        <li><strong>Cut Joker (20 pts each):</strong> Joker card matching both rank and suit of the cut card.</li>
         <li><strong>Poochie (Tiered):</strong> Printed joker — 1 = 20 pts, 2 = 50 pts, 3 = 70 pts (+20 each).</li>
         <li><strong>Paplu / Tuplu (Tiered pool):</strong> Same suit as cut card (+1 rank and -1 rank) remaining after marriages — 1 = 10 pts, 2 = 30 pts, 3 = 50 pts.</li>
       </ul>
@@ -1802,7 +1802,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     // Formula summary
     const formulaEl = document.getElementById('maalFormulaBar');
     if (formulaEl) {
-      formulaEl.innerText = `${d.marriagePts || 0} pts (Marriage) + ${d.tipluPts || 0} pts (Tiplu) + ${d.poochiePts || 0} pts (Poochie) + ${d.papluNichluPts || 0} pts (Paplu/Tuplu) = ${total} pts Total`;
+      formulaEl.innerText = `${d.marriagePts || 0} pts (Marriage) + ${d.tipluPts || 0} pts (Cut Joker) + ${d.poochiePts || 0} pts (Poochie) + ${d.papluNichluPts || 0} pts (Paplu/Tuplu) = ${total} pts Total`;
     }
 
     const cutName = cut ? (cut.isPoochie ? '★ PJ (Printed Joker)' : `${cut.rank}${cut.suit}`) : 'Not cut yet';
@@ -1815,7 +1815,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (cutBanner) {
       cutBanner.innerHTML = `
         <span style="color:#f1d27a; font-weight:800;">Cut Card: ${cutName}</span> &bull; 
-        <span>Tiplu: <strong>${tipluName}</strong></span> &bull; 
+        <span>Cut Joker: <strong>${tipluName}</strong></span> &bull; 
         <span>Paplu: <strong>${papluName}</strong></span> &bull; 
         <span>Tuplu: <strong>${tupluName}</strong></span> &bull; 
         <span>Poochie: <strong>★ PJ</strong></span>
@@ -1832,7 +1832,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.marriagePts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Full sets of Tuplu (${tupluName}) + Tiplu (${tipluName}) + Paplu (${papluName})
+            Full sets of Tuplu (${tupluName}) + Cut Joker (${tipluName}) + Paplu (${papluName})
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.marriages || 0} set(s) held = ${d.marriagePts || 0} pts
@@ -1841,11 +1841,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Tiplu (20 pts each)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Cut Joker (20 pts each)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tipluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Cut-suit joker: <strong>${tipluName}</strong> (remaining after marriages)
+            Matches suit &amp; rank of cut card: <strong>${tipluName}</strong> (remaining after marriages)
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.tiplus || 0} card(s) held = ${d.tipluPts || 0} pts
@@ -1887,7 +1887,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         if (card.isPoochie || card.suit === '★') {
           contributing.push({ card, role: 'Poochie' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
-          contributing.push({ card, role: 'Tiplu' });
+          contributing.push({ card, role: 'Cut Joker' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) {
           contributing.push({ card, role: 'Paplu' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) {
@@ -2542,7 +2542,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const m = data.winnerMaal.details;
     document.getElementById('maalDetails').innerHTML = `      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
       • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
-      • Joker: ${m.tiplus} (${m.tipluPts} pts)<br>
+      • Cut Joker: ${m.tiplus} (${m.tipluPts} pts)<br>
       • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
       • Paplu / Tuplu: ${m.papluNichlu} (${m.papluNichluPts} pts)
     `;
