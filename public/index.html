@@ -1571,15 +1571,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const suit=naturals[0].suit;
     if(!naturals.every(c=>c.suit===suit)) return false;
     const n=cards.length;
-    for(let start=1;start<=14-n;start++){
-      const target=new Set(Array.from({length:n},(_,i)=>start+i)), used=[];
+    const naturalOptions=naturals.map(declarationRankOptions);
+    // Try every consecutive window, including 10-J-Q-K-A. K-A-2 is not valid.
+    for(let start=1;start<=15-n;start++){
+      const target=new Set(Array.from({length:n},(_,i)=>start+i));
+      const used=new Set();
       let ok=true;
-      for(const opts of naturals.map(declarationRankOptions)){
-        const match=opts.find(v=>target.has(v));
-        if(match===undefined||used.includes(match)){ok=false;break;}
-        used.push(match);
+      for(const options of naturalOptions){
+        const match=options.find(v=>target.has(v)&&!used.has(v));
+        if(match===undefined){ok=false;break;}
+        used.add(match);
       }
-      if(ok&&wilds.length===n-naturals.length) return true;
+      if(ok && n-used.size===wilds.length) return true;
     }
     return false;
   }
