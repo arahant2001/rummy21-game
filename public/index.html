@@ -789,7 +789,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .player-state.turn{color:var(--accent-gold-soft);font-size:11px;text-transform:uppercase;letter-spacing:.35px}
 .player-state.turn:before{content:"●";color:var(--accent-gold-soft);margin-right:5px;animation:pulse 1.4s infinite}
 .player-state.you-turn{color:#f1d27a;background:rgba(217,182,92,.10);border:1px solid rgba(217,182,92,.28);padding:5px 8px;border-radius:7px}
-.player-state.dropped-state{color:var(--accent-rose)}
+.player-state.dropped-state{color:var(--accent-rose);background:rgba(244,63,94,.09);border:1px solid rgba(244,63,94,.22);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:750}
+.player-state.forfeited-state{color:#f87171;background:rgba(248,113,113,.14);border:1px solid rgba(248,113,113,.30);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800}
+.player-row.forfeited{opacity:.50;border-color:rgba(248,113,113,.22)}
 .player-strip-title{display:flex;justify-content:space-between;align-items:center;padding:1px 5px 3px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#789087}
 @media(max-width:600px){.player-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}.player-state{grid-column:1/-1;justify-self:stretch;text-align:left;margin-left:34px}.player-state.you-turn{display:inline-block;width:max-content;margin-left:34px}.player-count{font-size:11px}}
 
@@ -1616,9 +1618,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return Array.isArray(myHand) ? myHand.length : 0;
   }
 
+  function isCurrentPlayerMe() {
+    if (!roomState) return false;
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myP = roomState.players?.find(p => p.id === myId);
+    if (myP?.hasDropped || myP?.hasForfeited) return false;
+    return roomState.turnPlayerId === myId;
+  }
+
   function canPlayerDraw() {
-    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
-    if (!isMyTurn || !roomState || roomState.turnStage !== 'DRAW') return false;
+    if (!isCurrentPlayerMe() || !roomState || roomState.turnStage !== 'DRAW') return false;
     if (getHandCount() >= 22) return false;
     return true;
   }
@@ -1628,43 +1637,55 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const summary = document.getElementById('playerTurnSummary');
     if (!rows || !roomState || !roomState.players) return;
 
-    const me = roomState.players.find(p => p.id === getMyPlayerId());
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const me = roomState.players.find(p => p.id === myId);
     const currentId = roomState.turnPlayerId;
     const playing = roomState.status !== 'LOBBY';
-    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
+    const isMyTurn = isCurrentPlayerMe();
     const myCount = getHandCount();
+    const myForfeited = Boolean(me && (me.hasForfeited || me.dropType === 'FORFEIT'));
+    const myDropped = Boolean(me && me.hasDropped);
 
     if (summary) {
       if (!playing) {
         summary.innerText = roomState.players.length + ' seated';
+      } else if (myForfeited) {
+        summary.innerText = `You forfeited (100 pts) • Turn: ${roomState.turnPlayerName || 'Next player'}`;
+      } else if (myDropped) {
+        summary.innerText = `You scooted / dropped • Turn: ${roomState.turnPlayerName || 'Next player'}`;
       } else if (isMyTurn) {
         summary.innerText = roomState.turnStage === 'DRAW' && myCount < 22
           ? `Your turn: Draw card (${myCount}/21)`
           : `Your turn: Discard card (${myCount}/22)`;
       } else {
-        summary.innerText = roomState.turnPlayerName ? `Turn: ${roomState.turnPlayerName}` : 'In progress';
+        const lastActionText = roomState.lastAction ? ` • ${roomState.lastAction}` : '';
+        summary.innerText = roomState.turnPlayerName ? `Turn: ${roomState.turnPlayerName}${lastActionText}` : 'In progress';
       }
     }
 
     rows.innerHTML = roomState.players.map(p => {
-      const isMe = p.id === getMyPlayerId();
+      const isMe = p.id === myId;
       const isCurrent = playing && p.id === currentId;
-      const dropped = p.hasDropped;
+      const forfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
+      const dropped = Boolean(p.hasDropped);
       let stateText = 'Waiting';
       let stateClass = 'waiting';
-      if (dropped) {
-        stateText = 'Dropped';
+      if (forfeited) {
+        stateText = 'Forfeited (100 pts)';
+        stateClass = 'forfeited-state';
+      } else if (dropped) {
+        stateText = p.dropType === 'SCOOT' ? 'Scooted (30 pts)' : 'Dropped (30 pts)';
         stateClass = 'dropped-state';
       } else if (isCurrent && isMe) {
         stateText = roomState.turnStage === 'DRAW' && myCount < 22 ? 'YOUR TURN (DRAW)' : 'YOUR TURN (DISCARD)';
         stateClass = 'you-turn';
       } else if (isCurrent) {
-        stateText = 'Their turn';
+        stateText = roomState.turnStage === 'DRAW' ? 'Their Turn (Draw)' : 'Their Turn (Discard)';
         stateClass = 'turn';
       }
       const count = isMe ? myCount : (p.cardCount ?? 0);
       return `
-        <div class="player-row ${isMe ? 'me' : ''} ${isCurrent ? 'current' : ''} ${dropped ? 'dropped' : ''}">
+        <div class="player-row ${isMe ? 'me' : ''} ${isCurrent ? 'current' : ''} ${dropped ? 'dropped' : ''} ${forfeited ? 'forfeited' : ''}">
           <div class="player-name">
             <span class="player-avatar">🧑</span>
             <span>${p.name}</span>
@@ -1708,7 +1729,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (mini) mini.innerText = `${total} pts`;
 
     // Turn indicator & button state enforcement
-    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myPlayer = roomState?.players?.find(p => p.id === myId);
+    const myForfeited = Boolean(myPlayer && (myPlayer.hasForfeited || myPlayer.dropType === 'FORFEIT'));
+    const myDropped = Boolean(myPlayer && myPlayer.hasDropped);
+    const isMyTurn = isCurrentPlayerMe();
     const myCount = totalCount;
     const canDraw = canPlayerDraw();
     const canDiscard = isMyTurn && (roomState.turnStage === 'DISCARD' || myCount >= 22);
@@ -1718,12 +1743,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (guide) {
       if (!roomState || roomState.status === 'LOBBY') {
         guide.innerHTML = '<strong>Table ready:</strong> start the game when everyone is seated.';
+      } else if (myForfeited) {
+        guide.innerHTML = `<strong>You forfeited (100 pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
+      } else if (myDropped) {
+        guide.innerHTML = `<strong>You scooted / dropped:</strong> Hand folded (30 pts penalty). Watching ${roomState.turnPlayerName || 'other players'} finish.`;
       } else if (isMyTurn && canDraw) {
         guide.innerHTML = '<strong>Your turn:</strong> Double-click or drag Stock/Discard to draw your 22nd card.';
       } else if (isMyTurn && canDiscard) {
         guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Drag a card to Discard pile (or tap Discard Card), or Show / Declare.`;
       } else {
-        guide.innerHTML = '<strong>Waiting:</strong> watch the table while ' + (roomState.turnPlayerName || 'another player') + ' plays.';
+        const actionInfo = roomState.lastAction ? `[${roomState.lastAction}] ` : '';
+        guide.innerHTML = `<strong>Waiting:</strong> ${actionInfo}Watch the table while ${roomState.turnPlayerName || 'another player'} plays.`;
       }
     }
     const notice = document.getElementById('turnNotice');
@@ -1733,33 +1763,38 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const count = roomState ? roomState.players.length : 1;
       notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} seated)</button>`;
       dot.classList.remove('active');
+    } else if (myForfeited) {
+      dot.classList.remove('active');
+      notice.innerText = `Forfeited (100 pts) • Turn: ${roomState.turnPlayerName}`;
+    } else if (myDropped) {
+      dot.classList.remove('active');
+      notice.innerText = `Scooted (30 pts) • Turn: ${roomState.turnPlayerName}`;
+    } else if (isMyTurn) {
+      dot.classList.add('active');
+      notice.innerText = canDraw
+        ? `Your Turn: Draw a card (${myCount}/21)`
+        : `Your Turn: Discard a card (${myCount}/22)`;
     } else {
-      if (isMyTurn) {
-        dot.classList.add('active');
-        notice.innerText = canDraw
-          ? `Your Turn: Draw a card (${myCount}/21)`
-          : `Your Turn: Discard a card (${myCount}/22)`;
-      } else {
-        dot.classList.remove('active');
-        notice.innerText = `Waiting for ${roomState.turnPlayerName}...`;
-      }
+      dot.classList.remove('active');
+      const actionPrefix = roomState.lastAction ? `${roomState.lastAction} • ` : '';
+      notice.innerText = `${actionPrefix}Turn: ${roomState.turnPlayerName}`;
     }
 
-    document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw);
+    document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw || myDropped || myForfeited);
     const btnDiscard = document.getElementById('btnDiscard');
     if (btnDiscard) {
-      btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
+      btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId || myDropped || myForfeited);
       btnDiscard.style.display = canDiscard ? 'inline-flex' : 'none';
     }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
-      declareBtn.classList.toggle('btn-disabled', !isMyTurn);
+      declareBtn.classList.toggle('btn-disabled', !isMyTurn || myDropped || myForfeited);
       declareBtn.querySelector('b').innerText = declarationMode ? 'Submit Declaration' : 'Show / Declare';
       const sub = declareBtn.querySelector('.action-sub');
       if (sub) {
         sub.innerText = declarationMode
           ? 'submit your 21-card show'
-          : (canDiscard ? 'ready to group & declare' : 'draw card first to declare');
+          : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare'));
       }
     }
     const dp = document.getElementById('declarationPanel');
@@ -2167,18 +2202,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return;
     }
     forfeitConfirming = false;
-    if (isDemo) {
-      declarationMode = false;
-      declarationGroups = [];
-      declarationSelectedIds.clear();
-      renderAll(null);
-      window.alert('Declaration forfeited. Penalty: 100 points. Play continues.');
-      return;
-    }
-    ws.send(JSON.stringify({ type: 'FORFEIT_DECLARATION' }));
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
+
+    if (isDemo) {
+      const meP = roomState?.players?.find(p => p.id === 'p_demo');
+      if (meP) {
+        meP.hasDropped = true;
+        meP.hasForfeited = true;
+        meP.dropType = 'FORFEIT';
+        meP.dropPenalty = 100;
+      }
+      roomState.lastAction = `${meP?.name || 'You'} forfeited declaration (100 pts)`;
+      passDemoTurn();
+      window.alert('Declaration forfeited (100 points penalty). Turn passed to ' + roomState.turnPlayerName + '. Play continues.');
+      return;
+    }
+    ws.send(JSON.stringify({ type: 'FORFEIT_DECLARATION' }));
     renderAll(null);
   }
   function getMyPlayerId() {
@@ -2600,10 +2641,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const btn = document.getElementById('btnDrop');
     if (btn) btn.querySelector('b').innerText = 'Scoot';
     if (isDemo) {
-      const meP = roomState.players.find(p => p.id === 'p_demo');
-      if (meP) meP.hasDropped = true;
-      renderAll(null);
-      window.alert("Hand dropped / Scoot (30 pts drop penalty + winner's Maal points will be owed).");
+      const meP = roomState?.players?.find(p => p.id === 'p_demo');
+      if (meP) {
+        meP.hasDropped = true;
+        meP.dropType = 'SCOOT';
+        meP.dropPenalty = 30;
+      }
+      roomState.lastAction = `${meP?.name || 'You'} scooted / dropped (30 pts)`;
+      passDemoTurn();
+      window.alert("Hand dropped / Scoot (30 pts drop penalty + winner's Maal points will be owed). Turn passed to " + roomState.turnPlayerName + ".");
       return;
     }
     ws.send(JSON.stringify({ type: 'DROP' }));
@@ -2617,7 +2663,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function declareShow() {
-    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
+    const isMyTurn = isCurrentPlayerMe();
     if (!isMyTurn) {
       window.alert('You can only declare on your turn.');
       return;
@@ -2796,9 +2842,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       ],
       deckCount: 134,
       players: [
-        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false },
-        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false },
-        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false }
+        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 },
+        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 },
+        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 }
       ]
     };
 
@@ -2841,6 +2887,44 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     renderAll({ total: 90 });
     const demoControls = document.getElementById('demoControls');
     if (demoControls) demoControls.style.display = 'flex';
+  }
+
+  function passDemoTurn() {
+    if (!isDemo || !roomState || !roomState.players.length) return;
+    const currentIndex = roomState.players.findIndex(p => p.id === roomState.turnPlayerId);
+    let nextIndex = currentIndex === -1 ? 0 : currentIndex;
+    let attempts = 0;
+    do {
+      nextIndex = (nextIndex + 1) % roomState.players.length;
+      attempts++;
+    } while (roomState.players[nextIndex].hasDropped && attempts < roomState.players.length);
+
+    const activeRemaining = roomState.players.filter(p => !p.hasDropped);
+    if (activeRemaining.length <= 1) {
+      const winner = activeRemaining[0] || roomState.players[0];
+      const demoData = {
+        winnerName: winner.name,
+        winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, papluNichlu: 0, papluNichluPts: 0 } },
+        results: roomState.players.map(p => {
+          if (p.id === winner.id) {
+            return { name: p.name, net: 'Won (opponents folded) + collects 50 Maal from each loser' };
+          }
+          const pen = p.hasForfeited ? 100 : 30;
+          return { name: p.name, net: `Pays ${pen + 50} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + 50 winner Maal)` };
+        }),
+        revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
+      };
+      renderAll(null);
+      showWinnerFanfare(demoData);
+      setTimeout(() => showResultsModal(demoData), 900);
+      return;
+    }
+
+    const nextPlayer = roomState.players[nextIndex];
+    roomState.turnPlayerId = nextPlayer.id;
+    roomState.turnPlayerName = nextPlayer.name;
+    roomState.turnStage = 'DRAW';
+    renderAll(null);
   }
 
   function demoMyTurn() {
@@ -2937,8 +3021,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.discardHistory = roomState.discardHistory.slice(-8);
     roomState.topDiscard = card;
     selectedCardId = null;
-    roomState.turnStage = 'DRAW';
-    renderAll({ total: 90 });
+    roomState.lastAction = `${meP?.name || 'You'} discarded`;
+    passDemoTurn();
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('discardContainer')));
   }
 </script>
