@@ -2701,26 +2701,25 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function continueFromResults() {
     const modal = document.getElementById('resultModal');
-    if (!isDemo) {
-      // The server already schedules the next deal. Continue simply closes
-      // the settlement screen immediately; the SYNC handler will keep it
-      // closed once the new hand arrives.
-      modal.style.display = 'none';
-      return;
-    }
+    if (modal) modal.style.display = 'none';
 
-    // Demo mode has no server timer, so give the user a fresh demo hand.
-    modal.style.display = 'none';
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
     selectedCardId = null;
-    if (typeof startDemo === 'function') {
-      startDemo();
-    } else {
-      location.reload();
+
+    if (!isDemo) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'NEXT_HAND' }));
+      }
+      return;
     }
+
+    // In demo mode, start the next hand seamlessly without returning to lobby
+    startDemoMode();
   }
+
+  window.startDemo = startDemoMode;
 
   function showResultsModal(data) {
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;

@@ -133,6 +133,12 @@ wss.on('connection', (ws) => {
 
       if (!userRoom) return;
 
+      if (data.type === 'NEXT_HAND' && userRoom) {
+        dealNextHand(userRoom);
+        broadcastRoom(userRoom);
+        return;
+      }
+
       if (data.type === 'START_GAME' && userRoom.status === 'LOBBY') {
         const deck = createDeck();
         userRoom.players.forEach(p => {
