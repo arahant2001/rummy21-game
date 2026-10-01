@@ -246,14 +246,15 @@ wss.on('connection', (ws) => {
             };
           }
           if (p.hasDropped) {
-            const totalPay = p.dropPenalty + winnerMaal.total;
+            const drop = p.dropPenalty || CONFIG.firstDrop || 30;
+            const totalPay = drop + winnerMaal.total;
             return {
               name: p.name,
               status: 'DROPPED',
               points: totalPay,
-              dropPenalty: p.dropPenalty,
+              dropPenalty: drop,
               maalOwed: winnerMaal.total,
-              net: `Pays ${totalPay} pts (${p.dropPenalty} drop penalty + ${winnerMaal.total} winner Maal)`
+              net: `Pays ${totalPay} pts (${drop} drop penalty + ${winnerMaal.total} winner Maal)`
             };
           }
           const deadwood = calculateDeadwood(p.hand, userRoom.cutCard);

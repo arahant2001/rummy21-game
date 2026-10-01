@@ -1192,6 +1192,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <li><strong>Cut Joker (20 pts each):</strong> Joker card matching both rank and suit of the cut card.</li>
         <li><strong>Poochie (Tiered):</strong> Printed joker — 1 = 20 pts, 2 = 50 pts, 3 = 70 pts (+20 each).</li>
         <li><strong>Paplu / Tuplu (Tiered pool):</strong> Same suit as cut card (+1 rank and -1 rank) remaining after marriages — 1 = 10 pts, 2 = 30 pts, 3 = 50 pts.</li>
+        <li><strong>Settlement &amp; Drops:</strong> Every loser—including players who drop/scoot (30 pts drop penalty)—must pay the winner's total Maal points.</li>
       </ul>
     </div>
 
@@ -2598,7 +2599,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     dropConfirming = false;
     const btn = document.getElementById('btnDrop');
     if (btn) btn.querySelector('b').innerText = 'Scoot';
-    if (isDemo) { window.alert('Hand dropped in demo mode.'); return; }
+    if (isDemo) {
+      const meP = roomState.players.find(p => p.id === 'p_demo');
+      if (meP) meP.hasDropped = true;
+      renderAll(null);
+      window.alert("Hand dropped / Scoot (30 pts drop penalty + winner's Maal points will be owed).");
+      return;
+    }
     ws.send(JSON.stringify({ type: 'DROP' }));
   }
 
@@ -2654,8 +2661,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         winnerMaal: { total: 90, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, papluNichlu: 1, papluNichluPts: 20 } },
         results: [
           { name: roomState.turnPlayerName || 'You', net: 'Won + collects 90 Maal from each loser' },
-          { name: 'Player 2', net: 'Pays 132 pts (42 deadwood + 90 winner maal)', deadwood: 42 },
-          { name: 'Player 3', net: 'Pays flat drop penalty: 30 pts' }
+          { name: 'Player 2', net: 'Pays 132 pts (42 deadwood + 90 winner maal)', deadwood: 42, maalOwed: 90 },
+          { name: 'Player 3', net: 'Pays 120 pts (30 drop penalty + 90 winner Maal)', dropPenalty: 30, maalOwed: 90 }
         ],
         revealedHands: [{ name: roomState.turnPlayerName || 'You', hand: myHand }]
       };
