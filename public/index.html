@@ -389,6 +389,19 @@
     .court-suit-top{margin-bottom:3px}.court-suit-bottom{margin-top:3px;transform:rotate(180deg)}
 
 
+    /* Card movement animation */
+    .card-flight {
+      position: fixed !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      pointer-events: none !important;
+      transition: transform 420ms cubic-bezier(0.22, 0.75, 0.25, 1), opacity 420ms ease !important;
+      transform-origin: center center;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card-flight { transition: none !important; }
+    }
+
     /* Deck Card */
     .deck-card {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -1027,10 +1040,43 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const msg = JSON.parse(evt.data);
 
       if (msg.type === 'SYNC') {
+        // Capture the visible source before the board is re-rendered.
+        // Only animate when this client's hand actually changes.
+        const previousIds = new Set((myHand || []).map(c => c.id));
+        const previousElements = new Map();
+        (myHand || []).forEach(c => {
+          const el = document.getElementById('card-' + c.id);
+          if (el) previousElements.set(c.id, el);
+        });
+        const action = msg.room?.lastAction || '';
+        const sourceEl = action === 'DRAW_STOCK'
+          ? document.getElementById('stockDeckBtn')
+          : action === 'DRAW_DISCARD'
+            ? document.getElementById('discardContainer')
+            : null;
+        const sourceFlight = sourceEl ? captureCardFlight(sourceEl) : null;
+
         roomState = msg.room;
         if (roomState.status === 'PLAYING') document.getElementById('resultModal').style.display = 'none';
         syncIncomingHand(msg.yourHand);
+
+        const incomingIds = new Set((msg.yourHand || []).map(c => c.id));
+        const drawnIds = [...incomingIds].filter(id => !previousIds.has(id));
+        const discardedIds = [...previousIds].filter(id => !incomingIds.has(id));
+        const discardedFlight = discardedIds.length
+          ? captureCardFlight(previousElements.get(discardedIds[0]))
+          : null;
+
         renderAll(msg.yourMaal);
+
+        requestAnimationFrame(() => {
+          if (drawnIds.length && sourceFlight) {
+            playCardFlight(sourceFlight, document.getElementById('card-' + drawnIds[0]));
+          }
+          if (discardedFlight) {
+            playCardFlight(discardedFlight, document.getElementById('discardContainer'));
+          }
+        });
       }
 
       if (msg.type === 'SHOW_INVALID') {
@@ -1044,6 +1090,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         setTimeout(() => showResultsModal(msg), 900);
       }
     };
+  }
+
+  function captureCardFlight(el) {
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    const clone = el.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+    clone.classList.add('card-flight');
+    clone.style.left = rect.left + 'px';
+    clone.style.top = rect.top + 'px';
+    clone.style.width = rect.width + 'px';
+    clone.style.height = rect.height + 'px';
+    clone.style.transform = 'translate(0, 0) scale(1)';
+    return { clone, rect };
+  }
+
+  function playCardFlight(flight, targetEl) {
+    if (!flight || !targetEl) return;
+    const targetRect = targetEl.getBoundingClientRect();
+    document.body.appendChild(flight.clone);
+    const dx = targetRect.left + targetRect.width / 2 - (flight.rect.left + flight.rect.width / 2);
+    const dy = targetRect.top + targetRect.height / 2 - (flight.rect.top + flight.rect.height / 2);
+    requestAnimationFrame(() => {
+      flight.clone.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(0.82)';
+      flight.clone.style.opacity = '0.72';
+    });
+    setTimeout(() => flight.clone.remove(), 450);
   }
 
   // Preserve user custom card arrangement and stands on WebSocket sync
@@ -2200,6 +2274,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function simulateDrawStock() {
+    const sourceFlight = captureCardFlight(document.getElementById('stockDeckBtn'));
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const suits = ['♠', '♥', '♣', '♦'];
     const r = ranks[Math.floor(Math.random() * ranks.length)];
@@ -2215,10 +2290,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.turnStage = 'DISCARD';
     selectedCardId = newCard.id;
     renderAll({ total: 90 });
+    requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + newCard.id)));
     scrollCardIntoView(newCard.id);
   }
 
   function simulateDrawDiscard() {
+    const sourceFlight = captureCardFlight(document.getElementById('discardContainer'));
     if (!roomState.topDiscard) return;
     const drawn = roomState.topDiscard;
     if (userStands.length === 0) userStands.push([]);
@@ -2229,11 +2306,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.turnStage = 'DISCARD';
     selectedCardId = drawn.id;
     renderAll({ total: 90 });
+    requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + drawn.id)));
     scrollCardIntoView(drawn.id);
   }
 
   function simulateDiscard() {
     if (!selectedCardId) return;
+    const sourceFlight = captureCardFlight(document.getElementById('card-' + selectedCardId));
     let card = null;
     for (const stand of userStands) {
       const idx = stand.findIndex(c => c.id === selectedCardId);
@@ -2251,6 +2330,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     selectedCardId = null;
     roomState.turnStage = 'DRAW';
     renderAll({ total: 90 });
+    requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('discardContainer')));
   }
 </script>
 </body>
