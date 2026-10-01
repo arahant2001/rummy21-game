@@ -182,21 +182,25 @@ function isSequence(cards, cutCard) {
   if (!naturals.length) return false;
   const suit = naturals[0].suit;
   if (!naturals.every(c => c.suit === suit)) return false;
+
   const n = cards.length;
-  for (let start = 1; start <= 14 - n; start++) {
-    const target = new Set(Array.from({length:n}, (_,i)=>start+i));
-    const actual = [];
+  const naturalOptions = naturals.map(rankValueForSequence);
+  // Try every consecutive window, including 10-J-Q-K-A. Ace can be low or high;
+  // K-A-2 is never considered a valid run.
+  for (let start = 1; start <= 15 - n; start++) {
+    const target = new Set(Array.from({length:n}, (_, i) => start + i));
+    const used = new Set();
     let ok = true;
-    for (const options of naturals.map(c => rankValueForSequence(c))) {
-      const match = options.find(v => target.has(v));
-      if (match === undefined || actual.includes(match)) { ok = false; break; }
-      actual.push(match);
+    for (const options of naturalOptions) {
+      const match = options.find(v => target.has(v) && !used.has(v));
+      if (match === undefined) { ok = false; break; }
+      used.add(match);
     }
-    if (ok && wilds.length === n - naturals.length) return true;
+    const missingSlots = n - used.size;
+    if (ok && missingSlots === wilds.length) return true;
   }
   return false;
 }
-
 function isSet(cards, cutCard) {
   if (cards.length < 3 || cards.length > 4) return false;
   const naturals = cards.filter(c => !isWildCard(c, cutCard));

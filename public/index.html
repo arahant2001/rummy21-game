@@ -981,7 +981,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="maalDetails" class="maal-breakdown"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
     <div id="settlementList"></div><div id="revealedHands" class="revealed-hands"></div>
-    <button class="btn-primary" onclick="location.reload()" style="margin-top: 24px;">Play Next Hand</button>
+    <div style="margin-top:24px; color:var(--text-secondary); font-size:13px;">Next hand will be dealt automatically…</div>
   </div>
 </div>
 
@@ -997,7 +997,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let declarationMode = false;
   let declarationGroups = [];
   let declarationSelectedIds = new Set();
-  let declarationDiscardId = null;
 
   function joinRoom() {
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -1029,16 +1028,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       if (msg.type === 'SYNC') {
         roomState = msg.room;
+        if (roomState.status === 'PLAYING') document.getElementById('resultModal').style.display = 'none';
         syncIncomingHand(msg.yourHand);
         renderAll(msg.yourMaal);
       }
 
       if (msg.type === 'SHOW_INVALID') {
-        declarationMode = false; declarationGroups = []; declarationSelectedIds.clear(); declarationDiscardId = null;
-        alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\\n\\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
+        declarationMode = false; declarationGroups = []; declarationSelectedIds.clear(); alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\\n\\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
         renderAll(null);
       }
 
+      if (msg.type === 'DECLARATION_FORFEITED') { declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); alert('Declaration forfeited. Penalty: 100 points. Play continues.'); renderAll(null); }
       if (msg.type === 'SHOW_RESULT') {
         showWinnerFanfare(msg);
         setTimeout(() => showResultsModal(msg), 900);
@@ -1486,6 +1486,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw);
     document.getElementById('btnDiscard').classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId);
+    document.getElementById('btnDiscard').style.display = declarationMode ? 'none' : '';
     document.getElementById('btnDeclare').classList.toggle('btn-disabled', !canDiscard);
     const declareBtn=document.getElementById('btnDeclare');
     if(declareBtn){
@@ -1500,9 +1501,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         const pure=declarationGroups.filter(g=>g.type==='PURE_SEQUENCE').length;
         const selected=declarationSelectedIds.size;
         dp.innerHTML=`<div class="declare-panel-head"><div><div class="declare-title">Declare: group your 21-card show</div><div class="declare-subtitle">Tap cards to highlight them. Group each selection as a Pure Sequence, Sequence, or Set. The last ungrouped card becomes your final discard.</div></div><button class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button></div>
-          <div class="declare-stats"><span class="declare-stat"><strong>${grouped}</strong>/21 grouped</span><span class="declare-stat"><strong>${pure}</strong> Pure Sequences</span><span class="declare-stat"><strong>${selected}</strong> selected</span><span class="declare-stat"><strong>${declarationDiscardId?'1':'0'}</strong> discard</span></div>
-          <div class="declare-buttons"><button class="tool-btn" onclick="groupSelectedCards('PURE_SEQUENCE')" ${selected<3?'disabled':''}>Pure Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SEQUENCE')" ${selected<3?'disabled':''}>Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SET')" ${selected<3?'disabled':''}>Set</button><button class="tool-btn tool-btn-highlight" onclick="setDeclarationDiscard()" ${selected!==1?'disabled':''}>Set Final Discard</button></div>
-          <div class="declare-discard">${declarationDiscardId?'<span>Final discard selected.</span><strong>1 card</strong>':'<span>Select one ungrouped card for the final discard.</span><strong>Required</strong>'}</div>`;
+          <div class="declare-stats"><span class="declare-stat"><strong>${grouped}</strong>/21 grouped</span><span class="declare-stat"><strong>${pure}</strong> Pure Sequences</span><span class="declare-stat"><strong>${selected}</strong> selected</span><span class="declare-stat"><strong>${declarationGroups.flatMap(g=>g.cards).length===21?'1':'0'}</strong> finish card</span></div>
+          <div class="declare-buttons"><button class="tool-btn" onclick="groupSelectedCards('PURE_SEQUENCE')" ${selected<3?'disabled':''}>Pure Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SEQUENCE')" ${selected<3?'disabled':''}>Sequence</button><button class="tool-btn" onclick="groupSelectedCards('SET')" ${selected<3?'disabled':''}>Set</button><button class="tool-btn tool-btn-highlight" onclick="forfeitDeclaration()">Forfeit / Give Up</button></div>
+          <div class="declare-discard"><span>Group 21 cards. The one remaining card is automatically your final discard.</span><strong>Auto</strong></div>`;
       }
     }
     document.getElementById('stockDeckBtn').classList.toggle('drag-ready', canDraw);
@@ -1523,30 +1524,22 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close</button>`:'';
         return `<div class="stand-rack" id="stand-rack-${sIdx}" ondragover="onStandDragOver(event,${sIdx})" ondragleave="onStandDragLeave(event,${sIdx})" ondrop="onStandDrop(event,${sIdx})">
           <div class="stand-header"><div class="stand-title-box"><span>Group ${sIdx+1}</span><span class="stand-count-badge">${stand.length} cards</span>
-          <select class="group-type-select" onchange="setStandType(${sIdx},this.value)" onclick="event.stopPropagation()">
-          <option value="PURE_SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="PURE_SEQUENCE"?"selected":""}>Pure Sequence</option>
-          <option value="SEQUENCE" ${(standTypes[sIdx]||"SEQUENCE")==="SEQUENCE"?"selected":""}>Sequence</option>
-          <option value="SET" ${(standTypes[sIdx]||"SEQUENCE")==="SET"?"selected":""}>Set</option></select></div>${closeBtn}</div>
+</div>${closeBtn}</div>
           <div class="stand-cards">${stand.map(c=>renderCard(c,getCardTag(c),true)).join('')}</div></div>`;
       }).join('');
       return;
     }
     const groupedIds=new Set(declarationGroups.flatMap(g=>g.cards.map(c=>c.id)));
     const remaining=myHand.filter(c=>!groupedIds.has(c.id));
-    const selectable=remaining.filter(c=>c.id!==declarationDiscardId);
+    const selectable=remaining;
     const groups=declarationGroups.map((g,i)=>`<div class="stand-rack declaration-group locked">
       <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span></div>
       <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo</button></div>
       <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`).join('');
-    const discard=declarationDiscardId?myHand.find(c=>c.id===declarationDiscardId):null;
-    const discardHtml=discard?`<div class="stand-rack declaration-group" style="border-color:rgba(240,107,120,.28)">
-      <div class="stand-header"><div class="stand-title-box"><span>Final Discard</span><span class="stand-count-badge">1 card</span></div>
-      <button class="stand-close-btn" onclick="clearDeclarationDiscard()">↩ Undo</button></div>
-      <div class="stand-cards">${renderCard(discard,getCardTag(discard),false)}</div></div>`:'';
     container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
       <div class="stand-title-box"><span>Cards to Group</span><span class="stand-count-badge">${selectable.length} cards</span></div>
       <button class="stand-close-btn" onclick="clearDeclarationSelection()">Clear Selection</button></div>
-      <div class="stand-cards">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>${groups}${discardHtml}`;
+      <div class="stand-cards">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>${groups}`;
   }
   function setStandType(idx,type){standTypes[idx]=type;renderStands();}
   function setStandType(idx, type) { standTypes[idx]=type; renderStands(); }
@@ -1580,15 +1573,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const suit=naturals[0].suit;
     if(!naturals.every(c=>c.suit===suit)) return false;
     const n=cards.length;
-    for(let start=1;start<=14-n;start++){
-      const target=new Set(Array.from({length:n},(_,i)=>start+i)), used=[];
+    const naturalOptions=naturals.map(declarationRankOptions);
+    // Try every consecutive window, including 10-J-Q-K-A. K-A-2 is not valid.
+    for(let start=1;start<=15-n;start++){
+      const target=new Set(Array.from({length:n},(_,i)=>start+i));
+      const used=new Set();
       let ok=true;
-      for(const opts of naturals.map(declarationRankOptions)){
-        const match=opts.find(v=>target.has(v));
-        if(match===undefined||used.includes(match)){ok=false;break;}
-        used.push(match);
+      for(const options of naturalOptions){
+        const match=options.find(v=>target.has(v)&&!used.has(v));
+        if(match===undefined){ok=false;break;}
+        used.add(match);
       }
-      if(ok&&wilds.length===n-naturals.length) return true;
+      if(ok && n-used.size===wilds.length) return true;
     }
     return false;
   }
@@ -1602,7 +1598,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':'Set';}
   function groupSelectedCards(type) {
     if(!declarationMode) return;
-    const cards=myHand.filter(c=>declarationSelectedIds.has(c.id) && c.id!==declarationDiscardId);
+    const cards=myHand.filter(c=>declarationSelectedIds.has(c.id));
     if(cards.length<3){alert('Select at least 3 cards.');return;}
     const valid=type==='PURE_SEQUENCE'?declarationPure(cards):type==='SEQUENCE'?declarationSequence(cards):declarationSet(cards);
     if(!valid){alert(`${declarationTypeLabel(type)} is not valid for the selected cards. Try a different group type or adjust the selection.`);return;}
@@ -1610,18 +1606,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     cards.forEach(c=>declarationSelectedIds.delete(c.id));
     renderAll(null);
   }
-  function setDeclarationDiscard() {
-    if(!declarationMode)return;
-    if(declarationSelectedIds.size!==1){alert('Select exactly one card to use as the final discard.');return;}
-    declarationDiscardId=[...declarationSelectedIds][0];
-    declarationSelectedIds.clear();
-    renderAll(null);
-  }
-  function clearDeclarationDiscard(){declarationDiscardId=null;renderAll(null);}
   function clearDeclarationSelection(){declarationSelectedIds.clear();renderAll(null);}
   function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);renderAll(null);}
-  function cancelDeclaration(){declarationMode=false;declarationGroups=[];declarationSelectedIds.clear();declarationDiscardId=null;renderAll(null);}
+  function cancelDeclaration(){declarationMode=false;declarationGroups=[];declarationSelectedIds.clear();renderAll(null);}
 
+  function forfeitDeclaration() {
+    if(!declarationMode) return;
+    if(!confirm('Are you sure you want to forfeit this declaration?\\n\\nYou will receive a 100-point penalty and the other players will continue the hand.')) return;
+    if(isDemo){ declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); renderAll(null); alert('Declaration forfeited. Penalty: 100 points. Play continues.'); return; }
+    ws.send(JSON.stringify({type:'FORFEIT_DECLARATION'}));
+    declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); renderAll(null);
+  }
   function getMyPlayerId() {
     const me = roomState?.players.find(p => p.name === document.getElementById('playerName').value);
     return me ? me.id : null;
@@ -1629,7 +1624,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function selectCard(cardId) {
     if (declarationMode) {
-      if (declarationDiscardId === cardId) declarationDiscardId = null;
       if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
       else declarationSelectedIds.add(cardId);
       renderAll(null);
@@ -2019,22 +2013,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function declareShow() {
     if(!declarationMode){
       if(!roomState||roomState.turnStage!=='DISCARD')return;
-      declarationMode=true; declarationGroups=[]; declarationSelectedIds.clear(); declarationDiscardId=null; selectedCardId=null; renderAll(null); return;
+      if(!confirm('Are you sure you want to declare?\\n\\nYou will enter grouping mode. If you cannot complete a valid 21-card show, you can Forfeit.')) return;
+      declarationMode=true; declarationGroups=[]; declarationSelectedIds.clear(); selectedCardId=null; renderAll(null); return;
     }
-    const grouped=declarationGroups.flatMap(g=>g.cards), unique=new Set(grouped.map(c=>c.id));
-    if(!declarationDiscardId){alert('Group your 21 cards, then select one remaining card as the final discard.');return;}
-    if(unique.size!==21){alert(`You have grouped ${unique.size} cards. A valid declaration needs all 21 cards grouped.`);return;}
+    const grouped=declarationGroups.flatMap(g=>g.cards);
+    const unique=new Set(grouped.map(c=>c.id));
     const remaining=myHand.filter(c=>!unique.has(c.id));
-    if(remaining.length!==1||remaining[0].id!==declarationDiscardId){alert('The final discard must be the one ungrouped card.');return;}
+    if(unique.size!==21 || remaining.length!==1){ alert(`You have grouped ${unique.size} cards. Group exactly 21 cards; the one remaining card will be your final discard.`); return; }
     const pure=declarationGroups.filter(g=>g.type==='PURE_SEQUENCE').length;
-    if(pure<3){alert(`You have ${pure} Pure Sequences. At least 3 are required.`);return;}
+    if(pure<3){ alert(`You have ${pure} Pure Sequences. At least 3 are required.`); return; }
+    if(!confirm('Submit this declaration?\\n\\n21 cards are grouped with at least 3 Pure Sequences. The remaining card will be discarded to finish the hand.')) return;
     const groups=declarationGroups.map(g=>({type:g.type,cardIds:g.cards.map(c=>c.id)}));
+    const finalDiscardId=remaining[0].id;
     if(isDemo){
       const demoData={winnerName:roomState.turnPlayerName,winnerMaal:{total:90,details:{marriages:1,marriagePts:50,tiplus:0,tipluPts:0,poochies:1,poochiePts:20,papluNichlu:1,papluNichluPts:20}},results:[{name:roomState.turnPlayerName,net:'Won + collects 90 Maal from each loser'},{name:'Player 2',net:'Pays 132 pts (42 deadwood + 90 winner maal)',deadwood:42},{name:'Player 3',net:'Pays flat drop penalty: 30 pts'}],revealedHands:[{name:roomState.turnPlayerName,hand:myHand}]};
       showWinnerFanfare(demoData); setTimeout(()=>showResultsModal(demoData),900); return;
     }
-    ws.send(JSON.stringify({type:'DECLARE',cardId:declarationDiscardId,groups}));
-    declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); declarationDiscardId=null; renderAll(null);
+    ws.send(JSON.stringify({type:'DECLARE',cardId:finalDiscardId,groups}));
+    declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); renderAll(null);
   }
 
   function getCardTagForRoles(card) {

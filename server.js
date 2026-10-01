@@ -68,6 +68,25 @@ function advanceTurn(room) {
   room.turnStage = 'DRAW';
 }
 
+function dealNextHand(room) {
+  if (!room.players.length) return;
+
+  const deck = createDeck();
+  room.players.forEach(p => {
+    p.hand = deck.splice(0, 21);
+    p.hasDropped = false;
+    p.dropPenalty = 0;
+    p.turnsTaken = 0;
+  });
+
+  room.cutCard = deck.pop();
+  room.discardPile = [deck.pop()];
+  room.deck = deck;
+  room.status = 'PLAYING';
+  room.turnIndex = 0;
+  room.turnStage = 'DRAW';
+}
+
 wss.on('connection', (ws) => {
   let userRoom = null;
   let playerId = null;
@@ -175,6 +194,16 @@ wss.on('connection', (ws) => {
         broadcastRoom(userRoom);
       }
 
+      if (data.type === 'FORFEIT_DECLARATION' && isTurn && userRoom.turnStage === 'DISCARD') {
+        activePlayer.hasDropped = true;
+        activePlayer.dropPenalty = 100;
+        advanceTurn(userRoom);
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'DECLARATION_FORFEITED', penalty: 100 }));
+        }
+        broadcastRoom(userRoom);
+      }
+
       if (data.type === 'DECLARE' && isTurn && userRoom.turnStage === 'DISCARD') {
         const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
         if (finalIdx === -1) return;
@@ -197,7 +226,8 @@ wss.on('connection', (ws) => {
           userRoom.discardPile.push(finalDiscard);
         }
 
-        userRoom.status = 'GAME_OVER';
+        userRoom.status = 'ROUND_OVER';
+        userRoom.turnStage = 'WAITING';
         const winnerMaal = calculateMaal(activePlayer.hand, userRoom.cutCard);
 
         const results = userRoom.players.map(p => {
@@ -246,6 +276,15 @@ wss.on('connection', (ws) => {
             }));
           }
         });
+
+        // Show the settlement briefly, then automatically start the next hand
+        // without sending anyone back to the lobby.
+        setTimeout(() => {
+          if (userRoom && rooms.get(userRoom.id) === userRoom && userRoom.players.length) {
+            dealNextHand(userRoom);
+            broadcastRoom(userRoom);
+          }
+        }, 3500);
       }
     } catch (e) {
       console.error('Socket error:', e);
