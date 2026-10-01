@@ -994,7 +994,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div id="maalDetails" class="maal-breakdown"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
     <div id="settlementList"></div><div id="revealedHands" class="revealed-hands"></div>
-    <div style="margin-top:24px; color:var(--text-secondary); font-size:13px;">Next hand will be dealt automatically…</div>
+    <div class="result-modal-actions" style="margin-top:22px; display:flex; justify-content:center; gap:10px;">
+      <button id="btnContinueResults" class="btn-action btn-declare" onclick="continueFromResults()">
+        <span><b>Continue</b><small class="action-sub">next hand</small></span>
+      </button>
+    </div>
+    <div id="nextHandStatus" style="margin-top:10px; color:var(--text-secondary); font-size:12px; text-align:center;">Next hand will be dealt automatically.</div>
   </div>
 </div>
 
@@ -2125,6 +2130,29 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.body.appendChild(el); setTimeout(()=>el.remove(),2900);
   }
 
+  function continueFromResults() {
+    const modal = document.getElementById('resultModal');
+    if (!isDemo) {
+      // The server already schedules the next deal. Continue simply closes
+      // the settlement screen immediately; the SYNC handler will keep it
+      // closed once the new hand arrives.
+      modal.style.display = 'none';
+      return;
+    }
+
+    // Demo mode has no server timer, so give the user a fresh demo hand.
+    modal.style.display = 'none';
+    declarationMode = false;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    selectedCardId = null;
+    if (typeof startDemo === 'function') {
+      startDemo();
+    } else {
+      location.reload();
+    }
+  }
+
   function showResultsModal(data) {
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal.details;
@@ -2147,6 +2175,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         (data.revealedHands || []).map(p => '<div class="revealed-player"><div class="revealed-player-title">' + p.name + (p.name === data.winnerName ? ' • DECLARER' : '') + '</div><div class="revealed-player-cards">' + (p.hand || []).map(card => renderCard(card, getCardTagForRoles(card), false)).join('') + '</div></div>').join('');
     }
 
+    const continueBtn = document.getElementById('btnContinueResults');
+    const nextStatus = document.getElementById('nextHandStatus');
+    if (continueBtn) continueBtn.style.display = 'inline-flex';
+    if (nextStatus) nextStatus.innerText = isDemo ? 'Continue to a new demo hand.' : 'Next hand will be dealt automatically.';
     document.getElementById('resultModal').style.display = 'flex';
   }
 
