@@ -31,9 +31,8 @@ function getSafeRoom(room) {
     cutCard: room.cutCard,
     roles: room.cutCard ? resolveJokerRoles(room.cutCard) : null,
     topDiscard: room.discardPile[room.discardPile.length - 1] || null,
-    // Keep a short, ordered history so clients can review older discards without
-    // confusing them with the current top discard.
-    discardHistory: room.discardPile.slice(Math.max(0, room.discardPile.length - 9), Math.max(0, room.discardPile.length - 1)),
+    // Return all buried discards with metadata so players can inspect full discard history
+    discardHistory: room.discardPile.slice(0, Math.max(0, room.discardPile.length - 1)),
     deckCount: room.deck.length,
     lastAction: room.lastAction || '',
     players: room.players.map(p => ({
@@ -42,8 +41,9 @@ function getSafeRoom(room) {
       cardCount: p.hand.length,
       hasDropped: Boolean(p.hasDropped),
       hasForfeited: Boolean(p.hasForfeited),
-      dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? 'SCOOT' : null),
-      dropPenalty: p.dropPenalty || 0
+      dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? (p.turnsTaken === 0 ? 'FIRST_DROP' : 'MIDDLE_DROP') : null),
+      dropPenalty: p.dropPenalty || 0,
+      turnsTaken: p.turnsTaken || 0
     }))
   };
 }
@@ -249,9 +249,11 @@ wss.on('connection', (ws) => {
         const idx = activePlayer.hand.findIndex(c => c.id === data.cardId);
         if (idx !== -1) {
           const [discarded] = activePlayer.hand.splice(idx, 1);
+          discarded.discardedBy = activePlayer.name;
+          discarded.discardedAt = Date.now();
           userRoom.discardPile.push(discarded);
           activePlayer.turnsTaken++;
-          userRoom.lastAction = `${activePlayer.name} discarded`;
+          userRoom.lastAction = `${activePlayer.name} discarded ${discarded.rank}${discarded.suit}`;
           advanceTurn(userRoom);
           broadcastRoom(userRoom);
         }
@@ -259,10 +261,12 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'DROP' && isTurn && userRoom.turnStage === 'DRAW') {
         activePlayer.hasDropped = true;
-        activePlayer.dropType = 'SCOOT';
-        const penalty = activePlayer.turnsTaken === 0 ? CONFIG.firstDrop : CONFIG.middleDrop;
+        const isFirst = activePlayer.turnsTaken === 0;
+        const penalty = isFirst ? CONFIG.firstDrop : CONFIG.middleDrop;
+        const dropKind = isFirst ? 'First Drop' : 'Middle Drop';
+        activePlayer.dropType = isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP';
         activePlayer.dropPenalty = penalty;
-        userRoom.lastAction = `${activePlayer.name} scooted / dropped (${penalty} pts)`;
+        userRoom.lastAction = `${activePlayer.name} scooted (${dropKind}: ${penalty} pts)`;
 
         advanceTurn(userRoom);
         broadcastRoom(userRoom);

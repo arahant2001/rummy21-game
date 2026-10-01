@@ -851,6 +851,25 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
 .discard-history-panel{display:none!important}
 .discard-history-badge{font-size:8px;font-weight:800;color:#9fb0aa;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12);padding:3px 6px;border-radius:999px;white-space:nowrap}
+.btn-discard-history-badge{cursor:pointer;font-size:9px;font-weight:800;color:#f1d27a;background:rgba(217,182,92,.12);border:1px solid rgba(217,182,92,.28);padding:3px 8px;border-radius:999px;white-space:nowrap;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.btn-discard-history-badge:hover{background:rgba(217,182,92,.22);border-color:rgba(217,182,92,.50);transform:translateY(-1px)}
+.discard-modal-content{max-width:620px;width:95vw;max-height:85vh;display:flex;flex-direction:column;background:linear-gradient(145deg,#123324,#081a12);border:1px solid rgba(217,182,92,.35);border-top:4px solid #d9b65c;padding:20px 22px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.discard-modal-body{overflow-y:auto;margin-top:14px;padding-right:4px;display:flex;flex-direction:column;gap:10px}
+.discard-summary-pills{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.discard-summary-pill{font-size:11px;font-weight:700;padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#c6d2cc}
+.discard-summary-pill strong{color:#f1d27a}
+.discard-history-table{display:flex;flex-direction:column;gap:8px}
+.discard-item-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);transition:all .15s}
+.discard-item-row.is-top-card{background:rgba(50,197,138,.08);border-color:rgba(50,197,138,.35);box-shadow:0 0 12px rgba(50,197,138,.15)}
+.discard-item-left{display:flex;align-items:center;gap:12px}
+.discard-card-thumb{transform:scale(.85);transform-origin:center;flex-shrink:0}
+.discard-item-info{display:flex;flex-direction:column;gap:2px}
+.discard-card-name{font-size:13px;font-weight:800;color:#f8fafc}
+.discard-player-name{font-size:11px;color:#94a3b8}
+.discard-item-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.discard-badge-top{font-size:10px;font-weight:800;color:#7eedba;background:rgba(50,197,138,.18);border:1px solid rgba(50,197,138,.4);padding:3px 8px;border-radius:6px;text-transform:uppercase}
+.discard-badge-buried{font-size:10px;font-weight:700;color:#94a3b8;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:3px 8px;border-radius:6px}
+.discard-badge-role{font-size:10px;font-weight:800;color:#f1d27a;background:rgba(217,182,92,.15);border:1px solid rgba(217,182,92,.35);padding:3px 8px;border-radius:6px}
 /* Maal Calculation Details Modal */
 .maal-modal-content {
   max-width: 560px;
@@ -1095,7 +1114,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       </div>
     </div>
     <div class="pile-wrapper discard-pile-wrapper">
-      <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
+      <div class="pile-title" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <span>Discard</span>
+        <button type="button" class="btn-discard-history-badge" onclick="openDiscardHistoryModal()" title="View full chronological discard history">
+          📜 History (<span id="discardHistoryCount">0</span>)
+        </button>
+      </div>
       <div class="pile-action-hint">Double-click to pick up • Drag card here to discard</div>
       <div class="discard-stack-area">
         <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
@@ -1229,6 +1253,32 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <button class="btn-action btn-declare" style="min-height:40px; padding:8px 32px;" onclick="closeMaalModal()">
         <span><b>Close</b></span>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Discard Pile History Drawer / Modal -->
+<div id="discardHistoryModal" class="modal" onclick="if(event.target===this) closeDiscardHistoryModal()">
+  <div class="modal-content discard-modal-content">
+    <div class="maal-modal-header">
+      <div class="maal-modal-title-group">
+        <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+          <span>📜</span> Discard Pile History
+        </h2>
+        <span class="maal-modal-subtitle">Chronological record of every discarded card this hand</span>
+      </div>
+      <button class="maal-modal-close" onclick="closeDiscardHistoryModal()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Summary Statistics Pills -->
+    <div id="discardModalSummary" class="discard-summary-pills"></div>
+
+    <!-- Detailed Cards History List -->
+    <div id="discardModalList" class="discard-modal-body"></div>
+
+    <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:11px; color:#8ba096;">Only the Top Card can be drawn from the discard pile.</span>
+      <button type="button" class="btn-primary" style="margin-top:0; padding:6px 16px; font-size:12px;" onclick="closeDiscardHistoryModal()">Close</button>
     </div>
   </div>
 </div>
@@ -1679,7 +1729,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       } else if (myForfeited) {
         summary.innerText = `You forfeited (100 pts) • Turn: ${roomState.turnPlayerName || 'Next player'}`;
       } else if (myDropped) {
-        summary.innerText = `You scooted / dropped • Turn: ${roomState.turnPlayerName || 'Next player'}`;
+        const pen = me?.dropPenalty || (me?.dropType === 'FIRST_DROP' ? 30 : me?.dropType === 'MIDDLE_DROP' ? 70 : 30);
+        const kind = me?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts';
+        summary.innerText = `You scooted (${kind}) • Turn: ${roomState.turnPlayerName || 'Next player'}`;
       } else if (isMyTurn) {
         summary.innerText = roomState.turnStage === 'DRAW' && myCount < 22
           ? `Your turn: Draw card (${myCount}/21)`
@@ -1701,7 +1753,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         stateText = 'Forfeited (100 pts)';
         stateClass = 'forfeited-state';
       } else if (dropped) {
-        stateText = p.dropType === 'SCOOT' ? 'Scooted (30 pts)' : 'Dropped (30 pts)';
+        const pen = p.dropPenalty || (p.dropType === 'FIRST_DROP' ? 30 : p.dropType === 'MIDDLE_DROP' ? 70 : 30);
+        const kind = p.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop' : 'Mid Drop';
+        stateText = `Scooted (${kind}: ${pen} pts)`;
         stateClass = 'dropped-state';
       } else if (isCurrent && isMe) {
         stateText = roomState.turnStage === 'DRAW' && myCount < 22 ? 'YOUR TURN (DRAW)' : 'YOUR TURN (DISCARD)';
@@ -1773,7 +1827,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       } else if (myForfeited) {
         guide.innerHTML = `<strong>You forfeited (100 pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
       } else if (myDropped) {
-        guide.innerHTML = `<strong>You scooted / dropped:</strong> Hand folded (30 pts penalty). Watching ${roomState.turnPlayerName || 'other players'} finish.`;
+        const pen = myPlayer?.dropPenalty || (myPlayer?.dropType === 'FIRST_DROP' ? 30 : myPlayer?.dropType === 'MIDDLE_DROP' ? 70 : 30);
+        const kind = myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts';
+        guide.innerHTML = `<strong>You scooted (${kind} penalty):</strong> Hand folded. Watching ${roomState.turnPlayerName || 'other players'} finish.`;
       } else if (isMyTurn && canDraw) {
         guide.innerHTML = '<strong>Your turn:</strong> Double-click or drag Stock/Discard to draw your 22nd card.';
       } else if (isMyTurn && canDiscard) {
@@ -1795,7 +1851,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       notice.innerText = `Forfeited (100 pts) • Turn: ${roomState.turnPlayerName}`;
     } else if (myDropped) {
       dot.classList.remove('active');
-      notice.innerText = `Scooted (30 pts) • Turn: ${roomState.turnPlayerName}`;
+      const pen = myPlayer?.dropPenalty || (myPlayer?.dropType === 'FIRST_DROP' ? 30 : myPlayer?.dropType === 'MIDDLE_DROP' ? 70 : 30);
+      const kind = myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts';
+      notice.innerText = `Scooted (${kind}) • Turn: ${roomState.turnPlayerName}`;
     } else if (isMyTurn) {
       dot.classList.add('active');
       notice.innerText = canDraw
@@ -1807,7 +1865,32 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       notice.innerText = `${actionPrefix}Turn: ${roomState.turnPlayerName}`;
     }
 
-    document.getElementById('btnDrop').classList.toggle('btn-disabled', declarationMode || !canDraw || myDropped || myForfeited);
+    const myTurnsTaken = myPlayer?.turnsTaken || 0;
+    const isFirstDrop = myTurnsTaken === 0;
+    const dropPenaltyPts = isFirstDrop ? 30 : 70;
+    const dropTypeLabel = isFirstDrop ? 'First Drop' : 'Middle Drop';
+
+    const btnDrop = document.getElementById('btnDrop');
+    if (btnDrop) {
+      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDraw || myDropped || myForfeited);
+      const b = btnDrop.querySelector('b');
+      const s = btnDrop.querySelector('.action-sub');
+      if (b && !dropConfirming) {
+        if (myDropped) {
+          const pen = myPlayer?.dropPenalty || 30;
+          b.innerText = `Scooted (${pen} pts)`;
+        } else {
+          b.innerText = `Scoot (${dropPenaltyPts} pts)`;
+        }
+      }
+      if (s && !dropConfirming) {
+        if (myDropped) {
+          s.innerText = 'hand folded';
+        } else {
+          s.innerText = `${dropTypeLabel} (-${dropPenaltyPts} pts)`;
+        }
+      }
+    }
     const btnDiscard = document.getElementById('btnDiscard');
     if (btnDiscard) {
       btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId || myDropped || myForfeited);
@@ -2726,27 +2809,115 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function renderDiscardHistory() {
-    const box=document.getElementById('discardHistory');
-    const countEl=document.getElementById('discardHistoryCount');
-    if (!box) return;
-    const history=(roomState?.discardHistory||[]).slice().reverse();
-    if (countEl) countEl.innerText=`${history.length} previous`;
-    if (!history.length) {
-      box.innerHTML='<div class="discard-history-empty">Peekable history</div>';
+    const box = document.getElementById('discardHistory');
+    const countEl = document.getElementById('discardHistoryCount');
+    const history = (roomState?.discardHistory || []).slice();
+    const top = roomState?.topDiscard || null;
+    const totalCount = history.length + (top ? 1 : 0);
+    if (countEl) countEl.innerText = `${totalCount}`;
+
+    if (box) {
+      const reversed = history.slice().reverse().slice(0, 8);
+      if (!reversed.length) {
+        box.innerHTML = '<div class="discard-history-empty">Peekable history</div>';
+      } else {
+        box.innerHTML = reversed.map((card, idx) => {
+          const fanX = Math.min(idx * 11, 50);
+          const fanRot = Math.min(idx * 1.5, 7);
+          const z = 10 + idx;
+          const who = card.discardedBy ? ` by ${card.discardedBy}` : '';
+          return `
+            <div class="discard-history-card" draggable="true" style="--fan-x:${fanX}px;--fan-rot:${fanRot}deg;z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}${who}"
+                 ondragstart="onHistoryDragStart(event,this)" onclick="toggleHistoryPeek(this)" ondragend="onHistoryDragEnd(event,this)">
+              <span class="discard-history-index">${idx+1}</span>
+              ${renderCard(card)}
+            </div>`;
+        }).join('');
+      }
+    }
+
+    const modal = document.getElementById('discardHistoryModal');
+    if (modal && modal.style.display === 'flex') {
+      renderDiscardHistoryModalContent();
+    }
+  }
+
+  function openDiscardHistoryModal() {
+    renderDiscardHistoryModalContent();
+    const modal = document.getElementById('discardHistoryModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeDiscardHistoryModal() {
+    const modal = document.getElementById('discardHistoryModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function renderDiscardHistoryModalContent() {
+    const summary = document.getElementById('discardModalSummary');
+    const list = document.getElementById('discardModalList');
+    if (!list) return;
+
+    const top = roomState?.topDiscard || null;
+    const history = (roomState?.discardHistory || []).slice();
+    const allDiscards = [];
+    if (top) {
+      allDiscards.push({ ...top, isTop: true });
+    }
+    history.slice().reverse().forEach((c, idx) => {
+      allDiscards.push({ ...c, isTop: false, buriedIndex: idx + 1 });
+    });
+
+    if (summary) {
+      summary.innerHTML = `
+        <div class="discard-summary-pill">Total Discards: <strong>${allDiscards.length} cards</strong></div>
+        <div class="discard-summary-pill">Available to Draw: <strong>${top ? top.rank + top.suit : 'None'}</strong></div>
+        <div class="discard-summary-pill">Buried in Pile: <strong>${history.length} cards</strong></div>
+      `;
+    }
+
+    if (!allDiscards.length) {
+      list.innerHTML = `
+        <div style="text-align:center; padding:32px 14px; color:#8ba096; font-size:13px;">
+          <div style="font-size:28px; margin-bottom:8px;">🎴</div>
+          No cards discarded yet this hand. Discards will appear here in chronological order as players play.
+        </div>`;
       return;
     }
-    box.innerHTML=history.map((card,idx)=>{
-      const fanX = Math.min(idx * 11, 50);
-      const fanRot = Math.min(idx * 1.5, 7);
-      const z = 10 + idx;
-      return `
-        <div class="discard-history-card" draggable="true" style="--fan-x:${fanX}px;--fan-rot:${fanRot}deg;z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}"
-             ondragstart="onHistoryDragStart(event,this)" onclick="toggleHistoryPeek(this)" ondragend="onHistoryDragEnd(event,this)">
-          <span class="discard-history-index">${idx+1}</span>
-          ${renderCard(card)}
-        </div>`;
-    }).join('');
+
+    list.innerHTML = `
+      <div class="discard-history-table">
+        ${allDiscards.map((card, idx) => {
+          const roleTag = getCardTagForRoles(card);
+          const roleBadge = roleTag ? `<span class="discard-badge-role">${roleTag}</span>` : '';
+          const statusBadge = card.isTop
+            ? `<span class="discard-badge-top">🟢 Top Card (Available to Draw)</span>`
+            : `<span class="discard-badge-buried">🔒 Buried #${card.buriedIndex}</span>`;
+          const who = card.discardedBy ? `Discarded by <strong>${card.discardedBy}</strong>` : (card.isTop ? 'Current Open Discard' : `Older discard #${idx + 1}`);
+          const rankSuit = `${card.rank}${card.suit}`;
+
+          return `
+            <div class="discard-item-row ${card.isTop ? 'is-top-card' : ''}">
+              <div class="discard-item-left">
+                <div class="discard-card-thumb">
+                  ${renderCard(card, roleTag, false)}
+                </div>
+                <div class="discard-item-info">
+                  <div class="discard-card-name">${rankSuit} ${card.isPoochie ? '(Printed Joker)' : ''}</div>
+                  <div class="discard-player-name">${who}</div>
+                </div>
+              </div>
+              <div class="discard-item-badges">
+                ${roleBadge}
+                ${statusBadge}
+              </div>
+            </div>`;
+        }).join('')}
+      </div>`;
   }
+
+  window.openDiscardHistoryModal = openDiscardHistoryModal;
+  window.closeDiscardHistoryModal = closeDiscardHistoryModal;
 
   function onHistoryDragStart(e,el){
     el.classList.add('peeked');
@@ -2859,29 +3030,40 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
   let dropConfirming = false;
   function dropHand() {
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myP = roomState?.players?.find(p => p.id === myId);
+    if (!canPlayerDraw() || myP?.hasDropped || myP?.hasForfeited) return;
+
+    const myTurnsTaken = myP?.turnsTaken || 0;
+    const isFirst = myTurnsTaken === 0;
+    const penalty = isFirst ? 30 : 70;
+    const label = isFirst ? 'First Drop' : 'Middle Drop';
+
     if (!dropConfirming) {
       dropConfirming = true;
       const btn = document.getElementById('btnDrop');
-      if (btn) btn.querySelector('b').innerText = 'Confirm Scoot?';
+      if (btn) {
+        const b = btn.querySelector('b');
+        const s = btn.querySelector('.action-sub');
+        if (b) b.innerText = `Confirm ${label} (${penalty} pts)?`;
+        if (s) s.innerText = 'Tap again to fold hand';
+      }
       setTimeout(() => {
         dropConfirming = false;
-        if (btn) btn.querySelector('b').innerText = 'Scoot';
+        renderAll(null);
       }, 4500);
       return;
     }
     dropConfirming = false;
-    const btn = document.getElementById('btnDrop');
-    if (btn) btn.querySelector('b').innerText = 'Scoot';
     if (isDemo) {
-      const meP = roomState?.players?.find(p => p.id === 'p_demo');
-      if (meP) {
-        meP.hasDropped = true;
-        meP.dropType = 'SCOOT';
-        meP.dropPenalty = 30;
+      if (myP) {
+        myP.hasDropped = true;
+        myP.dropType = isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP';
+        myP.dropPenalty = penalty;
       }
-      roomState.lastAction = `${meP?.name || 'You'} scooted / dropped (30 pts)`;
+      roomState.lastAction = `${myP?.name || 'You'} scooted (${label}: ${penalty} pts)`;
       passDemoTurn();
-      window.alert("Hand dropped / Scoot (30 pts drop penalty + winner's Maal points will be owed). Turn passed to " + roomState.turnPlayerName + ".");
+      window.alert(`Hand dropped: ${label} penalty of ${penalty} points (plus winner's Maal points will be owed). Turn passed to ${roomState.turnPlayerName}.`);
       return;
     }
     ws.send(JSON.stringify({ type: 'DROP' }));
@@ -3065,18 +3247,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         papluRank: '8',
         nichluRank: '6'
       },
-      topDiscard: { id: 'c_disc', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false },
+      topDiscard: { id: 'c_disc', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false, discardedBy: 'Kavita' },
       discardHistory: [
-        { id: 'c_h1', suit: '♣', rank: '4', rankValue: 4, isPoochie: false },
-        { id: 'c_h2', suit: '♥', rank: '9', rankValue: 9, isPoochie: false },
-        { id: 'c_h3', suit: '♠', rank: 'Q', rankValue: 12, isPoochie: false },
-        { id: 'c_h4', suit: '♦', rank: '2', rankValue: 2, isPoochie: false }
+        { id: 'c_h1', suit: '♣', rank: '4', rankValue: 4, isPoochie: false, discardedBy: 'Kavita' },
+        { id: 'c_h2', suit: '♥', rank: '9', rankValue: 9, isPoochie: false, discardedBy: 'Sonia' },
+        { id: 'c_h3', suit: '♠', rank: 'Q', rankValue: 12, isPoochie: false, discardedBy: 'Kavita' },
+        { id: 'c_h4', suit: '♦', rank: '2', rankValue: 2, isPoochie: false, discardedBy: 'Sonia' }
       ],
       deckCount: 134,
       players: [
-        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 },
-        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 },
-        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0 }
+        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 0 },
+        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 },
+        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 }
       ]
     };
 
@@ -3246,14 +3428,19 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     myHand = userStands.flat();
 
     const meP = roomState.players.find(p => p.id === 'p_demo');
-    if (meP) meP.cardCount = myHand.length;
+    if (meP) {
+      meP.cardCount = myHand.length;
+      meP.turnsTaken = (meP.turnsTaken || 0) + 1;
+    }
+
+    card.discardedBy = meP?.name || 'You';
+    card.discardedAt = Date.now();
 
     if (!roomState.discardHistory) roomState.discardHistory = [];
     if (roomState.topDiscard) roomState.discardHistory.push(roomState.topDiscard);
-    roomState.discardHistory = roomState.discardHistory.slice(-8);
     roomState.topDiscard = card;
     selectedCardId = null;
-    roomState.lastAction = `${meP?.name || 'You'} discarded`;
+    roomState.lastAction = `${meP?.name || 'You'} discarded ${card.rank}${card.suit}`;
     passDemoTurn();
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('discardContainer')));
   }
