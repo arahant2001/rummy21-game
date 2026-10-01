@@ -799,8 +799,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   @media(max-width:600px){.demo-controls{display:grid;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
   
 /* ===== COMPACT TABLE LAYOUT ===== */
-.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible}
-.stock-pile-wrapper{position:relative;z-index:8}
+.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible;user-select:none;-webkit-user-select:none;}
+.stock-pile-wrapper{position:relative;z-index:8;user-select:none;-webkit-user-select:none;}
 .stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 36px);margin:0 auto}
 .stock-with-cut #stockDeckBtn{position:relative;z-index:5}
 .cut-card-under-stock{position:absolute;left:15%;top:30px;width:var(--card-h);height:var(--card-w);transform:translateX(-50%) rotate(90deg) scale(.90);transform-origin:center;z-index:1;pointer-events:none}
@@ -1053,10 +1053,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   <!-- Center Table Felt -->
   <div class="center-board">
     <div class="pile-wrapper stock-pile-wrapper">
-      <div class="pile-title">Stock</div><div class="pile-action-hint">Drag onto your board</div>
+      <div class="pile-title">Stock</div><div class="pile-action-hint">Double-click to draw • or drag onto board</div>
       <div class="stock-with-cut">
         <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
-        <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true" ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
+        <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
+             onclick="onStockClick(event)"
+             ondblclick="onStockDoubleClick(event)"
+             ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
           <span class="deck-icon">🂠</span>
           <span id="deckCountText" class="deck-count">0</span>
         </div>
@@ -1064,11 +1067,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="pile-wrapper discard-pile-wrapper">
       <div class="pile-title">Discard <span id="discardHistoryCount" class="discard-history-badge">0 previous</span></div>
-      <div class="pile-action-hint">Drag card here or select &amp; tap to discard • drag old cards aside to peek</div>
+      <div class="pile-action-hint">Double-click to pick up • Drag or select &amp; tap to discard</div>
       <div class="discard-stack-area">
         <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
         <div id="discardContainer" class="pile-drop-source" draggable="true"
              onclick="onDiscardContainerClick(event)"
+             ondblclick="onDiscardDoubleClick(event)"
              ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
              ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
              ondrop="onDiscardPileDrop(event)"></div>
@@ -1949,17 +1953,73 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (mini) mini.innerText = `${total} pts`;
   }
 
-  function onDiscardContainerClick(e) {
-    const isMyTurn = roomState && roomState.turnPlayerId === getMyPlayerId();
-    if (isMyTurn && roomState.turnStage === 'DISCARD' && selectedCardId) {
-      discardSelected();
+  let lastDrawActionTime = 0;
+  let lastStockClickTime = 0;
+  let lastDiscardClickTime = 0;
+
+  function onStockClick(e) {
+    const now = Date.now();
+    if (now - lastStockClickTime < 380) {
+      onStockDoubleClick(e);
+      lastStockClickTime = 0;
+    } else {
+      lastStockClickTime = now;
     }
+  }
+
+  function onStockDoubleClick(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastDrawActionTime < 450) return;
+    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
+    if (!isMyTurn || (roomState && roomState.turnStage !== 'DRAW')) return;
+    lastDrawActionTime = now;
+    drawStock();
+  }
+
+  function onDiscardContainerClick(e) {
+    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
+    if (!roomState) return;
+
+    if (roomState.turnStage === 'DISCARD') {
+      if (isMyTurn && selectedCardId) {
+        discardSelected();
+      }
+    } else if (roomState.turnStage === 'DRAW') {
+      const now = Date.now();
+      if (now - lastDiscardClickTime < 380) {
+        onDiscardDoubleClick(e);
+        lastDiscardClickTime = 0;
+      } else {
+        lastDiscardClickTime = now;
+      }
+    }
+  }
+
+  function onDiscardDoubleClick(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastDrawActionTime < 450) return;
+    const isMyTurn = isDemo || (roomState && roomState.turnPlayerId === getMyPlayerId());
+    if (!isMyTurn || (roomState && roomState.turnStage !== 'DRAW')) return;
+    if (!roomState.topDiscard && !isDemo) return;
+    lastDrawActionTime = now;
+    drawDiscard();
   }
 
   window.openMaalModal = openMaalModal;
   window.closeMaalModal = closeMaalModal;
   window.toggleMaalDetails = toggleMaalDetails;
+  window.onStockClick = onStockClick;
+  window.onStockDoubleClick = onStockDoubleClick;
   window.onDiscardContainerClick = onDiscardContainerClick;
+  window.onDiscardDoubleClick = onDiscardDoubleClick;
 
   function renderStands() {
     const container=document.getElementById('standsContainer');
