@@ -529,17 +529,19 @@
     .revealed-player { margin-top:14px;padding:14px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;background:rgba(10,24,18,0.75);box-shadow:0 4px 16px rgba(0,0,0,0.25); }
     .revealed-player.is-winner { border-color:rgba(241,210,122,0.45);background:linear-gradient(135deg,rgba(22,58,42,0.95),rgba(10,24,18,0.95));box-shadow:0 0 20px rgba(241,210,122,0.15); }
     .revealed-player-title { font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#f8fafc; }
-    .revealed-groups-container { display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start; }
-    .revealed-group-block { background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:7px 8px;display:flex;flex-direction:column;gap:6px;min-width:130px; }
+    .revealed-groups-container { display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start; }
+    .revealed-group-block { background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-width:140px; }
     .revealed-group-block.pure { border-color:rgba(50,197,138,0.35);background:rgba(50,197,138,0.05); }
     .revealed-group-block.seq { border-color:rgba(99,102,241,0.35);background:rgba(99,102,241,0.05); }
     .revealed-group-block.set { border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.05); }
     .revealed-group-block.deadwood { border-color:rgba(244,63,94,0.30);background:rgba(244,63,94,0.05); }
-    .revealed-group-badge { font-size:10px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:#7eedba;display:flex;align-items:center;gap:4px; }
-    .revealed-group-cards { display:flex;flex-wrap:wrap;gap:4px; }
-    .revealed-group-cards .card { width:46px;height:68px;transform:none !important; }
-    .revealed-player-cards { display:flex;flex-wrap:wrap;gap:5px; }
-    .revealed-player-cards .card { width:48px;height:70px;transform:none !important; }
+    .revealed-group-badge { font-size:11px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:#7eedba;display:flex;align-items:center;gap:6px; }
+    .revealed-group-cards { display:flex;flex-wrap:wrap;gap:8px;align-items:center; }
+    .revealed-group-cards .card { width:var(--card-w);height:var(--card-h);transform:none !important;box-shadow:0 3px 8px rgba(0,0,0,0.28); }
+    .revealed-player-cards { display:flex;flex-wrap:wrap;gap:8px; }
+    .revealed-player-cards .card { width:var(--card-w);height:var(--card-h);transform:none !important;box-shadow:0 3px 8px rgba(0,0,0,0.28); }
+    #resultModal .modal-content { max-width:980px !important;width:95vw !important;padding:26px 28px !important;border-radius:20px !important;border-top:4px solid #d9b65c !important;box-shadow:0 28px 70px rgba(0,0,0,0.7) !important; }
+    @media(max-width:768px){ #resultModal .modal-content{padding:16px 12px !important;} .revealed-group-cards .card, .revealed-player-cards .card{width:58px !important;height:86px !important;} }
     .stand-close-btn {
       width: auto !important;
       padding: 2px 7px !important;
@@ -3949,17 +3951,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         const aaravGroups = [
           { type: 'PURE_SEQUENCE', cards: [{ id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' }] },
           { type: 'PURE_SEQUENCE', cards: [{ id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' }] },
-          { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' }] },
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: 'A' }, { id: 'a8', suit: '♣', rank: '2' }, { id: 'a9', suit: '♣', rank: '3' }] },
           { type: 'SET', cards: [{ id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' }] }
         ];
         const aaravHand = [
           { id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' },
           { id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' },
-          { id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' },
+          { id: 'a7', suit: '♣', rank: 'A' }, { id: 'a8', suit: '♣', rank: '2' }, { id: 'a9', suit: '♣', rank: '3' },
           { id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' },
-          { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '2' },
-          { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: 'A' }, { id: 'a18', suit: '♠', rank: '4' },
-          { id: 'a19', suit: '♣', rank: '3' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
+          { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '4' },
+          { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: '2' }, { id: 'a18', suit: '♠', rank: '4' },
+          { id: 'a19', suit: '♣', rank: '6' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
         ];
         const aaravDeadwood = calculateCurrentDeadwood(aaravGroups, aaravHand).points;
 
