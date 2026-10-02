@@ -529,17 +529,19 @@
     .revealed-player { margin-top:14px;padding:14px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;background:rgba(10,24,18,0.75);box-shadow:0 4px 16px rgba(0,0,0,0.25); }
     .revealed-player.is-winner { border-color:rgba(241,210,122,0.45);background:linear-gradient(135deg,rgba(22,58,42,0.95),rgba(10,24,18,0.95));box-shadow:0 0 20px rgba(241,210,122,0.15); }
     .revealed-player-title { font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#f8fafc; }
-    .revealed-groups-container { display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start; }
-    .revealed-group-block { background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:7px 8px;display:flex;flex-direction:column;gap:6px;min-width:130px; }
+    .revealed-groups-container { display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start; }
+    .revealed-group-block { background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-width:140px; }
     .revealed-group-block.pure { border-color:rgba(50,197,138,0.35);background:rgba(50,197,138,0.05); }
     .revealed-group-block.seq { border-color:rgba(99,102,241,0.35);background:rgba(99,102,241,0.05); }
     .revealed-group-block.set { border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.05); }
     .revealed-group-block.deadwood { border-color:rgba(244,63,94,0.30);background:rgba(244,63,94,0.05); }
-    .revealed-group-badge { font-size:10px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:#7eedba;display:flex;align-items:center;gap:4px; }
-    .revealed-group-cards { display:flex;flex-wrap:wrap;gap:4px; }
-    .revealed-group-cards .card { width:46px;height:68px;transform:none !important; }
-    .revealed-player-cards { display:flex;flex-wrap:wrap;gap:5px; }
-    .revealed-player-cards .card { width:48px;height:70px;transform:none !important; }
+    .revealed-group-badge { font-size:11px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:#7eedba;display:flex;align-items:center;gap:6px; }
+    .revealed-group-cards { display:flex;flex-wrap:wrap;gap:8px;align-items:center; }
+    .revealed-group-cards .card { width:var(--card-w);height:var(--card-h);transform:none !important;box-shadow:0 3px 8px rgba(0,0,0,0.28); }
+    .revealed-player-cards { display:flex;flex-wrap:wrap;gap:8px; }
+    .revealed-player-cards .card { width:var(--card-w);height:var(--card-h);transform:none !important;box-shadow:0 3px 8px rgba(0,0,0,0.28); }
+    #resultModal .modal-content { max-width:980px !important;width:95vw !important;padding:26px 28px !important;border-radius:20px !important;border-top:4px solid #d9b65c !important;box-shadow:0 28px 70px rgba(0,0,0,0.7) !important; }
+    @media(max-width:768px){ #resultModal .modal-content{padding:16px 12px !important;} .revealed-group-cards .card, .revealed-player-cards .card{width:58px !important;height:86px !important;} }
     .stand-close-btn {
       width: auto !important;
       padding: 2px 7px !important;
@@ -2075,14 +2077,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         }
 
         if (isGroupingPhase) {
+          const estDeadwood = calculateCurrentDeadwood(declarationGroups, myHand);
           dp.innerHTML = `
             <div class="declare-panel-head">
               <div>
                 <div class="declare-title" style="color:#7eedba;">
                   <span>⚡</span> Group Your Melds to Minimize Deadwood
                 </div>
-                <div class="declare-subtitle">
-                  ${roomState?.winnerName || 'Winner'} declared! Form your runs and sets now. Any ungrouped cards count as deadwood.
+                <div class="declare-subtitle" style="max-width:700px; line-height:1.45;">
+                  ${roomState?.winnerName || 'Winner'} declared! Non-declarers need a <b>minimum of 3 pure sequences</b>. Otherwise, all cards apart from <b>Jokers</b>, <b>pure sequences of 4+ cards</b>, and <b>Tunellas</b> are considered deadwood.
                 </div>
               </div>
               <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:36px;" onclick="submitGroupingMeld()">
@@ -2090,12 +2093,21 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
               </button>
             </div>
 
+            <div style="margin:8px 0 10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; ${estDeadwood.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.35);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35);'}">
+                ${estDeadwood.pureSequences} / 3 Pure Sequences ${estDeadwood.hasRequiredPure ? '✅ (All melds protected)' : '⚠️ (Only Jokers, 4+ pure runs & Tunellas protected)'}
+              </span>
+              <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.35);">
+                Current Deadwood: <b>${estDeadwood.points} pts</b> (max 120)
+              </span>
+            </div>
+
             <div class="declare-smart-box">
               ${smartButtonHtml}
             </div>
 
             <div class="declare-actions-row">
-              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFullHand()" title="Automatically scan and group your entire hand into valid runs and sets">
+              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFullHand()" title="Automatically scan and group your entire hand into valid runs, tunellas, and sets">
                 <span>⚡ Auto-Group</span>
                 <span class="btn-group-sub">Find all melds</span>
               </button>
@@ -2120,7 +2132,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
               <div>
                 <div style="font-size:12px; font-weight:800; color:#cfdad4;">
-                  ${grouped} cards grouped • ${pure} pure runs • ${remaining.length} cards unmelded
+                  ${grouped} cards grouped • ${estDeadwood.pureSequences} pure runs • Deadwood: ${estDeadwood.points} pts
                 </div>
                 <div style="font-size:10px; color:#8ba096;">
                   All other players are waiting for your submission. Tap "Submit Melds" when done.
@@ -2566,10 +2578,29 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const remaining=myHand.filter(c=>!groupedIds.has(c.id));
     const selectable=remaining;
     const selCount = declarationSelectedIds.size;
-    const groups=declarationGroups.map((g,i)=>`<div class="stand-rack declaration-group locked">
-      <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span></div>
-      <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
-      <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`).join('');
+    const isGroupingPhase = roomState?.status === 'GROUPING';
+    const deadwoodCalc = isGroupingPhase ? calculateCurrentDeadwood(declarationGroups, myHand) : null;
+    const groups=declarationGroups.map((g,i)=>{
+      let protectionBadge = '';
+      if (isGroupingPhase && deadwoodCalc) {
+        const isPure = g.type === 'PURE_SEQUENCE';
+        const is4Plus = isPure && g.cards.length >= 4;
+        const isTun = declarationIsTunella(g.cards);
+        if (deadwoodCalc.hasRequiredPure) {
+          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Protected (0 pts)</span>`;
+        } else if (is4Plus) {
+          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ 4+ Run (Protected)</span>`;
+        } else if (isTun) {
+          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Tunella (Protected)</span>`;
+        } else {
+          protectionBadge = `<span style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">⚠️ Unprotected (Deadwood)</span>`;
+        }
+      }
+      return `<div class="stand-rack declaration-group locked">
+        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span>${protectionBadge}</div>
+        <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
+        <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`;
+    }).join('');
     container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
       <div class="stand-title-box">
         <span>Cards to Group (${selectable.length} remaining)</span>
@@ -2602,11 +2633,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (!Array.isArray(cards) || cards.length !== 3) return false;
     return cards.every(c => c && (c.isPoochie || c.suit === '★' || c.rank === 'PJ'));
   }
+  function declarationIsTunella(cards) {
+    if (!Array.isArray(cards) || cards.length !== 3) return false;
+    const first = cards[0];
+    if (!first || first.isPoochie || first.rank === 'PJ' || first.suit === '★') return false;
+    return cards.every(c => c && c.rank === first.rank && c.suit === first.suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+  }
   function declarationPure(cards) {
     if(!Array.isArray(cards) || cards.length<3) return false;
     if(declarationIsMarriage(cards) || declarationIsThreePoochies(cards)) return true;
+    if(declarationIsTunella(cards)) return true;
     if(cards.some(declarationIsWild)) return false;
-    if(cards.length===3 && cards.every(c=>c.rank===cards[0].rank && c.suit===cards[0].suit)) return true;
     const suit=cards[0].suit;
     if(!cards.every(c=>c.suit===suit)) return false;
     const vals=cards.map(c=>declarationRankOptions(c)[0]);
@@ -2615,6 +2652,91 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if(low.every((v,i)=>i===0||v===low[i-1]+1)) return true;
     const high=cards.map(c=>c.rank==='A'?14:declarationRankOptions(c)[0]).sort((a,b)=>a-b);
     return new Set(high).size===high.length && high.every((v,i)=>i===0||v===high[i-1]+1);
+  }
+
+  function calculateCurrentDeadwood(groups, hand) {
+    if (!Array.isArray(hand)) return { points: 0, pureSequences: 0, hasRequiredPure: false, exemptIds: new Set(), allValidMeldedIds: new Set() };
+    const handCards = hand;
+    const handIds = new Set(handCards.map(c => c.id));
+    const usedIds = new Set();
+    let pureSequences = 0;
+    const allValidMeldedIds = new Set();
+    const exemptIds = new Set(); // 4+ card pure runs and tunellas
+
+    if (Array.isArray(groups)) {
+      for (const g of groups) {
+        if (!g || !Array.isArray(g.cards) || g.cards.length < 3) continue;
+        const cards = g.cards;
+        let conflict = false;
+        for (const c of cards) {
+          if (!handIds.has(c.id) || usedIds.has(c.id)) { conflict = true; break; }
+        }
+        if (conflict) continue;
+
+        const isPure = g.type === 'PURE_SEQUENCE' ? declarationPure(cards) : false;
+        const isSeq = g.type === 'SEQUENCE' ? declarationSequence(cards) : false;
+        const isSetGroup = g.type === 'SET' ? declarationSet(cards) : false;
+        const isTun = declarationIsTunella(cards);
+
+        if (isPure || isSeq || isSetGroup) {
+          cards.forEach(c => {
+            usedIds.add(c.id);
+            allValidMeldedIds.add(c.id);
+          });
+          if (isPure) {
+            pureSequences++;
+            if (cards.length >= 4) {
+              cards.forEach(c => exemptIds.add(c.id));
+            }
+          }
+          if (isTun) {
+            cards.forEach(c => exemptIds.add(c.id));
+          }
+        }
+      }
+    }
+
+    // Also check if any unassigned/ungrouped cards form a Tunella
+    if (pureSequences < 3) {
+      const unassigned = handCards.filter(c => !usedIds.has(c.id));
+      const cardMap = new Map();
+      for (const c of unassigned) {
+        if (!c || c.isPoochie || c.rank === 'PJ' || c.suit === '★') continue;
+        const key = `${c.suit}_${c.rank}`;
+        if (!cardMap.has(key)) cardMap.set(key, []);
+        cardMap.get(key).push(c.id);
+      }
+      for (const ids of cardMap.values()) {
+        if (ids.length >= 3) {
+          ids.slice(0, 3).forEach(id => exemptIds.add(id));
+        }
+      }
+    }
+
+    // Rule: Non-declarers need a minimum of 3 pure sequences.
+    // - If pureSequences >= 3: all valid melded cards are protected.
+    // - If pureSequences < 3: ONLY jokers, pure sequences of 4 or more cards, and tunellas are protected.
+    //   All other cards are considered deadwood.
+    const protectedIds = (pureSequences >= 3) ? allValidMeldedIds : exemptIds;
+
+    let points = 0;
+    for (const card of handCards) {
+      if (protectedIds.has(card.id)) continue;
+      if (declarationIsWild(card)) continue; // Jokers are always exempt from deadwood
+      if (['A', 'K', 'Q', 'J', '10'].includes(card.rank)) {
+        points += 10;
+      } else {
+        points += parseInt(card.rank, 10) || 0;
+      }
+    }
+
+    return {
+      points: Math.min(points, 120),
+      pureSequences,
+      hasRequiredPure: pureSequences >= 3,
+      exemptIds,
+      allValidMeldedIds
+    };
   }
   function declarationSequence(cards) {
     if(!Array.isArray(cards) || cards.length<3) return false;
@@ -2807,6 +2929,33 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       } else {
         searchingPoochies = false;
       }
+    }
+
+    // 2b. Tunellas: (3 identical cards of exact same suit and rank) -> Pure Sequence (Protected)
+    let searchingTunellas = true;
+    while (searchingTunellas) {
+      const avail = getAvailable().filter(c => !declarationIsWild(c));
+      const suitRankMap = new Map();
+      for (const c of avail) {
+        const key = `${c.suit}_${c.rank}`;
+        if (!suitRankMap.has(key)) suitRankMap.set(key, []);
+        suitRankMap.get(key).push(c);
+      }
+      let foundTun = false;
+      for (const group of suitRankMap.values()) {
+        if (group.length >= 3) {
+          const trio = group.slice(0, 3);
+          trio.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cards: trio
+          });
+          foundTun = true;
+          break;
+        }
+      }
+      if (!foundTun) searchingTunellas = false;
     }
 
     // 3. Natural Pure Sequences (3+ consecutive cards in same suit without wildcards)
@@ -3020,16 +3169,25 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
     };
 
-    let myDeadwood = 0;
-    const myGroupedIds = new Set(declarationGroups.flatMap(g => g.cards.map(c => c.id)));
-    const myUngrouped = myHand.filter(c => !myGroupedIds.has(c.id));
-    const myPureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-    if (myPureCount >= 3) {
-      myDeadwood = myUngrouped.reduce((sum, c) => sum + (['A','K','Q','J','10'].includes(c.rank) ? 10 : (parseInt(c.rank,10)||0)), 0);
-    } else {
-      myDeadwood = myHand.reduce((sum, c) => sum + (declarationIsWild(c) ? 0 : (['A','K','Q','J','10'].includes(c.rank) ? 10 : (parseInt(c.rank,10)||0))), 0);
-    }
-    myDeadwood = Math.min(myDeadwood, 120);
+    const myDeadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
+    const myDeadwood = myDeadwoodCalc.points;
+
+    const soniaGroups = [
+      { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+      { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
+    ];
+    const soniaHand = [
+      { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+      { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+      { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+      { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+      { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+      { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+      { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+    ];
+    // Sonia only has 1 pure sequence (< 3), so her deadwood is computed under the rule:
+    // All cards apart from jokers, 4+ pure runs, and tunellas count as deadwood!
+    const soniaDeadwood = calculateCurrentDeadwood(soniaGroups, soniaHand).points;
 
     const demoData = {
       winnerName,
@@ -3037,7 +3195,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       results: [
         { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
         { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
-        { name: 'Sonia', status: 'LOST', points: 42 + winnerMaal.total, deadwood: 42, net: `Pays ${42 + winnerMaal.total} pts (42 deadwood + ${winnerMaal.total} winner Maal)` },
+        { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
         { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
       ],
       revealedHands: [
@@ -3066,20 +3224,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         {
           name: 'Sonia',
           isWinner: false,
-          deadwood: 42,
-          groups: [
-            { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
-            { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
-          ],
-          hand: [
-            { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
-            { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
-            { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
-            { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
-            { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
-            { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
-            { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
-          ]
+          deadwood: soniaDeadwood,
+          groups: soniaGroups,
+          hand: soniaHand
         },
         {
           name: 'Rohan',
@@ -3801,13 +3948,48 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         isDemoGroupingWait = false;
         if (waitModal) waitModal.style.display = 'none';
 
+        const aaravGroups = [
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' }] },
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' }] },
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: 'A' }, { id: 'a8', suit: '♣', rank: '2' }, { id: 'a9', suit: '♣', rank: '3' }] },
+          { type: 'SET', cards: [{ id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' }] }
+        ];
+        const aaravHand = [
+          { id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' },
+          { id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' },
+          { id: 'a7', suit: '♣', rank: 'A' }, { id: 'a8', suit: '♣', rank: '2' }, { id: 'a9', suit: '♣', rank: '3' },
+          { id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' },
+          { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '4' },
+          { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: '2' }, { id: 'a18', suit: '♠', rank: '4' },
+          { id: 'a19', suit: '♣', rank: '6' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
+        ];
+        const aaravDeadwood = calculateCurrentDeadwood(aaravGroups, aaravHand).points;
+
+        const priyaGroups = [
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+          { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] },
+          { type: 'SET', cards: [{ id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' }] }
+        ];
+        const priyaHand = [
+          { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+          { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+          { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+          { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+          { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+          { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+          { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+        ];
+        // Priya has only 1 pure sequence (< 3). Therefore, all cards apart from jokers,
+        // pure sequences of 4+ cards, and tunellas are counted as deadwood!
+        const priyaDeadwood = calculateCurrentDeadwood(priyaGroups, priyaHand).points;
+
         const demoData = {
           winnerName: roomState.turnPlayerName || 'You',
           winnerMaal,
           results: [
             { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
-            { name: 'Aarav', status: 'LOST', points: 34 + winnerMaal.total, deadwood: 34, net: `Pays ${34 + winnerMaal.total} pts (34 deadwood + ${winnerMaal.total} winner Maal)` },
-            { name: 'Priya', status: 'LOST', points: 52 + winnerMaal.total, deadwood: 52, net: `Pays ${52 + winnerMaal.total} pts (52 deadwood + ${winnerMaal.total} winner Maal)` },
+            { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
+            { name: 'Priya', status: 'LOST', points: priyaDeadwood + winnerMaal.total, deadwood: priyaDeadwood, net: `Pays ${priyaDeadwood + winnerMaal.total} pts (${priyaDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
             { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
           ],
           revealedHands: [
@@ -3821,41 +4003,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             {
               name: 'Aarav',
               isWinner: false,
-              deadwood: 34,
-              groups: [
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' }] },
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' }] },
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' }] },
-                { type: 'SET', cards: [{ id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' }] }
-              ],
-              hand: [
-                { id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' },
-                { id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' },
-                { id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' },
-                { id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' },
-                { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '2' },
-                { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: 'A' }, { id: 'a18', suit: '♠', rank: '4' },
-                { id: 'a19', suit: '♣', rank: '3' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
-              ]
+              deadwood: aaravDeadwood,
+              groups: aaravGroups,
+              hand: aaravHand
             },
             {
               name: 'Priya',
               isWinner: false,
-              deadwood: 52,
-              groups: [
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
-                { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] },
-                { type: 'SET', cards: [{ id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' }] }
-              ],
-              hand: [
-                { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
-                { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
-                { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
-                { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
-                { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
-                { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
-                { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
-              ]
+              deadwood: priyaDeadwood,
+              groups: priyaGroups,
+              hand: priyaHand
             },
             {
               name: 'Rohan',
@@ -3959,14 +4116,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       reveal.innerHTML = '<h3 style="font-size:15px;margin:18px 0 10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
         (data.revealedHands || []).map(p => {
           const isWinner = p.name === data.winnerName || p.isWinner;
-          const statusBadge = isWinner
+          const groups = Array.isArray(p.groups) ? p.groups : [];
+          const pPureCount = groups.filter(g => {
+            if (!g) return false;
+            if (g.type === 'PURE_SEQUENCE') return true;
+            if (Array.isArray(g.cards) && declarationPure(g.cards)) return true;
+            return false;
+          }).length;
+          const hasMinPure = isWinner || p.hasDropped || pPureCount >= 3;
+
+          let statusBadge = isWinner
             ? '<span style="color:#f1d27a;background:rgba(217,182,92,0.18);border:1px solid rgba(217,182,92,0.4);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;">🏆 DECLARER (WINNER)</span>'
             : p.hasDropped
             ? `<span style="color:#f87171;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">🚫 DROPPED (${p.deadwood || p.dropPenalty || 30} pts)</span>`
             : `<span style="color:#94a3b8;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">SETTLED (${p.deadwood || 0} pts deadwood)</span>`;
 
+          if (!isWinner && !p.hasDropped) {
+            statusBadge += hasMinPure
+              ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/3 Pure Runs (Melds Protected)</span>`
+              : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/3 Pure Runs (&lt;3: Only Jokers, 4+ runs &amp; Tunellas protected)</span>`;
+          }
+
           const handCards = Array.isArray(p.hand) ? p.hand : [];
-          const groups = Array.isArray(p.groups) ? p.groups : [];
 
           let groupsHtml = '';
           const usedCardIds = new Set();
@@ -3992,16 +4163,35 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                 gCards.push(...g.cards.filter(Boolean));
                 g.cards.forEach(c => { if (c && c.id) usedCardIds.add(c.id); });
               }
-              const isPure = g.type === 'PURE_SEQUENCE';
+              const isPure = g.type === 'PURE_SEQUENCE' || declarationPure(gCards);
               const isSeq = g.type === 'SEQUENCE';
+              const isTun = declarationIsTunella(gCards);
+              const is4PlusPure = isPure && gCards.length >= 4;
+
+              let protectNote = '';
+              let badgeBorder = '';
+              if (!isWinner && !p.hasDropped) {
+                if (hasMinPure) {
+                  protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Protected (0 pts)</span>';
+                } else if (is4PlusPure) {
+                  protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ 4+ Run Protected (0 pts)</span>';
+                } else if (isTun) {
+                  protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Tunella Protected (0 pts)</span>';
+                } else {
+                  protectNote = '<span style="color:#f87171;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Deadwood (Needs 3 Pure Runs)</span>';
+                  badgeBorder = 'border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.06);';
+                }
+              }
+
               const icon = isPure ? '💎' : isSeq ? '🃏' : '👑';
               const label = g.typeLabel || (isPure ? 'Pure Sequence' : isSeq ? 'Sequence' : 'Set');
               const badgeClass = isPure ? 'pure' : isSeq ? 'seq' : 'set';
               return `
-                <div class="revealed-group-block ${badgeClass}">
+                <div class="revealed-group-block ${badgeClass}" style="${badgeBorder}">
                   <div class="revealed-group-badge">
                     <span>${icon}</span>
                     <span>${label} (${gCards.length})</span>
+                    ${protectNote}
                   </div>
                   <div class="revealed-group-cards">
                     ${gCards.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
