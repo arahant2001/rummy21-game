@@ -1,0 +1,6 @@
+{
+  "name": "GitHub Repository Assistant",
+  "description": "Connect, inspect, and modify existing GitHub or local repositories.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

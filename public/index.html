@@ -526,8 +526,18 @@
     .group-type-select { background:rgba(15,23,42,.92);color:var(--text-primary);border:1px solid var(--surface-border-light);border-radius:6px;padding:3px 6px;font-size:10px;font-weight:700;text-transform:uppercase; }
     .show-help { margin:8px 0 10px;padding:8px 10px;border-radius:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--text-secondary);font-size:11px;line-height:1.35; }
     .revealed-hands { margin-top:16px;padding-top:14px;border-top:1px solid var(--surface-border-light); }
-    .revealed-player { margin-top:10px;padding:9px;border:1px solid var(--surface-border);border-radius:10px;background:rgba(15,23,42,.45); }
-    .revealed-player-title { font-weight:800;font-size:12px;margin-bottom:7px; }
+    .revealed-player { margin-top:14px;padding:14px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;background:rgba(10,24,18,0.75);box-shadow:0 4px 16px rgba(0,0,0,0.25); }
+    .revealed-player.is-winner { border-color:rgba(241,210,122,0.45);background:linear-gradient(135deg,rgba(22,58,42,0.95),rgba(10,24,18,0.95));box-shadow:0 0 20px rgba(241,210,122,0.15); }
+    .revealed-player-title { font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#f8fafc; }
+    .revealed-groups-container { display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start; }
+    .revealed-group-block { background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:7px 8px;display:flex;flex-direction:column;gap:6px;min-width:130px; }
+    .revealed-group-block.pure { border-color:rgba(50,197,138,0.35);background:rgba(50,197,138,0.05); }
+    .revealed-group-block.seq { border-color:rgba(99,102,241,0.35);background:rgba(99,102,241,0.05); }
+    .revealed-group-block.set { border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.05); }
+    .revealed-group-block.deadwood { border-color:rgba(244,63,94,0.30);background:rgba(244,63,94,0.05); }
+    .revealed-group-badge { font-size:10px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:#7eedba;display:flex;align-items:center;gap:4px; }
+    .revealed-group-cards { display:flex;flex-wrap:wrap;gap:4px; }
+    .revealed-group-cards .card { width:46px;height:68px;transform:none !important; }
     .revealed-player-cards { display:flex;flex-wrap:wrap;gap:5px; }
     .revealed-player-cards .card { width:48px;height:70px;transform:none !important; }
     .stand-close-btn {
@@ -800,6 +810,37 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .btn-forfeit-danger:hover{background:rgba(240,107,120,.20);border-color:rgba(240,107,120,.45);color:#fca5a5}
 .declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
 .fanfare{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(4,12,8,.30);animation:fanfareFade 2.8s ease forwards}.fanfare-card{padding:22px 28px;border-radius:18px;border:1px solid rgba(241,210,122,.55);background:linear-gradient(145deg,rgba(22,58,42,.98),rgba(7,24,16,.98));box-shadow:0 20px 70px rgba(0,0,0,.55),0 0 40px rgba(217,182,92,.18);text-align:center;transform:scale(.72);animation:fanfarePop .55s cubic-bezier(.2,1.4,.4,1) forwards}.fanfare-icon{font-size:34px}.fanfare-title{margin-top:6px;font-size:24px;font-weight:900;color:#f1d27a}.fanfare-sub{margin-top:4px;font-size:11px;color:#b9c8c0}@keyframes fanfarePop{to{transform:scale(1)}}@keyframes fanfareFade{0%,75%{opacity:1}100%{opacity:0}}
+@keyframes maalPulseAnim{0%{transform:scale(1);filter:brightness(1)}40%{transform:scale(1.22);filter:brightness(1.5);box-shadow:0 0 20px rgba(241,210,122,.9)}100%{transform:scale(1);filter:brightness(1)}}
+.maal-pulse{animation:maalPulseAnim .85s ease !important;border-color:rgba(241,210,122,.9)!important;background:rgba(217,182,92,.35)!important}
+@keyframes spinPulse{0%{transform:scale(1) rotate(0deg);opacity:.9}50%{transform:scale(1.18) rotate(180deg);opacity:1}100%{transform:scale(1) rotate(360deg);opacity:.9}}
+.wait-player-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);font-size:12px}
+.wait-player-row.ready{border-color:rgba(50,197,138,.35);background:rgba(50,197,138,.07);color:#7eedba}
+.wait-player-row.waiting{border-color:rgba(217,182,92,.25);background:rgba(217,182,92,.04);color:#f1d27a}
+.wait-player-row.dropped{opacity:.5;color:#94a3b8}
+
+#resultModal .modal-content {
+  max-width: 940px !important;
+  width: 95% !important;
+  background: linear-gradient(145deg, #122b1f, #07150f) !important;
+  border: 1px solid rgba(217,182,92,0.38) !important;
+  border-top: 3px solid #d9b65c !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7) !important;
+}
+.revealed-hands {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(217,182,92,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.revealed-player {
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: rgba(10,24,18,0.85);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
 
 /* Player Status Strip */
 .player-strip{display:flex;flex-direction:column;gap:6px;margin:0 0 2px;padding:9px 10px;background:rgba(6,23,16,.88);border:1px solid rgba(217,182,92,.16);border-radius:14px;box-shadow:0 7px 20px rgba(0,0,0,.18)}
@@ -1089,6 +1130,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <button class="tool-btn" onclick="demoMyTurn()">My Turn</button>
     <button class="tool-btn" onclick="demoOpponentTurn('Kavita')">Kavita's Turn</button>
     <button class="tool-btn" onclick="demoOpponentTurn('Sonia')">Sonia's Turn</button>
+    <button class="tool-btn tool-btn-highlight" onclick="simulateOpponentDeclare()" title="Simulate an opponent declaring to test grouping & wait sign">⚡ Opponent Declares</button>
     <button class="tool-btn" onclick="demoReset()">Reset</button>
   </div>
 
@@ -1183,6 +1225,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Scoot</b><small class="action-sub">before drawing</small></span></button>
       <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()" style="display:none;"><span><b>Discard Card</b><small class="action-sub">selected card</small></span></button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Grouping Wait Sign Modal -->
+<div id="groupingWaitModal" class="modal" style="display:none; z-index:230;">
+  <div class="modal-content" style="max-width: 480px; text-align: center; padding: 26px 22px;">
+    <div style="font-size: 38px; margin-bottom: 8px; animation: spinPulse 2.4s infinite ease-in-out;">⏳</div>
+    <h2 id="groupingWaitTitle" style="color: #f1d27a; font-size: 20px; font-weight: 800; margin: 0 0 6px;">Waiting For All Players</h2>
+    <div id="groupingWaitSubtitle" style="color: #b9c8c0; font-size: 13px; margin-bottom: 16px;">
+      A player has declared! Waiting for all opponents to finish grouping their melds...
+    </div>
+    <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+      <div id="groupingWaitProgress" style="font-size: 14px; font-weight: 700; color: #7eedba; margin-bottom: 8px;">
+        1 / 4 players ready
+      </div>
+      <div id="groupingPlayersList" style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #cfdad4;">
+      </div>
+    </div>
+    <div style="font-size: 11px; color: #7e9389;">
+      Round settlements and all player hands will be revealed as soon as grouping is complete.
     </div>
   </div>
 </div>
@@ -1314,6 +1377,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let selectedCardId = null;
   let draggedCardId = null;
   let isDemo = false;
+  let isDemoGroupingWait = false;
   let declarationMode = false;
   let declarationGroups = [];
   let declarationSelectedIds = new Set();
@@ -1678,12 +1742,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function getCardTag(card) {
-    if (!roomState || !roomState.roles) return '';
+    if (!roomState || !roomState.roles || !card) return '';
     const r = roomState.roles;
-    if (card.isPoochie) return 'POOCHIE';
-    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'TIPLU';
+    if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') return 'POOCHIE';
+    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'EXACT CUT';
     if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
-    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'NICHLU';
+    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'TAPLU';
     if (card.rank === r.tipluRank) return 'JOKER';
     return '';
   }
@@ -1907,6 +1971,63 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare'));
       }
     }
+    const isGroupingPhase = roomState?.status === 'GROUPING';
+    const mePlayer = isDemo
+      ? roomState?.players?.find(p => p.id === 'p_demo')
+      : roomState?.players?.find(p => p.name === document.getElementById('playerName')?.value || p.id === myPlayerId);
+
+    const meGrouped = Boolean(mePlayer?.isGrouped);
+    const meDropped = Boolean(mePlayer?.hasDropped || mePlayer?.hasForfeited);
+
+    // Grouping Wait Modal handling
+    const waitModal = document.getElementById('groupingWaitModal');
+    if (isGroupingPhase) {
+      if (meGrouped || meDropped) {
+        declarationMode = false;
+        if (waitModal) {
+          waitModal.style.display = 'flex';
+          const activeNonDropped = (roomState.players || []).filter(p => !p.hasDropped);
+          const readyCount = activeNonDropped.filter(p => p.isGrouped).length;
+          const totalActive = activeNonDropped.length;
+
+          const waitTitle = document.getElementById('groupingWaitTitle');
+          const waitSub = document.getElementById('groupingWaitSubtitle');
+          const waitProg = document.getElementById('groupingWaitProgress');
+          const playersList = document.getElementById('groupingPlayersList');
+
+          if (waitTitle) {
+            waitTitle.innerText = mePlayer?.id === roomState.winnerId
+              ? '🏆 Declaration Accepted!'
+              : '✅ Melds Submitted!';
+          }
+          if (waitSub) {
+            waitSub.innerText = mePlayer?.id === roomState.winnerId
+              ? 'Waiting for all other players to finish grouping their cards...'
+              : 'Waiting for remaining opponents to finish grouping their melds...';
+          }
+          if (waitProg) {
+            waitProg.innerText = `${readyCount} / ${totalActive} players finished grouping`;
+          }
+          if (playersList) {
+            playersList.innerHTML = (roomState.players || []).map(p => {
+              if (p.hasDropped) {
+                return `<div class="wait-player-row dropped"><span>${p.name}</span><span>🚫 Dropped (${p.dropPenalty || 30} pts)</span></div>`;
+              }
+              if (p.isGrouped) {
+                return `<div class="wait-player-row ready"><span>${p.name}</span><span>✅ Ready</span></div>`;
+              }
+              return `<div class="wait-player-row waiting"><span>${p.name}</span><span>⏳ Grouping cards...</span></div>`;
+            }).join('');
+          }
+        }
+      } else {
+        if (waitModal) waitModal.style.display = 'none';
+        declarationMode = true; // Open grouping mode for the active non-declarer
+      }
+    } else {
+      if (waitModal && !isDemoGroupingWait) waitModal.style.display = 'none';
+    }
+
     const dp = document.getElementById('declarationPanel');
     if (dp) {
       dp.classList.toggle('is-open', declarationMode);
@@ -1953,80 +2074,142 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             </button>`;
         }
 
-        dp.innerHTML = `
-          <div class="declare-panel-head">
-            <div>
-              <div class="declare-title">
-                <span>🏆</span> Declare 21-Card Show
-              </div>
-              <div class="declare-subtitle">
-                Group 21 cards into sequences &amp; sets. The 1 remaining card automatically serves as your final discard.
-              </div>
-            </div>
-            <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
-          </div>
-
-          <div class="declare-checklist">
-            <div class="checklist-item ${pure >= 3 ? 'done' : 'pending'}">
-              <span class="checklist-icon">${pure >= 3 ? '✅' : '⏳'}</span>
+        if (isGroupingPhase) {
+          dp.innerHTML = `
+            <div class="declare-panel-head">
               <div>
-                <div><strong>${pure} / 3</strong> Pure Sequences</div>
-                <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 required'}</div>
+                <div class="declare-title" style="color:#7eedba;">
+                  <span>⚡</span> Group Your Melds to Minimize Deadwood
+                </div>
+                <div class="declare-subtitle">
+                  ${roomState?.winnerName || 'Winner'} declared! Form your runs and sets now. Any ungrouped cards count as deadwood.
+                </div>
               </div>
+              <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:36px;" onclick="submitGroupingMeld()">
+                <span><b>✅ Submit Melds</b></span>
+              </button>
             </div>
-            <div class="checklist-item ${grouped === 21 ? 'done' : 'pending'}">
-              <span class="checklist-icon">${grouped === 21 ? '✅' : '⏳'}</span>
+
+            <div class="declare-smart-box">
+              ${smartButtonHtml}
+            </div>
+
+            <div class="declare-actions-row">
+              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFullHand()" title="Automatically scan and group your entire hand into valid runs and sets">
+                <span>⚡ Auto-Group</span>
+                <span class="btn-group-sub">Find all melds</span>
+              </button>
+              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFromStands()" title="Automatically convert your stands into valid sequences or sets">
+                <span>⚡ From Stands</span>
+                <span class="btn-group-sub">Auto-fill racks</span>
+              </button>
+              <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''}>
+                <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
+                <span class="btn-group-sub">Min 3</span>
+              </button>
+              <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''}>
+                <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
+                <span class="btn-group-sub">Wilds Allowed</span>
+              </button>
+              <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''}>
+                <span>👑 Set ${isSetValid ? '✓' : ''}</span>
+                <span class="btn-group-sub">3-4 Cards</span>
+              </button>
+            </div>
+
+            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
               <div>
-                <div><strong>${grouped} / 21</strong> Cards Grouped</div>
-                <div style="font-size:9px; opacity:0.85;">${grouped === 21 ? 'Complete (21 cards)' : `${21 - grouped} left to group`}</div>
+                <div style="font-size:12px; font-weight:800; color:#cfdad4;">
+                  ${grouped} cards grouped • ${pure} pure runs • ${remaining.length} cards unmelded
+                </div>
+                <div style="font-size:10px; color:#8ba096;">
+                  All other players are waiting for your submission. Tap "Submit Melds" when done.
+                </div>
               </div>
-            </div>
-            <div class="checklist-item ${remaining.length === 1 ? 'done' : 'pending'}">
-              <span class="checklist-icon">${remaining.length === 1 ? '🎴' : '⏳'}</span>
+              <button type="button" class="btn-action btn-declare" onclick="submitGroupingMeld()">
+                <span><b>Submit &amp; Finish</b></span>
+              </button>
+            </div>`;
+        } else {
+          dp.innerHTML = `
+            <div class="declare-panel-head">
               <div>
-                <div><strong>${remaining.length === 1 ? (remaining[0].rank + remaining[0].suit) : `${remaining.length} cards`}</strong> Finish Discard</div>
-                <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected discard' : '1 card must remain'}</div>
+                <div class="declare-title">
+                  <span>🏆</span> Declare 21-Card Show
+                </div>
+                <div class="declare-subtitle">
+                  Group 21 cards into sequences &amp; sets. The 1 remaining card automatically serves as your final discard.
+                </div>
+              </div>
+              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
+            </div>
+
+            <div class="declare-checklist">
+              <div class="checklist-item ${pure >= 3 ? 'done' : 'pending'}">
+                <span class="checklist-icon">${pure >= 3 ? '✅' : '⏳'}</span>
+                <div>
+                  <div><strong>${pure} / 3</strong> Pure Sequences</div>
+                  <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 required'}</div>
+                </div>
+              </div>
+              <div class="checklist-item ${grouped === 21 ? 'done' : 'pending'}">
+                <span class="checklist-icon">${grouped === 21 ? '✅' : '⏳'}</span>
+                <div>
+                  <div><strong>${grouped} / 21</strong> Cards Grouped</div>
+                  <div style="font-size:9px; opacity:0.85;">${grouped === 21 ? 'Complete (21 cards)' : `${21 - grouped} left to group`}</div>
+                </div>
+              </div>
+              <div class="checklist-item ${remaining.length === 1 ? 'done' : 'pending'}">
+                <span class="checklist-icon">${remaining.length === 1 ? '🎴' : '⏳'}</span>
+                <div>
+                  <div><strong>${remaining.length === 1 ? (remaining[0].rank + remaining[0].suit) : `${remaining.length} cards`}</strong> Finish Discard</div>
+                  <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected discard' : '1 card must remain'}</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          ${isShowReady ? `
-            <div class="declare-banner-ready">
-              ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
-            </div>` : ''}
+            ${isShowReady ? `
+              <div class="declare-banner-ready">
+                ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
+              </div>` : ''}
 
-          <div class="declare-smart-box">
-            ${smartButtonHtml}
-          </div>
-
-          <div class="declare-actions-row">
-            <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Sequence: Consecutive natural cards in the same suit with NO jokers">
-              <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
-              <span class="btn-group-sub">No Jokers • Min 3</span>
-            </button>
-            <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Sequence: Consecutive cards in the same suit, jokers allowed">
-              <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
-              <span class="btn-group-sub">Wilds Allowed • Min 3</span>
-            </button>
-            <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of the same rank in different suits">
-              <span>👑 Set ${isSetValid ? '✓' : ''}</span>
-              <span class="btn-group-sub">Same Rank • 3-4 Cards</span>
-            </button>
-            <button type="button" class="btn-group-type" onclick="autoGroupFromStands()" title="Automatically convert any valid sequences or sets from your racks">
-              <span>⚡ From Stands</span>
-              <span class="btn-group-sub">Auto-fill from racks</span>
-            </button>
-          </div>
-
-          <div class="declare-footer">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span>Wrong arrangement?</span>
-              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+            <div class="declare-smart-box">
+              ${smartButtonHtml}
             </div>
-            <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
-              ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
-            </button>
-          </div>`;
+
+            <div class="declare-actions-row">
+              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFullHand()" title="Automatically scan and group your entire hand into valid runs and sets">
+                <span>⚡ Auto-Group</span>
+                <span class="btn-group-sub">Auto-detect runs</span>
+              </button>
+              <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Sequence: Consecutive natural cards in the same suit with NO jokers">
+                <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
+                <span class="btn-group-sub">No Jokers • Min 3</span>
+              </button>
+              <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Sequence: Consecutive cards in the same suit, jokers allowed">
+                <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
+                <span class="btn-group-sub">Wilds Allowed • Min 3</span>
+              </button>
+              <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of the same rank in different suits">
+                <span>👑 Set ${isSetValid ? '✓' : ''}</span>
+                <span class="btn-group-sub">Same Rank • 3-4 Cards</span>
+              </button>
+              <button type="button" class="btn-group-type" onclick="autoGroupFromStands()" title="Automatically convert any valid sequences or sets from your racks">
+                <span>⚡ From Stands</span>
+                <span class="btn-group-sub">Auto-fill racks</span>
+              </button>
+            </div>
+
+            <div class="declare-footer">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span>Wrong arrangement?</span>
+                <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+              </div>
+              <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
+                ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
+              </button>
+            </div>`;
+        }
       }
     }
     const stockBtn = document.getElementById('stockDeckBtn');
@@ -2049,23 +2232,49 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function calculateLocalMaal() {
     const cut = roomState?.cutCard, roles = roomState?.roles;
     if (!cut || !roles) return null;
+    const cards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
     let poochies = 0, tiplus = 0, paplus = 0, nichlus = 0;
-    for (const card of myHand) {
-      if (card.isPoochie || card.suit === '★') poochies++;
-      else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) tiplus++;
-      else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) paplus++;
-      else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) nichlus++;
+    for (const card of cards) {
+      if (!card) continue;
+      if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') {
+        poochies++;
+      } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
+        tiplus++;
+      } else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) {
+        paplus++;
+      } else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) {
+        nichlus++;
+      }
     }
+    // Marriages = (Taplu + Exact Cut Joker + Paplu) sets
     const marriages = Math.min(nichlus, tiplus, paplus);
     const remTiplus = tiplus - marriages;
-    const remPapluNichlu = (paplus - marriages) + (nichlus - marriages);
-    const tier = (count, a, b, c) => count <= 0 ? 0 : count === 1 ? a : count === 2 ? b : c + (count - 3) * a;
+    const remPaplus = paplus - marriages;
+    const remTuplus = nichlus - marriages;
+
+    const getPoochieTier = (count) => {
+      if (count <= 0) return 0;
+      if (count === 1) return 20;
+      if (count === 2) return 50;
+      return 70 + (count - 3) * 20;
+    };
+
+    const getPoolTier = (count) => {
+      if (count <= 0) return 0;
+      if (count === 1) return 10;
+      if (count === 2) return 30;
+      return 50 + (count - 3) * 10;
+    };
+
     const marriagePts = marriages * 50;
     const tipluPts = remTiplus * 20;
-    const poochiePts = tier(poochies, 20, 50, 70);
-    const papluNichluPts = tier(remPapluNichlu, 10, 30, 50);
+    const poochiePts = getPoochieTier(poochies);
+    const papluPts = getPoolTier(remPaplus);
+    const tupluPts = getPoolTier(remTuplus);
+    const total = marriagePts + tipluPts + poochiePts + papluPts + tupluPts;
+
     return {
-      total: marriagePts + tipluPts + poochiePts + papluNichluPts,
+      total,
       details: {
         marriages,
         marriagePts,
@@ -2073,8 +2282,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         tipluPts,
         poochies,
         poochiePts,
-        papluNichlu: remPapluNichlu,
-        papluNichluPts
+        paplus: remPaplus,
+        papluPts,
+        tuplus: remTuplus,
+        tupluPts
       }
     };
   }
@@ -2090,8 +2301,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       tipluPts: 0,
       poochies: 0,
       poochiePts: 0,
-      papluNichlu: 0,
-      papluNichluPts: 0
+      paplus: 0,
+      papluPts: 0,
+      tuplus: 0,
+      tupluPts: 0
     };
     const total = data ? data.total : 0;
 
@@ -2101,7 +2314,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     // Formula summary
     const formulaEl = document.getElementById('maalFormulaBar');
     if (formulaEl) {
-      formulaEl.innerText = `${d.marriagePts || 0} pts (Marriage) + ${d.tipluPts || 0} pts (Cut Joker) + ${d.poochiePts || 0} pts (Poochie) + ${d.papluNichluPts || 0} pts (Paplu/Tuplu) = ${total} pts Total`;
+      formulaEl.innerText = `${d.marriagePts || 0} pts (Marriage) + ${d.tipluPts || 0} pts (Exact Cut Joker) + ${d.poochiePts || 0} pts (Poochie) + ${d.papluPts || 0} pts (Paplu Pool) + ${d.tupluPts || 0} pts (Taplu Pool) = ${total} pts Total`;
     }
 
     const cutName = cut ? (cut.isPoochie ? '★ PJ (Printed Joker)' : `${cut.rank}${cut.suit}`) : 'Not cut yet';
@@ -2114,9 +2327,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (cutBanner) {
       cutBanner.innerHTML = `
         <span style="color:#f1d27a; font-weight:800;">Cut Card: ${cutName}</span> &bull; 
-        <span>Cut Joker: <strong>${tipluName}</strong></span> &bull; 
+        <span>Exact Cut Joker: <strong>${tipluName}</strong></span> &bull; 
         <span>Paplu: <strong>${papluName}</strong></span> &bull; 
-        <span>Tuplu: <strong>${tupluName}</strong></span> &bull; 
+        <span>Taplu: <strong>${tupluName}</strong></span> &bull; 
         <span>Poochie: <strong>★ PJ</strong></span>
       `;
     }
@@ -2131,7 +2344,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.marriagePts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Full sets of Tuplu (${tupluName}) + Cut Joker (${tipluName}) + Paplu (${papluName})
+            Full sets of Taplu (${tupluName}) + Exact Cut Joker (${tipluName}) + Paplu (${papluName})
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.marriages || 0} set(s) held = ${d.marriagePts || 0} pts
@@ -2140,11 +2353,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Cut Joker (20 pts each)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Exact Cut Joker (20 pts each)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tipluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Matches suit &amp; rank of cut card: <strong>${tipluName}</strong> (remaining after marriages)
+            Matches exact cut card (same suit &amp; rank): <strong>${tipluName}</strong> (remaining after marriages)
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.tiplus || 0} card(s) held = ${d.tipluPts || 0} pts
@@ -2166,14 +2379,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Paplu &amp; Tuplu Pool</span>
-            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.papluNichluPts || 0} pts</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Paplu Pool (10/30/50 pts)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.papluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Remaining ${papluName} and ${tupluName} after marriages: 1st=10, 2nd=30, 3rd=50 pts
+            Remaining ${papluName} after marriages: 1st=10 pts, 2nd=30 pts, 3rd=50 pts
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
-            ${d.papluNichlu || 0} card(s) held = ${d.papluNichluPts || 0} pts
+            ${d.paplus || 0} card(s) held = ${d.papluPts || 0} pts
+          </div>
+        </div>
+
+        <div class="maal-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Taplu Pool (10/30/50 pts)</span>
+            <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tupluPts || 0} pts</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            Remaining ${tupluName} after marriages: 1st=10 pts, 2nd=30 pts, 3rd=50 pts
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
+            ${d.tuplus || 0} card(s) held = ${d.tupluPts || 0} pts
           </div>
         </div>
       `;
@@ -2181,16 +2407,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     // Find all cards in hand that earned Maal
     const contributing = [];
+    const heldCards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
     if (cut && roles.tipluRank) {
-      for (const card of myHand) {
-        if (card.isPoochie || card.suit === '★') {
+      for (const card of heldCards) {
+        if (!card) continue;
+        if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') {
           contributing.push({ card, role: 'Poochie' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
-          contributing.push({ card, role: 'Cut Joker' });
+          contributing.push({ card, role: 'Exact Cut Joker (20 pts)' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) {
           contributing.push({ card, role: 'Paplu' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) {
-          contributing.push({ card, role: 'Tuplu' });
+          contributing.push({ card, role: 'Taplu' });
         }
       }
     }
@@ -2201,7 +2429,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const heldListEl = document.getElementById('maalHeldCardsList');
     if (heldListEl) {
       if (contributing.length === 0) {
-        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Maal cards in your hand currently. Draw Poochies or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Maal!</span>';
+        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Maal cards in your hand currently. Draw Jokers, Poochies, or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Maal!</span>';
       } else {
         heldListEl.innerHTML = contributing.map(({card, role}) => {
           const isRed = card.suit === '♥' || card.suit === '♦';
@@ -2237,15 +2465,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   }
 
+  let lastMaalTotal = null;
   function renderMaalDetails(maalData) {
-    const data = maalData?.details ? maalData : calculateLocalMaal();
+    const data = (maalData && typeof maalData.total === 'number' && maalData.details) ? maalData : calculateLocalMaal();
     const total = data ? data.total : 0;
     const maalText = document.getElementById('maalPtsText');
     if (maalText) {
       maalText.innerText = `Maal: ${total} pts`;
+      if (lastMaalTotal !== null && lastMaalTotal !== total) {
+        maalText.classList.remove('maal-pulse');
+        void maalText.offsetWidth; // trigger reflow
+        maalText.classList.add('maal-pulse');
+        setTimeout(() => maalText.classList.remove('maal-pulse'), 900);
+      }
     }
     const mini = document.getElementById('maalMiniTotal');
     if (mini) mini.innerText = `${total} pts`;
+    lastMaalTotal = total;
+
+    const modal = document.getElementById('maalModal');
+    if (modal && modal.style.display === 'flex') {
+      openMaalModal();
+    }
   }
 
   let lastDrawActionTime = 0;
@@ -2349,8 +2590,22 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const r=roomState?.roles;
     return Boolean(card && r && (card.isPoochie || card.rank===r.tipluRank || (card.suit===r.tipluSuit && (card.rank===r.papluRank || card.rank===r.nichluRank))));
   }
+  function declarationIsMarriage(cards) {
+    if (!Array.isArray(cards) || cards.length !== 3 || !roomState?.roles) return false;
+    const r = roomState.roles;
+    const hasTuplu = cards.some(c => c && c.suit === r.tipluSuit && c.rank === r.nichluRank);
+    const hasTiplu = cards.some(c => c && c.suit === r.tipluSuit && c.rank === r.tipluRank);
+    const hasPaplu = cards.some(c => c && c.suit === r.tipluSuit && c.rank === r.papluRank);
+    return Boolean(hasTuplu && hasTiplu && hasPaplu);
+  }
+  function declarationIsThreePoochies(cards) {
+    if (!Array.isArray(cards) || cards.length !== 3) return false;
+    return cards.every(c => c && (c.isPoochie || c.suit === '★' || c.rank === 'PJ'));
+  }
   function declarationPure(cards) {
-    if(cards.length<3 || cards.some(declarationIsWild)) return false;
+    if(!Array.isArray(cards) || cards.length<3) return false;
+    if(declarationIsMarriage(cards) || declarationIsThreePoochies(cards)) return true;
+    if(cards.some(declarationIsWild)) return false;
     if(cards.length===3 && cards.every(c=>c.rank===cards[0].rank && c.suit===cards[0].suit)) return true;
     const suit=cards[0].suit;
     if(!cards.every(c=>c.suit===suit)) return false;
@@ -2362,7 +2617,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return new Set(high).size===high.length && high.every((v,i)=>i===0||v===high[i-1]+1);
   }
   function declarationSequence(cards) {
-    if(cards.length<3) return false;
+    if(!Array.isArray(cards) || cards.length<3) return false;
+    if(declarationIsMarriage(cards) || declarationIsThreePoochies(cards)) return true;
     if(declarationPure(cards)) return true;
     const wilds=cards.filter(declarationIsWild), naturals=cards.filter(c=>!declarationIsWild(c));
     if(!naturals.length) return false;
@@ -2385,7 +2641,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return false;
   }
   function declarationSet(cards) {
-    if(cards.length<3||cards.length>4) return false;
+    if(!Array.isArray(cards) || cards.length<3||cards.length>4) return false;
     const naturals=cards.filter(c=>!declarationIsWild(c));
     if(!naturals.length) return false;
     const rank=naturals[0].rank;
@@ -2395,6 +2651,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function detectBestGroupType(cards) {
     if (!cards || cards.length < 3) return null;
+    if (declarationIsMarriage(cards)) {
+      return {
+        type: 'PURE_SEQUENCE',
+        label: 'Marriage Sequence',
+        verb: 'Marriage Sequence',
+        badge: 'Taplu + Exact Cut + Paplu',
+        icon: '💍'
+      };
+    }
+    if (declarationIsThreePoochies(cards)) {
+      return {
+        type: 'PURE_SEQUENCE',
+        label: '3 Poochies Run',
+        verb: '3 Poochies Run',
+        badge: '3 Printed Jokers',
+        icon: '🃏'
+      };
+    }
     if (declarationPure(cards)) {
       return {
         type: 'PURE_SEQUENCE',
@@ -2482,6 +2756,353 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     } else {
       alert('None of your table stands formed a complete valid run or set yet. Tap cards below to group them manually.');
     }
+  }
+
+  function autoGroupFullHand() {
+    if (!declarationMode) declarationMode = true;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+
+    const usedCardIds = new Set();
+    const newGroups = [];
+    const pool = Array.isArray(myHand) ? [...myHand] : [];
+    const getAvailable = () => pool.filter(c => c && !usedCardIds.has(c.id));
+
+    // 1. Marriages: (Taplu + Exact Cut + Paplu in cut joker suit) -> Pure Sequence (50 pts)
+    if (roomState?.roles) {
+      const r = roomState.roles;
+      let searchingMarriage = true;
+      while (searchingMarriage) {
+        const avail = getAvailable();
+        const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
+        const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
+        const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
+        if (taplu && tiplu && paplu) {
+          const trio = [taplu, tiplu, paplu];
+          trio.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: 'Marriage Pure Run (50 pts)',
+            cards: trio
+          });
+        } else {
+          searchingMarriage = false;
+        }
+      }
+    }
+
+    // 2. 3 Poochies: (Tunnella) -> Pure Sequence
+    let searchingPoochies = true;
+    while (searchingPoochies) {
+      const avail = getAvailable();
+      const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+      if (poochies.length >= 3) {
+        const trio = poochies.slice(0, 3);
+        trio.forEach(c => usedCardIds.add(c.id));
+        newGroups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel: '3 Poochies (Tunnella)',
+          cards: trio
+        });
+      } else {
+        searchingPoochies = false;
+      }
+    }
+
+    // 3. Natural Pure Sequences (3+ consecutive cards in same suit without wildcards)
+    const suits = ['♠', '♥', '♣', '♦'];
+    const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+    for (const suit of suits) {
+      let foundRunInSuit = true;
+      while (foundRunInSuit) {
+        foundRunInSuit = false;
+        const availNaturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
+        if (availNaturals.length < 3) break;
+
+        const rankMap = new Map();
+        for (const c of availNaturals) {
+          if (!rankMap.has(c.rank)) rankMap.set(c.rank, []);
+          rankMap.get(c.rank).push(c);
+        }
+
+        let bestRun = null;
+        for (let len = 5; len >= 3; len--) {
+          for (let start = 0; start <= rankOrder.length - len; start++) {
+            const candidateRanks = rankOrder.slice(start, start + len);
+            if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
+              bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
+              break;
+            }
+          }
+          if (bestRun) break;
+
+          if (!bestRun) {
+            const aceHighRanks = ['10', 'J', 'Q', 'K', 'A'];
+            for (let start = 0; start <= aceHighRanks.length - len; start++) {
+              const candidateRanks = aceHighRanks.slice(start, start + len);
+              if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
+                bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
+                break;
+              }
+            }
+          }
+          if (bestRun) break;
+        }
+
+        if (bestRun && declarationPure(bestRun)) {
+          bestRun.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Pure Run (${bestRun.length})`,
+            cards: bestRun
+          });
+          foundRunInSuit = true;
+        }
+      }
+    }
+
+    // 4. Sets (3 or 4 cards of the same rank in different suits)
+    for (const rnk of rankOrder) {
+      let foundSet = true;
+      while (foundSet) {
+        foundSet = false;
+        const availSameRank = getAvailable().filter(c => c.rank === rnk && !declarationIsWild(c));
+        const bySuit = new Map();
+        for (const c of availSameRank) {
+          if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+        }
+        if (bySuit.size >= 3) {
+          const setCards = Array.from(bySuit.values()).slice(0, 4);
+          if (declarationSet(setCards)) {
+            setCards.forEach(c => usedCardIds.add(c.id));
+            newGroups.push({
+              type: 'SET',
+              typeLabel: `Set of ${rnk}s (${setCards.length})`,
+              cards: setCards
+            });
+            foundSet = true;
+          }
+        }
+      }
+    }
+
+    // 5. Impure Sequences (using wildcards)
+    let wildcardCards = getAvailable().filter(c => declarationIsWild(c));
+    if (wildcardCards.length > 0) {
+      for (const suit of suits) {
+        if (wildcardCards.length === 0) break;
+        const naturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
+        if (naturals.length >= 2 && wildcardCards.length >= 1) {
+          for (let i = 0; i < naturals.length; i++) {
+            for (let j = i + 1; j < naturals.length; j++) {
+              if (wildcardCards.length === 0) break;
+              const trio = [naturals[i], naturals[j], wildcardCards[0]];
+              if (declarationSequence(trio)) {
+                trio.forEach(c => usedCardIds.add(c.id));
+                newGroups.push({
+                  type: 'SEQUENCE',
+                  typeLabel: 'Joker Run',
+                  cards: trio
+                });
+                wildcardCards = getAvailable().filter(c => declarationIsWild(c));
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    declarationGroups = newGroups;
+    renderAll(null);
+
+    const pureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const totalGrouped = newGroups.flatMap(g => g.cards).length;
+    if (newGroups.length > 0) {
+      if (totalGrouped === 21 && pureCount >= 3) {
+        alert(`🎉 Perfect! Auto-grouped ${newGroups.length} valid melds (${pureCount} Pure Sequences). All 21 cards are grouped and ready!`);
+      } else {
+        alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Sequences). You can manually adjust or add more runs below.`);
+      }
+    } else {
+      alert('Could not find enough matching cards to auto-group. Tap cards below to manually select runs or sets.');
+    }
+  }
+
+  function submitGroupingMeld() {
+    const groups = declarationGroups.map(g => ({
+      type: g.type,
+      cardIds: g.cards.map(c => c.id),
+      cards: g.cards
+    }));
+
+    if (isDemo) {
+      const meP = roomState?.players?.find(p => p.id === 'p_demo');
+      if (meP) {
+        meP.isGrouped = true;
+        meP.declaredGroups = declarationGroups;
+      }
+      declarationMode = false;
+      declarationSelectedIds.clear();
+      isDemoGroupingWait = true;
+
+      const waitModal = document.getElementById('groupingWaitModal');
+      const waitTitle = document.getElementById('groupingWaitTitle');
+      const waitSub = document.getElementById('groupingWaitSubtitle');
+      const waitProg = document.getElementById('groupingWaitProgress');
+      const playersList = document.getElementById('groupingPlayersList');
+
+      if (waitModal) {
+        waitModal.style.display = 'flex';
+        if (waitTitle) waitTitle.innerText = '✅ Melds Submitted!';
+        if (waitSub) waitSub.innerText = 'Waiting for remaining opponents to finish grouping their cards...';
+        if (waitProg) waitProg.innerText = '3 / 4 players ready';
+        if (playersList) {
+          playersList.innerHTML = `
+            <div class="wait-player-row ready"><span>${roomState?.winnerName || 'Opponent'}</span><span>🏆 Declared (Winner)</span></div>
+            <div class="wait-player-row ready"><span>You</span><span>✅ Melds Submitted</span></div>
+            <div class="wait-player-row ready"><span>Kavita</span><span>✅ Melds Submitted</span></div>
+            <div class="wait-player-row waiting" id="demoWait_opp_last"><span>Sonia</span><span>⏳ Grouping cards...</span></div>
+          `;
+        }
+
+        setTimeout(() => {
+          const row = document.getElementById('demoWait_opp_last');
+          if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Sonia</span><span>✅ Melds Submitted</span>'; }
+          if (waitProg) waitProg.innerText = '4 / 4 players ready';
+        }, 1100);
+
+        setTimeout(() => {
+          isDemoGroupingWait = false;
+          if (waitModal) waitModal.style.display = 'none';
+          finishDemoRoundWithOpponentWinner();
+        }, 2200);
+      }
+      renderAll(null);
+      return;
+    }
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'SUBMIT_GROUPS', groups }));
+    }
+    declarationMode = false;
+    declarationSelectedIds.clear();
+    renderAll(null);
+  }
+
+  function simulateOpponentDeclare() {
+    if (!isDemo || !roomState) return;
+    const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
+    roomState.status = 'GROUPING';
+    roomState.winnerId = opp.id;
+    roomState.winnerName = opp.name;
+    opp.isGrouped = true;
+    roomState.lastAction = `${opp.name} declared 21-card show! Form your runs and sets to minimize deadwood.`;
+
+    const meP = roomState.players.find(p => p.id === 'p_demo');
+    if (meP) meP.isGrouped = false;
+
+    declarationMode = true;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    renderAll(calculateLocalMaal());
+    setTimeout(() => {
+      const dp = document.getElementById('declarationPanel');
+      if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+
+  function finishDemoRoundWithOpponentWinner() {
+    const winnerName = roomState?.winnerName || 'Kavita';
+    const winnerMaal = {
+      total: 50,
+      details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
+    };
+
+    let myDeadwood = 0;
+    const myGroupedIds = new Set(declarationGroups.flatMap(g => g.cards.map(c => c.id)));
+    const myUngrouped = myHand.filter(c => !myGroupedIds.has(c.id));
+    const myPureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    if (myPureCount >= 3) {
+      myDeadwood = myUngrouped.reduce((sum, c) => sum + (['A','K','Q','J','10'].includes(c.rank) ? 10 : (parseInt(c.rank,10)||0)), 0);
+    } else {
+      myDeadwood = myHand.reduce((sum, c) => sum + (declarationIsWild(c) ? 0 : (['A','K','Q','J','10'].includes(c.rank) ? 10 : (parseInt(c.rank,10)||0))), 0);
+    }
+    myDeadwood = Math.min(myDeadwood, 120);
+
+    const demoData = {
+      winnerName,
+      winnerMaal,
+      results: [
+        { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
+        { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
+        { name: 'Sonia', status: 'LOST', points: 42 + winnerMaal.total, deadwood: 42, net: `Pays ${42 + winnerMaal.total} pts (42 deadwood + ${winnerMaal.total} winner Maal)` },
+        { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
+      ],
+      revealedHands: [
+        {
+          name: winnerName,
+          isWinner: true,
+          finalDiscard: { id: 'd_w_fin', suit: '♠', rank: '2' },
+          groups: [
+            { type: 'PURE_SEQUENCE', cards: [{ id: 'w1', suit: '♠', rank: '7' }, { id: 'w2', suit: '♠', rank: '8' }, { id: 'w3', suit: '♠', rank: '6' }] },
+            { type: 'PURE_SEQUENCE', cards: [{ id: 'w4', suit: '♥', rank: '10' }, { id: 'w5', suit: '♥', rank: 'J' }, { id: 'w6', suit: '♥', rank: 'Q' }] },
+            { type: 'PURE_SEQUENCE', cards: [{ id: 'w7', suit: '♣', rank: 'A' }, { id: 'w8', suit: '♣', rank: '2' }, { id: 'w9', suit: '♣', rank: '3' }] },
+            { type: 'SEQUENCE', cards: [{ id: 'w10', suit: '♦', rank: '4' }, { id: 'w11', suit: '♦', rank: '5' }, { id: 'w12', suit: '★', rank: 'PJ', isPoochie: true }] },
+            { type: 'SET', cards: [{ id: 'w13', suit: '♦', rank: '9' }, { id: 'w14', suit: '♥', rank: '9' }, { id: 'w15', suit: '♣', rank: '9' }] },
+            { type: 'SET', cards: [{ id: 'w16', suit: '♠', rank: 'K' }, { id: 'w17', suit: '♥', rank: 'K' }, { id: 'w18', suit: '♦', rank: 'K' }] },
+            { type: 'PURE_SEQUENCE', cards: [{ id: 'w19', suit: '♦', rank: 'A' }, { id: 'w20', suit: '♦', rank: '2' }, { id: 'w21', suit: '♦', rank: '3' }] }
+          ],
+          hand: []
+        },
+        {
+          name: 'You',
+          isWinner: false,
+          deadwood: myDeadwood,
+          groups: declarationGroups,
+          hand: myHand
+        },
+        {
+          name: 'Sonia',
+          isWinner: false,
+          deadwood: 42,
+          groups: [
+            { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+            { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
+          ],
+          hand: [
+            { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+            { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+            { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+            { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+            { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+            { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+            { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+          ]
+        },
+        {
+          name: 'Rohan',
+          isWinner: false,
+          hasDropped: true,
+          dropType: 'First Drop (30 pts)',
+          deadwood: 30,
+          groups: [],
+          hand: [
+            { id: 'r1', suit: '♠', rank: '2' }, { id: 'r2', suit: '♠', rank: '5' }, { id: 'r3', suit: '♠', rank: '9' },
+            { id: 'r4', suit: '♥', rank: '4' }, { id: 'r5', suit: '♥', rank: 'J' }, { id: 'r6', suit: '♥', rank: 'K' },
+            { id: 'r7', suit: '♦', rank: '3' }, { id: 'r8', suit: '♦', rank: '7' }, { id: 'r9', suit: '♦', rank: 'Q' },
+            { id: 'r10', suit: '♣', rank: '2' }, { id: 'r11', suit: '♣', rank: '6' }, { id: 'r12', suit: '♣', rank: '10' },
+            { id: 'r13', suit: '♠', rank: 'A' }, { id: 'r14', suit: '♥', rank: '2' }, { id: 'r15', suit: '♦', rank: '5' },
+            { id: 'r16', suit: '♣', rank: '8' }, { id: 'r17', suit: '♠', rank: '8' }, { id: 'r18', suit: '♥', rank: '10' },
+            { id: 'r19', suit: '♦', rank: '9' }, { id: 'r20', suit: '♣', rank: 'J' }, { id: 'r21', suit: '♠', rank: '6' }
+          ]
+        }
+      ]
+    };
+
+    showWinnerFanfare(demoData);
+    setTimeout(() => showResultsModal(demoData), 900);
   }
 
   function groupSelectedCards(type) {
@@ -3077,6 +3698,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function declareShow() {
+    if (roomState?.status === 'GROUPING') {
+      submitGroupingMeld();
+      return;
+    }
     const isMyTurn = isCurrentPlayerMe();
     if (!isMyTurn) {
       window.alert('You can only declare on your turn.');
@@ -3116,22 +3741,148 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const groups = declarationGroups.map(g => ({ type: g.type, cardIds: g.cards.map(c => c.id) }));
     const finalDiscardId = remaining[0].id;
     if (isDemo) {
-      const demoData = {
-        winnerName: roomState.turnPlayerName || 'You',
-        winnerMaal: { total: 90, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, papluNichlu: 1, papluNichluPts: 20 } },
-        results: [
-          { name: roomState.turnPlayerName || 'You', net: 'Won + collects 90 Maal from each loser' },
-          { name: 'Player 2', net: 'Pays 132 pts (42 deadwood + 90 winner maal)', deadwood: 42, maalOwed: 90 },
-          { name: 'Player 3', net: 'Pays 120 pts (30 drop penalty + 90 winner Maal)', dropPenalty: 30, maalOwed: 90 }
-        ],
-        revealedHands: [{ name: roomState.turnPlayerName || 'You', hand: myHand }]
-      };
+      const discardedCard = remaining[0];
+      const meP = roomState.players.find(p => p.id === 'p_demo');
+      if (meP) {
+        meP.isGrouped = true;
+        meP.declaredGroups = declarationGroups;
+      }
+      myHand = myHand.filter(c => c.id !== discardedCard.id);
+      userStands = [myHand];
       declarationMode = false;
-      declarationGroups = [];
-      declarationSelectedIds.clear();
-      renderAll(null);
-      showWinnerFanfare(demoData);
-      setTimeout(() => showResultsModal(demoData), 900);
+      selectedCardId = null;
+      isDemoGroupingWait = true;
+
+      const winnerMaal = calculateLocalMaal() || {
+        total: 70,
+        details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
+      };
+
+      const waitModal = document.getElementById('groupingWaitModal');
+      const waitTitle = document.getElementById('groupingWaitTitle');
+      const waitSub = document.getElementById('groupingWaitSubtitle');
+      const waitProg = document.getElementById('groupingWaitProgress');
+      const playersList = document.getElementById('groupingPlayersList');
+
+      if (waitModal) {
+        waitModal.style.display = 'flex';
+        if (waitTitle) waitTitle.innerText = '🏆 Declaration Accepted!';
+        if (waitSub) waitSub.innerText = 'Waiting for opponents (Aarav, Priya, Rohan) to group their cards...';
+        if (waitProg) waitProg.innerText = '1 / 4 players ready';
+        if (playersList) {
+          playersList.innerHTML = `
+            <div class="wait-player-row ready"><span>You</span><span>✅ Declared (Ready)</span></div>
+            <div class="wait-player-row waiting" id="demoWait_p2"><span>Aarav</span><span>⏳ Grouping cards...</span></div>
+            <div class="wait-player-row waiting" id="demoWait_p3"><span>Priya</span><span>⏳ Grouping cards...</span></div>
+            <div class="wait-player-row waiting" id="demoWait_p4"><span>Rohan</span><span>⏳ Grouping cards...</span></div>
+          `;
+        }
+      }
+
+      setTimeout(() => {
+        const row = document.getElementById('demoWait_p2');
+        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Aarav</span><span>✅ Ready</span>'; }
+        if (waitProg) waitProg.innerText = '2 / 4 players ready';
+      }, 700);
+
+      setTimeout(() => {
+        const row = document.getElementById('demoWait_p3');
+        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Priya</span><span>✅ Ready</span>'; }
+        if (waitProg) waitProg.innerText = '3 / 4 players ready';
+      }, 1400);
+
+      setTimeout(() => {
+        const row = document.getElementById('demoWait_p4');
+        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Rohan</span><span>✅ Ready</span>'; }
+        if (waitProg) waitProg.innerText = '4 / 4 players ready';
+      }, 2000);
+
+      setTimeout(() => {
+        isDemoGroupingWait = false;
+        if (waitModal) waitModal.style.display = 'none';
+
+        const demoData = {
+          winnerName: roomState.turnPlayerName || 'You',
+          winnerMaal,
+          results: [
+            { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
+            { name: 'Aarav', status: 'LOST', points: 34 + winnerMaal.total, deadwood: 34, net: `Pays ${34 + winnerMaal.total} pts (34 deadwood + ${winnerMaal.total} winner Maal)` },
+            { name: 'Priya', status: 'LOST', points: 52 + winnerMaal.total, deadwood: 52, net: `Pays ${52 + winnerMaal.total} pts (52 deadwood + ${winnerMaal.total} winner Maal)` },
+            { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
+          ],
+          revealedHands: [
+            {
+              name: roomState.turnPlayerName || 'You',
+              isWinner: true,
+              finalDiscard: discardedCard,
+              groups: declarationGroups,
+              hand: myHand
+            },
+            {
+              name: 'Aarav',
+              isWinner: false,
+              deadwood: 34,
+              groups: [
+                { type: 'PURE_SEQUENCE', cards: [{ id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' }] },
+                { type: 'PURE_SEQUENCE', cards: [{ id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' }] },
+                { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' }] },
+                { type: 'SET', cards: [{ id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' }] }
+              ],
+              hand: [
+                { id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' },
+                { id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' },
+                { id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' },
+                { id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' },
+                { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '2' },
+                { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: 'A' }, { id: 'a18', suit: '♠', rank: '4' },
+                { id: 'a19', suit: '♣', rank: '3' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
+              ]
+            },
+            {
+              name: 'Priya',
+              isWinner: false,
+              deadwood: 52,
+              groups: [
+                { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+                { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] },
+                { type: 'SET', cards: [{ id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' }] }
+              ],
+              hand: [
+                { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+                { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+                { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+                { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+                { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+                { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+                { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+              ]
+            },
+            {
+              name: 'Rohan',
+              isWinner: false,
+              hasDropped: true,
+              dropType: 'First Drop (30 pts)',
+              deadwood: 30,
+              groups: [],
+              hand: [
+                { id: 'r1', suit: '♠', rank: '2' }, { id: 'r2', suit: '♠', rank: '5' }, { id: 'r3', suit: '♠', rank: '9' },
+                { id: 'r4', suit: '♥', rank: '4' }, { id: 'r5', suit: '♥', rank: 'J' }, { id: 'r6', suit: '♥', rank: 'K' },
+                { id: 'r7', suit: '♦', rank: '3' }, { id: 'r8', suit: '♦', rank: '7' }, { id: 'r9', suit: '♦', rank: 'Q' },
+                { id: 'r10', suit: '♣', rank: '2' }, { id: 'r11', suit: '♣', rank: '6' }, { id: 'r12', suit: '♣', rank: '10' },
+                { id: 'r13', suit: '♠', rank: 'A' }, { id: 'r14', suit: '♥', rank: '2' }, { id: 'r15', suit: '♦', rank: '5' },
+                { id: 'r16', suit: '♣', rank: '8' }, { id: 'r17', suit: '♠', rank: '8' }, { id: 'r18', suit: '♥', rank: '10' },
+                { id: 'r19', suit: '♦', rank: '9' }, { id: 'r20', suit: '♣', rank: 'J' }, { id: 'r21', suit: '♠', rank: '6' }
+              ]
+            }
+          ]
+        };
+
+        declarationGroups = [];
+        declarationSelectedIds.clear();
+        renderAll(null);
+        showWinnerFanfare(demoData);
+        setTimeout(() => showResultsModal(demoData), 900);
+      }, 2300);
       return;
     }
     ws.send(JSON.stringify({ type: 'DECLARE', cardId: finalDiscardId, groups }));
@@ -3143,11 +3894,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function getCardTagForRoles(card) {
     const r = roomState?.roles;
-    if (!r) return card?.isPoochie ? 'POOCHIE' : '';
-    if (card?.isPoochie) return 'POOCHIE';
-    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'TIPLU';
+    if (!card) return '';
+    if (card?.isPoochie || card?.suit === '★' || card?.rank === 'PJ') return 'POOCHIE';
+    if (!r) return '';
+    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'EXACT CUT';
     if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
-    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'NICHLU';
+    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'TAPLU';
     if (card.rank === r.tipluRank) return 'JOKER';
     return '';
   }
@@ -3182,16 +3934,21 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   window.startDemo = startDemoMode;
 
   function showResultsModal(data) {
+    const waitModal = document.getElementById('groupingWaitModal');
+    if (waitModal) waitModal.style.display = 'none';
+
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
-    const m = data.winnerMaal.details;
-    document.getElementById('maalDetails').innerHTML = `      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal.total} pts</strong><br>
-      • Marriages: ${m.marriages} (${m.marriagePts} pts)<br>
-      • Cut Joker: ${m.tiplus} (${m.tipluPts} pts)<br>
-      • Poochies: ${m.poochies} (${m.poochiePts} pts)<br>
-      • Paplu / Tuplu: ${m.papluNichlu} (${m.papluNichluPts} pts)
+    const m = data.winnerMaal?.details || {};
+    document.getElementById('maalDetails').innerHTML = `
+      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal?.total || 0} pts</strong><br>
+      • Marriages: ${m.marriages || 0} (${m.marriagePts || 0} pts)<br>
+      • Exact Cut Joker: ${m.tiplus || 0} (${m.tipluPts || 0} pts)<br>
+      • Poochies: ${m.poochies || 0} (${m.poochiePts || 0} pts)<br>
+      • Paplu Pool: ${m.paplus || 0} (${m.papluPts || 0} pts)<br>
+      • Taplu Pool: ${m.tuplus || 0} (${m.tupluPts || 0} pts)
     `;
 
-    document.getElementById('settlementList').innerHTML = data.results.map(r => `
+    document.getElementById('settlementList').innerHTML = (data.results || []).map(r => `
       <div class="settlement-row">
         <strong>${r.name}</strong>: ${r.net}
       </div>
@@ -3199,8 +3956,105 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     const reveal = document.getElementById('revealedHands');
     if (reveal) {
-      reveal.innerHTML = '<h3 style="font-size:15px;margin:0 0 8px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
-        (data.revealedHands || []).map(p => '<div class="revealed-player"><div class="revealed-player-title">' + p.name + (p.name === data.winnerName ? ' • DECLARER' : '') + '</div><div class="revealed-player-cards">' + (p.hand || []).map(card => renderCard(card, getCardTagForRoles(card), false)).join('') + '</div></div>').join('');
+      reveal.innerHTML = '<h3 style="font-size:15px;margin:18px 0 10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
+        (data.revealedHands || []).map(p => {
+          const isWinner = p.name === data.winnerName || p.isWinner;
+          const statusBadge = isWinner
+            ? '<span style="color:#f1d27a;background:rgba(217,182,92,0.18);border:1px solid rgba(217,182,92,0.4);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;">🏆 DECLARER (WINNER)</span>'
+            : p.hasDropped
+            ? `<span style="color:#f87171;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">🚫 DROPPED (${p.deadwood || p.dropPenalty || 30} pts)</span>`
+            : `<span style="color:#94a3b8;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">SETTLED (${p.deadwood || 0} pts deadwood)</span>`;
+
+          const handCards = Array.isArray(p.hand) ? p.hand : [];
+          const groups = Array.isArray(p.groups) ? p.groups : [];
+
+          let groupsHtml = '';
+          const usedCardIds = new Set();
+
+          if (groups.length > 0) {
+            groupsHtml = groups.map(g => {
+              const gCards = [];
+              const cardIds = Array.isArray(g.cardIds) ? g.cardIds : (Array.isArray(g.cards) ? g.cards.map(c => c && c.id) : []);
+              for (const id of cardIds) {
+                const found = handCards.find(c => c && c.id === id);
+                if (found) {
+                  gCards.push(found);
+                  usedCardIds.add(found.id);
+                } else if (Array.isArray(g.cards)) {
+                  const direct = g.cards.find(c => c && (c.id === id || (c.rank === id?.rank && c.suit === id?.suit)));
+                  if (direct) {
+                    gCards.push(direct);
+                    if (direct.id) usedCardIds.add(direct.id);
+                  }
+                }
+              }
+              if (gCards.length === 0 && Array.isArray(g.cards)) {
+                gCards.push(...g.cards.filter(Boolean));
+                g.cards.forEach(c => { if (c && c.id) usedCardIds.add(c.id); });
+              }
+              const isPure = g.type === 'PURE_SEQUENCE';
+              const isSeq = g.type === 'SEQUENCE';
+              const icon = isPure ? '💎' : isSeq ? '🃏' : '👑';
+              const label = g.typeLabel || (isPure ? 'Pure Sequence' : isSeq ? 'Sequence' : 'Set');
+              const badgeClass = isPure ? 'pure' : isSeq ? 'seq' : 'set';
+              return `
+                <div class="revealed-group-block ${badgeClass}">
+                  <div class="revealed-group-badge">
+                    <span>${icon}</span>
+                    <span>${label} (${gCards.length})</span>
+                  </div>
+                  <div class="revealed-group-cards">
+                    ${gCards.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+
+          if (p.finalDiscard) {
+            groupsHtml += `
+              <div class="revealed-group-block" style="border-color:rgba(217,182,92,0.5);background:rgba(217,182,92,0.08);">
+                <div class="revealed-group-badge" style="color:#f1d27a;">
+                  <span>🎴</span>
+                  <span>Final Discard (1)</span>
+                </div>
+                <div class="revealed-group-cards">
+                  ${renderCard(p.finalDiscard, 'DISCARD', false)}
+                </div>
+              </div>
+            `;
+            if (p.finalDiscard.id) usedCardIds.add(p.finalDiscard.id);
+          }
+
+          // Remaining ungrouped cards (deadwood)
+          const ungrouped = handCards.filter(c => c && !usedCardIds.has(c.id));
+          if (ungrouped.length > 0) {
+            const label = p.hasDropped ? 'Folded / Dropped Hand' : (groups.length > 0 ? 'Deadwood' : 'Held Cards (Deadwood)');
+            groupsHtml += `
+              <div class="revealed-group-block deadwood">
+                <div class="revealed-group-badge" style="color:#f87171;">
+                  <span>${p.hasDropped ? '🚫' : '📦'}</span>
+                  <span>${label} (${ungrouped.length})</span>
+                </div>
+                <div class="revealed-group-cards">
+                  ${ungrouped.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="revealed-player ${isWinner ? 'is-winner' : ''}">
+              <div class="revealed-player-title">
+                <span><b>${p.name}</b></span>
+                ${statusBadge}
+              </div>
+              <div class="revealed-groups-container">
+                ${groupsHtml}
+              </div>
+            </div>
+          `;
+        }).join('');
     }
 
     const continueBtn = document.getElementById('btnContinueResults');
@@ -3298,7 +4152,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       connectionStatus.style.borderColor = 'rgba(217,182,92,.30)';
     }
 
-    renderAll({ total: 90 });
+    renderAll(calculateLocalMaal());
     const demoControls = document.getElementById('demoControls');
     if (demoControls) demoControls.style.display = 'flex';
   }
@@ -3318,7 +4172,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const winner = activeRemaining[0] || roomState.players[0];
       const demoData = {
         winnerName: winner.name,
-        winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, papluNichlu: 0, papluNichluPts: 0 } },
+        winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 } },
         results: roomState.players.map(p => {
           if (p.id === winner.id) {
             return { name: p.name, net: 'Won (opponents folded) + collects 50 Maal from each loser' };
@@ -3328,7 +4182,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         }),
         revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
       };
-      renderAll(null);
+      renderAll(calculateLocalMaal());
       showWinnerFanfare(demoData);
       setTimeout(() => showResultsModal(demoData), 900);
       return;
@@ -3338,7 +4192,49 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.turnPlayerId = nextPlayer.id;
     roomState.turnPlayerName = nextPlayer.name;
     roomState.turnStage = 'DRAW';
-    renderAll(null);
+    renderAll(calculateLocalMaal());
+
+    // In demo mode, if turn passed to opponent, simulate their move and return turn to player
+    if (nextPlayer.id !== 'p_demo') {
+      setTimeout(() => {
+        if (!isDemo || roomState?.status !== 'PLAYING') return;
+        const rRoles = roomState.roles;
+        const oppDiscards = [
+          { suit: '♠', rank: '7', isPoochie: false }, // Exact Cut Joker (20 pts)
+          { suit: '★', rank: 'PJ', isPoochie: true },  // Poochie (20 pts)
+          { suit: '♠', rank: '8', isPoochie: false },  // Paplu (10 pts)
+          { suit: '♠', rank: '6', isPoochie: false },  // Taplu (10 pts)
+          { suit: '♥', rank: '7', isPoochie: false },  // Other suit Joker (0 Maal pts)
+          { suit: '♦', rank: '5', isPoochie: false },
+          { suit: '♣', rank: 'J', isPoochie: false },
+          { suit: '♥', rank: '2', isPoochie: false }
+        ];
+        const chosen = oppDiscards[Math.floor(Math.random() * oppDiscards.length)];
+        const oppCard = {
+          id: 'c_opp_' + Date.now(),
+          suit: chosen.suit,
+          rank: chosen.rank,
+          rankValue: 7,
+          isPoochie: Boolean(chosen.isPoochie),
+          discardedBy: nextPlayer.name,
+          discardedAt: Date.now()
+        };
+
+        if (roomState.topDiscard) {
+          if (!roomState.discardHistory) roomState.discardHistory = [];
+          roomState.discardHistory.push(roomState.topDiscard);
+        }
+        roomState.topDiscard = oppCard;
+        roomState.lastAction = `${nextPlayer.name} drew and discarded ${oppCard.rank}${oppCard.suit}`;
+
+        // Return turn to player
+        roomState.turnPlayerId = 'p_demo';
+        const meP = roomState.players.find(p => p.id === 'p_demo');
+        roomState.turnPlayerName = meP?.name || 'You';
+        roomState.turnStage = 'DRAW';
+        renderAll(calculateLocalMaal());
+      }, 1200);
+    }
   }
 
   function demoMyTurn() {
@@ -3346,7 +4242,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.turnPlayerId = 'p_demo';
     roomState.turnPlayerName = document.getElementById('playerName').value || 'You';
     roomState.turnStage = getHandCount() >= 22 ? 'DISCARD' : 'DRAW';
-    renderAll({ total: 90 });
+    renderAll(calculateLocalMaal());
   }
 
   function demoOpponentTurn(name) {
@@ -3355,7 +4251,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.turnPlayerId = p ? p.id : name.toLowerCase();
     roomState.turnPlayerName = name;
     roomState.turnStage = 'DRAW';
-    renderAll({ total: 90 });
+    renderAll(calculateLocalMaal());
   }
 
   function demoReset() {
@@ -3373,9 +4269,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const sourceFlight = captureCardFlight(document.getElementById('stockDeckBtn'));
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const suits = ['♠', '♥', '♣', '♦'];
-    const r = ranks[Math.floor(Math.random() * ranks.length)];
-    const s = suits[Math.floor(Math.random() * suits.length)];
-    const newCard = { id: 'c_' + Date.now(), suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false };
+    const rRoles = roomState?.roles;
+
+    // Wild/Maal cards test distribution
+    const roll = Math.random();
+    let newCard;
+    if (roll < 0.08) {
+      newCard = { id: 'c_' + Date.now(), suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true };
+    } else if (roll < 0.14 && rRoles) {
+      // Exact Cut Joker (cut suit & cut rank) -> 20 pts Maal
+      newCard = { id: 'c_' + Date.now(), suit: rRoles.tipluSuit, rank: rRoles.tipluRank, rankValue: ranks.indexOf(rRoles.tipluRank) + 1, isPoochie: false };
+    } else if (roll < 0.22 && rRoles) {
+      // Paplu or Taplu -> 10 pts Maal
+      const rankChoice = Math.random() < 0.5 ? rRoles.papluRank : rRoles.nichluRank;
+      newCard = { id: 'c_' + Date.now(), suit: rRoles.tipluSuit, rank: rankChoice, rankValue: ranks.indexOf(rankChoice) + 1, isPoochie: false };
+    } else if (roll < 0.28 && rRoles) {
+      // Other suit cut joker -> wild card in sequences, 0 pts Maal
+      const otherSuits = suits.filter(s => s !== rRoles.tipluSuit);
+      const chosenSuit = otherSuits[Math.floor(Math.random() * otherSuits.length)];
+      newCard = { id: 'c_' + Date.now(), suit: chosenSuit, rank: rRoles.tipluRank, rankValue: ranks.indexOf(rRoles.tipluRank) + 1, isPoochie: false };
+    } else {
+      const r = ranks[Math.floor(Math.random() * ranks.length)];
+      const s = suits[Math.floor(Math.random() * suits.length)];
+      newCard = { id: 'c_' + Date.now(), suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false };
+    }
     
     // Add to the last stand
     if (userStands.length === 0) userStands.push([]);
@@ -3388,7 +4305,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.deckCount--;
     roomState.turnStage = 'DISCARD';
     selectedCardId = newCard.id;
-    renderAll({ total: 90 });
+    renderAll(calculateLocalMaal());
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + newCard.id)));
     scrollCardIntoView(newCard.id);
   }
@@ -3405,10 +4322,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const meP = roomState.players.find(p => p.id === 'p_demo');
     if (meP) meP.cardCount = myHand.length;
 
-    roomState.topDiscard = { id: 'c_prev', suit: '♣', rank: '9', rankValue: 9, isPoochie: false };
+    // Pop the next buried card from discard history if available
+    const prevDiscard = (roomState.discardHistory && roomState.discardHistory.length > 0)
+      ? roomState.discardHistory.pop()
+      : { id: 'c_prev_' + Date.now(), suit: '♣', rank: '9', rankValue: 9, isPoochie: false, discardedBy: 'Kavita' };
+
+    roomState.topDiscard = prevDiscard;
     roomState.turnStage = 'DISCARD';
     selectedCardId = drawn.id;
-    renderAll({ total: 90 });
+    renderAll(calculateLocalMaal());
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + drawn.id)));
     scrollCardIntoView(drawn.id);
   }
@@ -3441,8 +4363,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     roomState.topDiscard = card;
     selectedCardId = null;
     roomState.lastAction = `${meP?.name || 'You'} discarded ${card.rank}${card.suit}`;
-    passDemoTurn();
+
+    // Immediately re-render with updated local Maal points
+    renderAll(calculateLocalMaal());
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('discardContainer')));
+
+    passDemoTurn();
   }
 </script>
 </body>
