@@ -7,9 +7,6 @@ export const CONFIG = {
   poochie1: 20,
   poochie2: 50,
   poochie3: 70,
-  papluNichlu1: 10,
-  papluNichlu2: 30,
-  papluNichlu3: 50,
   firstDrop: 30,
   middleDrop: 70,
   maxDeadwood: 120
@@ -83,7 +80,8 @@ export function calculateMaal(hand, cutCard) {
   let nichlus = 0;
 
   for (const card of hand) {
-    if (card.isPoochie) {
+    if (!card) continue;
+    if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') {
       poochies++;
     } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
       tiplus++;
@@ -94,24 +92,33 @@ export function calculateMaal(hand, cutCard) {
     }
   }
 
-  // Marriages = (Nichlu + Tiplu + Paplu) sets
+  // Marriages = (Taplu + Exact Cut Joker + Paplu) sets
   const marriages = Math.min(nichlus, tiplus, paplus);
   const remTiplus = tiplus - marriages;
-  const remPapluNichlu = (paplus - marriages) + (nichlus - marriages);
+  const remPaplus = paplus - marriages;
+  const remTuplus = nichlus - marriages;
 
-  const getTiered = (count, s1, s2, s3) => {
+  const getPoochieTier = (count) => {
     if (count <= 0) return 0;
-    if (count === 1) return s1;
-    if (count === 2) return s2;
-    return s3 + (count - 3) * s1;
+    if (count === 1) return CONFIG.poochie1;
+    if (count === 2) return CONFIG.poochie2;
+    return CONFIG.poochie3 + (count - 3) * CONFIG.poochie1;
+  };
+
+  const getPoolTier = (count) => {
+    if (count <= 0) return 0;
+    if (count === 1) return 10;
+    if (count === 2) return 30;
+    return 50 + (count - 3) * 10;
   };
 
   const marriagePts = marriages * CONFIG.marriagePts;
   const tipluPts = remTiplus * CONFIG.tipluPts;
-  const poochiePts = getTiered(poochies, CONFIG.poochie1, CONFIG.poochie2, CONFIG.poochie3);
-  const papluNichluPts = getTiered(remPapluNichlu, CONFIG.papluNichlu1, CONFIG.papluNichlu2, CONFIG.papluNichlu3);
+  const poochiePts = getPoochieTier(poochies);
+  const papluPts = getPoolTier(remPaplus);
+  const tupluPts = getPoolTier(remTuplus);
 
-  const total = marriagePts + tipluPts + poochiePts + papluNichluPts;
+  const total = marriagePts + tipluPts + poochiePts + papluPts + tupluPts;
 
   return {
     total,
@@ -122,8 +129,10 @@ export function calculateMaal(hand, cutCard) {
       tipluPts,
       poochies,
       poochiePts,
-      papluNichlu: remPapluNichlu,
-      papluNichluPts
+      paplus: remPaplus,
+      papluPts,
+      tuplus: remTuplus,
+      tupluPts
     }
   };
 }
@@ -147,11 +156,92 @@ export function calculateDeadwood(hand, cutCard) {
   return Math.min(points, CONFIG.maxDeadwood);
 }
 
+export function calculateGroupedDeadwood(groups, hand, cutCard) {
+  if (!Array.isArray(hand) || !cutCard) return 0;
+  const roles = resolveJokerRoles(cutCard);
+
+  if (!Array.isArray(groups) || groups.length === 0) {
+    return calculateDeadwood(hand, cutCard);
+  }
+
+  const handIds = new Set(hand.map(c => c.id));
+  const usedIds = new Set();
+  let validPureSequences = 0;
+  const validMeldedIds = new Set();
+
+  for (const group of groups) {
+    if (!group) continue;
+    const cardIds = Array.isArray(group.cardIds)
+      ? group.cardIds
+      : (Array.isArray(group.cards) ? group.cards.map(c => (c && c.id) ? c.id : c) : []);
+    if (cardIds.length < 3) continue;
+    const cards = [];
+    let conflict = false;
+    for (const id of cardIds) {
+      if (!handIds.has(id) || usedIds.has(id)) { conflict = true; break; }
+      cards.push(hand.find(c => c.id === id));
+    }
+    if (conflict) continue;
+
+    const type = group.type || 'SEQUENCE';
+    let isValid = false;
+    if (type === 'PURE_SEQUENCE' && isPureSequence(cards, cutCard)) {
+      isValid = true;
+      validPureSequences++;
+    } else if (type === 'SEQUENCE' && isSequence(cards, cutCard)) {
+      isValid = true;
+    } else if (type === 'SET' && isSet(cards, cutCard)) {
+      isValid = true;
+    }
+
+    if (isValid) {
+      for (const id of cardIds) {
+        usedIds.add(id);
+        validMeldedIds.add(id);
+      }
+    }
+  }
+
+  // Having at least 3 pure sequences unlocks full meld protection: valid groups count as 0 deadwood
+  const protectedCards = (validPureSequences >= 3) ? validMeldedIds : new Set();
+
+  let points = 0;
+  for (const card of hand) {
+    if (protectedCards.has(card.id)) continue;
+    const isJoker = card.isPoochie ||
+      card.rank === roles.tipluRank ||
+      (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank));
+
+    if (!isJoker) {
+      if (['A', 'K', 'Q', 'J', '10'].includes(card.rank)) {
+        points += 10;
+      } else {
+        points += parseInt(card.rank, 10) || 0;
+      }
+    }
+  }
+  return Math.min(points, CONFIG.maxDeadwood || 120);
+}
+
 export function isWildCard(card, cutCard) {
   if (!card || !cutCard) return false;
   const roles = resolveJokerRoles(cutCard);
   return Boolean(card.isPoochie || card.rank === roles.tipluRank ||
     (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank)));
+}
+
+export function isMarriageGroup(cards, cutCard) {
+  if (!Array.isArray(cards) || cards.length !== 3 || !cutCard) return false;
+  const roles = resolveJokerRoles(cutCard);
+  const hasTuplu = cards.some(c => c && c.suit === roles.tipluSuit && c.rank === roles.nichluRank);
+  const hasTiplu = cards.some(c => c && c.suit === roles.tipluSuit && c.rank === roles.tipluRank);
+  const hasPaplu = cards.some(c => c && c.suit === roles.tipluSuit && c.rank === roles.papluRank);
+  return Boolean(hasTuplu && hasTiplu && hasPaplu);
+}
+
+export function isThreePoochies(cards) {
+  if (!Array.isArray(cards) || cards.length !== 3) return false;
+  return cards.every(c => c && (c.isPoochie || c.suit === '★' || c.rank === 'PJ'));
 }
 
 function rankValueForSequence(card) {
@@ -161,7 +251,9 @@ function rankValueForSequence(card) {
 }
 
 function isPureSequence(cards, cutCard) {
-  if (cards.length < 3) return false;
+  if (!Array.isArray(cards) || cards.length < 3) return false;
+  if (isMarriageGroup(cards, cutCard)) return true;
+  if (isThreePoochies(cards)) return true;
   if (cards.some(c => isWildCard(c, cutCard))) return false;
   if (cards.length === 3 && cards.every(c => c.rank === cards[0].rank && c.suit === cards[0].suit)) return true;
   const suit = cards[0].suit;
@@ -175,7 +267,9 @@ function isPureSequence(cards, cutCard) {
 }
 
 function isSequence(cards, cutCard) {
-  if (cards.length < 3) return false;
+  if (!Array.isArray(cards) || cards.length < 3) return false;
+  if (isMarriageGroup(cards, cutCard)) return true;
+  if (isThreePoochies(cards)) return true;
   if (isPureSequence(cards, cutCard)) return true;
   const wilds = cards.filter(c => isWildCard(c, cutCard));
   const naturals = cards.filter(c => !isWildCard(c, cutCard));
