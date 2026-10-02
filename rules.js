@@ -137,81 +137,101 @@ export function calculateMaal(hand, cutCard) {
   };
 }
 
-export function calculateDeadwood(hand, cutCard) {
-  const roles = resolveJokerRoles(cutCard);
-  let points = 0;
-  for (const card of hand) {
-    const isJoker = card.isPoochie ||
-      card.rank === roles.tipluRank ||
-      (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank));
+export function isTunella(cards) {
+  if (!Array.isArray(cards) || cards.length !== 3) return false;
+  const first = cards[0];
+  if (!first || first.isPoochie || first.rank === 'PJ' || first.suit === '★') return false;
+  return cards.every(c => c && c.rank === first.rank && c.suit === first.suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+}
 
-    if (!isJoker) {
-      if (['A', 'K', 'Q', 'J', '10'].includes(card.rank)) {
-        points += 10;
-      } else {
-        points += parseInt(card.rank, 10) || 0;
-      }
-    }
-  }
-  return Math.min(points, CONFIG.maxDeadwood);
+export function calculateDeadwood(hand, cutCard) {
+  return calculateGroupedDeadwood([], hand, cutCard);
 }
 
 export function calculateGroupedDeadwood(groups, hand, cutCard) {
   if (!Array.isArray(hand) || !cutCard) return 0;
   const roles = resolveJokerRoles(cutCard);
 
-  if (!Array.isArray(groups) || groups.length === 0) {
-    return calculateDeadwood(hand, cutCard);
-  }
-
   const handIds = new Set(hand.map(c => c.id));
   const usedIds = new Set();
   let validPureSequences = 0;
   const validMeldedIds = new Set();
+  const qualifyingExemptIds = new Set(); // 4+ card pure runs and tunellas
 
-  for (const group of groups) {
-    if (!group) continue;
-    const cardIds = Array.isArray(group.cardIds)
-      ? group.cardIds
-      : (Array.isArray(group.cards) ? group.cards.map(c => (c && c.id) ? c.id : c) : []);
-    if (cardIds.length < 3) continue;
-    const cards = [];
-    let conflict = false;
-    for (const id of cardIds) {
-      if (!handIds.has(id) || usedIds.has(id)) { conflict = true; break; }
-      cards.push(hand.find(c => c.id === id));
-    }
-    if (conflict) continue;
+  if (Array.isArray(groups) && groups.length > 0) {
+    for (const group of groups) {
+      if (!group) continue;
+      const cardIds = Array.isArray(group.cardIds)
+        ? group.cardIds
+        : (Array.isArray(group.cards) ? group.cards.map(c => (c && c.id) ? c.id : c) : []);
+      if (cardIds.length < 3) continue;
 
-    const type = group.type || 'SEQUENCE';
-    let isValid = false;
-    if (type === 'PURE_SEQUENCE' && isPureSequence(cards, cutCard)) {
-      isValid = true;
-      validPureSequences++;
-    } else if (type === 'SEQUENCE' && isSequence(cards, cutCard)) {
-      isValid = true;
-    } else if (type === 'SET' && isSet(cards, cutCard)) {
-      isValid = true;
-    }
-
-    if (isValid) {
+      const cards = [];
+      let conflict = false;
       for (const id of cardIds) {
-        usedIds.add(id);
-        validMeldedIds.add(id);
+        if (!handIds.has(id) || usedIds.has(id)) { conflict = true; break; }
+        cards.push(hand.find(c => c.id === id));
+      }
+      if (conflict) continue;
+
+      const type = group.type || 'SEQUENCE';
+      const isPure = isPureSequence(cards, cutCard);
+      const isTun = isTunella(cards);
+      let isValid = false;
+
+      if (isPure) {
+        isValid = true;
+        validPureSequences++;
+      } else if (type === 'SEQUENCE' && isSequence(cards, cutCard)) {
+        isValid = true;
+      } else if (type === 'SET' && isSet(cards, cutCard)) {
+        isValid = true;
+      }
+
+      if (isValid) {
+        for (const id of cardIds) {
+          usedIds.add(id);
+          validMeldedIds.add(id);
+        }
+        // Pure sequences of 4 or more cards are exempt from deadwood even without 3 pure sequences
+        if (isPure && cards.length >= 4) {
+          for (const id of cardIds) qualifyingExemptIds.add(id);
+        }
+        // Tunellas are exempt from deadwood even without 3 pure sequences
+        if (isTun) {
+          for (const id of cardIds) qualifyingExemptIds.add(id);
+        }
       }
     }
   }
 
-  // Having at least 3 pure sequences unlocks full meld protection: valid groups count as 0 deadwood
-  const protectedCards = (validPureSequences >= 3) ? validMeldedIds : new Set();
+  // Also check if any unassigned/ungrouped cards form a Tunella
+  if (validPureSequences < 3) {
+    const unassigned = hand.filter(c => !usedIds.has(c.id));
+    const cardMap = new Map();
+    for (const c of unassigned) {
+      if (!c || c.isPoochie || c.rank === 'PJ' || c.suit === '★') continue;
+      const key = `${c.suit}_${c.rank}`;
+      if (!cardMap.has(key)) cardMap.set(key, []);
+      cardMap.get(key).push(c.id);
+    }
+    for (const ids of cardMap.values()) {
+      if (ids.length >= 3) {
+        ids.slice(0, 3).forEach(id => qualifyingExemptIds.add(id));
+      }
+    }
+  }
+
+  // Rule: Non-declarers need a minimum of 3 pure sequences.
+  // - If validPureSequences >= 3: all valid melded cards are protected (0 deadwood).
+  // - If validPureSequences < 3: ONLY jokers, pure sequences of 4 or more cards, and tunellas are protected.
+  //   All other cards (including 3-card pure runs, sets, impure sequences, and loose cards) are deadwood.
+  const protectedCards = (validPureSequences >= 3) ? validMeldedIds : qualifyingExemptIds;
 
   let points = 0;
   for (const card of hand) {
     if (protectedCards.has(card.id)) continue;
-    const isJoker = card.isPoochie ||
-      card.rank === roles.tipluRank ||
-      (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank));
-
+    const isJoker = isWildCard(card, cutCard);
     if (!isJoker) {
       if (['A', 'K', 'Q', 'J', '10'].includes(card.rank)) {
         points += 10;
@@ -220,6 +240,7 @@ export function calculateGroupedDeadwood(groups, hand, cutCard) {
       }
     }
   }
+
   return Math.min(points, CONFIG.maxDeadwood || 120);
 }
 
@@ -254,8 +275,8 @@ function isPureSequence(cards, cutCard) {
   if (!Array.isArray(cards) || cards.length < 3) return false;
   if (isMarriageGroup(cards, cutCard)) return true;
   if (isThreePoochies(cards)) return true;
+  if (isTunella(cards)) return true;
   if (cards.some(c => isWildCard(c, cutCard))) return false;
-  if (cards.length === 3 && cards.every(c => c.rank === cards[0].rank && c.suit === cards[0].suit)) return true;
   const suit = cards[0].suit;
   if (!cards.every(c => c.suit === suit)) return false;
   const vals = cards.map(c => rankValueForSequence(c)[0]);
