@@ -3170,13 +3170,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const myDeadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
     const myDeadwood = myDeadwoodCalc.points;
 
+    const soniaGroups = [
+      { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+      { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
+    ];
+    const soniaHand = [
+      { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+      { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+      { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+      { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+      { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+      { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+      { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+    ];
+    // Sonia only has 1 pure sequence (< 3), so her deadwood is computed under the rule:
+    // All cards apart from jokers, 4+ pure runs, and tunellas count as deadwood!
+    const soniaDeadwood = calculateCurrentDeadwood(soniaGroups, soniaHand).points;
+
     const demoData = {
       winnerName,
       winnerMaal,
       results: [
         { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
         { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
-        { name: 'Sonia', status: 'LOST', points: 42 + winnerMaal.total, deadwood: 42, net: `Pays ${42 + winnerMaal.total} pts (42 deadwood + ${winnerMaal.total} winner Maal)` },
+        { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
         { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
       ],
       revealedHands: [
@@ -3205,20 +3222,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         {
           name: 'Sonia',
           isWinner: false,
-          deadwood: 42,
-          groups: [
-            { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
-            { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
-          ],
-          hand: [
-            { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
-            { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
-            { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
-            { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
-            { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
-            { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
-            { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
-          ]
+          deadwood: soniaDeadwood,
+          groups: soniaGroups,
+          hand: soniaHand
         },
         {
           name: 'Rohan',
@@ -3940,13 +3946,48 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         isDemoGroupingWait = false;
         if (waitModal) waitModal.style.display = 'none';
 
+        const aaravGroups = [
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' }] },
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' }] },
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' }] },
+          { type: 'SET', cards: [{ id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' }] }
+        ];
+        const aaravHand = [
+          { id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' },
+          { id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' },
+          { id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' },
+          { id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' },
+          { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '2' },
+          { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: 'A' }, { id: 'a18', suit: '♠', rank: '4' },
+          { id: 'a19', suit: '♣', rank: '3' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
+        ];
+        const aaravDeadwood = calculateCurrentDeadwood(aaravGroups, aaravHand).points;
+
+        const priyaGroups = [
+          { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+          { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] },
+          { type: 'SET', cards: [{ id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' }] }
+        ];
+        const priyaHand = [
+          { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+          { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+          { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+          { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+          { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+          { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+          { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+        ];
+        // Priya has only 1 pure sequence (< 3). Therefore, all cards apart from jokers,
+        // pure sequences of 4+ cards, and tunellas are counted as deadwood!
+        const priyaDeadwood = calculateCurrentDeadwood(priyaGroups, priyaHand).points;
+
         const demoData = {
           winnerName: roomState.turnPlayerName || 'You',
           winnerMaal,
           results: [
             { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
-            { name: 'Aarav', status: 'LOST', points: 34 + winnerMaal.total, deadwood: 34, net: `Pays ${34 + winnerMaal.total} pts (34 deadwood + ${winnerMaal.total} winner Maal)` },
-            { name: 'Priya', status: 'LOST', points: 52 + winnerMaal.total, deadwood: 52, net: `Pays ${52 + winnerMaal.total} pts (52 deadwood + ${winnerMaal.total} winner Maal)` },
+            { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
+            { name: 'Priya', status: 'LOST', points: priyaDeadwood + winnerMaal.total, deadwood: priyaDeadwood, net: `Pays ${priyaDeadwood + winnerMaal.total} pts (${priyaDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
             { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
           ],
           revealedHands: [
@@ -3960,41 +4001,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             {
               name: 'Aarav',
               isWinner: false,
-              deadwood: 34,
-              groups: [
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' }] },
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' }] },
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' }] },
-                { type: 'SET', cards: [{ id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' }] }
-              ],
-              hand: [
-                { id: 'a1', suit: '♠', rank: '10' }, { id: 'a2', suit: '♠', rank: 'J' }, { id: 'a3', suit: '♠', rank: 'Q' },
-                { id: 'a4', suit: '♥', rank: '3' }, { id: 'a5', suit: '♥', rank: '4' }, { id: 'a6', suit: '♥', rank: '5' },
-                { id: 'a7', suit: '♣', rank: '7' }, { id: 'a8', suit: '♣', rank: '8' }, { id: 'a9', suit: '♣', rank: '9' },
-                { id: 'a10', suit: '♦', rank: 'K' }, { id: 'a11', suit: '♠', rank: 'K' }, { id: 'a12', suit: '♣', rank: 'K' },
-                { id: 'a13', suit: '♦', rank: '8' }, { id: 'a14', suit: '♥', rank: '9' }, { id: 'a15', suit: '♣', rank: '2' },
-                { id: 'a16', suit: '♦', rank: '5' }, { id: 'a17', suit: '♥', rank: 'A' }, { id: 'a18', suit: '♠', rank: '4' },
-                { id: 'a19', suit: '♣', rank: '3' }, { id: 'a20', suit: '♦', rank: '2' }, { id: 'a21', suit: '♥', rank: '6' }
-              ]
+              deadwood: aaravDeadwood,
+              groups: aaravGroups,
+              hand: aaravHand
             },
             {
               name: 'Priya',
               isWinner: false,
-              deadwood: 52,
-              groups: [
-                { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
-                { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] },
-                { type: 'SET', cards: [{ id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' }] }
-              ],
-              hand: [
-                { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
-                { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
-                { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
-                { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
-                { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
-                { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
-                { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
-              ]
+              deadwood: priyaDeadwood,
+              groups: priyaGroups,
+              hand: priyaHand
             },
             {
               name: 'Rohan',
