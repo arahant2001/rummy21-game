@@ -844,26 +844,402 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 
-/* Player Status Strip */
-.player-strip{display:flex;flex-direction:column;gap:6px;margin:0 0 2px;padding:9px 10px;background:rgba(6,23,16,.88);border:1px solid rgba(217,182,92,.16);border-radius:14px;box-shadow:0 7px 20px rgba(0,0,0,.18)}
-.player-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(100px,150px);align-items:center;gap:12px;padding:8px 11px;border:1px solid rgba(255,255,255,.055);border-radius:9px;background:rgba(255,255,255,.025);transition:background .18s,border-color .18s,transform .18s}
-.player-row.me{border-color:rgba(99,214,165,.28);background:rgba(50,197,138,.07)}
-.player-row.current{border-color:rgba(241,210,122,.55);background:linear-gradient(90deg,rgba(217,182,92,.12),rgba(50,197,138,.06));box-shadow:inset 3px 0 0 var(--accent-gold-soft)}
-.player-row.dropped{opacity:.55}
-.player-name{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;font-weight:700}
-.player-avatar{width:26px;height:26px;display:grid;place-items:center;flex:0 0 26px;border-radius:50%;background:rgba(217,182,92,.13);border:1px solid rgba(217,182,92,.25);font-size:13px}
-.player-you{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--accent-emerald);font-weight:800}
-.player-count{font-size:12px;color:#b9c8c0;white-space:nowrap}
-.player-state{justify-self:end;min-width:94px;text-align:right;font-size:11px;font-weight:700;color:#83978d}
-.player-state.waiting:before{content:"●";color:#647970;margin-right:5px}
-.player-state.turn{color:var(--accent-gold-soft);font-size:11px;text-transform:uppercase;letter-spacing:.35px}
-.player-state.turn:before{content:"●";color:var(--accent-gold-soft);margin-right:5px;animation:pulse 1.4s infinite}
-.player-state.you-turn{color:#f1d27a;background:rgba(217,182,92,.10);border:1px solid rgba(217,182,92,.28);padding:5px 8px;border-radius:7px}
-.player-state.dropped-state{color:var(--accent-rose);background:rgba(244,63,94,.09);border:1px solid rgba(244,63,94,.22);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:750}
-.player-state.forfeited-state{color:#f87171;background:rgba(248,113,113,.14);border:1px solid rgba(248,113,113,.30);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800}
-.player-row.forfeited{opacity:.50;border-color:rgba(248,113,113,.22)}
-.player-strip-title{display:flex;justify-content:space-between;align-items:center;padding:1px 5px 3px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#789087}
-@media(max-width:600px){.player-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}.player-state{grid-column:1/-1;justify-self:stretch;text-align:left;margin-left:34px}.player-state.you-turn{display:inline-block;width:max-content;margin-left:34px}.player-count{font-size:11px}}
+/* ===== POKERIST-STYLE CASINO RUMMY TABLE FELT ===== */
+.rummy-table-felt {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 8px auto 12px;
+  border-radius: 140px;
+  background: radial-gradient(ellipse at 50% 48%, #1a5c3e 0%, #10422c 42%, #082618 80%, #03100a 100%);
+  border: 14px solid #140d07;
+  outline: 2px solid rgba(217, 182, 92, 0.45);
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.9),
+    inset 0 0 35px rgba(0, 0, 0, 0.75),
+    inset 0 0 80px rgba(0, 0, 0, 0.45),
+    0 24px 60px rgba(0, 0, 0, 0.85);
+  padding: 22px 24px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 440px;
+  overflow: visible;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Inner Racetrack Dotted Betting Line */
+.rummy-table-felt::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 115px;
+  border: 1.5px dashed rgba(217, 182, 92, 0.22);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Center Table Watermark Insignia */
+.table-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.16;
+  user-select: none;
+}
+.table-watermark-suits {
+  font-size: 22px;
+  letter-spacing: 14px;
+  color: #f1d27a;
+  margin-bottom: 2px;
+}
+.table-watermark-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: #f1d27a;
+}
+.table-watermark-sub {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: #a7c1b5;
+  margin-top: 2px;
+}
+
+/* Radial Opponent Seats Container */
+.opponent-seats-area {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 980px;
+  z-index: 10;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+/* Pokerist Player Seat Pod */
+.pokerist-seat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  min-width: 105px;
+}
+.pokerist-seat.is-dropped {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+}
+
+/* Avatar Frame with Pokerist Turn Timer Ring */
+.seat-avatar-wrap {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 6px;
+}
+.seat-avatar-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(217, 182, 92, 0.4), rgba(255, 255, 255, 0.1));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  display: grid;
+  place-items: center;
+  transition: all 0.25s ease;
+}
+.seat-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2a523e, #0e271a);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  color: #f8fafc;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+/* Active Turn Pulsating Glow (Pokerist-Style Neon Ring) */
+@keyframes turnPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 2px #32c58a, 0 0 20px rgba(50, 197, 138, 0.85), inset 0 0 8px rgba(50, 197, 138, 0.6);
+    filter: brightness(1.05);
+  }
+  50% {
+    box-shadow: 0 0 0 3px #f1d27a, 0 0 32px rgba(241, 210, 122, 0.95), inset 0 0 12px rgba(241, 210, 122, 0.7);
+    filter: brightness(1.2);
+  }
+}
+
+.pokerist-seat.is-turn .seat-avatar-ring,
+.bottom-user-pod.is-my-turn .seat-avatar-ring {
+  background: linear-gradient(135deg, #32c58a, #f1d27a);
+  animation: turnPulseGlow 1.8s ease-in-out infinite;
+  transform: scale(1.05);
+}
+
+/* Turn Spotlight Aura on the Felt */
+.pokerist-seat.is-turn::after,
+.bottom-user-pod.is-my-turn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130px;
+  height: 130px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(50, 197, 138, 0.24) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Dealer Chip Badge ('D') */
+.seat-dealer-badge,
+.table-dealer-chip {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fffdf8, #d9b65c);
+  border: 1.5px solid #8e681c;
+  color: #121810;
+  font-size: 11px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), inset 0 1px 1px #fff;
+  user-select: none;
+}
+.seat-dealer-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  z-index: 5;
+}
+.table-dealer-chip {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  z-index: 20;
+}
+
+/* Turn Action Speech Pill */
+.seat-action-pill {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(7, 24, 16, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #9db2a7;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 6;
+  transition: all 0.2s ease;
+}
+.seat-action-pill.action-active {
+  background: linear-gradient(135deg, #1b7a54, #0e4c33);
+  border-color: rgba(99, 214, 165, 0.7);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(50, 197, 138, 0.5);
+  animation: pulse 1.6s infinite;
+}
+
+/* Seat Player Name & Mini Card Fan */
+.seat-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.seat-player-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f1f5f9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.seat-card-fan {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 24px;
+  margin-top: 1px;
+}
+.mini-card {
+  position: absolute;
+  width: 16px;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #1b3858, #0d1e34);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  color: #93c5fd;
+}
+.mini-card-1 { transform: rotate(-14deg) translateX(-4px); z-index: 1; }
+.mini-card-2 { transform: rotate(0deg); z-index: 2; }
+.mini-card-3 { transform: rotate(14deg) translateX(4px); z-index: 3; }
+.mini-card-count {
+  position: absolute;
+  bottom: -4px;
+  right: -8px;
+  background: rgba(10, 20, 15, 0.96);
+  border: 1px solid rgba(217, 182, 92, 0.45);
+  color: #f1d27a;
+  border-radius: 8px;
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1px 4px;
+  z-index: 5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Center Live Turn Ticker Banner on the Felt */
+.table-turn-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(4, 15, 10, 0.88);
+  border: 1px solid rgba(217, 182, 92, 0.32);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  color: #f1d27a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  z-index: 15;
+  margin-bottom: 6px;
+}
+.turn-banner-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #32c58a;
+  box-shadow: 0 0 8px #32c58a;
+  animation: pulse 1.4s infinite;
+}
+
+/* Bottom User Pod (YOU Seat at Table Rim) */
+.bottom-user-pod {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 18px 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(16, 45, 34, 0.94), rgba(7, 20, 15, 0.94));
+  border: 1.5px solid rgba(217, 182, 92, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  margin-top: 8px;
+}
+.bottom-user-pod.is-my-turn {
+  border-color: rgba(99, 214, 165, 0.8);
+  box-shadow: 0 0 24px rgba(50, 197, 138, 0.45), 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+.bottom-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.bottom-user-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+.bottom-you-tag {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #172014;
+  background: #32c58a;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.bottom-user-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  color: #a4b8af;
+}
+.stat-hand-count b {
+  color: #f1d27a;
+}
+
+/* Responsive Table Felt */
+@media(max-width: 768px) {
+  .rummy-table-felt {
+    border-radius: 54px;
+    border-width: 10px;
+    padding: 16px 10px 14px;
+    min-height: 390px;
+  }
+  .rummy-table-felt::before {
+    border-radius: 44px;
+    inset: 8px;
+  }
+  .opponent-seats-area {
+    gap: 8px;
+  }
+  .pokerist-seat {
+    min-width: 78px;
+  }
+  .seat-avatar-wrap {
+    width: 48px;
+    height: 48px;
+  }
+  .seat-avatar-inner {
+    font-size: 20px;
+  }
+  .seat-player-name {
+    font-size: 10.5px;
+  }
+  .center-board {
+    gap: 16px;
+  }
+  .bottom-user-pod {
+    padding: 6px 14px 6px 10px;
+  }
+}
+
+/* Backward Compatibility Fallbacks */
+.player-strip{display:none}
+.player-row{display:none}
 
 
   .demo-controls{display:none;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 9px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13)}
@@ -1128,53 +1504,79 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <span class="hint">Tap a card to select it</span>
   </div>
   <div id="demoControls" class="demo-controls" style="display:none">
-    <span class="demo-controls-title">🧪 Test Controls</span>
-    <button class="tool-btn" onclick="demoMyTurn()">My Turn</button>
-    <button class="tool-btn" onclick="demoOpponentTurn('Kavita')">Kavita's Turn</button>
-    <button class="tool-btn" onclick="demoOpponentTurn('Sonia')">Sonia's Turn</button>
+    <span class="demo-controls-title">🧪 Test Table Turns</span>
+    <button class="tool-btn" onclick="demoMyTurn()">My Turn (Bottom)</button>
+    <button class="tool-btn" onclick="demoOpponentTurn('Kavita')">Kavita (Left)</button>
+    <button class="tool-btn" onclick="demoOpponentTurn('Sonia')">Sonia (Top)</button>
+    <button class="tool-btn" onclick="demoOpponentTurn('Aarav')">Aarav (Right)</button>
     <button class="tool-btn tool-btn-highlight" onclick="simulateOpponentDeclare()" title="Simulate an opponent declaring to test grouping & wait sign">⚡ Opponent Declares</button>
     <button class="tool-btn" onclick="demoReset()">Reset</button>
   </div>
 
-  <!-- Player Status Strip -->
-  <div id="playerStrip" class="player-strip">
-    <div class="player-strip-title"><span>Players</span><span id="playerTurnSummary">Table status</span></div>
-    <div id="playerRows"></div>
-  </div>
+  <!-- Hidden backward-compatibility elements so old queries don't throw -->
+  <div id="playerStrip" style="display:none;"><div id="playerRows"></div><span id="playerTurnSummary"></span></div>
 
-  <!-- Center Table Felt -->
-  <div class="center-board">
-    <div class="pile-wrapper stock-pile-wrapper">
-      <div class="pile-title">Stock</div><div class="pile-action-hint">Double-click to draw • or drag onto board</div>
-      <div class="stock-with-cut">
-        <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
-        <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
-             onclick="onStockClick(event)"
-             ondblclick="onStockDoubleClick(event)"
-             ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
-          <span class="deck-icon">🂠</span>
-          <span id="deckCountText" class="deck-count">0</span>
+  <!-- Casino Oval Rummy Table Felt (Pokerist Style) -->
+  <div id="rummyTableFelt" class="rummy-table-felt">
+    <!-- Center Felt Watermark Insignia -->
+    <div class="table-watermark">
+      <div class="table-watermark-suits">♠ ♥ ♣ ♦</div>
+      <div class="table-watermark-title">21 CARD MARRIAGE RUMMY</div>
+      <div class="table-watermark-sub">OPEN JOKER • 3 DECKS</div>
+    </div>
+
+    <!-- Radial Opponent Seats Container around the Top & Flanks of the Table -->
+    <div id="opponentSeatsArea" class="opponent-seats-area"></div>
+
+    <!-- Center Felt Board with Stock, Cut Joker, Discard, and Dealer Chip -->
+    <div class="center-board">
+      <div id="tableDealerChip" class="table-dealer-chip" title="Dealer Token">D</div>
+
+      <!-- Live Action Banner in Center Felt -->
+      <div id="tableTurnBanner" class="table-turn-banner">
+        <span class="turn-banner-dot"></span>
+        <span id="tableTurnBannerText">Connecting to table...</span>
+      </div>
+
+      <!-- Stock Deck Pile with 3D Stack & Cut Joker -->
+      <div class="pile-wrapper stock-pile-wrapper">
+        <div class="pile-title">Stock Deck</div>
+        <div class="pile-action-hint">Double-click or drag to draw</div>
+        <div class="stock-with-cut">
+          <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
+          <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
+               onclick="onStockClick(event)"
+               ondblclick="onStockDoubleClick(event)"
+               ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
+            <span class="deck-icon">🂠</span>
+            <span id="deckCountText" class="deck-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open Discard Pile -->
+      <div class="pile-wrapper discard-pile-wrapper">
+        <div class="pile-title" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+          <span>Discard</span>
+          <button type="button" class="btn-discard-history-badge" onclick="openDiscardHistoryModal()" title="View full chronological discard history">
+            📜 History (<span id="discardHistoryCount">0</span>)
+          </button>
+        </div>
+        <div class="pile-action-hint">Double-click to pick up • Drag card here to discard</div>
+        <div class="discard-stack-area">
+          <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
+          <div id="discardContainer" class="pile-drop-source" draggable="true"
+               onclick="onDiscardContainerClick(event)"
+               ondblclick="onDiscardDoubleClick(event)"
+               ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
+               ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
+               ondrop="onDiscardPileDrop(event)"></div>
         </div>
       </div>
     </div>
-    <div class="pile-wrapper discard-pile-wrapper">
-      <div class="pile-title" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-        <span>Discard</span>
-        <button type="button" class="btn-discard-history-badge" onclick="openDiscardHistoryModal()" title="View full chronological discard history">
-          📜 History (<span id="discardHistoryCount">0</span>)
-        </button>
-      </div>
-      <div class="pile-action-hint">Double-click to pick up • Drag card here to discard</div>
-      <div class="discard-stack-area">
-        <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
-        <div id="discardContainer" class="pile-drop-source" draggable="true"
-             onclick="onDiscardContainerClick(event)"
-             ondblclick="onDiscardDoubleClick(event)"
-             ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
-             ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
-             ondrop="onDiscardPileDrop(event)"></div>
-      </div>
-    </div>
+
+    <!-- Bottom Player Seat (YOU) integrated at the bottom felt rim -->
+    <div id="bottomUserSeat" class="bottom-user-seat-container"></div>
   </div>
 
   <!-- Hand Section with Multi-Stand Support -->
@@ -1775,13 +2177,35 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return true;
   }
 
+  function getPlayerAvatarEmoji(name) {
+    const n = (name || '').toLowerCase().trim();
+    if (n === 'you' || n === 'me') return '🧑‍💼';
+    if (n.includes('kavita')) return '👩‍🦰';
+    if (n.includes('sonia')) return '👱‍♀️';
+    if (n.includes('priya')) return '👩';
+    if (n.includes('aarav')) return '🧔';
+    if (n.includes('rohan')) return '👨';
+    if (n.includes('vikram')) return '🧑';
+    const emojis = ['🧑', '👩', '🧔', '👱‍♀️', '👨‍🦱', '👩‍💼'];
+    let sum = 0;
+    for (let i = 0; i < n.length; i++) sum += n.charCodeAt(i);
+    return emojis[sum % emojis.length];
+  }
+
   function renderPlayerStrip() {
     const rows = document.getElementById('playerRows');
     const summary = document.getElementById('playerTurnSummary');
-    if (!rows || !roomState || !roomState.players) return;
+    const opponentArea = document.getElementById('opponentSeatsArea');
+    const bottomUserSeat = document.getElementById('bottomUserSeat');
+    const tableTurnBannerText = document.getElementById('tableTurnBannerText');
+    const turnNotice = document.getElementById('turnNotice');
+    const turnDot = document.getElementById('turnDot');
+    const stageGuideText = document.getElementById('stageGuideText');
+
+    if (!roomState || !roomState.players) return;
 
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
-    const me = roomState.players.find(p => p.id === myId);
+    const me = roomState.players.find(p => p.id === myId) || { id: myId, name: 'You', cardCount: getHandCount() };
     const currentId = roomState.turnPlayerId;
     const playing = roomState.status !== 'LOBBY';
     const isMyTurn = isCurrentPlayerMe();
@@ -1789,59 +2213,152 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const myForfeited = Boolean(me && (me.hasForfeited || me.dropType === 'FORFEIT'));
     const myDropped = Boolean(me && me.hasDropped);
 
+    // 1. Update Fallback Legacy Summary
     if (summary) {
-      if (!playing) {
-        summary.innerText = roomState.players.length + ' seated';
-      } else if (myForfeited) {
-        summary.innerText = `You forfeited (100 pts) • Turn: ${roomState.turnPlayerName || 'Next player'}`;
-      } else if (myDropped) {
-        const pen = me?.dropPenalty || (me?.dropType === 'FIRST_DROP' ? 30 : me?.dropType === 'MIDDLE_DROP' ? 70 : 30);
-        const kind = me?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts';
-        summary.innerText = `You scooted (${kind}) • Turn: ${roomState.turnPlayerName || 'Next player'}`;
-      } else if (isMyTurn) {
-        summary.innerText = roomState.turnStage === 'DRAW' && myCount < 22
-          ? `Your turn: Draw card (${myCount}/21)`
-          : `Your turn: Discard card (${myCount}/22)`;
+      if (!playing) summary.innerText = roomState.players.length + ' seated';
+      else if (isMyTurn) summary.innerText = roomState.turnStage === 'DRAW' ? 'Your turn: Draw' : 'Your turn: Discard';
+      else summary.innerText = `Turn: ${roomState.turnPlayerName || 'Opponent'}`;
+    }
+
+    // 2. Update Table Turn Banner on Felt & Top Status Pill
+    let bannerMsg = 'Table ready';
+    if (!playing) {
+      bannerMsg = `Waiting in lobby (${roomState.players.length} seated)`;
+      if (turnNotice) turnNotice.innerText = 'Lobby';
+      if (turnDot) turnDot.className = 'turn-indicator-dot';
+    } else if (isMyTurn) {
+      if (roomState.turnStage === 'DRAW' && myCount < 22) {
+        bannerMsg = '⚡ YOUR TURN: Draw a card from Stock or Discard pile';
+        if (stageGuideText) stageGuideText.innerHTML = '<strong>Your turn:</strong> Draw a card from Stock (double-click/drag) or Discard.';
       } else {
-        const lastActionText = roomState.lastAction ? ` • ${roomState.lastAction}` : '';
-        summary.innerText = roomState.turnPlayerName ? `Turn: ${roomState.turnPlayerName}${lastActionText}` : 'In progress';
+        bannerMsg = '⚡ YOUR TURN: Select a card to Discard or Show/Declare';
+        if (stageGuideText) stageGuideText.innerHTML = '<strong>Your turn:</strong> Select a card to Discard, or hit Show/Declare.';
+      }
+      if (turnNotice) turnNotice.innerText = 'YOUR TURN';
+      if (turnDot) turnDot.className = 'turn-indicator-dot active';
+    } else {
+      const activeName = roomState.turnPlayerName || 'Opponent';
+      bannerMsg = roomState.turnStage === 'DRAW'
+        ? `⚡ ${activeName}'s turn — Drawing a card...`
+        : `⚡ ${activeName}'s turn — Choosing discard...`;
+      if (stageGuideText) stageGuideText.innerHTML = `<strong>${activeName}'s turn:</strong> Waiting for action...`;
+      if (turnNotice) turnNotice.innerText = `Turn: ${activeName}`;
+      if (turnDot) turnDot.className = 'turn-indicator-dot active';
+    }
+    if (tableTurnBannerText) tableTurnBannerText.innerText = bannerMsg;
+
+    // 3. Render Opponent Seats around the Oval Table
+    const opponents = roomState.players.filter(p => p.id !== myId);
+    if (opponentArea) {
+      if (opponents.length === 0) {
+        opponentArea.innerHTML = `
+          <div class="pokerist-seat seat-top" style="opacity:0.4;">
+            <div class="seat-avatar-wrap">
+              <div class="seat-avatar-ring"><div class="seat-avatar-inner">🪑</div></div>
+              <div class="seat-action-pill">Open Seat</div>
+            </div>
+            <div class="seat-meta"><div class="seat-player-name">Waiting for players...</div></div>
+          </div>
+        `;
+      } else {
+        opponentArea.innerHTML = opponents.map((p, idx) => {
+          const isCurrent = playing && p.id === currentId;
+          const forfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
+          const dropped = Boolean(p.hasDropped);
+          let stateText = 'Waiting';
+          let stateClass = '';
+
+          if (forfeited) {
+            stateText = 'Forfeited';
+            stateClass = 'action-forfeited';
+          } else if (dropped) {
+            const pen = p.dropPenalty || (p.dropType === 'FIRST_DROP' ? 30 : p.dropType === 'MIDDLE_DROP' ? 70 : 30);
+            stateText = `Scooted (${pen}p)`;
+            stateClass = 'action-dropped';
+          } else if (isCurrent) {
+            stateText = roomState.turnStage === 'DRAW' ? '⚡ Drawing' : '⚡ Discarding';
+            stateClass = 'action-active';
+          } else if (p.lastAction) {
+            stateText = p.lastAction;
+          }
+
+          const count = p.cardCount ?? 21;
+          const avatar = getPlayerAvatarEmoji(p.name);
+          const isDealer = roomState.dealerId === p.id || (idx === 0 && !roomState.dealerId);
+
+          return `
+            <div class="pokerist-seat ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${forfeited ? 'is-forfeited' : ''}">
+              <div class="seat-avatar-wrap">
+                <div class="seat-avatar-ring">
+                  <div class="seat-avatar-inner">${avatar}</div>
+                </div>
+                ${isDealer ? '<div class="seat-dealer-badge" title="Dealer">D</div>' : ''}
+                <div class="seat-action-pill ${stateClass}">${stateText}</div>
+              </div>
+              <div class="seat-meta">
+                <div class="seat-player-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+                <div class="seat-card-fan" title="${count} cards in hand">
+                  <span class="mini-card mini-card-1">🂠</span>
+                  <span class="mini-card mini-card-2">🂠</span>
+                  <span class="mini-card mini-card-3">🂠</span>
+                  <span class="mini-card-count">${count}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
       }
     }
 
-    rows.innerHTML = roomState.players.map(p => {
-      const isMe = p.id === myId;
-      const isCurrent = playing && p.id === currentId;
-      const forfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
-      const dropped = Boolean(p.hasDropped);
-      let stateText = 'Waiting';
-      let stateClass = 'waiting';
-      if (forfeited) {
-        stateText = 'Forfeited (100 pts)';
-        stateClass = 'forfeited-state';
-      } else if (dropped) {
-        const pen = p.dropPenalty || (p.dropType === 'FIRST_DROP' ? 30 : p.dropType === 'MIDDLE_DROP' ? 70 : 30);
-        const kind = p.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop' : 'Mid Drop';
-        stateText = `Scooted (${kind}: ${pen} pts)`;
-        stateClass = 'dropped-state';
-      } else if (isCurrent && isMe) {
-        stateText = roomState.turnStage === 'DRAW' && myCount < 22 ? 'YOUR TURN (DRAW)' : 'YOUR TURN (DISCARD)';
-        stateClass = 'you-turn';
-      } else if (isCurrent) {
-        stateText = roomState.turnStage === 'DRAW' ? 'Their Turn (Draw)' : 'Their Turn (Discard)';
-        stateClass = 'turn';
+    // 4. Render Bottom Seat (YOU) Pod
+    if (bottomUserSeat) {
+      let myStateText = 'Waiting';
+      let myActionClass = '';
+      if (myForfeited) {
+        myStateText = 'Forfeited (100 pts)';
+      } else if (myDropped) {
+        const pen = me?.dropPenalty || (me?.dropType === 'FIRST_DROP' ? 30 : 70);
+        myStateText = `Scooted (${pen} pts)`;
+      } else if (isMyTurn) {
+        myStateText = roomState.turnStage === 'DRAW' && myCount < 22 ? '⚡ YOUR TURN (DRAW)' : '⚡ YOUR TURN (DISCARD)';
+        myActionClass = 'action-active';
       }
-      const count = isMe ? myCount : (p.cardCount ?? 0);
-      return `
-        <div class="player-row ${isMe ? 'me' : ''} ${isCurrent ? 'current' : ''} ${dropped ? 'dropped' : ''} ${forfeited ? 'forfeited' : ''}">
-          <div class="player-name">
-            <span class="player-avatar">🧑</span>
-            <span>${p.name}</span>
-            ${isMe ? '<span class="player-you">You</span>' : ''}
+
+      const isMeDealer = roomState.dealerId === myId;
+      bottomUserSeat.innerHTML = `
+        <div class="bottom-user-pod ${isMyTurn ? 'is-my-turn' : ''}">
+          <div class="seat-avatar-wrap">
+            <div class="seat-avatar-ring">
+              <div class="seat-avatar-inner">🧑‍💼</div>
+            </div>
+            ${isMeDealer ? '<div class="seat-dealer-badge" title="Dealer">D</div>' : ''}
+            <div class="seat-action-pill ${myActionClass}">${myStateText}</div>
           </div>
-          <div class="player-count">${count} cards</div>
-          <div class="player-state ${stateClass}">${stateText}</div>
-        </div>`;
-    }).join('');
+          <div class="bottom-user-details">
+            <div class="bottom-user-name">
+              <span>${escapeHtml(me?.name || 'You')}</span>
+              <span class="bottom-you-tag">YOU</span>
+            </div>
+            <div class="bottom-user-stats">
+              <span class="stat-hand-count">🎴 <b>${myCount}</b> cards</span>
+              <span>•</span>
+              <span class="stat-role-hint" style="color: ${isMyTurn ? '#7eedba' : '#94a3b8'};">
+                ${isMyTurn ? (roomState.turnStage === 'DRAW' ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn'}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 5. Update Legacy Rows (hidden fallback)
+    if (rows) {
+      rows.innerHTML = roomState.players.map(p => `
+        <div class="player-row ${p.id === myId ? 'me' : ''}">
+          <span>${escapeHtml(p.name)}</span>
+        </div>
+      `).join('');
+    }
   }
 
   function renderAll(maalData) {
@@ -4301,8 +4818,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       deckCount: 134,
       players: [
         { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 0 },
-        { id: 'p_2', name: 'Kavita', cardCount: 17, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 },
-        { id: 'p_3', name: 'Sonia', cardCount: 19, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 }
+        { id: 'p_2', name: 'Kavita', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 },
+        { id: 'p_3', name: 'Sonia', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 },
+        { id: 'p_4', name: 'Aarav', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 1 }
       ]
     };
 
@@ -4437,10 +4955,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function demoOpponentTurn(name) {
     if (!isDemo || !roomState) return;
-    const p = roomState.players.find(x => x.name === name);
+    const p = roomState.players.find(x => x.name.toLowerCase() === name.toLowerCase());
     roomState.turnPlayerId = p ? p.id : name.toLowerCase();
-    roomState.turnPlayerName = name;
+    roomState.turnPlayerName = p ? p.name : name;
     roomState.turnStage = 'DRAW';
+    roomState.lastAction = `${roomState.turnPlayerName} is drawing...`;
     renderAll(calculateLocalMaal());
   }
 
