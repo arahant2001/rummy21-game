@@ -1757,6 +1757,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 </div>
 
 <script>
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   window.alert = function(msg) {
     const toast = document.getElementById('gameToast');
     const toastMsg = document.getElementById('gameToastMessage');
