@@ -38,6 +38,11 @@ function getSafeRoom(room) {
     discardHistory: room.discardPile.slice(0, Math.max(0, room.discardPile.length - 1)),
     deckCount: room.deck.length,
     lastAction: room.lastAction || '',
+    handNumber: room.handNumber || 1,
+    starterIndex: room.starterIndex || 0,
+    dealerId: room.dealerId || (room.players.length > 0 ? room.players[(room.starterIndex - 1 + room.players.length) % room.players.length]?.id : null),
+    readyPlayers: room.players.filter(p => p.readyForNextHand).map(p => p.id),
+    sessionScores: Object.values(room.sessionScores || {}),
     players: room.players.map(p => ({
       id: p.id,
       name: p.name,
@@ -47,7 +52,8 @@ function getSafeRoom(room) {
       dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? (p.turnsTaken === 0 ? 'FIRST_DROP' : 'MIDDLE_DROP') : null),
       dropPenalty: p.dropPenalty || 0,
       turnsTaken: p.turnsTaken || 0,
-      isGrouped: Boolean(p.isGrouped)
+      isGrouped: Boolean(p.isGrouped),
+      readyForNextHand: Boolean(p.readyForNextHand)
     }))
   };
 }
@@ -78,8 +84,32 @@ function finalizeRound(userRoom) {
   const winner = userRoom.players.find(p => p.id === userRoom.winnerId) || userRoom.players[0];
   const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard);
 
+  userRoom.sessionScores = userRoom.sessionScores || {};
+  const losersCount = Math.max(0, userRoom.players.length - 1);
+
   const results = userRoom.players.map(p => {
+    // Ensure player session entry exists
+    if (!userRoom.sessionScores[p.id]) {
+      userRoom.sessionScores[p.id] = {
+        id: p.id,
+        name: p.name,
+        handsPlayed: 0,
+        handsWon: 0,
+        points: 0,
+        maal: 0,
+        totalScore: 0
+      };
+    }
+    const sc = userRoom.sessionScores[p.id];
+    sc.name = p.name;
+    sc.handsPlayed += 1;
+    p.readyForNextHand = false;
+
     if (p.id === winner.id) {
+      sc.handsWon += 1;
+      const netMaal = losersCount * winnerMaal.total;
+      sc.maal += netMaal;
+      sc.totalScore += netMaal;
       return {
         name: p.name,
         status: 'WINNER',
@@ -91,6 +121,9 @@ function finalizeRound(userRoom) {
     if (p.hasDropped) {
       const drop = p.dropPenalty || CONFIG.firstDrop || 30;
       const totalPay = drop + winnerMaal.total;
+      sc.points += drop;
+      sc.maal -= winnerMaal.total;
+      sc.totalScore -= totalPay;
       return {
         name: p.name,
         status: p.hasForfeited ? 'FORFEITED' : 'DROPPED',
@@ -102,6 +135,9 @@ function finalizeRound(userRoom) {
     }
     const deadwood = calculateGroupedDeadwood(p.declaredGroups, p.hand, userRoom.cutCard);
     const totalPay = deadwood + winnerMaal.total;
+    sc.points += deadwood;
+    sc.maal -= winnerMaal.total;
+    sc.totalScore -= totalPay;
     return {
       name: p.name,
       status: 'LOST',
@@ -131,7 +167,10 @@ function finalizeRound(userRoom) {
         winnerName: winner.name,
         winnerMaal,
         results,
-        revealedHands
+        revealedHands,
+        sessionScores: Object.values(userRoom.sessionScores),
+        handNumber: userRoom.handNumber || 1,
+        readyPlayers: []
       }));
     }
   });
@@ -170,6 +209,14 @@ function dealNextHand(room) {
     room.groupingTimer = null;
   }
 
+  // Refinement 5: Rotate starting player anti-clockwise around the table
+  // Array progression 0 -> 1 -> 2 -> 3 -> 0 matches anti-clockwise table rotation
+  room.starterIndex = ((room.starterIndex ?? 0) + 1) % room.players.length;
+  room.turnIndex = room.starterIndex;
+  // Dealer button sits on preceding player who dealt to starter
+  room.dealerId = room.players[(room.starterIndex - 1 + room.players.length) % room.players.length]?.id;
+  room.handNumber = (room.handNumber || 1) + 1;
+
   room.players.forEach(p => {
     p.hand = deck.splice(0, 21);
     p.hasDropped = false;
@@ -179,15 +226,16 @@ function dealNextHand(room) {
     p.turnsTaken = 0;
     p.isGrouped = false;
     p.declaredGroups = [];
+    p.readyForNextHand = false;
   });
 
   room.cutCard = deck.pop();
   room.discardPile = [deck.pop()];
   room.deck = deck;
   room.status = 'PLAYING';
-  room.turnIndex = 0;
   room.turnStage = 'DRAW';
-  room.lastAction = 'New hand dealt. Game on!';
+  const starter = room.players[room.starterIndex];
+  room.lastAction = `Hand #${room.handNumber} dealt. ${starter ? starter.name : 'First player'} starts drawing.`;
 }
 
 wss.on('connection', (ws) => {
@@ -217,17 +265,34 @@ wss.on('connection', (ws) => {
             discardPile: [],
             cutCard: null,
             turnIndex: 0,
-            turnStage: 'DRAW'
+            turnStage: 'DRAW',
+            handNumber: 1,
+            starterIndex: 0,
+            sessionScores: {}
           });
         }
 
         userRoom = rooms.get(roomId);
+        userRoom.sessionScores = userRoom.sessionScores || {};
+        if (!userRoom.sessionScores[playerId]) {
+          userRoom.sessionScores[playerId] = {
+            id: playerId,
+            name: playerName,
+            handsPlayed: 0,
+            handsWon: 0,
+            points: 0,
+            maal: 0,
+            totalScore: 0
+          };
+        }
+
         userRoom.players.push({
           id: playerId,
           name: playerName,
           hand: [],
           hasDropped: false,
           turnsTaken: 0,
+          readyForNextHand: false,
           ws
         });
 
@@ -236,8 +301,14 @@ wss.on('connection', (ws) => {
 
       if (!userRoom) return;
 
-      if (data.type === 'NEXT_HAND' && userRoom) {
-        dealNextHand(userRoom);
+      if ((data.type === 'NEXT_HAND' || data.type === 'CONTINUE_NEXT_HAND') && userRoom && userRoom.status === 'ROUND_OVER') {
+        const p = userRoom.players.find(x => x.id === playerId);
+        if (p) p.readyForNextHand = true;
+
+        const allReady = userRoom.players.length > 0 && userRoom.players.every(x => x.readyForNextHand);
+        if (allReady) {
+          dealNextHand(userRoom);
+        }
         broadcastRoom(userRoom);
         return;
       }
@@ -391,11 +462,6 @@ wss.on('connection', (ws) => {
             broadcastRoom(userRoom);
           }
         }
-      }
-
-      if (data.type === 'NEXT_HAND' && userRoom.status === 'ROUND_OVER') {
-        dealNextHand(userRoom);
-        broadcastRoom(userRoom);
       }
     } catch (e) {
       console.error('Socket error:', e);
