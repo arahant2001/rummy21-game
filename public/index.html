@@ -1241,6 +1241,92 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .player-strip{display:none}
 .player-row{display:none}
 
+/* Session Scores & Running Leaderboard Styling */
+.session-badge {
+  cursor: pointer;
+  background: rgba(99, 214, 165, 0.12) !important;
+  border: 1px solid rgba(99, 214, 165, 0.35) !important;
+  color: #7eedba !important;
+  transition: all 0.18s ease;
+}
+.session-badge:hover {
+  background: rgba(99, 214, 165, 0.22) !important;
+  border-color: rgba(99, 214, 165, 0.6) !important;
+  transform: translateY(-1px);
+}
+.session-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(217, 182, 92, 0.22);
+  background: rgba(6, 20, 14, 0.75);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  margin-top: 6px;
+}
+.session-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  text-align: left;
+}
+.session-table th {
+  background: linear-gradient(180deg, rgba(217, 182, 92, 0.18), rgba(217, 182, 92, 0.08));
+  color: #f1d27a;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid rgba(217, 182, 92, 0.25);
+  white-space: nowrap;
+}
+.session-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cfdad4;
+  white-space: nowrap;
+}
+.session-table tr:last-child td {
+  border-bottom: none;
+}
+.session-table tr.is-me-row {
+  background: rgba(50, 197, 138, 0.09);
+}
+.session-table tr.is-me-row td {
+  font-weight: 700;
+  color: #f8fafc;
+}
+.score-pos {
+  color: #7eedba !important;
+  font-weight: 800;
+}
+.score-neg {
+  color: #f87171 !important;
+  font-weight: 800;
+}
+.score-zero {
+  color: #94a3b8 !important;
+}
+.ready-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+.ready-pill.is-ready {
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  color: #86efac;
+}
+.ready-pill.is-waiting {
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #fde047;
+}
 
   .demo-controls{display:none;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 9px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13)}
   .demo-controls-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#b6c7bf;margin-right:2px}
@@ -1477,15 +1563,20 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
 <!-- Main Game View -->
 <div id="gameView" class="table-container" style="display: none;">
-  <!-- Header Status Bar -->
   <div class="status-bar">
     <div class="turn-chip">
       <div id="turnDot" class="turn-indicator-dot"></div>
       <span id="turnNotice">Connecting...</span>
     </div>
-    <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details">
-      <span>🏆</span>
-      <span id="maalPtsText">Maal: 0 pts</span>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div id="sessionScoresSummary" class="maal-badge session-badge" role="button" tabindex="0" onclick="openSessionScoresModal()" title="View session leaderboard and running scores">
+        <span>📊</span>
+        <span id="sessionScoresText">Session: 0 pts</span>
+      </div>
+      <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details">
+        <span>🏆</span>
+        <span id="maalPtsText">Maal: 0 pts</span>
+      </div>
     </div>
   </div>
 
@@ -1660,13 +1751,56 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <h2 id="winnerTitle" class="modal-winner"></h2>
     <div id="maalDetails" class="maal-breakdown"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
-    <div id="settlementList"></div><div id="revealedHands" class="revealed-hands"></div>
-    <div class="result-modal-actions" style="margin-top:22px; display:flex; justify-content:center; gap:10px;">
+    <div id="settlementList"></div>
+
+    <!-- Running Session Leaderboard Section -->
+    <div id="sessionLeaderboardSection" style="margin-top:18px; padding-top:14px; border-top:1px solid rgba(217,182,92,0.25);">
+      <h3 style="font-size: 14px; margin-bottom: 8px; color: var(--accent-gold-soft); text-transform: uppercase; letter-spacing: 0.5px; display:flex; align-items:center; justify-content:space-between;">
+        <span>📊 Session Running Scores</span>
+        <span id="sessionHandsCount" style="font-size:11px; color:#9db0a7; font-weight:normal; text-transform:none;">Hand #1</span>
+      </h3>
+      <div id="sessionLeaderboardTable"></div>
+    </div>
+
+    <div id="revealedHands" class="revealed-hands"></div>
+
+    <!-- Players Readiness Status -->
+    <div id="playersReadyStatus" style="margin-top:18px; padding:12px 14px; border-radius:10px; background:rgba(255,255,255,0.035); border:1px solid rgba(217,182,92,0.25); text-align:center;">
+      <div style="font-size:12px; font-weight:800; color:#f1d27a; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <span>⏳</span> <span>Waiting for all players to continue:</span>
+      </div>
+      <div id="playersReadyList" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; font-size:11px;"></div>
+    </div>
+
+    <div class="result-modal-actions" style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
       <button id="btnContinueResults" class="btn-action btn-declare" onclick="continueFromResults()">
-        <span><b>Continue</b><small class="action-sub">next hand</small></span>
+        <span id="btnContinueResultsText"><b>Continue</b><small class="action-sub">next hand</small></span>
       </button>
     </div>
-    <div id="nextHandStatus" style="margin-top:10px; color:var(--text-secondary); font-size:12px; text-align:center;">Next hand will be dealt automatically.</div>
+    <div id="nextHandStatus" style="margin-top:10px; color:var(--text-secondary); font-size:12px; text-align:center;">
+      Next hand will begin once all seated players hit Continue.
+    </div>
+  </div>
+</div>
+
+<!-- Session Scores Full Modal -->
+<div id="sessionScoresModal" class="modal" onclick="if(event.target===this) closeSessionScoresModal()">
+  <div class="modal-content session-modal-content" style="max-width: 680px;">
+    <div class="maal-modal-header">
+      <div class="maal-modal-title-group">
+        <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+          <span>📊</span> Session Running Scores &amp; Leaderboard
+        </h2>
+        <span class="maal-modal-subtitle">Cumulative tally across all played hands in this session</span>
+      </div>
+      <button class="maal-modal-close" onclick="closeSessionScoresModal()" aria-label="Close">✕</button>
+    </div>
+    <div id="sessionModalBody" style="margin-top:14px;"></div>
+    <div style="margin-top:18px; display:flex; justify-content:center;">
+      <button class="btn-action btn-declare" style="min-height:38px; padding:6px 28px;" onclick="closeSessionScoresModal()">
+        <span><b>Close</b></span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1795,6 +1929,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let declarationMode = false;
   let declarationGroups = [];
   let declarationSelectedIds = new Set();
+  let globalSessionScores = [];
+  let demoHandNumber = 1;
+  let demoStarterIndex = 0;
+  let demoReadyPlayers = new Set();
+  let demoReadyTimer = null;
 
   function joinRoom() {
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -1825,6 +1964,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const msg = JSON.parse(evt.data);
 
       if (msg.type === 'SYNC') {
+        const prevHandNum = roomState?.handNumber;
+        roomState = msg.room;
+
+        if (roomState?.sessionScores) {
+          globalSessionScores = roomState.sessionScores;
+          updateSessionHeaderBadge();
+        }
+
+        if (roomState?.status === 'ROUND_OVER') {
+          const readyMap = {};
+          (roomState.players || []).forEach(p => {
+            readyMap[p.id] = Boolean(p.readyForNextHand);
+          });
+          renderReadinessList(readyMap);
+        } else if (roomState?.status === 'PLAYING') {
+          const resModal = document.getElementById('resultModal');
+          if (resModal) resModal.style.display = 'none';
+        }
+
+        const isNewHand = prevHandNum !== undefined && roomState?.handNumber !== undefined && roomState.handNumber !== prevHandNum;
+        if (isNewHand) {
+          myHand = [];
+          declarationMode = false;
+          declarationGroups = [];
+          declarationSelectedIds.clear();
+          selectedCardId = null;
+        }
+
         // Capture the visible source before the board is re-rendered.
         // Only animate when this client's hand actually changes.
         const previousIds = new Set((myHand || []).map(c => c.id));
@@ -1841,8 +2008,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             : null;
         const sourceFlight = sourceEl ? captureCardFlight(sourceEl) : null;
 
-        roomState = msg.room;
-        if (roomState.status === 'PLAYING') document.getElementById('resultModal').style.display = 'none';
         syncIncomingHand(msg.yourHand);
 
         const incomingIds = new Set((msg.yourHand || []).map(c => c.id));
@@ -1865,7 +2030,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       }
 
       if (msg.type === 'SHOW_INVALID') {
-        declarationMode = false; declarationGroups = []; declarationSelectedIds.clear(); alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\\n\\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
+        declarationMode = false; declarationGroups = []; declarationSelectedIds.clear(); alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\n\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
         renderAll(null);
       }
 
@@ -1907,9 +2072,19 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   // Preserve user custom card arrangement and stands on WebSocket sync
   function syncIncomingHand(incomingCards) {
-    if (!myHand || myHand.length === 0) {
+    if (!incomingCards || incomingCards.length === 0) {
+      myHand = [];
+      userStands = [[]];
+      return;
+    }
+
+    const existingIds = new Set((myHand || []).map(c => c.id));
+    const matchingCount = incomingCards.filter(c => existingIds.has(c.id)).length;
+    const isBrandNewHand = myHand.length === 0 || (incomingCards.length >= 21 && matchingCount === 0);
+
+    if (isBrandNewHand) {
       myHand = incomingCards;
-      // Initialize with 2 stands for optimal visibility
+      // Requirement 3: when next hand is dealt, auto arrange into 3 groups
       initDefaultStands(3);
       return;
     }
@@ -1922,8 +2097,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     );
 
     // Identify any newly drawn card
-    const existingIds = new Set(userStands.flatMap(stand => stand.map(c => c.id)));
-    const newCards = incomingCards.filter(c => !existingIds.has(c.id));
+    const currentStandIds = new Set(userStands.flatMap(stand => stand.map(c => c.id)));
+    const newCards = incomingCards.filter(c => !currentStandIds.has(c.id));
 
     // Place new cards at the end of the last stand (or stand 1)
     if (newCards.length > 0) {
@@ -1935,7 +2110,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     myHand = userStands.flat();
   }
 
-  function initDefaultStands(count = 2) {
+  function initDefaultStands(count = 3) {
     if (!myHand || myHand.length === 0) {
       userStands = [[]];
       standTypes = ['SEQUENCE'];
@@ -4296,15 +4471,21 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     const reordered = [...poochies, ...regular];
 
-    // Re-populate stands preserving stand card counts
+    // Requirement 4: Distribute across all created groups/stands
+    const numStands = Math.max(1, userStands.length || 1);
+    const N = reordered.length;
+    const base = Math.floor(N / numStands);
+    let rem = N % numStands;
     let offset = 0;
-    userStands = userStands.map(stand => {
-      const count = stand.length;
-      const slice = reordered.slice(offset, offset + count);
-      offset += count;
-      return slice;
-    });
+    const newStands = [];
+    for (let i = 0; i < numStands; i++) {
+      const take = base + (rem > 0 ? 1 : 0);
+      if (rem > 0) rem--;
+      newStands.push(reordered.slice(offset, offset + take));
+      offset += take;
+    }
 
+    userStands = newStands;
     myHand = userStands.flat();
     renderAll(null);
   }
@@ -4595,24 +4776,395 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.body.appendChild(el); setTimeout(()=>el.remove(),2900);
   }
 
-  function continueFromResults() {
-    const modal = document.getElementById('resultModal');
-    if (modal) modal.style.display = 'none';
+  // Auto arrange hand into valid Rummy melds (Marriages, 3 Poochies, Tunellas, Pure Sequences, Sets, Wildcard Runs)
+  function autoArrangeHandToGroups(cards, cutCard, roles) {
+    if (!Array.isArray(cards) || cards.length === 0) return [];
+    const pool = cards.filter(Boolean);
+    const usedIds = new Set();
+    const groups = [];
+    const getAvailable = () => pool.filter(c => c && !usedIds.has(c.id));
 
-    declarationMode = false;
-    declarationGroups = [];
-    declarationSelectedIds.clear();
-    selectedCardId = null;
+    const effectiveRoles = roles || roomState?.roles;
+
+    // 1. Marriages: (Taplu + Tiplu + Paplu in cut suit) -> Pure Sequence (50 pts)
+    if (effectiveRoles) {
+      const r = effectiveRoles;
+      let searchingMarriage = true;
+      while (searchingMarriage) {
+        const avail = getAvailable();
+        const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
+        const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
+        const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
+        if (taplu && tiplu && paplu) {
+          const trio = [taplu, tiplu, paplu];
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: 'Marriage Pure Run (50 pts)',
+            cards: trio
+          });
+        } else {
+          searchingMarriage = false;
+        }
+      }
+    }
+
+    // 2. 3 Poochies -> Pure Sequence (Tunella)
+    let searchingPoochies = true;
+    while (searchingPoochies) {
+      const avail = getAvailable();
+      const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+      if (poochies.length >= 3) {
+        const trio = poochies.slice(0, 3);
+        trio.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel: '3 Poochies (Tunella)',
+          cards: trio
+        });
+      } else {
+        searchingPoochies = false;
+      }
+    }
+
+    // 3. Tunellas: (3 identical cards of exact same suit and rank)
+    let searchingTunellas = true;
+    while (searchingTunellas) {
+      const avail = getAvailable().filter(c => !declarationIsWild(c));
+      const suitRankMap = new Map();
+      for (const c of avail) {
+        const key = `${c.suit}_${c.rank}`;
+        if (!suitRankMap.has(key)) suitRankMap.set(key, []);
+        suitRankMap.get(key).push(c);
+      }
+      let foundTun = false;
+      for (const grp of suitRankMap.values()) {
+        if (grp.length >= 3) {
+          const trio = grp.slice(0, 3);
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cards: trio
+          });
+          foundTun = true;
+          break;
+        }
+      }
+      if (!foundTun) searchingTunellas = false;
+    }
+
+    // 4. Natural Pure Sequences (3+ consecutive cards in same suit without wildcards)
+    const suits = ['♠', '♥', '♣', '♦'];
+    const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+    for (const suit of suits) {
+      let foundRun = true;
+      while (foundRun) {
+        foundRun = false;
+        const availNaturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
+        if (availNaturals.length < 3) break;
+
+        const rankMap = new Map();
+        for (const c of availNaturals) {
+          if (!rankMap.has(c.rank)) rankMap.set(c.rank, []);
+          rankMap.get(c.rank).push(c);
+        }
+
+        let bestRun = null;
+        for (let len = 5; len >= 3; len--) {
+          for (let start = 0; start <= rankOrder.length - len; start++) {
+            const candidateRanks = rankOrder.slice(start, start + len);
+            if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
+              bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
+              break;
+            }
+          }
+          if (bestRun) break;
+
+          const aceHighRanks = ['10', 'J', 'Q', 'K', 'A'];
+          for (let start = 0; start <= aceHighRanks.length - len; start++) {
+            const candidateRanks = aceHighRanks.slice(start, start + len);
+            if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
+              bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
+              break;
+            }
+          }
+          if (bestRun) break;
+        }
+
+        if (bestRun && declarationPure(bestRun)) {
+          bestRun.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Pure Run (${bestRun.length})`,
+            cards: bestRun
+          });
+          foundRun = true;
+        }
+      }
+    }
+
+    // 5. Sets (3 or 4 cards of the same rank in different suits)
+    for (const rnk of rankOrder) {
+      let foundSet = true;
+      while (foundSet) {
+        foundSet = false;
+        const availSameRank = getAvailable().filter(c => c.rank === rnk && !declarationIsWild(c));
+        const bySuit = new Map();
+        for (const c of availSameRank) {
+          if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+        }
+        if (bySuit.size >= 3) {
+          const setCards = Array.from(bySuit.values()).slice(0, 4);
+          if (declarationSet(setCards)) {
+            setCards.forEach(c => usedIds.add(c.id));
+            groups.push({
+              type: 'SET',
+              typeLabel: `Set of ${rnk}s (${setCards.length})`,
+              cards: setCards
+            });
+            foundSet = true;
+          }
+        }
+      }
+    }
+
+    // 6. Impure sequences (using wildcards)
+    let wildcardCards = getAvailable().filter(c => declarationIsWild(c));
+    if (wildcardCards.length > 0) {
+      for (const suit of suits) {
+        if (wildcardCards.length === 0) break;
+        const naturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
+        if (naturals.length >= 2 && wildcardCards.length >= 1) {
+          for (let i = 0; i < naturals.length; i++) {
+            for (let j = i + 1; j < naturals.length; j++) {
+              if (wildcardCards.length === 0) break;
+              const trio = [naturals[i], naturals[j], wildcardCards[0]];
+              if (declarationSequence(trio)) {
+                trio.forEach(c => usedIds.add(c.id));
+                groups.push({
+                  type: 'SEQUENCE',
+                  typeLabel: 'Joker Run',
+                  cards: trio
+                });
+                wildcardCards = getAvailable().filter(c => declarationIsWild(c));
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return groups;
+  }
+
+  // --- Session Running Scoreboard Helper ---
+  function renderSessionLeaderboardHtml(scores, handNum) {
+    if (!Array.isArray(scores) || scores.length === 0) {
+      return '<div style="padding:14px; text-align:center; color:#9db0a7; font-size:12px;">No session scores recorded yet. Scores will be tallied here at the end of each round.</div>';
+    }
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const sorted = [...scores].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+
+    const rowsHtml = sorted.map((s, idx) => {
+      const isMe = s.playerId === myId || s.name === 'You' || (isDemo && s.playerId === 'p_demo');
+      const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+      const pts = s.points || 0;
+      const maal = s.maal || 0;
+      const total = s.totalScore || 0;
+      const totalClass = total > 0 ? 'score-pos' : total < 0 ? 'score-neg' : 'score-zero';
+      const totalPrefix = total > 0 ? '+' : '';
+      const maalPrefix = maal > 0 ? '+' : '';
+
+      return `
+        <tr class="${isMe ? 'is-me-row' : ''}">
+          <td style="text-align:center; width:36px;">${rankMedal}</td>
+          <td>
+            <span style="font-weight:700;">${escapeHtml(s.name)}</span>
+            ${isMe ? '<span style="margin-left:6px; font-size:9px; background:rgba(50,197,138,0.22); color:#7eedba; padding:1px 5px; border-radius:4px; font-weight:800;">YOU</span>' : ''}
+          </td>
+          <td style="text-align:center;"><b>${s.handsWon || 0}</b> / ${s.handsPlayed || 1}</td>
+          <td style="text-align:right; color:#fca5a5;">${pts > 0 ? `-${pts}` : '0'}</td>
+          <td style="text-align:right; color:${maal >= 0 ? '#fde047' : '#f87171'};">${maal !== 0 ? `${maalPrefix}${maal}` : '0'}</td>
+          <td style="text-align:right;" class="${totalClass}">${totalPrefix}${total}</td>
+        </tr>
+      `;
+    }).join('');
+
+    return `
+      <div class="session-table-wrap">
+        <table class="session-table">
+          <thead>
+            <tr>
+              <th style="text-align:center; width:36px;">#</th>
+              <th>Player</th>
+              <th style="text-align:center;">Won / Played</th>
+              <th style="text-align:right;" title="Deadwood / Scoot penalty points paid">Points</th>
+              <th style="text-align:right;" title="Net Maal points won or paid">Maal</th>
+              <th style="text-align:right;" title="Net overall session score">Total Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function openSessionScoresModal() {
+    const modal = document.getElementById('sessionScoresModal');
+    const body = document.getElementById('sessionModalBody');
+    if (!modal || !body) return;
+    const currentHand = isDemo ? demoHandNumber : (roomState?.handNumber || 1);
+    body.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:12px; color:#a3b8af;">
+        <span>Running leaderboard across all played hands in current room</span>
+        <span style="background:rgba(217,182,92,0.15); color:#f1d27a; padding:2px 8px; border-radius:6px; font-weight:700;">Hand #${currentHand}</span>
+      </div>
+      ${renderSessionLeaderboardHtml(globalSessionScores, currentHand)}
+    `;
+    modal.style.display = 'flex';
+  }
+
+  function closeSessionScoresModal() {
+    const modal = document.getElementById('sessionScoresModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function updateSessionHeaderBadge() {
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myStat = globalSessionScores.find(s => s.playerId === myId || s.name === 'You' || (isDemo && s.playerId === 'p_demo'));
+    const el = document.getElementById('sessionScoresText');
+    if (el) {
+      if (myStat) {
+        const tot = myStat.totalScore || 0;
+        const prefix = tot > 0 ? '+' : '';
+        el.innerText = `Session: ${prefix}${tot} pts`;
+        el.style.color = tot > 0 ? '#7eedba' : tot < 0 ? '#fca5a5' : '#f1d27a';
+      } else {
+        el.innerText = 'Session: 0 pts';
+        el.style.color = '#f1d27a';
+      }
+    }
+  }
+
+  function renderReadinessList(readyMap) {
+    const container = document.getElementById('playersReadyList');
+    if (!container) return;
+    const players = roomState?.players || [];
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+
+    container.innerHTML = players.map(p => {
+      const isMe = p.id === myId;
+      const isReady = readyMap ? Boolean(readyMap[p.id]) : (isDemo ? demoReadyPlayers.has(p.id) : Boolean(p.readyForNextHand));
+      return `
+        <div class="ready-pill ${isReady ? 'is-ready' : 'is-waiting'}" id="readyPill_${p.id}">
+          <span>${isReady ? '✓' : '⏳'}</span>
+          <span><b>${escapeHtml(p.name)}</b>: ${isReady ? 'Ready' : 'Waiting...'}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateDemoSessionScores(data) {
+    if (!globalSessionScores || globalSessionScores.length === 0) {
+      globalSessionScores = (roomState?.players || []).map(p => ({
+        playerId: p.id,
+        name: p.name,
+        handsPlayed: 0,
+        handsWon: 0,
+        points: 0,
+        maal: 0,
+        totalScore: 0
+      }));
+    }
+
+    const winner = data.winnerName;
+    const winnerMaalTotal = data.winnerMaal?.total || 0;
+    const loserCount = Math.max(1, (roomState?.players || []).length - 1);
+
+    (data.results || []).forEach(r => {
+      let sc = globalSessionScores.find(s => s.name === r.name || (r.name === 'You' && s.playerId === 'p_demo'));
+      if (!sc) {
+        sc = { playerId: 'p_' + r.name, name: r.name, handsPlayed: 0, handsWon: 0, points: 0, maal: 0, totalScore: 0 };
+        globalSessionScores.push(sc);
+      }
+      sc.handsPlayed++;
+      const isWinner = r.name === winner || r.status === 'WINNER';
+      if (isWinner) {
+        sc.handsWon++;
+        const maalWon = winnerMaalTotal * loserCount;
+        sc.maal += maalWon;
+        sc.totalScore += maalWon;
+      } else {
+        const deadwoodPts = r.deadwood !== undefined ? r.deadwood : (r.points !== undefined ? Math.max(0, r.points - winnerMaalTotal) : 30);
+        sc.points += deadwoodPts;
+        sc.maal -= winnerMaalTotal;
+        sc.totalScore -= (deadwoodPts + winnerMaalTotal);
+      }
+    });
+
+    updateSessionHeaderBadge();
+  }
+
+  // Requirement 2: wait for all players to hit continue before moving to next hand
+  function continueFromResults() {
+    const continueBtn = document.getElementById('btnContinueResults');
+    const btnText = document.getElementById('btnContinueResultsText');
+    const nextStatus = document.getElementById('nextHandStatus');
+
+    if (continueBtn) continueBtn.disabled = true;
+    if (btnText) btnText.innerHTML = '<b>✓ Ready</b><small class="action-sub">waiting for others...</small>';
+    if (nextStatus) nextStatus.innerText = 'Waiting for other players to hit Continue...';
+
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myPill = document.getElementById(`readyPill_${myId}`);
+    if (myPill) {
+      myPill.className = 'ready-pill is-ready';
+      myPill.innerHTML = `<span>✓</span><span><b>You</b>: Ready</span>`;
+    }
 
     if (!isDemo) {
       if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'NEXT_HAND' }));
+        ws.send(JSON.stringify({ type: 'CONTINUE_NEXT_HAND' }));
       }
       return;
     }
 
-    // In demo mode, start the next hand seamlessly without returning to lobby
-    startDemoMode();
+    // In demo mode: wait for all opponents to hit continue with realistic timing
+    demoReadyPlayers.clear();
+    demoReadyPlayers.add('p_demo');
+
+    const opponents = (roomState?.players || []).filter(p => p.id !== 'p_demo');
+    if (demoReadyTimer) clearTimeout(demoReadyTimer);
+
+    const delays = [600, 1200, 1800];
+    opponents.forEach((opp, idx) => {
+      setTimeout(() => {
+        demoReadyPlayers.add(opp.id);
+        const pill = document.getElementById(`readyPill_${opp.id}`);
+        if (pill) {
+          pill.className = 'ready-pill is-ready';
+          pill.innerHTML = `<span>✓</span><span><b>${escapeHtml(opp.name)}</b>: Ready</span>`;
+        }
+        if (demoReadyPlayers.size >= (roomState?.players?.length || 4)) {
+          setTimeout(() => {
+            const modal = document.getElementById('resultModal');
+            if (modal) modal.style.display = 'none';
+
+            declarationMode = false;
+            declarationGroups = [];
+            declarationSelectedIds.clear();
+            selectedCardId = null;
+
+            startNextHandDemo();
+          }, 450);
+        }
+      }, delays[idx] || 1500);
+    });
   }
 
   window.startDemo = startDemoMode;
@@ -4643,7 +5195,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       reveal.innerHTML = '<h3 style="font-size:15px;margin:18px 0 10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
         (data.revealedHands || []).map(p => {
           const isWinner = p.name === data.winnerName || p.isWinner;
-          const groups = Array.isArray(p.groups) ? p.groups : [];
+          // Requirement 1: In the winner dialog, auto arrange the cards, unless the user has already arranged their hand while showing
+          const userHasArranged = Array.isArray(p.groups) && p.groups.length > 0 && p.groups.some(g => (Array.isArray(g.cards) && g.cards.length >= 3) || (Array.isArray(g.cardIds) && g.cardIds.length >= 3));
+          const groups = userHasArranged 
+            ? p.groups 
+            : autoArrangeHandToGroups(p.hand, data.cutCard || roomState?.cutCard, data.roles || roomState?.roles);
+
           const pPureCount = groups.filter(g => {
             if (!g) return false;
             if (g.type === 'PURE_SEQUENCE') return true;
@@ -4774,11 +5331,133 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         }).join('');
     }
 
+    // Requirement 6: show a table with a running score of points, maal and total scored for each player
+    if (isDemo) {
+      updateDemoSessionScores(data);
+    } else {
+      if (data.sessionScores) globalSessionScores = data.sessionScores;
+      updateSessionHeaderBadge();
+    }
+
+    const leadTable = document.getElementById('sessionLeaderboardTable');
+    const currentHandNum = data.handNumber || (isDemo ? demoHandNumber : (roomState?.handNumber || 1));
+    if (leadTable) {
+      leadTable.innerHTML = renderSessionLeaderboardHtml(globalSessionScores, currentHandNum);
+    }
+    const handsCountEl = document.getElementById('sessionHandsCount');
+    if (handsCountEl) {
+      handsCountEl.innerText = `Hand #${currentHandNum}`;
+    }
+
+    // Requirement 2: Render live readiness list
+    demoReadyPlayers.clear();
+    renderReadinessList();
+
     const continueBtn = document.getElementById('btnContinueResults');
+    const btnText = document.getElementById('btnContinueResultsText');
     const nextStatus = document.getElementById('nextHandStatus');
-    if (continueBtn) continueBtn.style.display = 'inline-flex';
-    if (nextStatus) nextStatus.innerText = isDemo ? 'Continue to a new demo hand.' : 'Next hand will be dealt automatically.';
+    if (continueBtn) {
+      continueBtn.style.display = 'inline-flex';
+      continueBtn.disabled = false;
+    }
+    if (btnText) btnText.innerHTML = '<b>Continue</b><small class="action-sub">next hand</small>';
+    if (nextStatus) nextStatus.innerText = 'Next hand will begin once all seated players hit Continue.';
+
     document.getElementById('resultModal').style.display = 'flex';
+  }
+
+  // --- Start Next Hand in Demo Mode with Anti-Clockwise Starting Turns & 3 Groups ---
+  function startNextHandDemo() {
+    demoHandNumber++;
+    // Requirement 5: Players should take turns (anti clockwise) in starting to draw when new hand is played
+    // Player seat positions: 0: You (bottom), 1: Kavita (left), 2: Sonia (top), 3: Aarav (right)
+    // Advancing index goes anti-clockwise around the table
+    demoStarterIndex = (demoStarterIndex + 1) % (roomState.players.length || 4);
+    const starter = roomState.players[demoStarterIndex];
+    const dealerIndex = (demoStarterIndex - 1 + roomState.players.length) % roomState.players.length;
+    const dealer = roomState.players[dealerIndex];
+
+    roomState.handNumber = demoHandNumber;
+    roomState.starterIndex = demoStarterIndex;
+    roomState.dealerId = dealer.id;
+    roomState.status = 'PLAYING';
+    roomState.turnPlayerId = starter.id;
+    roomState.turnPlayerName = starter.name;
+    roomState.turnStage = 'DRAW';
+    roomState.deckCount = 134;
+    roomState.lastAction = `Hand #${demoHandNumber} dealt! ${starter.name} opens the hand (anti-clockwise turn order).`;
+
+    roomState.players.forEach(p => {
+      p.cardCount = 21;
+      p.hasDropped = false;
+      p.hasForfeited = false;
+      p.dropType = null;
+      p.dropPenalty = 0;
+      p.turnsTaken = 0;
+      p.readyForNextHand = false;
+    });
+
+    const suits = ['♠', '♥', '♣', '♦'];
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+    // Cut Joker & Roles for new hand
+    const cutSuit = suits[Math.floor(Math.random() * suits.length)];
+    const cutRank = ranks[Math.floor(Math.random() * ranks.length)];
+    const cutVal = ranks.indexOf(cutRank) + 1;
+    roomState.cutCard = { id: `cut_${demoHandNumber}`, suit: cutSuit, rank: cutRank, rankValue: cutVal, isPoochie: false };
+
+    const papluRank = ranks[cutVal % 13];
+    const nichluRank = ranks[(cutVal - 2 + 13) % 13];
+    roomState.roles = {
+      tipluSuit: cutSuit,
+      tipluRank: cutRank,
+      papluRank: papluRank,
+      nichluRank: nichluRank
+    };
+
+    // Deal 21 cards
+    const newHand = [
+      { id: `c_n_${demoHandNumber}_1`, suit: cutSuit, rank: cutRank, rankValue: cutVal, isPoochie: false },
+      { id: `c_n_${demoHandNumber}_2`, suit: cutSuit, rank: papluRank, rankValue: ranks.indexOf(papluRank) + 1, isPoochie: false },
+      { id: `c_n_${demoHandNumber}_3`, suit: cutSuit, rank: nichluRank, rankValue: ranks.indexOf(nichluRank) + 1, isPoochie: false },
+      { id: `c_n_${demoHandNumber}_4`, suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true }
+    ];
+
+    const s1 = suits[(suits.indexOf(cutSuit) + 1) % 4];
+    newHand.push({ id: `c_n_${demoHandNumber}_5`, suit: s1, rank: '4', rankValue: 4, isPoochie: false });
+    newHand.push({ id: `c_n_${demoHandNumber}_6`, suit: s1, rank: '5', rankValue: 5, isPoochie: false });
+    newHand.push({ id: `c_n_${demoHandNumber}_7`, suit: s1, rank: '6', rankValue: 6, isPoochie: false });
+
+    const s2 = suits[(suits.indexOf(cutSuit) + 2) % 4];
+    newHand.push({ id: `c_n_${demoHandNumber}_8`, suit: s2, rank: '9', rankValue: 9, isPoochie: false });
+    newHand.push({ id: `c_n_${demoHandNumber}_9`, suit: s2, rank: '10', rankValue: 10, isPoochie: false });
+    newHand.push({ id: `c_n_${demoHandNumber}_10`, suit: s2, rank: 'J', rankValue: 11, isPoochie: false });
+
+    while (newHand.length < 21) {
+      const s = suits[Math.floor(Math.random() * suits.length)];
+      const r = ranks[Math.floor(Math.random() * ranks.length)];
+      newHand.push({ id: `c_n_${demoHandNumber}_${newHand.length + 1}`, suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false });
+    }
+
+    myHand = newHand;
+
+    // Requirement 3: when next hand is dealt, auto arrange into 3 groups
+    initDefaultStands(3);
+
+    const discSuit = suits[(suits.indexOf(cutSuit) + 3) % 4];
+    roomState.topDiscard = { id: `disc_${demoHandNumber}`, suit: discSuit, rank: 'Q', rankValue: 12, isPoochie: false, discardedBy: dealer.name };
+    roomState.discardHistory = [];
+
+    renderAll(calculateLocalMaal());
+
+    window.alert(`🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Anti-Clockwise turn order)\nCards arranged into 3 stands.`);
+
+    // If starter is an opponent, simulate their opening move
+    if (starter.id !== 'p_demo') {
+      setTimeout(() => {
+        passDemoTurn();
+      }, 1500);
+    }
   }
 
   // Maal details: click/tap opens the calculation details modal
@@ -4804,13 +5483,21 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   // --- Offline Demo Simulation Mode ---
   function startDemoMode() {
     isDemo = true;
+    demoHandNumber = 1;
+    demoStarterIndex = 0;
+    demoReadyPlayers.clear();
+    if (demoReadyTimer) clearTimeout(demoReadyTimer);
+
     roomState = {
       id: 'DEMO-TABLE',
+      handNumber: 1,
+      starterIndex: 0,
+      dealerId: 'p_4', // Aarav (dealer), so turn starts anti-clockwise at 'p_demo' (You)
       status: 'PLAYING',
       turnPlayerId: 'p_demo',
       turnPlayerName: document.getElementById('playerName').value || 'You',
       turnStage: 'DRAW',
-      lastAction: 'You are up next',
+      lastAction: 'Hand #1 started • You are up next to draw (Anti-Clockwise turn order)',
       cutCard: { id: 'c_cut', suit: '♠', rank: '7', rankValue: 7, isPoochie: false },
       roles: {
         tipluSuit: '♠',
@@ -4827,10 +5514,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       ],
       deckCount: 134,
       players: [
-        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 0 },
-        { id: 'p_2', name: 'Kavita', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 },
-        { id: 'p_3', name: 'Sonia', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2 },
-        { id: 'p_4', name: 'Aarav', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 1 }
+        { id: 'p_demo', name: document.getElementById('playerName').value || 'You', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 0, readyForNextHand: false },
+        { id: 'p_2', name: 'Kavita', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2, readyForNextHand: false },
+        { id: 'p_3', name: 'Sonia', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 2, readyForNextHand: false },
+        { id: 'p_4', name: 'Aarav', cardCount: 21, hasDropped: false, hasForfeited: false, dropType: null, dropPenalty: 0, turnsTaken: 1, readyForNextHand: false }
       ]
     };
 
@@ -4858,8 +5545,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       { id: 'c_21', suit: '♥', rank: 'K', rankValue: 13, isPoochie: false }  // King
     ];
 
-    // Split into 2 stands by default
-    initDefaultStands(2);
+    // Auto arrange into 3 groups by default
+    initDefaultStands(3);
 
     document.getElementById('lobbyView').style.display = 'none';
     document.getElementById('gameView').style.display = 'flex';
