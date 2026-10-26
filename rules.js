@@ -246,10 +246,12 @@ export function calculateGroupedDeadwood(groups, hand, cutCard) {
 
 export function isWildCard(card, cutCard) {
   if (!card || !cutCard) return false;
+  if (card.isPoochie || card.rank === 'PJ' || card.suit === '★') return true;
   const roles = resolveJokerRoles(cutCard);
-  return Boolean(card.isPoochie || card.rank === roles.tipluRank ||
+  return Boolean(card.rank === roles.tipluRank ||
     (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank)));
 }
+
 
 export function isMarriageGroup(cards, cutCard) {
   if (!Array.isArray(cards) || cards.length !== 3 || !cutCard) return false;

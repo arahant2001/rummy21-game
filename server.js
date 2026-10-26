@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, CONFIG } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, isWildCard, CONFIG } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +21,30 @@ app.get('/health', (req, res) => {
 
 const rooms = new Map();
 
+function ensurePlayerHand(player, room, targetCount = 21) {
+  if (!player.hand) player.hand = [];
+  if (!room.deck || !Array.isArray(room.deck)) room.deck = createDeck();
+  while (player.hand.length < targetCount) {
+    if (room.deck.length === 0) {
+      room.deck = createDeck();
+    }
+    player.hand.push(room.deck.pop());
+  }
+  // Clamp invariant: player hand never exceeds 22 cards
+  if (player.hand.length > 22) {
+    player.hand = player.hand.slice(0, 22);
+  }
+}
+
 function getSafeRoom(room) {
+  const rawTop = room.discardPile[room.discardPile.length - 1] || null;
+  const isTopJoker = rawTop && room.cutCard ? isWildCard(rawTop, room.cutCard) : false;
+  const topDiscard = rawTop ? {
+    ...rawTop,
+    isInitialOpenCard: Boolean(rawTop.isInitialOpenCard),
+    isDiscardedJoker: Boolean(isTopJoker && !rawTop.isInitialOpenCard)
+  } : null;
+
   return {
     id: room.id,
     status: room.status,
@@ -33,10 +56,15 @@ function getSafeRoom(room) {
     turnStage: room.turnStage,
     cutCard: room.cutCard,
     roles: room.cutCard ? resolveJokerRoles(room.cutCard) : null,
-    topDiscard: room.discardPile[room.discardPile.length - 1] || null,
+    topDiscard,
     // Return all buried discards with metadata so players can inspect full discard history
-    discardHistory: room.discardPile.slice(0, Math.max(0, room.discardPile.length - 1)),
+    discardHistory: room.discardPile.slice(0, Math.max(0, room.discardPile.length - 1)).map(c => ({
+      ...c,
+      isInitialOpenCard: Boolean(c.isInitialOpenCard),
+      isJoker: room.cutCard ? isWildCard(c, room.cutCard) : false
+    })),
     deckCount: room.deck.length,
+
     lastAction: room.lastAction || '',
     handNumber: room.handNumber || 1,
     starterIndex: room.starterIndex || 0,
@@ -230,7 +258,9 @@ function dealNextHand(room) {
   });
 
   room.cutCard = deck.pop();
-  room.discardPile = [deck.pop()];
+  const initialOpen = deck.pop();
+  initialOpen.isInitialOpenCard = true;
+  room.discardPile = [initialOpen];
   room.deck = deck;
   room.status = 'PLAYING';
   room.turnStage = 'DRAW';
@@ -254,7 +284,6 @@ wss.on('connection', (ws) => {
       if (data.type === 'JOIN') {
         const roomId = (data.roomId || 'FAMILY').trim().toUpperCase();
         const playerName = (data.playerName || 'Player').trim();
-        playerId = `p_${Math.random().toString(36).substring(2, 9)}`;
 
         if (!rooms.has(roomId)) {
           rooms.set(roomId, {
@@ -274,6 +303,22 @@ wss.on('connection', (ws) => {
 
         userRoom = rooms.get(roomId);
         userRoom.sessionScores = userRoom.sessionScores || {};
+
+        // 1. Reconnection Check: Support mobile players reconnecting after tab switch / screen sleep
+        const existingPlayer = userRoom.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
+        if (existingPlayer) {
+          existingPlayer.ws = ws;
+          playerId = existingPlayer.id;
+          // Invariant: Ensure rejoining player has strictly 21 (or 22) cards if game is active
+          if (userRoom.status === 'PLAYING') {
+            ensurePlayerHand(existingPlayer, userRoom, 21);
+          }
+          broadcastRoom(userRoom);
+          return;
+        }
+
+        playerId = `p_${Math.random().toString(36).substring(2, 9)}`;
+
         if (!userRoom.sessionScores[playerId]) {
           userRoom.sessionScores[playerId] = {
             id: playerId,
@@ -286,7 +331,7 @@ wss.on('connection', (ws) => {
           };
         }
 
-        userRoom.players.push({
+        const newPlayer = {
           id: playerId,
           name: playerName,
           hand: [],
@@ -294,8 +339,14 @@ wss.on('connection', (ws) => {
           turnsTaken: 0,
           readyForNextHand: false,
           ws
-        });
+        };
 
+        // Requirement 3: When a player joins from a phone (or mid-game), deal them strictly 21 cards
+        if (userRoom.status === 'PLAYING') {
+          ensurePlayerHand(newPlayer, userRoom, 21);
+        }
+
+        userRoom.players.push(newPlayer);
         broadcastRoom(userRoom);
       }
 
@@ -322,7 +373,9 @@ wss.on('connection', (ws) => {
         });
 
         userRoom.cutCard = deck.pop(); // Open Cut Joker immediately
-        userRoom.discardPile = [deck.pop()];
+        const initialOpen = deck.pop();
+        initialOpen.isInitialOpenCard = true; // First open card can be picked up even if a Joker
+        userRoom.discardPile = [initialOpen];
         userRoom.deck = deck;
         userRoom.status = 'PLAYING';
         userRoom.turnIndex = 0;
@@ -335,7 +388,11 @@ wss.on('connection', (ws) => {
       const isTurn = activePlayer && activePlayer.id === playerId;
 
       if (data.type === 'DRAW_STOCK' && isTurn && userRoom.turnStage === 'DRAW') {
+        // Enforce strict hand size invariant: exactly 21 before draw, 22 after draw
         if (activePlayer.hand.length >= 22) return;
+        if (activePlayer.hand.length < 21) {
+          ensurePlayerHand(activePlayer, userRoom, 21);
+        }
         if (userRoom.deck.length === 0) {
           // Recycle discard pile if stock runs dry
           const top = userRoom.discardPile.pop();
@@ -343,15 +400,42 @@ wss.on('connection', (ws) => {
           userRoom.discardPile = [top];
         }
         activePlayer.hand.push(userRoom.deck.pop());
+        // Clamp invariant: exactly 22 cards
+        if (activePlayer.hand.length > 22) {
+          activePlayer.hand = activePlayer.hand.slice(0, 22);
+        }
         userRoom.turnStage = 'DISCARD';
         userRoom.lastAction = 'DRAW_STOCK';
         broadcastRoom(userRoom);
       }
 
       if (data.type === 'DRAW_DISCARD' && isTurn && userRoom.turnStage === 'DRAW') {
+        // Enforce strict hand size invariant: exactly 21 before draw, 22 after draw
         if (activePlayer.hand.length >= 22) return;
         if (userRoom.discardPile.length > 0) {
+          const topCard = userRoom.discardPile[userRoom.discardPile.length - 1];
+          const isJoker = isWildCard(topCard, userRoom.cutCard);
+
+          // Requirement 4: Do not allow a discarded joker to be picked up from discard pile.
+          // However if the first open card is a joker, that CAN be picked up!
+          if (isJoker && !topCard.isInitialOpenCard) {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({
+                type: 'INVALID_MOVE',
+                message: 'A discarded Joker cannot be picked up from the discard pile. (Only the initial open card can be picked up if it is a Joker). You must draw from the Stock deck.'
+              }));
+            }
+            return;
+          }
+
+          if (activePlayer.hand.length < 21) {
+            ensurePlayerHand(activePlayer, userRoom, 21);
+          }
           activePlayer.hand.push(userRoom.discardPile.pop());
+          // Clamp invariant: exactly 22 cards
+          if (activePlayer.hand.length > 22) {
+            activePlayer.hand = activePlayer.hand.slice(0, 22);
+          }
           userRoom.turnStage = 'DISCARD';
           userRoom.lastAction = 'DRAW_DISCARD';
           broadcastRoom(userRoom);
@@ -364,9 +448,16 @@ wss.on('connection', (ws) => {
           const [discarded] = activePlayer.hand.splice(idx, 1);
           discarded.discardedBy = activePlayer.name;
           discarded.discardedAt = Date.now();
+          discarded.isInitialOpenCard = false; // Discarded by a player!
           userRoom.discardPile.push(discarded);
           activePlayer.turnsTaken++;
           userRoom.lastAction = `${activePlayer.name} discarded ${discarded.rank}${discarded.suit}`;
+
+          // Invariant: after discard, hand must have strictly 21 cards
+          if (activePlayer.hand.length > 21) {
+            activePlayer.hand = activePlayer.hand.slice(0, 21);
+          }
+
           advanceTurn(userRoom);
           broadcastRoom(userRoom);
         }
@@ -471,8 +562,14 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     clearInterval(pingInterval);
     if (userRoom) {
-      userRoom.players = userRoom.players.filter(p => p.id !== playerId);
-      if (userRoom.players.length === 0) {
+      const p = userRoom.players.find(x => x.id === playerId);
+      if (p) {
+        p.ws = null;
+      }
+      if (userRoom.status === 'LOBBY') {
+        userRoom.players = userRoom.players.filter(p => p.id !== playerId);
+      }
+      if (userRoom.players.length === 0 || userRoom.players.every(p => !p.ws)) {
         rooms.delete(userRoom.id);
       } else {
         broadcastRoom(userRoom);

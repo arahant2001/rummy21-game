@@ -373,20 +373,83 @@
     }
     .card.red .card-inner{color:#b91c1c}
     .card:not(.red) .card-inner{color:#172033}
-    .classic-court-card{
-      width:42px;height:54px;border:1px solid rgba(15,23,42,.18);border-radius:5px;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      background:linear-gradient(145deg,#fff 0%,#f7f7f5 100%);
-      box-shadow:inset 0 0 0 2px rgba(15,23,42,.04);
-      position:relative;
+
+    /* Distinct 4-Color Deck Suit Presentation (Requirement 1: Crystal-clear distinction between Spades & Clubs) */
+    .card.suit-spades .card-inner { color: #090e17 !important; }
+    .card.suit-spades .corner-suit { color: #090e17 !important; font-weight: 900; }
+    .card.suit-spades .pip { color: #090e17 !important; }
+    .card.suit-spades { border-color: rgba(15, 23, 42, 0.45) !important; }
+
+    .card.suit-clubs .card-inner { color: #047857 !important; }
+    .card.suit-clubs .corner-suit { color: #047857 !important; font-weight: 900; filter: drop-shadow(0 0 1px rgba(4, 120, 87, 0.35)); }
+    .card.suit-clubs .corner-rank { color: #047857 !important; }
+    .card.suit-clubs .pip { color: #047857 !important; font-weight: 900; }
+    .card.suit-clubs .court-rank, .card.suit-clubs .court-suit-top, .card.suit-clubs .court-suit-bottom { color: #047857 !important; }
+    .card.suit-clubs {
+      border: 1px solid rgba(4, 120, 87, 0.5) !important;
+      box-shadow: 0 4px 10px rgba(4, 120, 87, 0.15), 0 1px 2px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.95) !important;
     }
-    .classic-court-card::before,.classic-court-card::after{
-      content:'';position:absolute;left:5px;right:5px;height:1px;background:rgba(15,23,42,.10);
+
+    .card.suit-hearts .card-inner { color: #dc2626 !important; }
+    .card.suit-hearts .corner-suit, .card.suit-hearts .corner-rank, .card.suit-hearts .pip { color: #dc2626 !important; }
+
+    .card.suit-diamonds .card-inner { color: #c2410c !important; }
+    .card.suit-diamonds .corner-suit, .card.suit-diamonds .corner-rank, .card.suit-diamonds .pip { color: #c2410c !important; }
+
+    .card-vector-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      object-fit: fill;
+      pointer-events: none;
+      z-index: 2;
     }
-    .classic-court-card::before{top:5px}.classic-court-card::after{bottom:5px}
-    .court-rank{font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:900;line-height:.9;letter-spacing:-1px}.card.poochie .corner-rank{font-size:10px;letter-spacing:-.7px}.card.poochie .court-rank{font-size:18px;letter-spacing:-1.4px}
-    .court-suit-top,.court-suit-bottom{font-size:13px;line-height:1}
-    .court-suit-top{margin-bottom:3px}.court-suit-bottom{margin-top:3px;transform:rotate(180deg)}
+
+    /* Locked cards inside formed declaration groups (cannot be selected into second group) */
+    .locked-cards .card {
+      cursor: default !important;
+    }
+    .locked-cards .card:hover {
+      transform: none !important;
+    }
+
+    /* Discard Pile Joker Pickup Lock (Requirement 4) */
+    .discard-locked-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-top: 5px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .discard-initial-joker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(34, 197, 94, 0.16);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-top: 5px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .discard-pile-locked #discardContainer {
+      cursor: not-allowed !important;
+      opacity: 0.85;
+    }
 
 
     /* Card movement animation */
@@ -402,29 +465,77 @@
       .card-flight { transition: none !important; }
     }
 
-    /* Deck Card */
+    /* Deck Card (Stock / Store Deck) with Standard Vector Back */
     .deck-card {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #94a3b8;
+      width: var(--card-w);
+      height: var(--card-h);
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.35) !important;
+      border-radius: var(--card-radius) !important;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      /* Realistic physical casino deck stacked look */
+      box-shadow: 
+        1px 1px 0 #e2e8f0,
+        2px 2px 0 #cbd5e1,
+        3px 3px 0 #94a3b8,
+        4px 4px 0 #64748b,
+        0 8px 20px rgba(0, 0, 0, 0.45) !important;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
+    }
+    .deck-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 
+        1px 1px 0 #e2e8f0,
+        2px 2px 0 #cbd5e1,
+        3px 3px 0 #94a3b8,
+        4px 4px 0 #64748b,
+        0 14px 28px rgba(56, 189, 248, 0.35) !important;
+      border-color: var(--accent-blue) !important;
+    }
+    .deck-card.clickable-action {
+      border-color: var(--accent-blue) !important;
+    }
+    .deck-back-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
+      border-radius: calc(var(--card-radius) - 1px);
+    }
+    .deck-count-badge {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 24, 18, 0.92);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(217, 182, 92, 0.45);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #f1d27a;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+      z-index: 5;
+      display: inline-flex;
       align-items: center;
       gap: 4px;
-    }
-    .deck-card.clickable-action:hover {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 14px var(--accent-blue-glow);
-    }
-    .deck-icon {
-      font-size: 22px;
-      color: var(--accent-blue);
+      white-space: nowrap;
     }
     .deck-count {
       font-size: 11px;
-      font-weight: 700;
-      color: var(--text-secondary);
+      font-weight: 800;
+      color: #f8fafc;
     }
 
     /* Stands Architecture */
@@ -1095,13 +1206,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   width: 16px;
   height: 22px;
   border-radius: 3px;
-  background: linear-gradient(135deg, #1b3858, #0d1e34);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background-color: #ffffff;
+  background-image: url('https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/BLUE_BACK.svg');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-  display: grid;
-  place-items: center;
-  font-size: 10px;
-  color: #93c5fd;
 }
 .mini-card-1 { transform: rotate(-14deg) translateX(-4px); z-index: 1; }
 .mini-card-2 { transform: rotate(0deg); z-index: 2; }
@@ -1638,9 +1748,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
                onclick="onStockClick(event)"
                ondblclick="onStockDoubleClick(event)"
-               ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)">
-            <span class="deck-icon">🂠</span>
-            <span id="deckCountText" class="deck-count">0</span>
+               ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)"
+               title="Stock Deck (Double-click or Drag to hand)">
+            <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/BLUE_BACK.svg"
+                 alt="Deck Back"
+                 class="deck-back-img"
+                 draggable="false" />
+            <div class="deck-count-badge">
+              <span id="deckCountText" class="deck-count">0</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1935,18 +2051,46 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let demoReadyPlayers = new Set();
   let demoReadyTimer = null;
 
+  // Restore saved player name and room from previous session
+  try {
+    const savedName = localStorage.getItem('rummy_player_name');
+    if (savedName && document.getElementById('playerName')) {
+      document.getElementById('playerName').value = savedName;
+    }
+    const savedRoom = localStorage.getItem('rummy_room_id');
+    if (savedRoom && document.getElementById('roomId')) {
+      document.getElementById('roomId').value = savedRoom;
+    }
+  } catch (e) {
+    console.warn('LocalStorage not accessible', e);
+  }
+
   function joinRoom() {
+    const nameInput = document.getElementById('playerName');
+    const roomInput = document.getElementById('roomId');
+    const playerName = (nameInput?.value || '').trim() || 'Player';
+    const roomId = (roomInput?.value || '').trim().toUpperCase() || 'FAMILY';
+
+    try {
+      localStorage.setItem('rummy_player_name', playerName);
+      localStorage.setItem('rummy_room_id', roomId);
+    } catch (e) {}
+
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     ws = new WebSocket(`${proto}//${location.host}`);
 
     ws.onopen = () => {
       ws.send(JSON.stringify({
         type: 'JOIN',
-        playerName: document.getElementById('playerName').value,
-        roomId: document.getElementById('roomId').value
+        playerName,
+        roomId
       }));
       const connectionStatus = document.getElementById('connectionStatus');
-      if (connectionStatus) connectionStatus.innerText = 'Live Table';
+      if (connectionStatus) {
+        connectionStatus.innerText = 'Live Table';
+        connectionStatus.style.color = '#8ee6bf';
+        connectionStatus.style.borderColor = 'rgba(50,197,138,.25)';
+      }
       document.getElementById('lobbyView').style.display = 'none';
       document.getElementById('gameView').style.display = 'flex';
     };
@@ -1954,14 +2098,25 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     ws.onclose = () => {
       const connectionStatus = document.getElementById('connectionStatus');
       if (connectionStatus) {
-        connectionStatus.innerText = 'Reconnecting';
+        connectionStatus.innerText = 'Reconnecting...';
         connectionStatus.style.color = '#f1a7ad';
         connectionStatus.style.borderColor = 'rgba(240,107,120,.28)';
       }
+      // Automatic background reconnect if player is on active table
+      setTimeout(() => {
+        if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
+          joinRoom();
+        }
+      }, 2500);
     };
 
     ws.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
+
+      if (msg.type === 'INVALID_MOVE') {
+        window.alert(msg.message || 'Invalid move.');
+        return;
+      }
 
       if (msg.type === 'SYNC') {
         const prevHandNum = roomState?.handNumber;
@@ -2073,23 +2228,39 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   // Preserve user custom card arrangement and stands on WebSocket sync
   function syncIncomingHand(incomingCards) {
     if (!incomingCards || incomingCards.length === 0) {
+      if (roomState?.status === 'PLAYING') {
+        console.warn('Received empty hand during PLAYING');
+      }
       myHand = [];
       userStands = [[]];
       return;
     }
 
+    // Deduplicate incoming cards by ID to eliminate any duplicate objects
+    const seenIncoming = new Set();
+    const cleanIncoming = [];
+    for (const c of incomingCards) {
+      if (c && c.id && !seenIncoming.has(c.id)) {
+        seenIncoming.add(c.id);
+        cleanIncoming.push(c);
+      }
+    }
+
+    // Enforce strict hand size invariant: max 22 cards
+    const clampedIncoming = cleanIncoming.slice(0, 22);
+
     const existingIds = new Set((myHand || []).map(c => c.id));
-    const matchingCount = incomingCards.filter(c => existingIds.has(c.id)).length;
-    const isBrandNewHand = myHand.length === 0 || (incomingCards.length >= 21 && matchingCount === 0);
+    const matchingCount = clampedIncoming.filter(c => existingIds.has(c.id)).length;
+    const isBrandNewHand = myHand.length === 0 || (clampedIncoming.length >= 21 && matchingCount === 0);
 
     if (isBrandNewHand) {
-      myHand = incomingCards;
+      myHand = clampedIncoming;
       // Requirement 3: when next hand is dealt, auto arrange into 3 groups
       initDefaultStands(3);
       return;
     }
 
-    const incomingMap = new Map(incomingCards.map(c => [c.id, c]));
+    const incomingMap = new Map(clampedIncoming.map(c => [c.id, c]));
     
     // Update existing cards and remove discarded ones across stands
     userStands = userStands.map(stand => 
@@ -2098,12 +2269,37 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     // Identify any newly drawn card
     const currentStandIds = new Set(userStands.flatMap(stand => stand.map(c => c.id)));
-    const newCards = incomingCards.filter(c => !currentStandIds.has(c.id));
+    const newCards = clampedIncoming.filter(c => !currentStandIds.has(c.id));
 
     // Place new cards at the end of the last stand (or stand 1)
     if (newCards.length > 0) {
       if (userStands.length === 0) userStands.push([]);
       userStands[userStands.length - 1].push(...newCards);
+    }
+
+    // Strict deduplication across user stands
+    const seenStandIds = new Set();
+    userStands = userStands.map(stand => {
+      const clean = [];
+      for (const c of stand) {
+        if (c && c.id && !seenStandIds.has(c.id)) {
+          seenStandIds.add(c.id);
+          clean.push(c);
+        }
+      }
+      return clean;
+    });
+
+    // Invariant: Clamp total cards in stands to strictly at most 22
+    let totalCards = userStands.reduce((sum, s) => sum + s.length, 0);
+    while (totalCards > 22) {
+      for (let i = userStands.length - 1; i >= 0; i--) {
+        if (userStands[i].length > 0) {
+          userStands[i].pop();
+          totalCards--;
+          if (totalCards <= 22) break;
+        }
+      }
     }
 
     // Flatten back to myHand
@@ -2264,15 +2460,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return '<div class="pip-grid pip-'+n+'">'+items+'</div>';
   }
 
-  function renderCard(card, tag = '', isHand = false) {
+  function getStandardCardSvgUrl(card) {
+    if (!card) return '';
+    if (card.rank === 'PJ' || card.isPoochie || card.suit === '★') {
+      return 'https://cdn.jsdelivr.net/gh/djp952/external-vectorcards@master/svg/joker2.svg';
+    }
+    const suitMap = { '♠': 'S', '♥': 'H', '♣': 'C', '♦': 'D' };
+    const s = suitMap[card.suit];
+    if (!s) return '';
+    let r = card.rank;
+    return `https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/${r}${s}.svg`;
+  }
+
+  function renderCard(card, tag = '', isHand = false, isLocked = false) {
     if (!card) return '<div class="card" style="opacity:0.25; background: #0f172a; border: 1px dashed var(--surface-border-light); justify-content:center; align-items:center; color: var(--text-muted); font-size:11px;">Empty</div>';
     const isRed = ['♥', '♦'].includes(card.suit);
     const poochieClass = card.isPoochie ? 'poochie' : '';
-  const displayRank = card.isPoochie ? 'JOKER' : card.rank;
+    const displayRank = card.isPoochie ? 'JOKER' : card.rank;
     const redClass = isRed ? 'red' : '';
-    const suitClass = card.suit === '♠' ? 'card-suit-spade' : card.suit === '♣' ? 'card-suit-club' : 'card-suit-black';
-    const selClass = declarationMode ? (declarationSelectedIds.has(card.id) ? 'is-selected' : '') : (selectedCardId === card.id ? 'is-selected' : '');
-    const dragAttrs = isHand ? `
+    const suitClass = card.suit === '♠' ? 'suit-spades' : card.suit === '♣' ? 'suit-clubs' : card.suit === '♥' ? 'suit-hearts' : card.suit === '♦' ? 'suit-diamonds' : '';
+    const suitTitle = card.suit === '♣' ? 'Clubs (♣)' : card.suit === '♠' ? 'Spades (♠)' : card.suit === '♥' ? 'Hearts (♥)' : card.suit === '♦' ? 'Diamonds (♦)' : '';
+    const selClass = isLocked ? '' : (declarationMode ? (declarationSelectedIds.has(card.id) ? 'is-selected' : '') : (selectedCardId === card.id ? 'is-selected' : ''));
+    const lockedClass = isLocked ? 'locked-card-item' : '';
+    const clickAttr = isLocked ? '' : `onclick="selectCard('${card.id}')"`;
+    const dragAttrs = (isHand && !isLocked) ? `
       id="card-${card.id}"
       draggable="true"
       ondragstart="onCardDragStart(event, '${card.id}')"
@@ -2280,7 +2491,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       ondragleave="onCardDragLeave(event, '${card.id}')"
       ondrop="onCardDrop(event, '${card.id}')"
       ondragend="onCardDragEnd(event)"
-    ` : '';
+    ` : (isHand ? `id="card-${card.id}"` : '');
 
     // Floating Role Tag (positioned top-center outside card corners - NEVER obscures suit or rank)
     let tagHtml = '';
@@ -2294,6 +2505,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
     }
 
+    // Standard Vector Deck Card Appearance (Chris Aguilar's open-source deck via jsDelivr CDN)
+    const svgUrl = getStandardCardSvgUrl(card);
+    const vectorImgHtml = svgUrl
+      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" loading="lazy" onerror="this.style.display='none';" />`
+      : '';
+
     // Standard-deck presentation: no custom face artwork.
     // Number cards use familiar pip layouts; J/Q/K use a clean classic court-card
     // treatment with large rank + suit, matching the visual language of a normal deck.
@@ -2302,28 +2519,29 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const courtRank = card.rank === 'PJ' ? 'JOKER' : card.rank;
       centerHtml = `
         <div class="classic-court-card">
-          <div class="court-suit-top">${card.suit}</div>
+          <div class="court-suit-top" title="${suitTitle}">${card.suit}</div>
           <div class="court-rank">${courtRank}</div>
-          <div class="court-suit-bottom">${card.suit}</div>
+          <div class="court-suit-bottom" title="${suitTitle}">${card.suit}</div>
         </div>`;
     } else {
       centerHtml = renderPipLayout(card.rank, card.suit);
     }
 
     return `
-      <div class="card ${redClass} ${poochieClass} ${selClass}" ${dragAttrs} onclick="selectCard('${card.id}')">
+      <div class="card ${redClass} ${poochieClass} ${selClass} ${suitClass} ${lockedClass}" ${dragAttrs} ${clickAttr}>
         ${tagHtml}
         <div class="card-inner">
+          ${vectorImgHtml}
           <div class="card-corner top-left">
             <div class="corner-rank">${displayRank}</div>
-            <div class="corner-suit">${card.suit}</div>
+            <div class="corner-suit" title="${suitTitle}">${card.suit}</div>
           </div>
           <div class="card-center">
             ${centerHtml}
           </div>
           <div class="card-corner bottom-right">
             <div class="corner-rank">${displayRank}</div>
-            <div class="corner-suit">${card.suit}</div>
+            <div class="corner-suit" title="${suitTitle}">${card.suit}</div>
           </div>
         </div>
       </div>
@@ -2359,6 +2577,23 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function canPlayerDraw() {
     if (!isCurrentPlayerMe() || !roomState || roomState.turnStage !== 'DRAW') return false;
     if (getHandCount() >= 22) return false;
+    return true;
+  }
+
+  // Requirement 4: Discarded joker pickup restriction
+  function isDiscardedJoker(card) {
+    if (!card) return false;
+    // Initial open card is exempt and CAN be picked up!
+    if (card.isInitialOpenCard) return false;
+    if (card.isDiscardedJoker) return true;
+    return Boolean(declarationIsWild(card));
+  }
+
+  function canPlayerDrawFromDiscard() {
+    if (!canPlayerDraw()) return false;
+    const top = roomState?.topDiscard;
+    if (!top && !isDemo) return false;
+    if (top && isDiscardedJoker(top)) return false;
     return true;
   }
 
@@ -2559,8 +2794,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('cutCardContainer').innerHTML = renderCard(roomState?.cutCard, 'CUT');
 
     // Render Open Discard
-    document.getElementById('discardContainer').innerHTML = roomState?.topDiscard
-      ? renderCard(roomState.topDiscard, 'LATEST')
+    const topCard = roomState?.topDiscard;
+    const isLockedJoker = isDiscardedJoker(topCard);
+    const isInitialJoker = Boolean(topCard && declarationIsWild(topCard) && topCard.isInitialOpenCard);
+
+    let discardBadgeHtml = '';
+    if (isLockedJoker) {
+      discardBadgeHtml = '<div class="discard-locked-badge">🔒 Discarded Joker<br><span style="font-size:9px;font-weight:normal;">Cannot pick up</span></div>';
+    } else if (isInitialJoker) {
+      discardBadgeHtml = '<div class="discard-initial-joker-badge">✅ Initial Joker<br><span style="font-size:9px;font-weight:normal;">Can pick up</span></div>';
+    }
+
+    const discardWrapper = document.querySelector('.discard-pile-wrapper');
+    if (discardWrapper) {
+      discardWrapper.classList.toggle('discard-pile-locked', isLockedJoker);
+    }
+
+    document.getElementById('discardContainer').innerHTML = topCard
+      ? (renderCard(topCard, isLockedJoker ? 'LOCKED JOKER' : (isInitialJoker ? 'INITIAL JOKER' : 'LATEST')) + discardBadgeHtml)
       : '<div class="card" style="opacity:0.25; justify-content:center; align-items:center; color:var(--text-muted); font-size:11px;">Empty</div>';
     renderDiscardHistory();
 
@@ -2931,11 +3182,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       stockBtn.classList.toggle('drag-ready', canDraw);
       stockBtn.setAttribute('draggable', canDraw ? 'true' : 'false');
     }
+    const canDrawFromDiscard = canPlayerDrawFromDiscard();
     const discardBtn = document.getElementById('discardContainer');
     if (discardBtn) {
-      discardBtn.classList.toggle('drag-ready', canDraw);
+      discardBtn.classList.toggle('drag-ready', canDrawFromDiscard);
       discardBtn.classList.toggle('discard-drop-ready', canDiscard);
-      discardBtn.setAttribute('draggable', canDraw ? 'true' : 'false');
+      discardBtn.setAttribute('draggable', canDrawFromDiscard ? 'true' : 'false');
     }
     const guideBox=document.getElementById('stageGuide');
     if(guideBox) guideBox.classList.toggle('pile-mode',canDraw);
@@ -3249,7 +3501,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const now = Date.now();
     if (now - lastDrawActionTime < 450) return;
     if (!canPlayerDraw()) return;
-    if (!roomState.topDiscard && !isDemo) return;
+    if (!roomState?.topDiscard && !isDemo) return;
+    if (!canPlayerDrawFromDiscard()) {
+      window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
+      return;
+    }
     lastDrawActionTime = now;
     drawDiscard();
   }
@@ -3301,7 +3557,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return `<div class="stand-rack declaration-group locked">
         <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span>${protectionBadge}</div>
         <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
-        <div class="stand-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>`;
+        <div class="stand-cards locked-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false,true)).join('')}</div></div>`;
     }).join('');
     container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
       <div class="stand-title-box">
@@ -3525,9 +3781,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function autoGroupSelected() {
     if (!declarationMode) return;
-    const cards = myHand.filter(c => declarationSelectedIds.has(c.id));
+    const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+    const cards = myHand.filter(c => declarationSelectedIds.has(c.id) && !alreadyGrouped.has(c.id));
     if (cards.length < 3) {
-      alert('Please select at least 3 cards to form a group.');
+      alert('Please select at least 3 ungrouped cards to form a group.');
       return;
     }
     const detected = detectBestGroupType(cards);
@@ -3554,14 +3811,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (Array.isArray(userStands)) {
       for (const stand of userStands) {
         if (Array.isArray(stand) && stand.length >= 3) {
-          const detected = detectBestGroupType(stand);
-          if (detected) {
-            newGroups.push({
-              type: detected.type,
-              typeLabel: detected.label,
-              cards: [...stand]
-            });
-            stand.forEach(c => usedCardIds.add(c.id));
+          const availableInStand = stand.filter(c => c && !usedCardIds.has(c.id));
+          if (availableInStand.length >= 3) {
+            const detected = detectBestGroupType(availableInStand);
+            if (detected) {
+              newGroups.push({
+                type: detected.type,
+                typeLabel: detected.label,
+                cards: [...availableInStand]
+              });
+              availableInStand.forEach(c => usedCardIds.add(c.id));
+            }
           }
         }
       }
@@ -3956,12 +4216,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function groupSelectedCards(type) {
     if(!declarationMode) return;
-    const cards=myHand.filter(c=>declarationSelectedIds.has(c.id));
-    if(cards.length<3){alert('Select at least 3 cards.');return;}
-    const valid=type==='PURE_SEQUENCE'?declarationPure(cards):type==='SEQUENCE'?declarationSequence(cards):declarationSet(cards);
-    if(!valid){alert(`${declarationTypeLabel(type)} is not valid for the selected cards. Try a different group type or adjust the selection.`);return;}
-    declarationGroups.push({type,typeLabel:declarationTypeLabel(type),cards});
-    cards.forEach(c=>declarationSelectedIds.delete(c.id));
+    const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+    const cards = myHand.filter(c => declarationSelectedIds.has(c.id) && !alreadyGrouped.has(c.id));
+    if(cards.length < 3){ alert('Select at least 3 ungrouped cards.'); return; }
+    const valid = type==='PURE_SEQUENCE' ? declarationPure(cards) : type==='SEQUENCE' ? declarationSequence(cards) : declarationSet(cards);
+    if(!valid){ alert(`${declarationTypeLabel(type)} is not valid for the selected cards. Try a different group type or adjust the selection.`); return; }
+    declarationGroups.push({ type, typeLabel: declarationTypeLabel(type), cards });
+    cards.forEach(c => declarationSelectedIds.delete(c.id));
     renderAll(null);
   }
   function clearDeclarationSelection(){declarationSelectedIds.clear();renderAll(null);}
@@ -4014,6 +4275,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function selectCard(cardId) {
     if (declarationMode) {
+      const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+      if (alreadyGrouped.has(cardId)) {
+        // Locked in a formed group: ignore selection
+        return;
+      }
       if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
       else declarationSelectedIds.add(cardId);
       renderAll(null);
@@ -4164,6 +4430,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let draggedPileType=null;
   function onPileDragStart(e,pileType){
     if(!canPlayerDraw()){e.preventDefault();return;}
+    if(pileType==='discard' && !canPlayerDrawFromDiscard()){
+      e.preventDefault();
+      window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
+      return;
+    }
     draggedPileType=pileType;draggedCardId=null;
     e.dataTransfer.setData('text/plain','pile:'+pileType);e.dataTransfer.effectAllowed='move';
     document.querySelectorAll('.stand-rack').forEach(el=>el.classList.add('pile-drop-ready'));
@@ -4178,7 +4449,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return;
     }
     if(pileType==='stock') drawStock();
-    if(pileType==='discard') drawDiscard();
+    if(pileType==='discard') {
+      if(!canPlayerDrawFromDiscard()){
+        window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
+        onPileDragEnd();
+        return;
+      }
+      drawDiscard();
+    }
     onPileDragEnd();
   }
 
@@ -4501,6 +4779,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
   function drawDiscard() { 
     if (!canPlayerDraw()) return;
+    if (!canPlayerDrawFromDiscard()) {
+      window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
+      return;
+    }
     if (isDemo) { simulateDrawDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DRAW_DISCARD' })); 
   }
@@ -4580,11 +4862,29 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return;
     }
 
+    // Clean and deduplicate myHand to ensure exactly unique cards
+    const seenHandIds = new Set();
+    const cleanHand = [];
+    for (const c of myHand) {
+      if (c && c.id && !seenHandIds.has(c.id)) {
+        seenHandIds.add(c.id);
+        cleanHand.push(c);
+      }
+    }
+    myHand = cleanHand;
+
     const grouped = declarationGroups.flatMap(g => g.cards);
     const unique = new Set(grouped.map(c => c.id));
+
+    // Bug 2 fix: Verify no cards duplicated across groups
+    if (unique.size !== grouped.length) {
+      window.alert('One or more cards were assigned to multiple groups. Please undo and re-form your groups cleanly.');
+      return;
+    }
+
     const remaining = myHand.filter(c => !unique.has(c.id));
     if (unique.size !== 21 || remaining.length !== 1) {
-      window.alert(`You have grouped ${unique.size}/21 cards. Please group exactly 21 cards; the 1 remaining card will automatically be your final discard.`);
+      window.alert(`You have grouped ${unique.size}/21 cards (${remaining.length} remaining). In 21 Card Rummy, please group exactly 21 cards; the 1 remaining card will automatically be your final discard.`);
       return;
     }
     const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
@@ -5225,27 +5525,41 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
           let groupsHtml = '';
           const usedCardIds = new Set();
+          const playerRenderedIds = new Set();
+          if (p.finalDiscard && p.finalDiscard.id) playerRenderedIds.add(p.finalDiscard.id);
 
           if (groups.length > 0) {
             groupsHtml = groups.map(g => {
               const gCards = [];
               const cardIds = Array.isArray(g.cardIds) ? g.cardIds : (Array.isArray(g.cards) ? g.cards.map(c => c && c.id) : []);
               for (const id of cardIds) {
+                if (playerRenderedIds.has(id)) continue;
                 const found = handCards.find(c => c && c.id === id);
                 if (found) {
                   gCards.push(found);
+                  playerRenderedIds.add(found.id);
                   usedCardIds.add(found.id);
                 } else if (Array.isArray(g.cards)) {
                   const direct = g.cards.find(c => c && (c.id === id || (c.rank === id?.rank && c.suit === id?.suit)));
-                  if (direct) {
+                  if (direct && (!direct.id || !playerRenderedIds.has(direct.id))) {
                     gCards.push(direct);
-                    if (direct.id) usedCardIds.add(direct.id);
+                    if (direct.id) {
+                      playerRenderedIds.add(direct.id);
+                      usedCardIds.add(direct.id);
+                    }
                   }
                 }
               }
               if (gCards.length === 0 && Array.isArray(g.cards)) {
-                gCards.push(...g.cards.filter(Boolean));
-                g.cards.forEach(c => { if (c && c.id) usedCardIds.add(c.id); });
+                for (const c of g.cards) {
+                  if (c && (!c.id || !playerRenderedIds.has(c.id))) {
+                    gCards.push(c);
+                    if (c.id) {
+                      playerRenderedIds.add(c.id);
+                      usedCardIds.add(c.id);
+                    }
+                  }
+                }
               }
               const isPure = g.type === 'PURE_SEQUENCE' || declarationPure(gCards);
               const isSeq = g.type === 'SEQUENCE';
@@ -5301,7 +5615,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           }
 
           // Remaining ungrouped cards (deadwood)
-          const ungrouped = handCards.filter(c => c && !usedCardIds.has(c.id));
+          // For Winner: Strictly NO deadwood! In 21 Card Rummy the declarer has 21 grouped cards + 1 final discard = 22 cards.
+          const ungrouped = isWinner ? [] : handCards.filter(c => c && !usedCardIds.has(c.id));
           if (ungrouped.length > 0) {
             const label = p.hasDropped ? 'Folded / Dropped Hand' : (groups.length > 0 ? 'Deadwood' : 'Held Cards (Deadwood)');
             groupsHtml += `
@@ -5718,6 +6033,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function simulateDrawDiscard() {
     if (!canPlayerDraw()) return;
+    if (!canPlayerDrawFromDiscard()) {
+      window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
+      return;
+    }
     const sourceFlight = captureCardFlight(document.getElementById('discardContainer'));
     if (!roomState.topDiscard) return;
     const drawn = roomState.topDiscard;
