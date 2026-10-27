@@ -391,6 +391,16 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'START_GAME' && userRoom.status === 'LOBBY') {
+        if (userRoom.players.length < 2) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: 'At least 2 players are required to start the game. Share the room code so another player can join!'
+            }));
+          }
+          return;
+        }
+
         const deck = createDeck();
         userRoom.players.forEach(p => {
           p.hand = deck.splice(0, 21);
