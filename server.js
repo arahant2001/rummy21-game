@@ -235,6 +235,16 @@ function advanceTurn(room) {
 function dealNextHand(room) {
   if (!room.players.length) return;
 
+  // Prune players who left the session or disconnected
+  room.players = room.players.filter(p => !p.hasLeft && p.ws);
+  if (room.players.length < 2) {
+    room.status = 'LOBBY';
+    room.turnStage = 'WAITING';
+    room.lastAction = 'Waiting for at least 2 players to start a hand.';
+    broadcastRoom(room);
+    return;
+  }
+
   const deck = createDeck();
   room.winnerId = null;
   room.winnerName = null;
@@ -313,7 +323,7 @@ wss.on('connection', (ws) => {
             discardPile: [],
             cutCard: null,
             turnIndex: 0,
-            turnStage: 'DRAW',
+            turnStage: 'WAITING',
             handNumber: 1,
             starterIndex: 0,
             sessionScores: {}
@@ -422,8 +432,9 @@ wss.on('connection', (ws) => {
 
       const activePlayer = userRoom.players[userRoom.turnIndex];
       const isTurn = activePlayer && activePlayer.id === playerId;
+      const isPlaying = userRoom.status === 'PLAYING';
 
-      if (data.type === 'DRAW_STOCK' && isTurn && userRoom.turnStage === 'DRAW') {
+      if (data.type === 'DRAW_STOCK' && isPlaying && isTurn && userRoom.turnStage === 'DRAW') {
         // Enforce strict hand size invariant: exactly 21 before draw, 22 after draw
         if (activePlayer.hand.length >= 22) return;
         if (activePlayer.hand.length < 21) {
@@ -445,7 +456,7 @@ wss.on('connection', (ws) => {
         broadcastRoom(userRoom);
       }
 
-      if (data.type === 'DRAW_DISCARD' && isTurn && userRoom.turnStage === 'DRAW') {
+      if (data.type === 'DRAW_DISCARD' && isPlaying && isTurn && userRoom.turnStage === 'DRAW') {
         // Enforce strict hand size invariant: exactly 21 before draw, 22 after draw
         if (activePlayer.hand.length >= 22) return;
         if (userRoom.discardPile.length > 0) {
@@ -478,7 +489,7 @@ wss.on('connection', (ws) => {
         }
       }
 
-      if (data.type === 'DISCARD' && isTurn && userRoom.turnStage === 'DISCARD') {
+      if (data.type === 'DISCARD' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
         const idx = activePlayer.hand.findIndex(c => c.id === data.cardId);
         if (idx !== -1) {
           const [discarded] = activePlayer.hand.splice(idx, 1);
@@ -499,7 +510,7 @@ wss.on('connection', (ws) => {
         }
       }
 
-      if (data.type === 'DROP' && isTurn && userRoom.turnStage === 'DRAW') {
+      if (data.type === 'DROP' && isPlaying && isTurn && userRoom.turnStage === 'DRAW') {
         activePlayer.hasDropped = true;
         const isFirst = activePlayer.turnsTaken === 0;
         const penalty = isFirst ? CONFIG.firstDrop : CONFIG.middleDrop;
@@ -512,7 +523,7 @@ wss.on('connection', (ws) => {
         broadcastRoom(userRoom);
       }
 
-      if (data.type === 'FORFEIT_DECLARATION' && isTurn && userRoom.turnStage === 'DISCARD') {
+      if (data.type === 'FORFEIT_DECLARATION' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
         activePlayer.hasDropped = true;
         activePlayer.hasForfeited = true;
         activePlayer.dropType = 'FORFEIT';
@@ -525,7 +536,7 @@ wss.on('connection', (ws) => {
         broadcastRoom(userRoom);
       }
 
-      if (data.type === 'DECLARE' && isTurn && userRoom.turnStage === 'DISCARD') {
+      if (data.type === 'DECLARE' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
         const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
         if (finalIdx === -1) return;
         const showHand = activePlayer.hand.filter(c => c.id !== data.cardId);
@@ -589,6 +600,109 @@ wss.on('connection', (ws) => {
             broadcastRoom(userRoom);
           }
         }
+      }
+
+      if (data.type === 'CLOSE_ROOM') {
+        const closingPlayer = userRoom.players.find(p => p.id === playerId);
+        const closingName = closingPlayer ? closingPlayer.name : 'A player';
+        userRoom.players.forEach(p => {
+          if (p.ws && p.ws.readyState === WebSocket.OPEN) {
+            p.ws.send(JSON.stringify({
+              type: 'ROOM_CLOSED',
+              message: `${closingName} closed the room.`
+            }));
+          }
+        });
+        if (userRoom.groupingTimer) {
+          clearTimeout(userRoom.groupingTimer);
+          userRoom.groupingTimer = null;
+        }
+        if (userRoom.cleanupTimer) {
+          clearTimeout(userRoom.cleanupTimer);
+          userRoom.cleanupTimer = null;
+        }
+        rooms.delete(userRoom.id);
+        return;
+      }
+
+      if (data.type === 'LEAVE_SESSION') {
+        const leavingPlayer = userRoom.players.find(p => p.id === playerId);
+        if (!leavingPlayer) return;
+
+        const wasPlaying = userRoom.status === 'PLAYING' || userRoom.status === 'GROUPING';
+
+        if (wasPlaying) {
+          // Mid-scoot: apply 70 pts penalty and treat hand as folded mid-game
+          leavingPlayer.hasDropped = true;
+          leavingPlayer.dropType = 'MIDDLE_DROP';
+          leavingPlayer.dropPenalty = CONFIG.middleDrop || 70;
+          leavingPlayer.hasLeft = true;
+
+          if (!userRoom.sessionScores[leavingPlayer.id]) {
+            userRoom.sessionScores[leavingPlayer.id] = {
+              id: leavingPlayer.id,
+              name: leavingPlayer.name,
+              handsPlayed: 1,
+              handsWon: 0,
+              points: 70,
+              honors: 0,
+              maal: 0,
+              totalScore: -70
+            };
+          } else {
+            const sc = userRoom.sessionScores[leavingPlayer.id];
+            sc.points += 70;
+            sc.totalScore -= 70;
+          }
+
+          userRoom.lastAction = `${leavingPlayer.name} left the game (Mid-scoot: 70 pts)`;
+
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'SESSION_LEFT',
+              message: 'You left the game as a Mid-Scoot (70 pts penalty).'
+            }));
+          }
+          leavingPlayer.ws = null;
+          leavingPlayer.hand = [];
+
+          const activeIndex = userRoom.turnIndex;
+          const isLeavingTurn = userRoom.players[activeIndex]?.id === playerId;
+
+          const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.hasLeft);
+          if (activeNonDropped.length <= 1 && userRoom.players.length > 1) {
+            const soleWinner = activeNonDropped[0] || userRoom.players.find(p => !p.hasLeft);
+            if (soleWinner) {
+              userRoom.winnerId = soleWinner.id;
+              userRoom.winnerName = soleWinner.name;
+              finalizeRound(userRoom);
+            } else {
+              userRoom.status = 'LOBBY';
+              broadcastRoom(userRoom);
+            }
+          } else {
+            if (isLeavingTurn) {
+              advanceTurn(userRoom);
+            }
+            broadcastRoom(userRoom);
+          }
+        } else {
+          // In LOBBY or ROUND_OVER
+          userRoom.players = userRoom.players.filter(p => p.id !== playerId);
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'SESSION_LEFT',
+              message: 'You left the table.'
+            }));
+          }
+          userRoom.lastAction = `${leavingPlayer.name} left the table.`;
+          if (userRoom.players.length === 0) {
+            rooms.delete(userRoom.id);
+          } else {
+            broadcastRoom(userRoom);
+          }
+        }
+        return;
       }
     } catch (e) {
       console.error('Socket error:', e);
