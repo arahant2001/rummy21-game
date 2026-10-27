@@ -75,6 +75,7 @@ function getSafeRoom(room) {
       id: p.id,
       name: p.name,
       cardCount: p.hand.length,
+      connected: Boolean(p.ws && p.ws.readyState === WebSocket.OPEN),
       hasDropped: Boolean(p.hasDropped),
       hasForfeited: Boolean(p.hasForfeited),
       dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? (p.turnsTaken === 0 ? 'FIRST_DROP' : 'MIDDLE_DROP') : null),
@@ -89,7 +90,7 @@ function getSafeRoom(room) {
 function broadcastRoom(room) {
   const safeState = getSafeRoom(room);
   room.players.forEach(p => {
-    if (p.ws.readyState === WebSocket.OPEN) {
+    if (p.ws && p.ws.readyState === WebSocket.OPEN) {
       p.ws.send(JSON.stringify({
         type: 'SYNC',
         room: safeState,
@@ -137,13 +138,15 @@ function finalizeRound(userRoom) {
       sc.handsWon += 1;
       const netMaal = losersCount * winnerMaal.total;
       sc.maal += netMaal;
+      sc.honors = sc.maal;
       sc.totalScore += netMaal;
       return {
         name: p.name,
         status: 'WINNER',
         points: 0,
         maalCollected: winnerMaal.total,
-        net: `Won + collects ${winnerMaal.total} Maal from each loser`
+        honorsCollected: winnerMaal.total,
+        net: `Won + collects ${winnerMaal.total} Honors from each loser`
       };
     }
     if (p.hasDropped) {
@@ -151,6 +154,7 @@ function finalizeRound(userRoom) {
       const totalPay = drop + winnerMaal.total;
       sc.points += drop;
       sc.maal -= winnerMaal.total;
+      sc.honors = sc.maal;
       sc.totalScore -= totalPay;
       return {
         name: p.name,
@@ -158,20 +162,23 @@ function finalizeRound(userRoom) {
         points: totalPay,
         dropPenalty: drop,
         maalOwed: winnerMaal.total,
-        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${winnerMaal.total} winner Maal)`
+        honorsOwed: winnerMaal.total,
+        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${winnerMaal.total} winner Honors)`
       };
     }
     const deadwood = calculateGroupedDeadwood(p.declaredGroups, p.hand, userRoom.cutCard);
     const totalPay = deadwood + winnerMaal.total;
     sc.points += deadwood;
     sc.maal -= winnerMaal.total;
+    sc.honors = sc.maal;
     sc.totalScore -= totalPay;
     return {
       name: p.name,
       status: 'LOST',
       deadwood,
       maalOwed: winnerMaal.total,
-      net: `Pays ${totalPay} pts (${deadwood} deadwood + ${winnerMaal.total} winner Maal)`
+      honorsOwed: winnerMaal.total,
+      net: `Pays ${totalPay} pts (${deadwood} deadwood + ${winnerMaal.total} winner Honors)`
     };
   });
 
@@ -189,7 +196,7 @@ function finalizeRound(userRoom) {
   }));
 
   userRoom.players.forEach(p => {
-    if (p.ws.readyState === WebSocket.OPEN) {
+    if (p.ws && p.ws.readyState === WebSocket.OPEN) {
       p.ws.send(JSON.stringify({
         type: 'SHOW_RESULT',
         winnerName: winner.name,
@@ -272,14 +279,26 @@ wss.on('connection', (ws) => {
   let userRoom = null;
   let playerId = null;
 
-  // Heartbeat ping to keep remote connections alive
+  // Heartbeat ping to keep remote connections alive every 15s
   const pingInterval = setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN) ws.ping();
-  }, 25000);
+    if (ws.readyState === WebSocket.OPEN) {
+      try {
+        ws.ping();
+      } catch (e) {}
+    }
+  }, 15000);
 
   ws.on('message', (raw) => {
     try {
       const data = JSON.parse(raw);
+
+      // Keepalive ping from client to prevent proxy/cloud timeouts
+      if (data.type === 'PING') {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'PONG', timestamp: Date.now() }));
+        }
+        return;
+      }
 
       if (data.type === 'JOIN') {
         const roomId = (data.roomId || 'FAMILY').trim().toUpperCase();
@@ -304,6 +323,12 @@ wss.on('connection', (ws) => {
         userRoom = rooms.get(roomId);
         userRoom.sessionScores = userRoom.sessionScores || {};
 
+        // Cancel any pending room deletion timer since active reconnect occurred
+        if (userRoom.cleanupTimer) {
+          clearTimeout(userRoom.cleanupTimer);
+          userRoom.cleanupTimer = null;
+        }
+
         // 1. Reconnection Check: Support mobile players reconnecting after tab switch / screen sleep
         const existingPlayer = userRoom.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
         if (existingPlayer) {
@@ -326,6 +351,7 @@ wss.on('connection', (ws) => {
             handsPlayed: 0,
             handsWon: 0,
             points: 0,
+            honors: 0,
             maal: 0,
             totalScore: 0
           };
@@ -569,8 +595,17 @@ wss.on('connection', (ws) => {
       if (userRoom.status === 'LOBBY') {
         userRoom.players = userRoom.players.filter(p => p.id !== playerId);
       }
-      if (userRoom.players.length === 0 || userRoom.players.every(p => !p.ws)) {
-        rooms.delete(userRoom.id);
+      const allDisconnected = userRoom.players.length === 0 || userRoom.players.every(p => !p.ws);
+      if (allDisconnected) {
+        // Prevent session drops: give 30 minutes grace period for phones/laptops to reconnect
+        if (!userRoom.cleanupTimer) {
+          userRoom.cleanupTimer = setTimeout(() => {
+            const stillEmpty = !userRoom.players || userRoom.players.length === 0 || userRoom.players.every(p => !p.ws);
+            if (stillEmpty) {
+              rooms.delete(userRoom.id);
+            }
+          }, 30 * 60 * 1000);
+        }
       } else {
         broadcastRoom(userRoom);
       }

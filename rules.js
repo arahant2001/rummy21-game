@@ -357,3 +357,5 @@ export function validateShow(groups, hand, cutCard) {
   if (pureSequences < 3) return { valid:false, reason:`A 21-card declaration requires at least 3 Pure Sequences. You have \${pureSequences}.` };
   return { valid:true, pureSequences };
 }
+
+export const calculateHonors = calculateMaal;

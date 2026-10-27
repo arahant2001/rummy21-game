@@ -686,21 +686,156 @@
       border-radius: 2px;
     }
 
-    /* Selected Card Reorder Control Bar */
+    /* Audio Toggle Button in Header */
+    .sound-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--surface-border-light);
+      color: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .sound-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+    .sound-toggle-btn.sound-muted {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    /* Dedicated Card Reorder & Stand Move Bar (Mobile-friendly, full width) */
     .reorder-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(14, 34, 61, 0.95), rgba(10, 25, 47, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 12px rgba(56, 189, 248, 0.15);
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      animation: fadeInSlide .18s ease-out;
+    }
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reorder-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .reorder-hint {
+      font-size: 12px;
+      color: #7dd3fc;
+      font-weight: 700;
+    }
+    .reorder-nav-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .reorder-nav-btn {
+      min-width: 34px !important;
+      padding: 6px 9px !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      background: #1e293b !important;
+      border-color: rgba(148, 163, 184, 0.3) !important;
+      border-radius: 6px !important;
+      cursor: pointer;
+    }
+    .reorder-nav-btn:hover {
+      background: #334155 !important;
+    }
+    .reorder-stands-section {
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      padding: 5px 10px;
-      border-radius: 8px;
+      flex-wrap: wrap;
     }
-    .reorder-hint {
+    .reorder-stands-label {
       font-size: 11px;
-      color: var(--accent-blue);
-      font-weight: 600;
-      margin-right: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+    }
+    .stand-move-options {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .stand-move-btn {
+      background: #0369a1 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      font-size: 12px !important;
+      padding: 6px 11px !important;
+      border-radius: 6px !important;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap !important;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .stand-move-btn:hover {
+      background: #0284c7 !important;
+      transform: translateY(-1px);
+    }
+    .stand-move-new-btn {
+      background: rgba(16, 185, 129, 0.22) !important;
+      border-color: #10b981 !important;
+      color: #6ee7b7 !important;
+    }
+    .stand-move-new-btn:hover {
+      background: #059669 !important;
+      color: #ffffff !important;
+    }
+    .stand-move-here-btn {
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid #38bdf8;
+      color: #7dd3fc;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: all 0.15s ease;
+    }
+    .stand-move-here-btn:hover {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .empty-stand-hint {
+      padding: 16px 12px;
+      color: #64748b;
+      font-size: 12px;
+      font-style: italic;
+      text-align: center;
+      width: 100%;
+      border: 1px dashed rgba(148, 163, 184, 0.25);
+      border-radius: 8px;
+      margin: 4px;
     }
 
     /* Action Grid */
@@ -827,6 +962,43 @@
       }
       .btn-declare {
         grid-column: span 2;
+      }
+      .sound-label {
+        display: none;
+      }
+      .reorder-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 8px 10px;
+      }
+      .reorder-info {
+        justify-content: space-between;
+        width: 100%;
+      }
+      .reorder-stands-section {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .stand-move-options {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .stand-move-btn {
+        flex: 1 1 calc(50% - 4px);
+        min-height: 38px;
+        justify-content: center;
+        text-align: center;
+        font-size: 13px !important;
+      }
+      .stand-move-new-btn {
+        flex-basis: 100% !important;
+        min-height: 38px;
+        justify-content: center;
+        font-size: 13px !important;
       }
     }
   
@@ -1658,7 +1830,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 <div id="lobbyView" class="lobby-box">
   <h2 class="lobby-title">21 Card Rummy</h2>
   <div class="lobby-subtitle">
-    South Indian Open Joker Table &bull; Winner Takes Maal
+    South Indian Open Joker Table &bull; Winner Takes Honors
   </div>
   <label class="field-label">Your Name</label>
   <input id="playerName" placeholder="Enter your name" value="" autocomplete="name" />
@@ -1679,13 +1851,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <span id="turnNotice">Connecting...</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
+      <button id="btnSoundToggle" class="sound-toggle-btn" role="button" onclick="toggleSoundSetting()" title="Toggle Sound Effects">
+        <span id="soundIcon">🔊</span>
+        <span id="soundLabel" class="sound-label">Audio: ON</span>
+      </button>
       <div id="sessionScoresSummary" class="maal-badge session-badge" role="button" tabindex="0" onclick="openSessionScoresModal()" title="View session leaderboard and running scores">
         <span>📊</span>
         <span id="sessionScoresText">Session: 0 pts</span>
       </div>
-      <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Maal details">
+      <div id="maalSummary" class="maal-badge" role="button" tabindex="0" aria-expanded="false" title="Click to see Honors details">
         <span>🏆</span>
-        <span id="maalPtsText">Maal: 0 pts</span>
+        <span id="maalPtsText">Honors: 0 pts</span>
       </div>
     </div>
   </div>
@@ -1694,7 +1870,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div class="game-hero-copy">
       <div class="game-kicker">Family Table</div>
       <div class="game-title">21 Card Rummy</div>
-      <div class="game-subtitle">Open Joker • Winner Takes Maal</div>
+      <div class="game-subtitle">Open Joker • Winner Takes Honors</div>
     </div>
     <div class="connection-pill" id="connectionStatus">Live Table</div>
   </div>
@@ -1800,29 +1976,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div class="stands-toolbar">
       <div class="toolbar-left">
         <span class="hand-toolbar-label">Arrange</span>
-        <button class="tool-btn tool-btn-highlight" onclick="moveJokersToFront()" title="Move Poochies to the start">
-          <span>🃏</span> Jokers to Start
-        </button>
         <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank (Poochies to start)">
           <span>↕</span> Sort Suit/Rank
         </button>
       </div>
 
       <div class="toolbar-right">
-        <!-- Reorder controls when card is selected -->
-        <div id="reorderBar" class="reorder-bar" style="display: none;">
-          <span class="reorder-hint">Card <strong id="selectedCardLabel"></strong>:</span>
-          <button class="tool-btn" onclick="moveSelectedCardToStart()" title="Move to Front">⏮</button>
-          <button class="tool-btn" onclick="moveSelectedCard(-1)" title="Move Left">◀</button>
-          <button class="tool-btn" onclick="moveSelectedCard(1)" title="Move Right">▶</button>
-          <button class="tool-btn" onclick="moveSelectedCardToEnd()" title="Move to End">⏭</button>
-          <span id="standMoveOptions" style="display: flex; gap: 4px; margin-left: 4px;"></span>
-        </div>
+        <!-- Stand management buttons (Consistent Stand terminology) -->
+        <button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 stands">3 Stands</button>
+        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands">2 Stands</button>
+        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand">1 Stand</button>
+        <button class="tool-btn tool-btn-highlight" onclick="addNewStand()" title="Add a new empty stand">+ Add Stand</button>
+      </div>
+    </div>
 
-        <!-- Stand management buttons -->
-        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 groups">2 Groups</button><button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 groups">3 Groups</button>
-        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 group">1 Group</button>
-        <button class="tool-btn" onclick="addNewStand()" title="Add an empty show group">+ Add Group</button>
+    <!-- Dedicated Responsive Card Action & Stand Move Bar (visible on mobile and desktop) -->
+    <div id="reorderBar" class="reorder-bar" style="display: none;">
+      <div class="reorder-info">
+        <span class="reorder-hint">Card <strong id="selectedCardLabel"></strong>:</span>
+        <div class="reorder-nav-group">
+          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCardToStart()" title="Move to Front">⏮</button>
+          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCard(-1)" title="Move Left">◀</button>
+          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCard(1)" title="Move Right">▶</button>
+          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCardToEnd()" title="Move to End">⏭</button>
+        </div>
+      </div>
+      <div class="reorder-stands-section">
+        <span class="reorder-stands-label">Move card:</span>
+        <div id="standMoveOptions" class="stand-move-options"></div>
       </div>
     </div>
 
@@ -1920,13 +2101,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   </div>
 </div>
 
-<!-- Maal Points Calculation Details Modal -->
+<!-- Honors Points Calculation Details Modal -->
 <div id="maalModal" class="modal" onclick="if(event.target===this) closeMaalModal()">
   <div class="modal-content maal-modal-content">
     <div class="maal-modal-header">
       <div class="maal-modal-title-group">
         <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-          <span>🏆</span> Maal Points Breakdown
+          <span>🏆</span> Honors Points Breakdown
         </h2>
         <span class="maal-modal-subtitle">Comprehensive calculation for your hand</span>
       </div>
@@ -1935,7 +2116,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     <!-- Total Score Highlight -->
     <div id="maalModalTotalBanner" class="maal-total-banner">
-      <span class="maal-total-label">Total Maal Points</span>
+      <span class="maal-total-label">Total Honors Points</span>
       <span id="maalModalTotalPoints" class="maal-total-value">0 pts</span>
     </div>
 
@@ -1950,7 +2131,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     <!-- Contributing Cards Held in Hand -->
     <div class="maal-held-section">
-      <div class="maal-held-title">Maal Cards in Your Hand (<span id="maalHeldCount">0</span>)</div>
+      <div class="maal-held-title">Honors Cards in Your Hand (<span id="maalHeldCount">0</span>)</div>
       <div id="maalHeldCardsList" class="maal-held-list"></div>
     </div>
 
@@ -1962,7 +2143,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <li><strong>Cut Joker (20 pts each):</strong> Joker card matching both rank and suit of the cut card.</li>
         <li><strong>Poochie (Tiered):</strong> Printed joker — 1 = 20 pts, 2 = 50 pts, 3 = 70 pts (+20 each).</li>
         <li><strong>Paplu / Tuplu (Tiered pool):</strong> Same suit as cut card (+1 rank and -1 rank) remaining after marriages — 1 = 10 pts, 2 = 30 pts, 3 = 50 pts.</li>
-        <li><strong>Settlement &amp; Drops:</strong> Every loser—including players who drop/scoot (30 pts drop penalty)—must pay the winner's total Maal points.</li>
+        <li><strong>Settlement &amp; Drops:</strong> Every loser—including players who drop/scoot (30 pts drop penalty)—must pay the winner's total Honors points.</li>
       </ul>
     </div>
 
@@ -2033,10 +2214,202 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   };
 
+  // --- Web Audio API Subtle Sound Effect System ---
+  class SoundSystem {
+    constructor() {
+      this.ctx = null;
+      this.enabled = true;
+      try {
+        const saved = localStorage.getItem('rummy_audio_enabled');
+        if (saved !== null) {
+          this.enabled = saved !== 'false';
+        }
+      } catch (e) {}
+    }
+
+    init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          this.ctx = new AudioCtx();
+        }
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+    }
+
+    toggle() {
+      this.enabled = !this.enabled;
+      try {
+        localStorage.setItem('rummy_audio_enabled', String(this.enabled));
+      } catch (e) {}
+      this.updateUI();
+      if (this.enabled) {
+        this.init();
+        this.playCardDraw();
+      }
+      return this.enabled;
+    }
+
+    updateUI() {
+      const btn = document.getElementById('btnSoundToggle');
+      const icon = document.getElementById('soundIcon');
+      const label = document.getElementById('soundLabel');
+      if (btn) {
+        btn.classList.toggle('sound-muted', !this.enabled);
+        btn.title = this.enabled ? 'Sound Effects Enabled (Click to Mute)' : 'Sound Effects Muted (Click to Unmute)';
+      }
+      if (icon) {
+        icon.innerText = this.enabled ? '🔊' : '🔇';
+      }
+      if (label) {
+        label.innerText = this.enabled ? 'Audio: ON' : 'Audio: OFF';
+      }
+    }
+
+    // 1. Subtle, realistic card slide/whoosh for draws
+    playCardDraw() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const now = this.ctx.currentTime;
+        const bufferSize = Math.floor(this.ctx.sampleRate * 0.08);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1200, now);
+        filter.frequency.exponentialRampToValueAtTime(420, now + 0.08);
+        filter.Q.setValueAtTime(3.0, now);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(0.14, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        noise.start(now);
+        noise.stop(now + 0.08);
+      } catch (e) {}
+    }
+
+    // 2. Crisp, tactile felt snap for card discards
+    playCardDiscard() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(65, now + 0.07);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.07);
+
+        // Soft high-frequency snap
+        const snap = this.ctx.createOscillator();
+        const snapGain = this.ctx.createGain();
+        snap.type = 'sine';
+        snap.frequency.setValueAtTime(1600, now);
+        snap.frequency.exponentialRampToValueAtTime(150, now + 0.02);
+        snapGain.gain.setValueAtTime(0.07, now);
+        snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+        snap.connect(snapGain);
+        snapGain.connect(this.ctx.destination);
+        snap.start(now);
+        snap.stop(now + 0.02);
+      } catch (e) {}
+    }
+
+    // 3. Celebratory fanfare arpeggio for shows & declarations
+    playDeclaration() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const noteStart = now + (idx * 0.09);
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, noteStart);
+
+          gain.gain.setValueAtTime(0.001, noteStart);
+          gain.gain.linearRampToValueAtTime(0.18, noteStart + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.45);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(noteStart);
+          osc.stop(noteStart + 0.45);
+        });
+      } catch (e) {}
+    }
+
+    // 4. Subtle turn alert chime
+    playTurn() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const now = this.ctx.currentTime;
+        [880, 1108].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const t = now + (idx * 0.08);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.08, t);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.2);
+        });
+      } catch (e) {}
+    }
+  }
+
+  const soundSystem = new SoundSystem();
+  function toggleSoundSetting() {
+    soundSystem.toggle();
+  }
+  window.toggleSoundSetting = toggleSoundSetting;
+  window.soundSystem = soundSystem;
+
+  ['click', 'touchstart', 'keydown'].forEach(evtType => {
+    document.addEventListener(evtType, () => soundSystem.init(), { once: true, passive: true });
+  });
+
   let ws;
   let roomState = null;
   let myHand = [];
-  let userStands = []; // Array of card arrays representing each show group
+  let userStands = []; // Array of card arrays representing each stand
   let standTypes = [];
   let selectedCardId = null;
   let draggedCardId = null;
@@ -2050,6 +2423,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let demoStarterIndex = 0;
   let demoReadyPlayers = new Set();
   let demoReadyTimer = null;
+  let clientPingTimer = null;
+  let wasMyTurn = false;
 
   // Restore saved player name and room from previous session
   try {
@@ -2063,6 +2438,29 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   } catch (e) {
     console.warn('LocalStorage not accessible', e);
+  }
+
+  // Prevent random mobile session drops when switching tabs or waking phone screen
+  if (!window.sessionDropListenersAttached) {
+    window.sessionDropListenersAttached = true;
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
+          if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
+            console.log('[RECONNECT] Tab active, reconnecting socket...');
+            joinRoom();
+          }
+        }
+      }
+    });
+    window.addEventListener('online', () => {
+      if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
+        if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
+          console.log('[RECONNECT] Network restored, reconnecting socket...');
+          joinRoom();
+        }
+      }
+    });
   }
 
   function joinRoom() {
@@ -2093,25 +2491,40 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       }
       document.getElementById('lobbyView').style.display = 'none';
       document.getElementById('gameView').style.display = 'flex';
+      soundSystem.updateUI();
+
+      // Keepalive ping: prevent proxy / cloud timeouts
+      if (clientPingTimer) clearInterval(clientPingTimer);
+      clientPingTimer = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'PING' }));
+        }
+      }, 15000);
     };
 
     ws.onclose = () => {
+      if (clientPingTimer) clearInterval(clientPingTimer);
       const connectionStatus = document.getElementById('connectionStatus');
       if (connectionStatus) {
         connectionStatus.innerText = 'Reconnecting...';
         connectionStatus.style.color = '#f1a7ad';
         connectionStatus.style.borderColor = 'rgba(240,107,120,.28)';
       }
-      // Automatic background reconnect if player is on active table
+      // Automatic background reconnect with fast 1.5s initial retry
       setTimeout(() => {
         if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
           joinRoom();
         }
-      }, 2500);
+      }, 1500);
     };
 
     ws.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
+
+      if (msg.type === 'PONG') {
+        // Keepalive acknowledged
+        return;
+      }
 
       if (msg.type === 'INVALID_MOVE') {
         window.alert(msg.message || 'Invalid move.');
@@ -2172,7 +2585,22 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           ? captureCardFlight(previousElements.get(discardedIds[0]))
           : null;
 
+        // Sound triggers for draws & discards
+        if (drawnIds.length) {
+          soundSystem.playCardDraw();
+        }
+        if (discardedIds.length) {
+          soundSystem.playCardDiscard();
+        }
+
         renderAll(msg.yourMaal);
+
+        // Turn change notification chime
+        const isMyTurnNow = roomState && roomState.turnPlayerId === getMyPlayerId();
+        if (isMyTurnNow && !wasMyTurn && roomState.status === 'PLAYING') {
+          soundSystem.playTurn();
+        }
+        wasMyTurn = Boolean(isMyTurnNow);
 
         requestAnimationFrame(() => {
           if (drawnIds.length && sourceFlight) {
@@ -2191,6 +2619,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       if (msg.type === 'DECLARATION_FORFEITED') { declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); alert('Declaration forfeited. Penalty: 100 points. Play continues.'); renderAll(null); }
       if (msg.type === 'SHOW_RESULT') {
+        soundSystem.playDeclaration();
         showWinnerFanfare(msg);
         setTimeout(() => showResultsModal(msg), 900);
       }
@@ -2345,11 +2774,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
     }
     myHand = userStands.flat();
+    soundSystem.playCardDraw();
     renderAll(null);
   }
   function addNewStand() {
     userStands.push([]);
-    renderAll(null);
+    if (selectedCardId) {
+      moveCardToStand(selectedCardId, userStands.length - 1);
+    } else {
+      soundSystem.playCardDraw();
+      renderAll(null);
+    }
   }
 
   function removeStand(standIdx) {
@@ -2823,7 +3258,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const total = data ? data.total : 0;
     const maalText = document.getElementById('maalPtsText');
     if (maalText) {
-      maalText.innerText = `Maal: ${total} pts`;
+      maalText.innerText = `Honors: ${total} pts`;
     }
     const mini = document.getElementById('maalMiniTotal');
     if (mini) mini.innerText = `${total} pts`;
@@ -3395,7 +3830,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const heldListEl = document.getElementById('maalHeldCardsList');
     if (heldListEl) {
       if (contributing.length === 0) {
-        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Maal cards in your hand currently. Draw Jokers, Poochies, or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Maal!</span>';
+        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Honors cards in your hand currently. Draw Jokers, Poochies, or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Honors!</span>';
       } else {
         heldListEl.innerHTML = contributing.map(({card, role}) => {
           const isRed = card.suit === '♥' || card.suit === '♦';
@@ -3437,7 +3872,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const total = data ? data.total : 0;
     const maalText = document.getElementById('maalPtsText');
     if (maalText) {
-      maalText.innerText = `Maal: ${total} pts`;
+      maalText.innerText = `Honors: ${total} pts`;
       if (lastMaalTotal !== null && lastMaalTotal !== total) {
         maalText.classList.remove('maal-pulse');
         void maalText.offsetWidth; // trigger reflow
@@ -3523,12 +3958,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if(!container)return;
     if(!declarationMode){
       if(!userStands||userStands.length===0)userStands=[myHand];
+      const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
-        const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close</button>`:'';
+        const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
+        let moveHereBtn = '';
+        if (selectedCardId && sIdx !== currentSelectedStandIdx) {
+          moveHereBtn = `<button class="stand-move-here-btn" onclick="moveCardToStand('${selectedCardId}', ${sIdx})" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
+        }
+        const cardsContent = stand.length > 0
+          ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
+          : `<div class="empty-stand-hint">Empty stand • Tap any card and select "➔ Stand ${sIdx+1}" or drag a card here</div>`;
         return `<div class="stand-rack" id="stand-rack-${sIdx}" ondragover="onStandDragOver(event,${sIdx})" ondragleave="onStandDragLeave(event,${sIdx})" ondrop="onStandDrop(event,${sIdx})">
-          <div class="stand-header"><div class="stand-title-box"><span>Group ${sIdx+1}</span><span class="stand-count-badge">${stand.length} cards</span>
-</div>${closeBtn}</div>
-          <div class="stand-cards">${stand.map(c=>renderCard(c,getCardTag(c),true)).join('')}</div></div>`;
+          <div class="stand-header">
+            <div class="stand-title-box">
+              <span>Stand ${sIdx+1}</span>
+              <span class="stand-count-badge">${stand.length} cards</span>
+              ${moveHereBtn}
+            </div>
+            ${closeBtn}
+          </div>
+          <div class="stand-cards">${cardsContent}</div>
+        </div>`;
       }).join('');
       return;
     }
@@ -4155,10 +4605,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       winnerName,
       winnerMaal,
       results: [
-        { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
-        { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
-        { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
-        { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
+        { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each loser` },
+        { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+        { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+        { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Honors)` }
       ],
       revealedHands: [
         {
@@ -4295,21 +4745,25 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const optionsSpan = document.getElementById('standMoveOptions');
     if (!reorderBox) return;
 
-    if (selectedCardId) {
+    if (selectedCardId && !declarationMode) {
       const card = userStands.flat().find(c => c.id === selectedCardId);
       reorderBox.style.display = 'flex';
       if (labelSpan && card) {
         labelSpan.innerText = `${card.rank} ${card.suit}`;
       }
 
-      // Quick move to other stands buttons
-      if (optionsSpan && userStands.length > 1) {
+      // Quick move to other stands buttons (Requests 6 & 7)
+      if (optionsSpan) {
         const currentStandIdx = userStands.findIndex(s => s.some(c => c.id === selectedCardId));
-        optionsSpan.innerHTML = userStands.map((s, idx) => {
-          if (idx === currentStandIdx) return '';
-          return `<button class="tool-btn" onclick="moveCardToStand('${selectedCardId}', ${idx})" title="Move to Stand ${idx + 1}">To Stand ${idx + 1}</button>`;
-        }).join('');      } else if (optionsSpan) {
-        optionsSpan.innerHTML = '';
+        let html = '';
+        userStands.forEach((s, idx) => {
+          if (idx !== currentStandIdx) {
+            html += `<button class="tool-btn stand-move-btn" onclick="moveCardToStand('${selectedCardId}', ${idx})" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
+          }
+        });
+        // Request 7: Corresponding button to move to a new stand
+        html += `<button class="tool-btn stand-move-btn stand-move-new-btn" onclick="moveCardToNewStand('${selectedCardId}')" title="Create a new stand and move this card into it">+ Move to Stand ${userStands.length + 1}</button>`;
+        optionsSpan.innerHTML = html;
       }
     } else {
       reorderBox.style.display = 'none';
@@ -4332,6 +4786,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
     userStands[targetStandIdx].push(card);
     myHand = userStands.flat();
+    soundSystem.playCardDraw();
+    renderAll(null);
+    scrollCardIntoView(card.id);
+  }
+
+  function moveCardToNewStand(cardId) {
+    if (!cardId) {
+      addNewStand();
+      return;
+    }
+    let sourceStandIdx = -1;
+    let cardIdx = -1;
+    for (let i = 0; i < userStands.length; i++) {
+      const idx = userStands[i].findIndex(c => c.id === cardId);
+      if (idx !== -1) {
+        sourceStandIdx = i;
+        cardIdx = idx;
+        break;
+      }
+    }
+    if (sourceStandIdx === -1) {
+      addNewStand();
+      return;
+    }
+    const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
+    userStands.push([card]);
+    myHand = userStands.flat();
+    soundSystem.playCardDraw();
     renderAll(null);
     scrollCardIntoView(card.id);
   }
@@ -4774,6 +5256,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
   function drawStock() { 
     if (!canPlayerDraw()) return;
+    soundSystem.playCardDraw();
     if (isDemo) { simulateDrawStock(); return; }
     ws.send(JSON.stringify({ type: 'DRAW_STOCK' })); 
   }
@@ -4783,6 +5266,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
       return;
     }
+    soundSystem.playCardDraw();
     if (isDemo) { simulateDrawDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DRAW_DISCARD' })); 
   }
@@ -4821,7 +5305,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       }
       roomState.lastAction = `${myP?.name || 'You'} scooted (${label}: ${penalty} pts)`;
       passDemoTurn();
-      window.alert(`Hand dropped: ${label} penalty of ${penalty} points (plus winner's Maal points will be owed). Turn passed to ${roomState.turnPlayerName}.`);
+      window.alert(`Hand dropped: ${label} penalty of ${penalty} points (plus winner's Honors points will be owed). Turn passed to ${roomState.turnPlayerName}.`);
       return;
     }
     ws.send(JSON.stringify({ type: 'DROP' }));
@@ -4829,6 +5313,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function discardSelected() {
     if (!selectedCardId) return;
+    soundSystem.playCardDiscard();
     if (isDemo) { simulateDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DISCARD', cardId: selectedCardId }));
     selectedCardId = null;
@@ -4995,10 +5480,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           winnerName: roomState.turnPlayerName || 'You',
           winnerMaal,
           results: [
-            { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Maal from each loser` },
-            { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
-            { name: 'Priya', status: 'LOST', points: priyaDeadwood + winnerMaal.total, deadwood: priyaDeadwood, net: `Pays ${priyaDeadwood + winnerMaal.total} pts (${priyaDeadwood} deadwood + ${winnerMaal.total} winner Maal)` },
-            { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Maal)` }
+            { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each loser` },
+            { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+            { name: 'Priya', status: 'LOST', points: priyaDeadwood + winnerMaal.total, deadwood: priyaDeadwood, net: `Pays ${priyaDeadwood + winnerMaal.total} pts (${priyaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+            { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Honors)` }
           ],
           revealedHands: [
             {
@@ -5302,7 +5787,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
               <th>Player</th>
               <th style="text-align:center;">Won / Played</th>
               <th style="text-align:right;" title="Deadwood / Scoot penalty points paid">Points</th>
-              <th style="text-align:right;" title="Net Maal points won or paid">Maal</th>
+              <th style="text-align:right;" title="Net Honors points won or paid">Honors</th>
               <th style="text-align:right;" title="Net overall session score">Total Score</th>
             </tr>
           </thead>
@@ -5476,7 +5961,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal?.details || {};
     document.getElementById('maalDetails').innerHTML = `
-      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Maal: ${data.winnerMaal?.total || 0} pts</strong><br>
+      <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Honors: ${data.winnerMaal?.total || 0} pts</strong><br>
       • Marriages: ${m.marriages || 0} (${m.marriagePts || 0} pts)<br>
       • Exact Cut Joker: ${m.tiplus || 0} (${m.tipluPts || 0} pts)<br>
       • Poochies: ${m.poochies || 0} (${m.poochiePts || 0} pts)<br>
@@ -5895,10 +6380,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 } },
         results: roomState.players.map(p => {
           if (p.id === winner.id) {
-            return { name: p.name, net: 'Won (opponents folded) + collects 50 Maal from each loser' };
+            return { name: p.name, net: 'Won (opponents folded) + collects 50 Honors from each loser' };
           }
           const pen = p.hasForfeited ? 100 : 30;
-          return { name: p.name, net: `Pays ${pen + 50} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + 50 winner Maal)` };
+          return { name: p.name, net: `Pays ${pen + 50} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + 50 winner Honors)` };
         }),
         revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
       };
@@ -5987,25 +6472,26 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function simulateDrawStock() {
     if (!canPlayerDraw()) return;
+    soundSystem.playCardDraw();
     const sourceFlight = captureCardFlight(document.getElementById('stockDeckBtn'));
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const suits = ['♠', '♥', '♣', '♦'];
     const rRoles = roomState?.roles;
 
-    // Wild/Maal cards test distribution
+    // Wild/Honors cards test distribution
     const roll = Math.random();
     let newCard;
     if (roll < 0.08) {
       newCard = { id: 'c_' + Date.now(), suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true };
     } else if (roll < 0.14 && rRoles) {
-      // Exact Cut Joker (cut suit & cut rank) -> 20 pts Maal
+      // Exact Cut Joker (cut suit & cut rank) -> 20 pts Honors
       newCard = { id: 'c_' + Date.now(), suit: rRoles.tipluSuit, rank: rRoles.tipluRank, rankValue: ranks.indexOf(rRoles.tipluRank) + 1, isPoochie: false };
     } else if (roll < 0.22 && rRoles) {
-      // Paplu or Taplu -> 10 pts Maal
+      // Paplu or Taplu -> 10 pts Honors
       const rankChoice = Math.random() < 0.5 ? rRoles.papluRank : rRoles.nichluRank;
       newCard = { id: 'c_' + Date.now(), suit: rRoles.tipluSuit, rank: rankChoice, rankValue: ranks.indexOf(rankChoice) + 1, isPoochie: false };
     } else if (roll < 0.28 && rRoles) {
-      // Other suit cut joker -> wild card in sequences, 0 pts Maal
+      // Other suit cut joker -> wild card in sequences, 0 pts Honors
       const otherSuits = suits.filter(s => s !== rRoles.tipluSuit);
       const chosenSuit = otherSuits[Math.floor(Math.random() * otherSuits.length)];
       newCard = { id: 'c_' + Date.now(), suit: chosenSuit, rank: rRoles.tipluRank, rankValue: ranks.indexOf(rRoles.tipluRank) + 1, isPoochie: false };
@@ -6037,6 +6523,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
       return;
     }
+    soundSystem.playCardDraw();
     const sourceFlight = captureCardFlight(document.getElementById('discardContainer'));
     if (!roomState.topDiscard) return;
     const drawn = roomState.topDiscard;
@@ -6062,6 +6549,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function simulateDiscard() {
     if (!selectedCardId) return;
+    soundSystem.playCardDiscard();
     const sourceFlight = captureCardFlight(document.getElementById('card-' + selectedCardId));
     let card = null;
     for (const stand of userStands) {
