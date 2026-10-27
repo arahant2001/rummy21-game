@@ -930,6 +930,49 @@
       transform: none !important;
     }
 
+    .room-control-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #d1ded8;
+      padding: 6px 11px;
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .room-control-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .room-control-btn.leave-btn:hover {
+      border-color: rgba(240, 107, 120, 0.5);
+      background: rgba(240, 107, 120, 0.16);
+      color: #ff9da6;
+    }
+    .room-control-btn.close-btn {
+      background: rgba(185, 28, 28, 0.16);
+      border-color: rgba(239, 68, 68, 0.38);
+      color: #fca5a5;
+    }
+    .room-control-btn.close-btn:hover {
+      background: rgba(220, 38, 38, 0.35);
+      border-color: rgba(239, 68, 68, 0.65);
+      color: #ffffff;
+    }
+    @media (max-width: 640px) {
+      .room-control-btn {
+        padding: 5px 8px;
+        font-size: 10px;
+      }
+    }
+
     /* Modal Settlements */
     .modal {
       display: none;
@@ -2065,6 +2108,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
+<!-- Action Confirmation Modal (Close Room & Leave Session) -->
+<div id="confirmModal" class="modal" style="display:none; z-index:260;" onclick="if(event.target===this) closeConfirmModal()">
+  <div class="modal-content" style="max-width: 440px; padding: 26px 22px; text-align: center; border: 1px solid rgba(217,182,92,0.32); box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+    <div id="confirmModalIcon" style="font-size: 40px; margin-bottom: 8px;">⚠️</div>
+    <h2 id="confirmModalTitle" style="color: var(--accent-gold-soft); font-size: 19px; font-weight: 800; margin: 0 0 8px;">Confirm Action</h2>
+    <div id="confirmModalBadge" style="display:inline-block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; padding:4px 10px; border-radius:999px; margin-bottom:12px; background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.35); color:#fca5a5;">Game In Progress</div>
+    <div id="confirmModalMessage" style="color: #cbd5e1; font-size: 13.5px; line-height: 1.55; margin-bottom: 22px;"></div>
+    <div style="display: flex; justify-content: center; gap: 12px;">
+      <button type="button" class="tool-btn" onclick="closeConfirmModal()" style="min-width: 100px; padding: 10px 18px; font-weight: 700;">Cancel</button>
+      <button type="button" id="confirmModalActionBtn" class="btn-primary" style="min-width: 130px; margin: 0; padding: 10px 18px; font-weight: 800;">Confirm</button>
+    </div>
+  </div>
 </div>
 
 <!-- Grouping Wait Sign Modal -->
@@ -3052,7 +3107,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function isCurrentPlayerMe() {
-    if (!roomState) return false;
+    if (!roomState || roomState.status !== 'PLAYING') return false;
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myP = roomState.players?.find(p => p.id === myId);
     if (myP?.hasDropped || myP?.hasForfeited) return false;
@@ -3060,7 +3115,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function canPlayerDraw() {
-    if (!isCurrentPlayerMe() || !roomState || roomState.turnStage !== 'DRAW') return false;
+    if (!roomState || roomState.status !== 'PLAYING') return false;
+    if (!isCurrentPlayerMe() || roomState.turnStage !== 'DRAW') return false;
     if (getHandCount() >= 22) return false;
     return true;
   }
