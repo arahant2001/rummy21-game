@@ -75,6 +75,7 @@ function getSafeRoom(room) {
       id: p.id,
       name: p.name,
       cardCount: p.hand.length,
+      connected: Boolean(p.ws && p.ws.readyState === WebSocket.OPEN),
       hasDropped: Boolean(p.hasDropped),
       hasForfeited: Boolean(p.hasForfeited),
       dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? (p.turnsTaken === 0 ? 'FIRST_DROP' : 'MIDDLE_DROP') : null),
@@ -89,7 +90,7 @@ function getSafeRoom(room) {
 function broadcastRoom(room) {
   const safeState = getSafeRoom(room);
   room.players.forEach(p => {
-    if (p.ws.readyState === WebSocket.OPEN) {
+    if (p.ws && p.ws.readyState === WebSocket.OPEN) {
       p.ws.send(JSON.stringify({
         type: 'SYNC',
         room: safeState,
@@ -195,7 +196,7 @@ function finalizeRound(userRoom) {
   }));
 
   userRoom.players.forEach(p => {
-    if (p.ws.readyState === WebSocket.OPEN) {
+    if (p.ws && p.ws.readyState === WebSocket.OPEN) {
       p.ws.send(JSON.stringify({
         type: 'SHOW_RESULT',
         winnerName: winner.name,
