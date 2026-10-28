@@ -6229,6 +6229,22 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   }
 
+  // Resolve mobile drop destinations by geometry, even when an overlay or
+  // horizontally scrolling stand obscures the element directly under the finger.
+  function resolveTouchCardDrop(x, y, draggedId) {
+    const inside = (rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    const racks = Array.from(document.querySelectorAll('.stand-rack'));
+    const rack = racks.find(el => inside(el.getBoundingClientRect()));
+    const candidates = Array.from(document.querySelectorAll('[id^="card-"]'))
+      .filter(el => el.id !== 'card-' + draggedId && el.closest('.stand-rack'));
+    const card = candidates.find(el => inside(el.getBoundingClientRect()) && (!rack || rack.contains(el)));
+    const discard = document.getElementById('discardContainer');
+    if (discard && inside(discard.getBoundingClientRect())) return { kind: 'discard' };
+    if (card) return { kind: 'card', element: card };
+    if (rack) return { kind: 'stand', element: rack };
+    return null;
+  }
+
   function onTouchCardEnd(e, cardId) {
     if (!touchCardState || touchCardState.cardId !== cardId) return;
 
@@ -6250,14 +6266,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         return;
       }
 
-      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+      const destination = resolveTouchCardDrop(touch.clientX, touch.clientY, cardId);
 
       document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
         .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
 
-      if (targetEl) {
+      if (destination) {
         // 1. Dropped on Discard Pile
-        const discardTarget = targetEl.closest('#discardContainer, .discard-pile-wrapper');
+        const discardTarget = destination.kind === 'discard';
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
 
@@ -6271,7 +6287,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         }
 
         // 2. Dropped on Another Card (reorder in same stand OR move to specific position in another stand)
-        const cardTarget = targetEl.closest('.card');
+        const cardTarget = destination.kind === 'card' ? destination.element : null;
         if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-')) {
           const targetCardId = cardTarget.id.replace('card-', '');
           if (targetCardId && targetCardId !== cardId) {
@@ -6307,7 +6323,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         }
 
         // 3. Dropped on Stand Rack (stand background, header, cards row, or empty rack)
-        const standRackTarget = targetEl.closest('.stand-rack');
+        const standRackTarget = destination.kind === 'stand' ? destination.element : null;
         if (standRackTarget && standRackTarget.id && standRackTarget.id.startsWith('stand-rack-')) {
           const sIdx = parseInt(standRackTarget.id.replace('stand-rack-', ''), 10);
           if (!isNaN(sIdx) && sIdx >= 0 && sIdx < userStands.length) {
