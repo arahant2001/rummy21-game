@@ -1691,21 +1691,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
 /* Center Live Turn Ticker Banner on the Felt */
 .table-turn-banner {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 6px 16px;
+  padding: 4px 16px;
   border-radius: 999px;
-  background: rgba(4, 15, 10, 0.88);
-  border: 1px solid rgba(217, 182, 92, 0.32);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  background: rgba(4, 15, 10, 0.94);
+  border: 1px solid rgba(217, 182, 92, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
   color: #f1d27a;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.3px;
-  z-index: 15;
-  margin-bottom: 6px;
+  z-index: 25;
+  white-space: nowrap;
+  max-width: calc(100% - 24px);
+  pointer-events: none;
 }
 .turn-banner-dot {
   width: 7px;
@@ -2012,15 +2018,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   @media(max-width:600px){.demo-controls{display:grid;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
   
 /* ===== COMPACT TABLE LAYOUT ===== */
-.center-board{position:relative;gap:30px;min-height:132px;padding:14px 24px;overflow:visible;user-select:none;-webkit-user-select:none;}
+.center-board{position:relative;display:flex;justify-content:center;align-items:center;gap:30px;min-height:148px;padding:38px 24px 14px;overflow:visible;user-select:none;-webkit-user-select:none;}
 .stock-pile-wrapper{position:relative;z-index:8;user-select:none;-webkit-user-select:none;}
-.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 36px);margin:0 auto}
-.stock-with-cut #stockDeckBtn{position:relative;z-index:5}
-.cut-card-under-stock{position:absolute;left:15%;top:30px;width:var(--card-h);height:var(--card-w);transform:translateX(-50%) rotate(90deg) scale(.90);transform-origin:center;z-index:1;pointer-events:none}
-.cut-card-under-stock .card{transform:none!important;opacity:.96;box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 1px rgba(217,182,92,.2)!important}
+.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 20px);margin:0 auto}
+.stock-with-cut #stockDeckBtn{position:relative;z-index:5;touch-action:manipulation!important;}
+.cut-card-under-stock{position:absolute;left:-22px;top:8px;width:var(--card-h);height:var(--card-w);transform:rotate(90deg) scale(.88);transform-origin:center;z-index:2;pointer-events:none}
+.cut-card-under-stock .card{transform:none!important;opacity:.98;box-shadow:0 2px 7px rgba(0,0,0,.4),0 0 0 1px rgba(217,182,92,.25)!important}
+.pile-tap-hint{outline:2.5px solid #38bdf8!important;box-shadow:0 0 16px rgba(56,189,248,0.7)!important;transform:scale(1.05)!important;transition:transform .15s ease,box-shadow .15s ease,outline .15s ease;}
+.card, .card *, .deck-card, .deck-card *, .stand-rack, .stand-cards{-webkit-user-drag:none!important;user-drag:none!important;-webkit-touch-callout:none!important;}
 .discard-pile-wrapper{position:relative;z-index:9}
 .discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
-.discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30}
+.discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:manipulation!important;}
 .discard-history{position:absolute;left:108px;top:0;width:118px;height:108px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
 .discard-history-card{position:absolute;width:68px;height:98px;left:0;top:5px;display:block;opacity:.9;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
 .discard-history-card:active{cursor:grabbing}
@@ -2029,7 +2037,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translateX(calc(var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-card.peeked ~ .discard-history-card{opacity:.72}
-@media(max-width:600px){.discard-stack-area{width:190px}.discard-stack-area #discardContainer{left:22px;top:9px}.discard-history{left:88px;width:96px}.discard-history-card{width:58px;height:84px;top:9px}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
+@media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.cut-card-under-stock{left:-18px;top:6px;transform:rotate(90deg) scale(.84);}.table-turn-banner{top:5px;font-size:9.5px;padding:3px 12px;}.discard-stack-area{width:190px}.discard-stack-area #discardContainer{left:22px;top:9px}.discard-history{left:88px;width:96px}.discard-history-card{width:58px;height:84px;top:9px}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-index{top:-4px;right:-4px;pointer-events:none}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
@@ -2217,7 +2225,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 #maalSummary{cursor:pointer;position:relative}
 #maalSummary:hover{filter:brightness(1.15);transform:translateY(-1px);transition:all 0.15s;}
 #maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
-@media(max-width:600px){.center-board{gap:18px;padding:12px 12px}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
+@media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
 
 </style>
 </head>
@@ -4732,15 +4740,60 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let lastDrawActionTime = 0;
   let lastStockClickTime = 0;
   let lastDiscardClickTime = 0;
+  let lastPileTapTime = 0;
+  let lastPileTapType = null;
+  let pileTapFeedbackTimeout = null;
+
+  function showPileTapFeedback(pileType) {
+    const el = (pileType === 'discard')
+      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+      : document.getElementById('stockDeckBtn');
+    if (!el) return;
+    el.classList.add('pile-tap-hint');
+    clearTimeout(pileTapFeedbackTimeout);
+    pileTapFeedbackTimeout = setTimeout(() => {
+      el.classList.remove('pile-tap-hint');
+    }, 550);
+  }
+
+  function handlePileTap(pileType, e) {
+    if (e && e.cancelable) e.preventDefault();
+    if (!canPlayerDraw()) return;
+    if (pileType === 'discard' && !canPlayerDrawFromDiscard()) return;
+
+    const now = Date.now();
+    if (lastPileTapType === pileType && (now - lastPileTapTime) < 550) {
+      lastPileTapTime = 0;
+      lastPileTapType = null;
+      const el = (pileType === 'discard')
+        ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+        : document.getElementById('stockDeckBtn');
+      if (el) el.classList.remove('pile-tap-hint');
+
+      if (now - lastDrawActionTime < 450) return;
+      lastDrawActionTime = now;
+
+      if (pileType === 'stock') {
+        drawStock();
+      } else {
+        drawDiscard();
+      }
+    } else {
+      lastPileTapTime = now;
+      lastPileTapType = pileType;
+      showPileTapFeedback(pileType);
+    }
+  }
 
   function onStockClick(e) {
     if (!canPlayerDraw()) return;
     const now = Date.now();
-    if (now - lastStockClickTime < 380) {
+    if (now - lastStockClickTime < 550) {
       onStockDoubleClick(e);
       lastStockClickTime = 0;
     } else {
       lastStockClickTime = now;
+      showPileTapFeedback('stock');
     }
   }
 
@@ -4759,11 +4812,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onDiscardContainerClick(e) {
     if (!canPlayerDraw()) return;
     const now = Date.now();
-    if (now - lastDiscardClickTime < 380) {
+    if (now - lastDiscardClickTime < 550) {
       onDiscardDoubleClick(e);
       lastDiscardClickTime = 0;
     } else {
       lastDiscardClickTime = now;
+      showPileTapFeedback('discard');
     }
   }
 
@@ -4884,7 +4938,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
         let moveHereBtn = '';
         if (selectedCardId && sIdx !== currentSelectedStandIdx) {
-          moveHereBtn = `<button type="button" class="stand-move-here-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); moveCardToStand('${selectedCardId}', ${sIdx}, event)" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
+          moveHereBtn = `<button type="button" class="stand-move-here-btn" ontouchend="executeStandMove('${selectedCardId}', ${sIdx}, event)" onclick="executeStandMove('${selectedCardId}', ${sIdx}, event)" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
         }
         const cardsContent = stand.length > 0
           ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
@@ -5726,16 +5780,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         let html = '';
         userStands.forEach((s, idx) => {
           if (idx !== currentStandIdx) {
-            html += `<button type="button" class="tool-btn stand-move-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); moveCardToStand('${selectedCardId}', ${idx}, event)" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
+            html += `<button type="button" class="tool-btn stand-move-btn" ontouchend="executeStandMove('${selectedCardId}', ${idx}, event)" onclick="executeStandMove('${selectedCardId}', ${idx}, event)" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
           }
         });
-        html += `<button type="button" class="tool-btn stand-move-btn stand-move-new-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); moveCardToNewStand('${selectedCardId}', event)" title="Create a new stand and move this card into it">+ Stand ${userStands.length + 1}</button>`;
+        html += `<button type="button" class="tool-btn stand-move-btn stand-move-new-btn" ontouchend="executeStandMoveNew('${selectedCardId}', event)" onclick="executeStandMoveNew('${selectedCardId}', event)" title="Create a new stand and move this card into it">+ Stand ${userStands.length + 1}</button>`;
         
         // If it is player's turn to discard, offer quick discard button in the action bar
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
         if (canDiscard) {
-          html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
+          html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); discardSelected()" onclick="event.preventDefault(); event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
         }
 
         optionsSpan.innerHTML = html;
@@ -5752,6 +5806,32 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       }
     }
   }
+
+  let lastStandMoveActionTime = 0;
+  function executeStandMove(cardId, targetStandIdx, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastStandMoveActionTime < 250) return;
+    lastStandMoveActionTime = now;
+    moveCardToStand(cardId, targetStandIdx, e);
+  }
+
+  function executeStandMoveNew(cardId, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastStandMoveActionTime < 250) return;
+    lastStandMoveActionTime = now;
+    moveCardToNewStand(cardId, e);
+  }
+
+  window.executeStandMove = executeStandMove;
+  window.executeStandMoveNew = executeStandMoveNew;
 
   function moveCardToStand(cardId, targetStandIdx, e) {
     if (e) {
@@ -5777,14 +5857,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
     userStands[targetStandIdx].push(card);
     myHand = userStands.flat();
-    selectedCardId = card.id;
+    selectedCardId = null; // Clear selection after moving card to give instant clear feedback
     soundSystem.playCardSlide();
     renderAll(null);
 
     // Scroll target stand to immediately reveal the newly moved card
     const targetCardsRow = document.getElementById(`stand-cards-${targetStandIdx}`);
     if (targetCardsRow) {
+      targetCardsRow.style.scrollBehavior = 'auto';
       targetCardsRow.scrollLeft = targetCardsRow.scrollWidth;
+      targetCardsRow.style.scrollBehavior = '';
       updateStandScrollButtons(targetStandIdx);
     }
     const cardEl = document.getElementById('card-' + card.id);
@@ -5821,14 +5903,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
     userStands.push([card]);
     myHand = userStands.flat();
-    selectedCardId = card.id;
+    selectedCardId = null; // Clear selection after moving card
     soundSystem.playCardSlide();
     renderAll(null);
 
     const newStandIdx = userStands.length - 1;
     const targetCardsRow = document.getElementById(`stand-cards-${newStandIdx}`);
     if (targetCardsRow) {
+      targetCardsRow.style.scrollBehavior = 'auto';
       targetCardsRow.scrollLeft = 0;
+      targetCardsRow.style.scrollBehavior = '';
       updateStandScrollButtons(newStandIdx);
     }
     const cardEl = document.getElementById('card-' + card.id);
@@ -6149,8 +6233,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dist = Math.hypot(dx, dy);
 
     // Any deliberate motion (dist > 8px) initiates card drag immediately
-    // Enables reordering within the same stand (horizontal motion),
-    // moving between stands (vertical motion), and dragging to discard pile!
     if (!touchCardState.isDragging && dist > 8) {
       touchCardState.isDragging = true;
       draggedCardId = cardId;
@@ -6186,45 +6268,82 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (touchDragGhost) {
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
-        // Subtle dynamic tilt based on horizontal drag movement
         const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
         touchDragGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
       }
-
-      // Hide ghost temporarily to accurately detect the element under user's finger
-      if (touchDragGhost) touchDragGhost.style.display = 'none';
-      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (touchDragGhost) touchDragGhost.style.display = 'block';
 
       // Clear previous hover highlights
       document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
         .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
 
-      if (!targetEl) return;
+      touchCardState.dropTarget = null;
 
       // 1. Check Discard Pile
-      const discardTarget = targetEl.closest('#discardContainer, .discard-pile-wrapper');
-      if (discardTarget) {
-        document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
-        return;
-      }
-
-      // 2. Check Another Card in hand (reorder within same stand or across stands)
-      const cardTarget = targetEl.closest('.card');
-      if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-') && cardTarget.id !== 'card-' + cardId) {
-        const rect = cardTarget.getBoundingClientRect();
-        if (touch.clientX < rect.left + rect.width / 2) {
-          cardTarget.classList.add('drag-over-left');
-        } else {
-          cardTarget.classList.add('drag-over-right');
+      const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
+      if (discardEl) {
+        const dRect = discardEl.getBoundingClientRect();
+        if (touch.clientX >= dRect.left - 20 && touch.clientX <= dRect.right + 20 &&
+            touch.clientY >= dRect.top - 20 && touch.clientY <= dRect.bottom + 20) {
+          document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
+          touchCardState.dropTarget = { type: 'discard' };
+          return;
         }
-        return;
       }
 
-      // 3. Check Stand Rack
-      const standRackTarget = targetEl.closest('.stand-rack');
-      if (standRackTarget) {
-        standRackTarget.classList.add('stand-rack-drop-hover');
+      // 2. Check Stands: find stand rack matching touch coordinates or closest vertically
+      let bestStandIdx = -1;
+      let minVerticalDist = Infinity;
+
+      for (let sIdx = 0; sIdx < userStands.length; sIdx++) {
+        const rackEl = document.getElementById(`stand-rack-${sIdx}`);
+        if (!rackEl) continue;
+        const rect = rackEl.getBoundingClientRect();
+        if (touch.clientY >= rect.top - 25 && touch.clientY <= rect.bottom + 25) {
+          bestStandIdx = sIdx;
+          break;
+        }
+        const vCenter = (rect.top + rect.bottom) / 2;
+        const vDist = Math.abs(touch.clientY - vCenter);
+        if (vDist < minVerticalDist) {
+          minVerticalDist = vDist;
+          bestStandIdx = sIdx;
+        }
+      }
+
+      if (bestStandIdx !== -1) {
+        const rackEl = document.getElementById(`stand-rack-${bestStandIdx}`);
+        if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
+
+        // Determine exact insertion index among cards in bestStandIdx
+        const targetStandCards = userStands[bestStandIdx] || [];
+        let insertIdx = targetStandCards.length;
+
+        for (let i = 0; i < targetStandCards.length; i++) {
+          const c = targetStandCards[i];
+          if (!c) continue;
+          const cEl = document.getElementById('card-' + c.id);
+          if (!cEl) continue;
+          const cRect = cEl.getBoundingClientRect();
+          const cCenter = cRect.left + cRect.width / 2;
+
+          if (touch.clientX < cCenter) {
+            insertIdx = i;
+            if (c.id !== cardId) {
+              cEl.classList.add('drag-over-left');
+            }
+            break;
+          } else if (i === targetStandCards.length - 1) {
+            if (c.id !== cardId) {
+              cEl.classList.add('drag-over-right');
+            }
+          }
+        }
+
+        touchCardState.dropTarget = {
+          type: 'stand',
+          targetStandIdx: bestStandIdx,
+          insertIdx
+        };
       }
     }
   }
@@ -6240,77 +6359,33 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       touchCardState.el.style.opacity = '';
     }
 
+    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
+      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
+
     if (touchCardState.isDragging) {
       if (e.cancelable) e.preventDefault();
 
-      const touch = e.changedTouches ? e.changedTouches[0] : null;
-      if (!touch) {
-        touchCardState = null;
-        draggedCardId = null;
-        return;
-      }
+      const dropTarget = touchCardState.dropTarget;
 
-      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-
-      document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
-        .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
-
-      if (targetEl) {
+      if (dropTarget) {
         // 1. Dropped on Discard Pile
-        const discardTarget = targetEl.closest('#discardContainer, .discard-pile-wrapper');
-        const isMyTurn = isCurrentPlayerMe();
-        const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
-
-        if (discardTarget && canDiscard) {
-          selectedCardId = cardId;
-          discardSelected();
-          soundSystem.playDiscard();
-          touchCardState = null;
-          draggedCardId = null;
-          return;
-        }
-
-        // 2. Dropped on Another Card (reorder in same stand OR move to specific position in another stand)
-        const cardTarget = targetEl.closest('.card');
-        if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-')) {
-          const targetCardId = cardTarget.id.replace('card-', '');
-          if (targetCardId && targetCardId !== cardId) {
-            let sourceStand = null, targetStand = null;
-            let fromIdx = -1, toIdx = -1;
-            for (const s of userStands) {
-              if (fromIdx === -1) {
-                fromIdx = s.findIndex(c => c && c.id === cardId);
-                if (fromIdx !== -1) sourceStand = s;
-              }
-              if (toIdx === -1) {
-                toIdx = s.findIndex(c => c && c.id === targetCardId);
-                if (toIdx !== -1) targetStand = s;
-              }
-            }
-            if (sourceStand && targetStand) {
-              const [c] = sourceStand.splice(fromIdx, 1);
-              const rect = cardTarget.getBoundingClientRect();
-              const insertAfter = (touch.clientX >= rect.left + rect.width / 2);
-              let insertIdx = targetStand.findIndex(c => c && c.id === targetCardId);
-              if (insertAfter) insertIdx += 1;
-              targetStand.splice(insertIdx, 0, c);
-              selectedCardId = c.id;
-              myHand = userStands.flat();
-              soundSystem.playCardSlide();
-              renderAll(null);
-              scrollCardIntoView(c.id);
-              touchCardState = null;
-              draggedCardId = null;
-              return;
-            }
+        if (dropTarget.type === 'discard') {
+          const isMyTurn = isCurrentPlayerMe();
+          const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+          if (canDiscard) {
+            selectedCardId = cardId;
+            discardSelected();
+            soundSystem.playDiscard();
+            touchCardState = null;
+            draggedCardId = null;
+            return;
           }
         }
 
-        // 3. Dropped on Stand Rack (stand background, header, cards row, or empty rack)
-        const standRackTarget = targetEl.closest('.stand-rack');
-        if (standRackTarget && standRackTarget.id && standRackTarget.id.startsWith('stand-rack-')) {
-          const sIdx = parseInt(standRackTarget.id.replace('stand-rack-', ''), 10);
-          if (!isNaN(sIdx) && sIdx >= 0 && sIdx < userStands.length) {
+        // 2. Dropped in a Stand
+        if (dropTarget.type === 'stand') {
+          const targetStandIdx = dropTarget.targetStandIdx;
+          if (targetStandIdx >= 0 && targetStandIdx < userStands.length) {
             let sourceStandIdx = -1;
             let fromIdx = -1;
             for (let i = 0; i < userStands.length; i++) {
@@ -6321,25 +6396,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                 break;
               }
             }
+
             if (sourceStandIdx !== -1) {
-              if (sourceStandIdx !== sIdx) {
-                // Moved to a different stand
-                moveCardToStand(cardId, sIdx);
-              } else {
-                // Reordered to start or end of the same stand
-                const [c] = userStands[sourceStandIdx].splice(fromIdx, 1);
-                const rackRect = standRackTarget.getBoundingClientRect();
-                if (touch.clientX < rackRect.left + rackRect.width / 2) {
-                  userStands[sourceStandIdx].unshift(c);
-                } else {
-                  userStands[sourceStandIdx].push(c);
+              let insertIdx = dropTarget.insertIdx;
+              const [card] = userStands[sourceStandIdx].splice(fromIdx, 1);
+
+              if (sourceStandIdx === targetStandIdx) {
+                // Reordered in the same stand
+                if (fromIdx < insertIdx) {
+                  insertIdx = Math.max(0, insertIdx - 1);
                 }
-                selectedCardId = c.id;
-                myHand = userStands.flat();
-                soundSystem.playCardSlide();
-                renderAll(null);
-                scrollCardIntoView(c.id);
+                userStands[sourceStandIdx].splice(insertIdx, 0, card);
+              } else {
+                // Moved to another stand
+                insertIdx = Math.min(insertIdx, userStands[targetStandIdx].length);
+                userStands[targetStandIdx].splice(insertIdx, 0, card);
               }
+
+              myHand = userStands.flat();
+              selectedCardId = card.id;
+              soundSystem.playCardSlide();
+              renderAll(null);
+              scrollCardIntoView(card.id);
               touchCardState = null;
               draggedCardId = null;
               return;
@@ -6375,6 +6453,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
       .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
+    
+    // If dropped via cancel while dropTarget was established, complete the drop
+    if (touchCardState && touchCardState.isDragging && touchCardState.dropTarget) {
+      onTouchCardEnd(e, cardId);
+      return;
+    }
     touchCardState = null;
     draggedCardId = null;
   }
@@ -6492,6 +6576,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       touchPileState = null;
       draggedPileType = null;
     } else {
+      const touch = e.changedTouches ? e.changedTouches[0] : null;
+      const dx = touch ? touch.clientX - touchPileState.startX : 0;
+      const dy = touch ? touch.clientY - touchPileState.startY : 0;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= 12) {
+        handlePileTap(touchPileState.pileType, e);
+      }
       touchPileState = null;
     }
   }
