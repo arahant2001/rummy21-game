@@ -245,25 +245,62 @@
       overflow: visible;
     }
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.38);
+    }
+    .card:active {
+      transform: translateY(-8px) scale(1.05) rotate(-1.5deg);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45), 0 0 12px rgba(217, 182, 92, 0.25);
     }
     .card.is-selected {
-      transform: translateY(-14px) !important;
-      box-shadow: 0 0 0 3px var(--accent-blue), 0 12px 24px rgba(56, 189, 248, 0.4) !important;
+      transform: translateY(-15px) scale(1.05) rotate(-1.5deg) !important;
+      box-shadow: 0 0 0 3px var(--accent-blue), 0 16px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.45) !important;
     }
     .card.is-dragging {
-      opacity: 0.35;
-      transform: scale(0.92);
-      border: 2px dashed var(--accent-blue);
+      opacity: 0.32 !important;
+      transform: scale(0.94) !important;
+      border: 2px dashed rgba(217, 182, 92, 0.65) !important;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5) !important;
     }
     .card.drag-over-left {
-      box-shadow: -5px 0 0 0 var(--accent-blue), 0 4px 10px rgba(0, 0, 0, 0.3);
-      transform: translateX(5px);
+      box-shadow: -6px 0 0 0 var(--accent-gold), 0 6px 14px rgba(0, 0, 0, 0.35) !important;
+      transform: translateX(8px) scale(1.02) !important;
     }
     .card.drag-over-right {
-      box-shadow: 5px 0 0 0 var(--accent-blue), 0 4px 10px rgba(0, 0, 0, 0.3);
-      transform: translateX(-5px);
+      box-shadow: 6px 0 0 0 var(--accent-gold), 0 6px 14px rgba(0, 0, 0, 0.35) !important;
+      transform: translateX(-8px) scale(1.02) !important;
+    }
+
+    /* Tactile Drag Lift Animation for Cards & Discard Pile */
+    .card-touch-lifted,
+    .card-drag-preview {
+      transform-origin: center center !important;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.72), 0 8px 18px rgba(0, 0, 0, 0.45), 0 0 22px rgba(217, 182, 92, 0.45) !important;
+      filter: brightness(1.06) contrast(1.02);
+      border-color: rgba(241, 210, 122, 0.95) !important;
+      cursor: grabbing !important;
+      transition: transform 0.08s ease-out, box-shadow 0.15s ease-out;
+      animation: cardLiftPulse 0.22s cubic-bezier(0.2, 1.2, 0.3, 1) forwards;
+    }
+
+    @keyframes cardLiftPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.09) rotate(-2.8deg);
+        box-shadow: 0 22px 50px rgba(0, 0, 0, 0.72), 0 8px 18px rgba(0, 0, 0, 0.45), 0 0 22px rgba(217, 182, 92, 0.45);
+      }
+    }
+
+    /* Pickup feedback on active discard pile / stock drag */
+    .pile-draggable:active,
+    .pile-drop-source:active .card,
+    .pile-drop-source.is-dragging-pile .card {
+      transform: scale(1.07) rotate(-2.4deg);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.55), 0 0 18px rgba(217, 182, 92, 0.4);
+      transition: transform 0.12s ease;
     }
 
     .card-inner {
@@ -2272,6 +2309,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                onclick="onStockClick(event)"
                ondblclick="onStockDoubleClick(event)"
                ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)"
+               ontouchstart="onTouchPileStart(event, 'stock')" ontouchmove="onTouchPileMove(event)"
+               ontouchend="onTouchPileEnd(event)" ontouchcancel="onTouchPileCancel()"
                title="Stock Deck (Double-click or Drag to hand)">
             <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/BLUE_BACK.svg"
                  alt="Deck Back"
@@ -2299,6 +2338,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                onclick="onDiscardContainerClick(event)"
                ondblclick="onDiscardDoubleClick(event)"
                ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
+               ontouchstart="onTouchPileStart(event, 'discard')" ontouchmove="onTouchPileMove(event)"
+               ontouchend="onTouchPileEnd(event)" ontouchcancel="onTouchPileCancel()"
                ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
                ondrop="onDiscardPileDrop(event)"></div>
         </div>
@@ -5820,31 +5861,81 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   });
 
+  // --- Tactile Drag Ghost Generator for Desktop & Mobile ---
+  function createLiftedDragGhost(sourceEl, rotationDeg = -2.8, scale = 1.09) {
+    if (!sourceEl) return null;
+    const rect = sourceEl.getBoundingClientRect();
+    const ghost = sourceEl.cloneNode(true);
+    ghost.id = 'activeDragGhost';
+    ghost.classList.add('card-drag-preview');
+    ghost.style.position = 'fixed';
+    ghost.style.top = '-9999px';
+    ghost.style.left = '-9999px';
+    ghost.style.width = (rect.width || 72) + 'px';
+    ghost.style.height = (rect.height || 104) + 'px';
+    ghost.style.transform = `scale(${scale}) rotate(${rotationDeg}deg)`;
+    ghost.style.transformOrigin = 'center center';
+    ghost.style.boxShadow = '0 22px 50px rgba(0,0,0,0.72), 0 8px 18px rgba(0,0,0,0.45), 0 0 20px rgba(217,182,92,0.45)';
+    ghost.style.borderRadius = '9px';
+    ghost.style.pointerEvents = 'none';
+    ghost.style.zIndex = '999999';
+    ghost.style.opacity = '0.98';
+    document.body.appendChild(ghost);
+    return ghost;
+  }
+
   // --- Drag a Stock / Discard pile onto your board ---
-  let draggedPileType=null;
-  function onPileDragStart(e,pileType){
-    if(!canPlayerDraw()){e.preventDefault();return;}
-    if(pileType==='discard' && !canPlayerDrawFromDiscard()){
+  let draggedPileType = null;
+  function onPileDragStart(e, pileType) {
+    if (!canPlayerDraw()) { e.preventDefault(); return; }
+    if (pileType === 'discard' && !canPlayerDrawFromDiscard()) {
       e.preventDefault();
       window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
       return;
     }
-    draggedPileType=pileType;draggedCardId=null;
-    e.dataTransfer.setData('text/plain','pile:'+pileType);e.dataTransfer.effectAllowed='move';
-    document.querySelectorAll('.stand-rack').forEach(el=>el.classList.add('pile-drop-ready'));
+    draggedPileType = pileType;
+    draggedCardId = null;
+    e.dataTransfer.setData('text/plain', 'pile:' + pileType);
+    e.dataTransfer.effectAllowed = 'move';
+
+    // Tactile lifted feedback on pickup from discard pile or stock deck
+    const sourceEl = (pileType === 'discard')
+      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+      : document.getElementById('stockDeckBtn');
+
+    if (sourceEl) {
+      try {
+        const ghost = createLiftedDragGhost(sourceEl, -3.0, 1.09);
+        if (ghost && e.dataTransfer.setDragImage) {
+          const rect = sourceEl.getBoundingClientRect();
+          e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
+          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+        }
+      } catch (err) {
+        console.warn('Custom pile drag image error:', err);
+      }
+    }
+
+    if (pileType === 'discard') {
+      document.getElementById('discardContainer')?.classList.add('is-dragging-pile');
+    }
+    document.querySelectorAll('.stand-rack').forEach(el => el.classList.add('pile-drop-ready'));
   }
-  function onPileDragEnd(){
-    draggedPileType=null;
-    document.querySelectorAll('.stand-rack').forEach(el=>el.classList.remove('pile-drop-ready'));
+
+  function onPileDragEnd() {
+    draggedPileType = null;
+    document.getElementById('discardContainer')?.classList.remove('is-dragging-pile');
+    document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
   }
-  function completePileDrop(pileType){
-    if(!canPlayerDraw()){
+
+  function completePileDrop(pileType) {
+    if (!canPlayerDraw()) {
       onPileDragEnd();
       return;
     }
-    if(pileType==='stock') drawStock();
-    if(pileType==='discard') {
-      if(!canPlayerDrawFromDiscard()){
+    if (pileType === 'stock') drawStock();
+    if (pileType === 'discard') {
+      if (!canPlayerDrawFromDiscard()) {
         window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
         onPileDragEnd();
         return;
@@ -5854,14 +5945,26 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     onPileDragEnd();
   }
 
-  // --- HTML5 Drag & Drop Support Across Stands ---
+  // --- HTML5 Drag & Drop Support Across Stands with Tactile Card Lift ---
   function onCardDragStart(e, cardId) {
     draggedPileType = null;
     draggedCardId = cardId;
     e.dataTransfer.setData('text/plain', cardId);
     e.dataTransfer.effectAllowed = 'move';
     const el = document.getElementById('card-' + cardId);
-    if (el) setTimeout(() => el.classList.add('is-dragging'), 0);
+    if (el) {
+      try {
+        const ghost = createLiftedDragGhost(el, -2.8, 1.09);
+        if (ghost && e.dataTransfer.setDragImage) {
+          const rect = el.getBoundingClientRect();
+          e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
+          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+        }
+      } catch (err) {
+        console.warn('Custom card drag image error:', err);
+      }
+      setTimeout(() => el.classList.add('is-dragging'), 0);
+    }
   }
 
   function onCardDragOver(e, cardId) {
@@ -5988,21 +6091,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       touchCardState.isDragging = true;
       draggedCardId = cardId;
 
-      // Create floating ghost avatar
+      // Create floating ghost avatar with subtle scaling and slight rotation
       if (!touchDragGhost) {
         touchDragGhost = touchCardState.el.cloneNode(true);
         touchDragGhost.id = 'touchDragGhost';
+        touchDragGhost.className = touchCardState.el.className + ' card-touch-lifted';
         touchDragGhost.style.position = 'fixed';
         touchDragGhost.style.zIndex = '999999';
         touchDragGhost.style.pointerEvents = 'none';
         touchDragGhost.style.width = touchCardState.el.offsetWidth + 'px';
         touchDragGhost.style.height = touchCardState.el.offsetHeight + 'px';
-        touchDragGhost.style.transform = 'translate(-50%, -50%) scale(1.08)';
-        touchDragGhost.style.boxShadow = '0 18px 40px rgba(0,0,0,0.7), 0 0 14px rgba(56,189,248,0.5)';
-        touchDragGhost.style.opacity = '0.94';
+        touchDragGhost.style.transformOrigin = 'center center';
+        touchDragGhost.style.transform = 'translate(-50%, -50%) scale(1.09) rotate(-2.8deg)';
+        touchDragGhost.style.boxShadow = '0 22px 50px rgba(0,0,0,0.72), 0 8px 18px rgba(0,0,0,0.45), 0 0 20px rgba(217,182,92,0.45)';
+        touchDragGhost.style.opacity = '0.98';
         touchDragGhost.style.borderRadius = '9px';
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
+        touchDragGhost.style.transition = 'transform 0.08s ease-out, box-shadow 0.15s ease-out';
         document.body.appendChild(touchDragGhost);
       }
 
@@ -6016,6 +6122,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (touchDragGhost) {
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
+        // Subtle dynamic tilt based on drag movement velocity
+        const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
+        touchDragGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
       }
 
       const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -6165,6 +6274,142 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     touchCardState = null;
     draggedCardId = null;
   }
+
+  // --- Mobile Touch Drag & Drop for Stock Deck & Discard Pile ---
+  let touchPileState = null;
+  let touchPileGhost = null;
+
+  function onTouchPileStart(e, pileType) {
+    if (!canPlayerDraw()) return;
+    if (pileType === 'discard' && !canPlayerDrawFromDiscard()) return;
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const sourceEl = (pileType === 'discard')
+      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+      : document.getElementById('stockDeckBtn');
+    if (!sourceEl) return;
+
+    touchPileState = {
+      pileType,
+      sourceEl,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startTime: Date.now(),
+      isDragging: false
+    };
+  }
+
+  function onTouchPileMove(e) {
+    if (!touchPileState) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchPileState.startX;
+    const dy = touch.clientY - touchPileState.startY;
+    const dist = Math.hypot(dx, dy);
+
+    if (!touchPileState.isDragging && dist > 16) {
+      touchPileState.isDragging = true;
+      draggedPileType = touchPileState.pileType;
+      document.querySelectorAll('.stand-rack').forEach(el => el.classList.add('pile-drop-ready'));
+
+      if (!touchPileGhost) {
+        touchPileGhost = touchPileState.sourceEl.cloneNode(true);
+        touchPileGhost.id = 'touchPileGhost';
+        touchPileGhost.className = touchPileState.sourceEl.className + ' card-touch-lifted';
+        touchPileGhost.style.position = 'fixed';
+        touchPileGhost.style.zIndex = '999999';
+        touchPileGhost.style.pointerEvents = 'none';
+        touchPileGhost.style.width = touchPileState.sourceEl.offsetWidth + 'px';
+        touchPileGhost.style.height = touchPileState.sourceEl.offsetHeight + 'px';
+        touchPileGhost.style.transformOrigin = 'center center';
+        touchPileGhost.style.transform = 'translate(-50%, -50%) scale(1.09) rotate(-2.8deg)';
+        touchPileGhost.style.boxShadow = '0 22px 50px rgba(0,0,0,0.72), 0 8px 18px rgba(0,0,0,0.45), 0 0 20px rgba(217,182,92,0.45)';
+        touchPileGhost.style.opacity = '0.98';
+        touchPileGhost.style.borderRadius = '9px';
+        touchPileGhost.style.left = touch.clientX + 'px';
+        touchPileGhost.style.top = touch.clientY + 'px';
+        touchPileGhost.style.transition = 'transform 0.08s ease-out, box-shadow 0.15s ease-out';
+        document.body.appendChild(touchPileGhost);
+      }
+
+      touchPileState.sourceEl.style.opacity = '0.4';
+    }
+
+    if (touchPileState.isDragging) {
+      if (e.cancelable) e.preventDefault();
+
+      if (touchPileGhost) {
+        touchPileGhost.style.left = touch.clientX + 'px';
+        touchPileGhost.style.top = touch.clientY + 'px';
+        const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
+        touchPileGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
+      }
+
+      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+      document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
+
+      if (targetEl) {
+        const standRackTarget = targetEl.closest('.stand-rack');
+        if (standRackTarget) {
+          standRackTarget.classList.add('stand-rack-drop-hover');
+        }
+      }
+    }
+  }
+
+  function onTouchPileEnd(e) {
+    if (!touchPileState) return;
+
+    if (touchPileGhost) {
+      touchPileGhost.remove();
+      touchPileGhost = null;
+    }
+    if (touchPileState.sourceEl) {
+      touchPileState.sourceEl.style.opacity = '';
+    }
+
+    if (touchPileState.isDragging) {
+      if (e.cancelable) e.preventDefault();
+      const touch = e.changedTouches[0];
+      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
+      document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
+
+      if (targetEl) {
+        const standRackTarget = targetEl.closest('.stand-rack');
+        if (standRackTarget) {
+          completePileDrop(touchPileState.pileType);
+          touchPileState = null;
+          draggedPileType = null;
+          return;
+        }
+      }
+      onPileDragEnd();
+      touchPileState = null;
+      draggedPileType = null;
+    } else {
+      touchPileState = null;
+    }
+  }
+
+  function onTouchPileCancel() {
+    if (touchPileGhost) {
+      touchPileGhost.remove();
+      touchPileGhost = null;
+    }
+    if (touchPileState && touchPileState.sourceEl) {
+      touchPileState.sourceEl.style.opacity = '';
+    }
+    document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
+    document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
+    touchPileState = null;
+    draggedPileType = null;
+  }
+
+  window.onTouchPileStart = onTouchPileStart;
+  window.onTouchPileMove = onTouchPileMove;
+  window.onTouchPileEnd = onTouchPileEnd;
+  window.onTouchPileCancel = onTouchPileCancel;
 
   function renderDiscardHistory() {
     const box = document.getElementById('discardHistory');
