@@ -871,26 +871,52 @@
       transform: translateY(-1px);
     }
 
-    /* Dedicated Card Reorder & Stand Move Bar (Mobile-friendly, full width) */
+    /* Dedicated Card Reorder & Stand Move Bar (Always visible on mobile & desktop) */
     .reorder-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      background: linear-gradient(135deg, rgba(14, 34, 61, 0.95), rgba(10, 25, 47, 0.95));
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 12px rgba(56, 189, 248, 0.15);
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 9px 12px;
+      border-radius: 12px;
       margin-bottom: 8px;
       width: 100%;
       box-sizing: border-box;
-      animation: fadeInSlide .18s ease-out;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
     }
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+    .reorder-bar-standby {
+      background: rgba(14, 30, 24, 0.78);
+      border: 1px dashed rgba(217, 182, 92, 0.35);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+    .reorder-bar-standby .reorder-nav-btn,
+    .reorder-bar-standby .reorder-close-btn {
+      opacity: 0.38;
+      pointer-events: none;
+    }
+    .reorder-bar-active {
+      background: linear-gradient(135deg, rgba(14, 38, 28, 0.98), rgba(6, 20, 14, 0.99)) !important;
+      border: 2px solid #38bdf8 !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.3) !important;
+      animation: reorderBarPulse 0.2s ease-out;
+    }
+    @keyframes reorderBarPulse {
+      from { transform: translateY(-3px); opacity: 0.85; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .reorder-standby-hint {
+      font-size: 11px;
+      color: #94a3b8;
+      font-style: italic;
+    }
+    .card-just-moved {
+      animation: cardMovedFlash 0.55s ease-out !important;
+    }
+    @keyframes cardMovedFlash {
+      0% { transform: scale(1.15) translateY(-8px); box-shadow: 0 0 0 3px #38bdf8, 0 14px 26px rgba(56, 189, 248, 0.55); }
+      100% { transform: none; box-shadow: none; }
     }
     .reorder-info {
       display: flex;
@@ -917,6 +943,7 @@
       border-color: rgba(148, 163, 184, 0.3) !important;
       border-radius: 6px !important;
       cursor: pointer;
+      touch-action: manipulation !important;
     }
     .reorder-nav-btn:hover {
       background: #334155 !important;
@@ -954,6 +981,7 @@
       gap: 4px;
       white-space: nowrap !important;
       transition: background 0.15s, transform 0.1s;
+      touch-action: manipulation !important;
     }
     .stand-move-btn:hover {
       background: #0284c7 !important;
@@ -963,26 +991,31 @@
       background: rgba(16, 185, 129, 0.22) !important;
       border-color: #10b981 !important;
       color: #6ee7b7 !important;
+      touch-action: manipulation !important;
     }
     .stand-move-new-btn:hover {
       background: #059669 !important;
       color: #ffffff !important;
     }
     .stand-move-here-btn {
-      background: rgba(56, 189, 248, 0.18);
+      background: rgba(56, 189, 248, 0.22);
       border: 1px solid #38bdf8;
       color: #7dd3fc;
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
       cursor: pointer;
       margin-left: 8px;
       transition: all 0.15s ease;
+      touch-action: manipulation !important;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    .stand-move-here-btn:hover {
+    .stand-move-here-btn:hover, .stand-move-here-btn:active {
       background: #0284c7;
       color: #ffffff;
+      transform: translateY(-1px);
     }
     .stand-discard-quick-btn {
       background: linear-gradient(135deg, #b45309, #92400e) !important;
@@ -1177,7 +1210,7 @@
       line-height: 1.4;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       :root {
         --card-w: 60px;
         --card-h: 88px;
@@ -1191,32 +1224,18 @@
       .sound-label {
         display: none;
       }
-      /* Fixed Mobile Bottom Action Dock when a card is selected */
+      /* Sticky Responsive Card Action & Stand Move Bar on Mobile */
       .reorder-bar {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        max-width: 100vw !important;
-        z-index: 99999 !important;
-        margin: 0 !important;
-        border-radius: 18px 18px 0 0 !important;
-        background: linear-gradient(180deg, rgba(14, 38, 28, 0.98), rgba(6, 20, 14, 0.99)) !important;
-        border: 2px solid #38bdf8 !important;
-        border-bottom: none !important;
-        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.85), 0 0 18px rgba(56, 189, 248, 0.35) !important;
-        padding: 10px 14px 16px !important;
-        gap: 10px !important;
+        position: sticky !important;
+        top: 52px !important;
+        z-index: 85 !important;
+        margin: 4px 0 8px 0 !important;
+        border-radius: 12px !important;
+        padding: 9px 12px !important;
+        gap: 8px !important;
         box-sizing: border-box !important;
-        animation: slideUpMobileBar 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      }
-      @keyframes slideUpMobileBar {
-        from { transform: translateY(100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      body.card-selected-mobile {
-        padding-bottom: 140px !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
       }
       .reorder-info {
         justify-content: space-between;
@@ -1238,13 +1257,15 @@
         min-height: 38px;
         justify-content: center;
         text-align: center;
-        font-size: 13px !important;
+        font-size: 12px !important;
+        touch-action: manipulation !important;
       }
       .stand-move-new-btn {
         flex-basis: 100% !important;
         min-height: 38px;
         justify-content: center;
-        font-size: 13px !important;
+        font-size: 12px !important;
+        touch-action: manipulation !important;
       }
     }
   
@@ -1302,11 +1323,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .center-board{position:relative;gap:clamp(18px,5vw,54px);min-height:160px;padding:22px 24px;margin:8px 0;border:1px solid rgba(217,182,92,.20);border-radius:20px;background:radial-gradient(circle at center,rgba(35,126,85,.20),transparent 60%),linear-gradient(145deg,#0c3323,#082117);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 15px 38px rgba(0,0,0,.32)}
 .center-board:before{content:"21 CARD RUMMY";position:absolute;top:9px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;letter-spacing:2px;color:rgba(241,210,122,.38);pointer-events:none}
 .pile-title{color:#b9c8c0;font-size:10px;margin-bottom:8px}.pile-wrapper{min-width:78px}
-.card{border-radius:9px;box-shadow:0 5px 12px rgba(0,0,0,.34),0 1px 2px rgba(0,0,0,.18)}.card:hover{transform:translateY(-6px);box-shadow:0 10px 22px rgba(0,0,0,.42)}
+.card{border-radius:9px;box-shadow:0 5px 12px rgba(0,0,0,.34),0 1px 2px rgba(0,0,0,.18);touch-action:none;-webkit-user-select:none;user-select:none}.card:hover{transform:translateY(-6px);box-shadow:0 10px 22px rgba(0,0,0,.42)}
 .card.is-selected{transform:translateY(-16px)!important;box-shadow:0 0 0 3px var(--accent-gold-soft),0 14px 28px rgba(217,182,92,.30)!important}.card-inner{border-radius:9px;background:linear-gradient(145deg,#fff,#f7f5ee)}.card.poochie .card-inner{background:linear-gradient(145deg,#fff9df,#f4df9a)}
 .stand-rack{background:linear-gradient(180deg,rgba(12,35,26,.95),rgba(6,20,14,.95));border-color:rgba(217,182,92,.15);border-radius:14px;padding:9px 10px 8px}.stand-title-box{color:#a9bbb2}.stand-count-badge{background:rgba(217,182,92,.10);color:#e6eee9}.stand-cards{gap:9px;padding-top:14px}
-.tool-btn{background:rgba(19,39,31,.95)!important;border-color:rgba(255,255,255,.10)!important}.tool-btn:hover{background:rgba(34,65,51,.98)!important;border-color:rgba(99,214,165,.45)!important}.tool-btn-highlight{border-color:rgba(217,182,92,.35)!important;color:var(--accent-gold-soft)!important}
-.reorder-bar{background:rgba(16,61,45,.38);border-color:rgba(99,214,165,.22)}
+.tool-btn{background:rgba(19,39,31,.95)!important;border-color:rgba(255,255,255,.10)!important;touch-action:manipulation}.tool-btn:hover{background:rgba(34,65,51,.98)!important;border-color:rgba(99,214,165,.45)!important}.tool-btn-highlight{border-color:rgba(217,182,92,.35)!important;color:var(--accent-gold-soft)!important}
 .actions-grid{gap:9px;margin-top:7px;padding:4px 0 2px}.btn-action{min-height:48px;border-radius:11px}.btn-draw-stock{background:linear-gradient(135deg,#177e5a,#0c6044)}.btn-draw-discard{background:linear-gradient(135deg,#3c8065,#28624c)}.btn-discard{background:linear-gradient(135deg,#c08e2e,#966c1f)}.btn-drop{background:rgba(41,20,24,.72);border-color:rgba(240,107,120,.25)}.btn-declare{background:linear-gradient(135deg,#e1bd62,#ae7d27);box-shadow:0 5px 18px rgba(217,182,92,.24);color:#172014}
 .modal-content{background:linear-gradient(145deg,#143728,#091b13);border-color:rgba(217,182,92,.28)}
 @media(max-width:760px){body{padding:7px}.table-container{min-height:calc(100vh - 14px)}.center-board{min-height:145px;gap:16px;padding:22px 10px 14px}.btn-action{min-height:46px;padding:10px 5px;font-size:12px}}
@@ -2379,20 +2399,22 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
 
     <!-- Dedicated Responsive Card Action & Stand Move Bar (visible on mobile and desktop) -->
-    <div id="reorderBar" class="reorder-bar" style="display: none;">
+    <div id="reorderBar" class="reorder-bar reorder-bar-standby">
       <div class="reorder-info">
-        <span class="reorder-hint">Card <strong id="selectedCardLabel"></strong>:</span>
+        <span class="reorder-hint">Card <strong id="selectedCardLabel"><span style="color:#94a3b8; font-weight:normal; font-size:11px;">None selected</span></strong>:</span>
         <div class="reorder-nav-group">
-          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCardToStart()" title="Move to Front">⏮</button>
-          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCard(-1)" title="Move Left">◀</button>
-          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCard(1)" title="Move Right">▶</button>
-          <button class="tool-btn reorder-nav-btn" onclick="moveSelectedCardToEnd()" title="Move to End">⏭</button>
+          <button type="button" class="tool-btn reorder-nav-btn" onclick="moveSelectedCardToStart()" title="Move to Front">⏮</button>
+          <button type="button" class="tool-btn reorder-nav-btn" onclick="moveSelectedCard(-1)" title="Move Left">◀</button>
+          <button type="button" class="tool-btn reorder-nav-btn" onclick="moveSelectedCard(1)" title="Move Right">▶</button>
+          <button type="button" class="tool-btn reorder-nav-btn" onclick="moveSelectedCardToEnd()" title="Move to End">⏭</button>
         </div>
-        <button class="tool-btn reorder-close-btn" onclick="deselectCard()" title="Close / Deselect Card">✕</button>
+        <button type="button" class="tool-btn reorder-close-btn" onclick="deselectCard()" title="Close / Deselect Card">✕</button>
       </div>
       <div class="reorder-stands-section">
         <span class="reorder-stands-label">Move card:</span>
-        <div id="standMoveOptions" class="stand-move-options"></div>
+        <div id="standMoveOptions" class="stand-move-options">
+          <span class="reorder-standby-hint">Tap any card in your hand to move or reorder</span>
+        </div>
       </div>
     </div>
 
@@ -4862,7 +4884,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
         let moveHereBtn = '';
         if (selectedCardId && sIdx !== currentSelectedStandIdx) {
-          moveHereBtn = `<button class="stand-move-here-btn" onclick="moveCardToStand('${selectedCardId}', ${sIdx})" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
+          moveHereBtn = `<button type="button" class="stand-move-here-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); moveCardToStand('${selectedCardId}', ${sIdx}, event)" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
         }
         const cardsContent = stand.length > 0
           ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
@@ -5659,8 +5681,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function selectCard(cardId, fromTouch = false) {
     const now = Date.now();
-    if (!fromTouch && (now - lastTouchSelectTime < 450)) {
-      return; // Ignore synthetic click directly after touch
+    if (!fromTouch && (now - lastTouchSelectTime < 600)) {
+      return; // Ignore synthetic mouse click directly following touch
     }
     if (fromTouch) {
       lastTouchSelectTime = now;
@@ -5685,65 +5707,99 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const optionsSpan = document.getElementById('standMoveOptions');
     if (!reorderBox) return;
 
+    // Always keep toolbar visible on mobile & desktop
+    reorderBox.style.display = 'flex';
+
     if (selectedCardId && !declarationMode) {
-      const card = userStands.flat().find(c => c.id === selectedCardId);
-      reorderBox.style.display = 'flex';
+      const card = userStands.flat().find(c => c && c.id === selectedCardId);
+      reorderBox.classList.remove('reorder-bar-standby');
+      reorderBox.classList.add('reorder-bar-active');
       document.body.classList.add('card-selected-mobile');
       if (labelSpan && card) {
         const isRed = ['♥', '♦'].includes(card.suit);
         labelSpan.innerHTML = `<span style="color:${isRed ? '#f87171' : '#38bdf8'}; font-weight:800;">${card.rank}${card.suit}</span>`;
       }
 
-      // Quick move to other stands buttons (Requests 6 & 7)
+      // Quick move to other stands buttons
       if (optionsSpan) {
-        const currentStandIdx = userStands.findIndex(s => s.some(c => c.id === selectedCardId));
+        const currentStandIdx = userStands.findIndex(s => s.some(c => c && c.id === selectedCardId));
         let html = '';
         userStands.forEach((s, idx) => {
           if (idx !== currentStandIdx) {
-            html += `<button class="tool-btn stand-move-btn" onclick="moveCardToStand('${selectedCardId}', ${idx})" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
+            html += `<button type="button" class="tool-btn stand-move-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); moveCardToStand('${selectedCardId}', ${idx}, event)" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
           }
         });
-        // Request 7: Corresponding button to move to a new stand
-        html += `<button class="tool-btn stand-move-btn stand-move-new-btn" onclick="moveCardToNewStand('${selectedCardId}')" title="Create a new stand and move this card into it">+ Move to Stand ${userStands.length + 1}</button>`;
+        html += `<button type="button" class="tool-btn stand-move-btn stand-move-new-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); moveCardToNewStand('${selectedCardId}', event)" title="Create a new stand and move this card into it">+ Stand ${userStands.length + 1}</button>`;
         
-        // If it is player's turn to discard, offer quick discard button in the mobile action bar
+        // If it is player's turn to discard, offer quick discard button in the action bar
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
         if (canDiscard) {
-          html += `<button class="tool-btn stand-move-btn stand-discard-quick-btn" onclick="discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
+          html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
         }
 
         optionsSpan.innerHTML = html;
       }
     } else {
-      reorderBox.style.display = 'none';
+      reorderBox.classList.add('reorder-bar-standby');
+      reorderBox.classList.remove('reorder-bar-active');
       document.body.classList.remove('card-selected-mobile');
-      if (optionsSpan) optionsSpan.innerHTML = '';
+      if (labelSpan) {
+        labelSpan.innerHTML = '<span style="color:#94a3b8; font-weight:normal; font-size:11px;">None selected</span>';
+      }
+      if (optionsSpan) {
+        optionsSpan.innerHTML = `<span class="reorder-standby-hint">Tap any card in your hand to move or reorder</span>`;
+      }
     }
   }
 
-  function moveCardToStand(cardId, targetStandIdx) {
+  function moveCardToStand(cardId, targetStandIdx, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    if (!cardId && selectedCardId) cardId = selectedCardId;
+    if (!cardId) return;
+
     let sourceStandIdx = -1;
     let cardIdx = -1;
     for (let i = 0; i < userStands.length; i++) {
-      const idx = userStands[i].findIndex(c => c.id === cardId);
+      const idx = userStands[i].findIndex(c => c && c.id === cardId);
       if (idx !== -1) {
         sourceStandIdx = i;
         cardIdx = idx;
         break;
       }
     }
-    if (sourceStandIdx === -1 || targetStandIdx >= userStands.length) return;
+    if (sourceStandIdx === -1 || targetStandIdx < 0 || targetStandIdx >= userStands.length) return;
+    if (sourceStandIdx === targetStandIdx) return; // already in this stand
+
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
     userStands[targetStandIdx].push(card);
     myHand = userStands.flat();
     selectedCardId = card.id;
     soundSystem.playCardSlide();
     renderAll(null);
-    scrollCardIntoView(card.id);
+
+    // Scroll target stand to immediately reveal the newly moved card
+    const targetCardsRow = document.getElementById(`stand-cards-${targetStandIdx}`);
+    if (targetCardsRow) {
+      targetCardsRow.scrollLeft = targetCardsRow.scrollWidth;
+      updateStandScrollButtons(targetStandIdx);
+    }
+    const cardEl = document.getElementById('card-' + card.id);
+    if (cardEl) {
+      cardEl.classList.add('card-just-moved');
+      setTimeout(() => cardEl.classList.remove('card-just-moved'), 600);
+    }
   }
 
-  function moveCardToNewStand(cardId) {
+  function moveCardToNewStand(cardId, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    if (!cardId && selectedCardId) cardId = selectedCardId;
     if (!cardId) {
       addNewStand();
       return;
@@ -5751,7 +5807,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     let sourceStandIdx = -1;
     let cardIdx = -1;
     for (let i = 0; i < userStands.length; i++) {
-      const idx = userStands[i].findIndex(c => c.id === cardId);
+      const idx = userStands[i].findIndex(c => c && c.id === cardId);
       if (idx !== -1) {
         sourceStandIdx = i;
         cardIdx = idx;
@@ -5768,7 +5824,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     selectedCardId = card.id;
     soundSystem.playCardSlide();
     renderAll(null);
-    scrollCardIntoView(card.id);
+
+    const newStandIdx = userStands.length - 1;
+    const targetCardsRow = document.getElementById(`stand-cards-${newStandIdx}`);
+    if (targetCardsRow) {
+      targetCardsRow.scrollLeft = 0;
+      updateStandScrollButtons(newStandIdx);
+    }
+    const cardEl = document.getElementById('card-' + card.id);
+    if (cardEl) {
+      cardEl.classList.add('card-just-moved');
+      setTimeout(() => cardEl.classList.remove('card-just-moved'), 600);
+    }
   }
 
   // --- Manual Card Reordering within Stand ---
@@ -6081,13 +6148,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchCardState.startY;
     const dist = Math.hypot(dx, dy);
 
-    // Distinguish between horizontal scroll swipes and card dragging:
-    // When the user swipes horizontally (dx >> dy), let native horizontal scroll operate freely.
-    // Transition to card dragging only when movement is distinctly vertical (dragging upwards to discard/table)
-    // or after a deliberate drag distance exceeding threshold.
-    const isMainlyVertical = Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx) * 0.75;
-    const isDistinctDrag = dist > 26;
-    if (!touchCardState.isDragging && (isMainlyVertical || isDistinctDrag)) {
+    // Any deliberate motion (dist > 8px) initiates card drag immediately
+    // Enables reordering within the same stand (horizontal motion),
+    // moving between stands (vertical motion), and dragging to discard pile!
+    if (!touchCardState.isDragging && dist > 8) {
       touchCardState.isDragging = true;
       draggedCardId = cardId;
 
@@ -6116,19 +6180,22 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
 
     if (touchCardState.isDragging) {
-      // PREVENT NATIVE SCROLL: this is what stops dragging the scrollbar on phones!
+      // PREVENT NATIVE SCROLL: stops page or container scrolling while dragging a card
       if (e.cancelable) e.preventDefault();
 
       if (touchDragGhost) {
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
-        // Subtle dynamic tilt based on drag movement velocity
+        // Subtle dynamic tilt based on horizontal drag movement
         const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
         touchDragGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
       }
 
+      // Hide ghost temporarily to accurately detect the element under user's finger
+      if (touchDragGhost) touchDragGhost.style.display = 'none';
       const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-      
+      if (touchDragGhost) touchDragGhost.style.display = 'block';
+
       // Clear previous hover highlights
       document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
         .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
@@ -6142,7 +6209,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         return;
       }
 
-      // 2. Check Another Card in hand
+      // 2. Check Another Card in hand (reorder within same stand or across stands)
       const cardTarget = targetEl.closest('.card');
       if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-') && cardTarget.id !== 'card-' + cardId) {
         const rect = cardTarget.getBoundingClientRect();
@@ -6176,7 +6243,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (touchCardState.isDragging) {
       if (e.cancelable) e.preventDefault();
 
-      const touch = e.changedTouches[0];
+      const touch = e.changedTouches ? e.changedTouches[0] : null;
+      if (!touch) {
+        touchCardState = null;
+        draggedCardId = null;
+        return;
+      }
+
       const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
 
       document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
@@ -6197,7 +6270,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           return;
         }
 
-        // 2. Dropped on Another Card
+        // 2. Dropped on Another Card (reorder in same stand OR move to specific position in another stand)
         const cardTarget = targetEl.closest('.card');
         if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-')) {
           const targetCardId = cardTarget.id.replace('card-', '');
@@ -6206,11 +6279,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             let fromIdx = -1, toIdx = -1;
             for (const s of userStands) {
               if (fromIdx === -1) {
-                fromIdx = s.findIndex(c => c.id === cardId);
+                fromIdx = s.findIndex(c => c && c.id === cardId);
                 if (fromIdx !== -1) sourceStand = s;
               }
               if (toIdx === -1) {
-                toIdx = s.findIndex(c => c.id === targetCardId);
+                toIdx = s.findIndex(c => c && c.id === targetCardId);
                 if (toIdx !== -1) targetStand = s;
               }
             }
@@ -6218,7 +6291,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
               const [c] = sourceStand.splice(fromIdx, 1);
               const rect = cardTarget.getBoundingClientRect();
               const insertAfter = (touch.clientX >= rect.left + rect.width / 2);
-              let insertIdx = targetStand.findIndex(c => c.id === targetCardId);
+              let insertIdx = targetStand.findIndex(c => c && c.id === targetCardId);
               if (insertAfter) insertIdx += 1;
               targetStand.splice(insertIdx, 0, c);
               selectedCardId = c.id;
@@ -6233,15 +6306,44 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           }
         }
 
-        // 3. Dropped on Stand Rack
+        // 3. Dropped on Stand Rack (stand background, header, cards row, or empty rack)
         const standRackTarget = targetEl.closest('.stand-rack');
         if (standRackTarget && standRackTarget.id && standRackTarget.id.startsWith('stand-rack-')) {
           const sIdx = parseInt(standRackTarget.id.replace('stand-rack-', ''), 10);
           if (!isNaN(sIdx) && sIdx >= 0 && sIdx < userStands.length) {
-            moveCardToStand(cardId, sIdx);
-            touchCardState = null;
-            draggedCardId = null;
-            return;
+            let sourceStandIdx = -1;
+            let fromIdx = -1;
+            for (let i = 0; i < userStands.length; i++) {
+              const idx = userStands[i].findIndex(c => c && c.id === cardId);
+              if (idx !== -1) {
+                sourceStandIdx = i;
+                fromIdx = idx;
+                break;
+              }
+            }
+            if (sourceStandIdx !== -1) {
+              if (sourceStandIdx !== sIdx) {
+                // Moved to a different stand
+                moveCardToStand(cardId, sIdx);
+              } else {
+                // Reordered to start or end of the same stand
+                const [c] = userStands[sourceStandIdx].splice(fromIdx, 1);
+                const rackRect = standRackTarget.getBoundingClientRect();
+                if (touch.clientX < rackRect.left + rackRect.width / 2) {
+                  userStands[sourceStandIdx].unshift(c);
+                } else {
+                  userStands[sourceStandIdx].push(c);
+                }
+                selectedCardId = c.id;
+                myHand = userStands.flat();
+                soundSystem.playCardSlide();
+                renderAll(null);
+                scrollCardIntoView(c.id);
+              }
+              touchCardState = null;
+              draggedCardId = null;
+              return;
+            }
           }
         }
       }
@@ -6249,12 +6351,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       draggedCardId = null;
       touchCardState = null;
     } else {
-      // Tap vs swipe check: only select card if movement was minimal (tap)
+      // Tap (no drag): select/deselect card
       const touch = e.changedTouches ? e.changedTouches[0] : null;
       const dx = touch ? touch.clientX - touchCardState.startX : 0;
       const dy = touch ? touch.clientY - touchCardState.startY : 0;
       const dist = Math.hypot(dx, dy);
-      if (dist <= 10) {
+      if (dist <= 8) {
+        if (e.cancelable) e.preventDefault();
+        lastTouchSelectTime = Date.now();
         selectCard(cardId, true);
       }
       touchCardState = null;
