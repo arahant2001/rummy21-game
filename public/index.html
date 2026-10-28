@@ -6225,6 +6225,82 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     };
   }
 
+  function updateTouchCardDropTarget(x, y, cardId) {
+      // Clear previous hover highlights
+      document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
+        .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
+
+      touchCardState.dropTarget = null;
+
+      // 1. Check Discard Pile
+      const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
+      if (discardEl) {
+        const dRect = discardEl.getBoundingClientRect();
+        if (x >= dRect.left - 20 && x <= dRect.right + 20 &&
+            y >= dRect.top - 20 && y <= dRect.bottom + 20) {
+          document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
+          touchCardState.dropTarget = { type: 'discard' };
+          return;
+        }
+      }
+
+      // 2. Check Stands: find stand rack matching touch coordinates or closest vertically
+      let bestStandIdx = -1;
+      let minVerticalDist = Infinity;
+
+      for (let sIdx = 0; sIdx < userStands.length; sIdx++) {
+        const rackEl = document.getElementById(`stand-rack-${sIdx}`);
+        if (!rackEl) continue;
+        const rect = rackEl.getBoundingClientRect();
+        if (y >= rect.top - 25 && y <= rect.bottom + 25) {
+          bestStandIdx = sIdx;
+          break;
+        }
+        const vCenter = (rect.top + rect.bottom) / 2;
+        const vDist = Math.abs(y - vCenter);
+        if (vDist < minVerticalDist) {
+          minVerticalDist = vDist;
+          bestStandIdx = sIdx;
+        }
+      }
+
+      if (bestStandIdx !== -1) {
+        const rackEl = document.getElementById(`stand-rack-${bestStandIdx}`);
+        if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
+
+        // Determine exact insertion index among cards in bestStandIdx
+        const targetStandCards = userStands[bestStandIdx] || [];
+        let insertIdx = targetStandCards.length;
+
+        for (let i = 0; i < targetStandCards.length; i++) {
+          const c = targetStandCards[i];
+          if (!c) continue;
+          const cEl = document.getElementById('card-' + c.id);
+          if (!cEl) continue;
+          const cRect = cEl.getBoundingClientRect();
+          const cCenter = cRect.left + cRect.width / 2;
+
+          if (x < cCenter) {
+            insertIdx = i;
+            if (c.id !== cardId) {
+              cEl.classList.add('drag-over-left');
+            }
+            break;
+          } else if (i === targetStandCards.length - 1) {
+            if (c.id !== cardId) {
+              cEl.classList.add('drag-over-right');
+            }
+          }
+        }
+
+        touchCardState.dropTarget = {
+          type: 'stand',
+          targetStandIdx: bestStandIdx,
+          insertIdx
+        };
+      }
+  }
+
   function onTouchCardMove(e, cardId) {
     if (!touchCardState || touchCardState.cardId !== cardId) return;
     const touch = e.touches[0];
@@ -6272,79 +6348,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         touchDragGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
       }
 
-      // Clear previous hover highlights
-      document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
-        .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
-
-      touchCardState.dropTarget = null;
-
-      // 1. Check Discard Pile
-      const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
-      if (discardEl) {
-        const dRect = discardEl.getBoundingClientRect();
-        if (touch.clientX >= dRect.left - 20 && touch.clientX <= dRect.right + 20 &&
-            touch.clientY >= dRect.top - 20 && touch.clientY <= dRect.bottom + 20) {
-          document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
-          touchCardState.dropTarget = { type: 'discard' };
-          return;
-        }
-      }
-
-      // 2. Check Stands: find stand rack matching touch coordinates or closest vertically
-      let bestStandIdx = -1;
-      let minVerticalDist = Infinity;
-
-      for (let sIdx = 0; sIdx < userStands.length; sIdx++) {
-        const rackEl = document.getElementById(`stand-rack-${sIdx}`);
-        if (!rackEl) continue;
-        const rect = rackEl.getBoundingClientRect();
-        if (touch.clientY >= rect.top - 25 && touch.clientY <= rect.bottom + 25) {
-          bestStandIdx = sIdx;
-          break;
-        }
-        const vCenter = (rect.top + rect.bottom) / 2;
-        const vDist = Math.abs(touch.clientY - vCenter);
-        if (vDist < minVerticalDist) {
-          minVerticalDist = vDist;
-          bestStandIdx = sIdx;
-        }
-      }
-
-      if (bestStandIdx !== -1) {
-        const rackEl = document.getElementById(`stand-rack-${bestStandIdx}`);
-        if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
-
-        // Determine exact insertion index among cards in bestStandIdx
-        const targetStandCards = userStands[bestStandIdx] || [];
-        let insertIdx = targetStandCards.length;
-
-        for (let i = 0; i < targetStandCards.length; i++) {
-          const c = targetStandCards[i];
-          if (!c) continue;
-          const cEl = document.getElementById('card-' + c.id);
-          if (!cEl) continue;
-          const cRect = cEl.getBoundingClientRect();
-          const cCenter = cRect.left + cRect.width / 2;
-
-          if (touch.clientX < cCenter) {
-            insertIdx = i;
-            if (c.id !== cardId) {
-              cEl.classList.add('drag-over-left');
-            }
-            break;
-          } else if (i === targetStandCards.length - 1) {
-            if (c.id !== cardId) {
-              cEl.classList.add('drag-over-right');
-            }
-          }
-        }
-
-        touchCardState.dropTarget = {
-          type: 'stand',
-          targetStandIdx: bestStandIdx,
-          insertIdx
-        };
-      }
+      updateTouchCardDropTarget(touch.clientX, touch.clientY, cardId);
     }
   }
 
@@ -6365,6 +6369,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (touchCardState.isDragging) {
       if (e.cancelable) e.preventDefault();
 
+      const releaseTouch = e.changedTouches && e.changedTouches[0];
+      if (releaseTouch) {
+        updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
+      }
       const dropTarget = touchCardState.dropTarget;
 
       if (dropTarget) {
