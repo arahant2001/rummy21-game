@@ -245,25 +245,62 @@
       overflow: visible;
     }
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.38);
+    }
+    .card:active {
+      transform: translateY(-8px) scale(1.05) rotate(-1.5deg);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45), 0 0 12px rgba(217, 182, 92, 0.25);
     }
     .card.is-selected {
-      transform: translateY(-14px) !important;
-      box-shadow: 0 0 0 3px var(--accent-blue), 0 12px 24px rgba(56, 189, 248, 0.4) !important;
+      transform: translateY(-15px) scale(1.05) rotate(-1.5deg) !important;
+      box-shadow: 0 0 0 3px var(--accent-blue), 0 16px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.45) !important;
     }
     .card.is-dragging {
-      opacity: 0.35;
-      transform: scale(0.92);
-      border: 2px dashed var(--accent-blue);
+      opacity: 0.32 !important;
+      transform: scale(0.94) !important;
+      border: 2px dashed rgba(217, 182, 92, 0.65) !important;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5) !important;
     }
     .card.drag-over-left {
-      box-shadow: -5px 0 0 0 var(--accent-blue), 0 4px 10px rgba(0, 0, 0, 0.3);
-      transform: translateX(5px);
+      box-shadow: -6px 0 0 0 var(--accent-gold), 0 6px 14px rgba(0, 0, 0, 0.35) !important;
+      transform: translateX(8px) scale(1.02) !important;
     }
     .card.drag-over-right {
-      box-shadow: 5px 0 0 0 var(--accent-blue), 0 4px 10px rgba(0, 0, 0, 0.3);
-      transform: translateX(-5px);
+      box-shadow: 6px 0 0 0 var(--accent-gold), 0 6px 14px rgba(0, 0, 0, 0.35) !important;
+      transform: translateX(-8px) scale(1.02) !important;
+    }
+
+    /* Tactile Drag Lift Animation for Cards & Discard Pile */
+    .card-touch-lifted,
+    .card-drag-preview {
+      transform-origin: center center !important;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.72), 0 8px 18px rgba(0, 0, 0, 0.45), 0 0 22px rgba(217, 182, 92, 0.45) !important;
+      filter: brightness(1.06) contrast(1.02);
+      border-color: rgba(241, 210, 122, 0.95) !important;
+      cursor: grabbing !important;
+      transition: transform 0.08s ease-out, box-shadow 0.15s ease-out;
+      animation: cardLiftPulse 0.22s cubic-bezier(0.2, 1.2, 0.3, 1) forwards;
+    }
+
+    @keyframes cardLiftPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.09) rotate(-2.8deg);
+        box-shadow: 0 22px 50px rgba(0, 0, 0, 0.72), 0 8px 18px rgba(0, 0, 0, 0.45), 0 0 22px rgba(217, 182, 92, 0.45);
+      }
+    }
+
+    /* Pickup feedback on active discard pile / stock drag */
+    .pile-draggable:active,
+    .pile-drop-source:active .card,
+    .pile-drop-source.is-dragging-pile .card {
+      transform: scale(1.07) rotate(-2.4deg);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.55), 0 0 18px rgba(217, 182, 92, 0.4);
+      transition: transform 0.12s ease;
     }
 
     .card-inner {
@@ -677,13 +714,98 @@
       min-height: 116px;
       align-items: center;
       -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(217, 182, 92, 0.4) rgba(0, 0, 0, 0.2);
     }
     .stand-cards::-webkit-scrollbar {
-      height: 4px;
+      height: 5px;
+    }
+    .stand-cards::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 4px;
     }
     .stand-cards::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.2);
-      border-radius: 2px;
+      background: rgba(217, 182, 92, 0.4);
+      border-radius: 4px;
+    }
+    .stand-cards::-webkit-scrollbar-thumb:hover {
+      background: rgba(217, 182, 92, 0.7);
+    }
+
+    /* Stand Horizontal Scroll Navigators (Scroll Triangles) */
+    .stand-scroll-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .stand-scroll-container .stand-cards {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .stand-scroll-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 30px;
+      align-self: stretch;
+      min-height: 94px;
+      background: linear-gradient(180deg, rgba(20, 48, 36, 0.95), rgba(11, 28, 21, 0.95));
+      border: 1px solid rgba(217, 182, 92, 0.42);
+      border-radius: 8px;
+      color: #f1d27a;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: background 0.15s, border-color 0.15s, transform 0.1s, opacity 0.15s, box-shadow 0.15s;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      z-index: 5;
+    }
+    .stand-scroll-btn:hover:not(.is-disabled) {
+      background: linear-gradient(180deg, rgba(32, 78, 58, 0.98), rgba(18, 44, 33, 0.98));
+      border-color: #f1d27a;
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(241, 210, 122, 0.25), 0 0 10px rgba(217, 182, 92, 0.45);
+      transform: translateY(-1px);
+    }
+    .stand-scroll-btn:active:not(.is-disabled) {
+      transform: scale(0.93);
+      background: rgba(217, 182, 92, 0.3);
+    }
+    .stand-scroll-btn.is-disabled {
+      opacity: 0.18;
+      cursor: default;
+      pointer-events: none;
+      border-color: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.2);
+      box-shadow: none;
+    }
+    .scroll-arrow-svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    }
+    @media (max-width: 600px) {
+      .stand-scroll-container {
+        gap: 4px;
+      }
+      .stand-scroll-btn {
+        width: 25px;
+        min-height: 84px;
+        border-radius: 6px;
+      }
+      .scroll-arrow-svg {
+        width: 14px;
+        height: 14px;
+      }
     }
 
     /* Audio Toggle Button in Header */
@@ -711,6 +833,42 @@
       background: rgba(239, 68, 68, 0.15);
       border-color: rgba(239, 68, 68, 0.35);
       color: #fca5a5;
+    }
+
+    /* Status Bar Action Buttons (Leave Session & Close Room) */
+    .status-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .status-action-btn.btn-leave {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--surface-border-light);
+      color: #e2e8f0;
+    }
+    .status-action-btn.btn-leave:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+    .status-action-btn.btn-close-room {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .status-action-btn.btn-close-room:hover {
+      background: rgba(239, 68, 68, 0.28);
+      border-color: rgba(239, 68, 68, 0.65);
+      color: #ffffff;
+      transform: translateY(-1px);
     }
 
     /* Dedicated Card Reorder & Stand Move Bar (Mobile-friendly, full width) */
@@ -1182,7 +1340,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .btn-forfeit-danger{background:rgba(240,107,120,.09);border:1px solid rgba(240,107,120,.26);color:#f87171;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
 .btn-forfeit-danger:hover{background:rgba(240,107,120,.20);border-color:rgba(240,107,120,.45);color:#fca5a5}
 .declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
-.fanfare{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(4,12,8,.30);animation:fanfareFade 2.8s ease forwards}.fanfare-card{padding:22px 28px;border-radius:18px;border:1px solid rgba(241,210,122,.55);background:linear-gradient(145deg,rgba(22,58,42,.98),rgba(7,24,16,.98));box-shadow:0 20px 70px rgba(0,0,0,.55),0 0 40px rgba(217,182,92,.18);text-align:center;transform:scale(.72);animation:fanfarePop .55s cubic-bezier(.2,1.4,.4,1) forwards}.fanfare-icon{font-size:34px}.fanfare-title{margin-top:6px;font-size:24px;font-weight:900;color:#f1d27a}.fanfare-sub{margin-top:4px;font-size:11px;color:#b9c8c0}@keyframes fanfarePop{to{transform:scale(1)}}@keyframes fanfareFade{0%,75%{opacity:1}100%{opacity:0}}
+.fanfare{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(4,12,8,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fanfareFade 3.3s ease forwards}
+.fanfare-card{position:relative;padding:26px 36px;border-radius:20px;border:1.5px solid rgba(241,210,122,.7);background:linear-gradient(145deg,rgba(20,55,38,.98),rgba(6,22,15,.98));box-shadow:0 24px 80px rgba(0,0,0,.75),0 0 50px rgba(241,210,122,.35),inset 0 1px 0 rgba(255,255,255,.15);text-align:center;transform:scale(.65);animation:fanfarePop .55s cubic-bezier(.2,1.4,.4,1) forwards;max-width:90vw}
+.fanfare-crown-badge{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:38px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.6)) drop-shadow(0 0 14px rgba(241,210,122,.9));animation:crownBob 1.6s infinite ease-in-out}
+@keyframes crownBob{0%,100%{transform:translateX(-50%) translateY(0) scale(1)}50%{transform:translateX(-50%) translateY(-6px) scale(1.1)}}
+.fanfare-icon{font-size:32px;margin-top:4px}
+.fanfare-title{margin-top:8px;font-size:26px;font-weight:900;letter-spacing:.5px;color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.8),0 0 20px rgba(241,210,122,.5)}
+.fanfare-honors-announcement{margin:12px auto 8px;display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:linear-gradient(135deg,rgba(217,182,92,.35),rgba(245,158,11,.2));border:1.5px solid #f1d27a;box-shadow:0 0 24px rgba(241,210,122,.55),inset 0 1px 0 rgba(255,255,255,.3);animation:honorsPillPulse 1.8s infinite ease-in-out}
+.fanfare-honors-label{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.fanfare-honors-pts{font-size:16px;font-weight:900;color:#fef08a;text-shadow:0 0 10px rgba(254,240,138,.8)}
+.fanfare-sparkle{color:#fde047;font-size:14px;animation:sparkleTwinkle 1s infinite alternate}
+@keyframes sparkleTwinkle{0%{opacity:.4;transform:scale(.8) rotate(0deg)}100%{opacity:1;transform:scale(1.3) rotate(45deg)}}
+.fanfare-sub{margin-top:6px;font-size:12px;color:#cfdad4}
+.fanfare-sparkle-trail{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:16px}
+.fanfare-sparkle-trail .sparkle-dot{display:inline-block;animation:floatSparkle 1.8s infinite ease-in-out}
+.fanfare-sparkle-trail .s1{animation-delay:0s;color:#f1d27a}.fanfare-sparkle-trail .s2{animation-delay:.3s;color:#7eedba}.fanfare-sparkle-trail .s3{animation-delay:.6s;color:#ffe082}.fanfare-sparkle-trail .s4{animation-delay:.9s;color:#fff}
+@keyframes floatSparkle{0%,100%{transform:translateY(0) scale(.9);opacity:.6}50%{transform:translateY(-8px) scale(1.2);opacity:1}}
+@keyframes fanfarePop{to{transform:scale(1)}}
+@keyframes fanfareFade{0%,75%{opacity:1}100%{opacity:0}}
+.winner-honors-tag{color:#f1d27a;font-weight:700;transition:all .3s ease}
+.winner-honors-pill.active{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(217,182,92,.25),rgba(245,158,11,.15));border:1px solid rgba(241,210,122,.55);color:#fef08a;padding:2px 9px;border-radius:999px;font-weight:800;box-shadow:0 0 14px rgba(241,210,122,.35);animation:honorsPillPulse 1.8s infinite ease-in-out}
+@keyframes honorsPillPulse{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(241,210,122,.25)}50%{transform:scale(1.04);box-shadow:0 0 20px rgba(241,210,122,.6)}}
 @keyframes maalPulseAnim{0%{transform:scale(1);filter:brightness(1)}40%{transform:scale(1.22);filter:brightness(1.5);box-shadow:0 0 20px rgba(241,210,122,.9)}100%{transform:scale(1);filter:brightness(1)}}
 .maal-pulse{animation:maalPulseAnim .85s ease !important;border-color:rgba(241,210,122,.9)!important;background:rgba(217,182,92,.35)!important}
 @keyframes spinPulse{0%{transform:scale(1) rotate(0deg);opacity:.9}50%{transform:scale(1.18) rotate(180deg);opacity:1}100%{transform:scale(1) rotate(360deg);opacity:.9}}
@@ -1536,6 +1714,117 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   border-color: rgba(99, 214, 165, 0.8);
   box-shadow: 0 0 24px rgba(50, 197, 138, 0.45), 0 8px 24px rgba(0, 0, 0, 0.6);
 }
+
+/* ===== WINNER CELEBRATION & SEAT HIGHLIGHT STYLING ===== */
+.winner-celebration-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 245;
+  display: block;
+}
+
+@keyframes winnerGoldAuraPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px #ffe082, 0 0 28px rgba(245, 158, 11, 0.9), inset 0 0 12px rgba(254, 240, 138, 0.75);
+    filter: brightness(1.15);
+  }
+  50% {
+    box-shadow: 0 0 0 4.5px #ffffff, 0 0 48px rgba(251, 191, 36, 1), inset 0 0 18px rgba(255, 255, 255, 0.95);
+    filter: brightness(1.35);
+  }
+}
+
+@keyframes winnerSpotlightPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.18);
+    opacity: 1;
+  }
+}
+
+.pokerist-seat.is-winner-seat .seat-avatar-ring,
+.bottom-user-pod.is-winner-seat .seat-avatar-ring {
+  background: linear-gradient(135deg, #ffe082, #f59e0b, #d97706) !important;
+  animation: winnerGoldAuraPulse 1.4s ease-in-out infinite !important;
+  transform: scale(1.12);
+  z-index: 8;
+}
+
+.pokerist-seat.is-winner-seat::after,
+.bottom-user-pod.is-winner-seat::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 165px;
+  height: 165px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.48) 0%, rgba(217, 182, 92, 0.28) 45%, transparent 75%) !important;
+  pointer-events: none;
+  z-index: -1;
+  animation: winnerSpotlightPulse 1.8s infinite ease-in-out !important;
+}
+
+.pokerist-seat.is-winner-seat .seat-player-name {
+  color: #fef08a !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.85), 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+.bottom-user-pod.is-winner-seat {
+  border-color: #f1d27a !important;
+  box-shadow: 0 0 34px rgba(245, 158, 11, 0.7), 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+  background: linear-gradient(135deg, rgba(42, 32, 10, 0.96), rgba(20, 15, 5, 0.96)) !important;
+}
+
+.bottom-user-pod.is-winner-seat .bottom-user-name {
+  color: #fef08a !important;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.85);
+}
+
+.seat-winner-crown {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  line-height: 1;
+  z-index: 12;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(241, 210, 122, 0.95));
+  animation: crownBob 1.6s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.seat-action-pill.action-winner {
+  background: linear-gradient(135deg, #f59e0b, #b45309) !important;
+  border-color: #fde047 !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.85) !important;
+  animation: honorsPillPulse 1.6s infinite ease-in-out !important;
+  z-index: 10;
+}
+
+.table-turn-banner.is-winner-banner {
+  background: linear-gradient(135deg, rgba(40, 28, 6, 0.96), rgba(18, 12, 3, 0.96)) !important;
+  border: 1.5px solid #f1d27a !important;
+  color: #fef08a !important;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.6), 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+  animation: honorsPillPulse 2s infinite ease-in-out;
+}
+
+.table-turn-banner.is-winner-banner .turn-banner-dot {
+  background: #f59e0b !important;
+  box-shadow: 0 0 12px #fde047 !important;
+}
+
 .bottom-user-details {
   display: flex;
   flex-direction: column;
@@ -1913,6 +2202,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 </style>
 </head>
 <body>
+<canvas id="winnerCelebrationCanvas" class="winner-celebration-canvas"></canvas>
 
 <!-- Lobby View -->
 <div id="lobbyView" class="lobby-box">
@@ -1938,7 +2228,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div id="turnDot" class="turn-indicator-dot"></div>
       <span id="turnNotice">Connecting...</span>
     </div>
-    <div style="display:flex; align-items:center; gap:8px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       <button id="btnSoundToggle" class="sound-toggle-btn" role="button" onclick="toggleSoundSetting()" title="Toggle Sound Effects">
         <span id="soundIcon">🔊</span>
         <span id="soundLabel" class="sound-label">Audio: ON</span>
@@ -1951,6 +2241,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span>🏆</span>
         <span id="maalPtsText">Honors: 0 pts</span>
       </div>
+      <button id="btnLeaveSession" type="button" class="status-action-btn btn-leave" onclick="promptLeaveSession()" title="Leave session and return to start screen">
+        <span>🚪 Leave</span>
+      </button>
+      <button id="btnCloseRoom" type="button" class="status-action-btn btn-close-room" onclick="promptCloseRoom()" title="Close room for all players and return to start screen">
+        <span>✕ Close Room</span>
+      </button>
     </div>
   </div>
 
@@ -1958,7 +2254,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div class="game-hero-copy">
       <div class="game-kicker">Family Table</div>
       <div class="game-title">21 Card Rummy</div>
-      <div class="game-subtitle">Open Joker • Winner Takes Honors</div>
+      <div class="game-subtitle" id="gameHeroSubtitle">Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span></div>
     </div>
     <div class="connection-pill" id="connectionStatus">Live Table</div>
   </div>
@@ -2013,6 +2309,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                onclick="onStockClick(event)"
                ondblclick="onStockDoubleClick(event)"
                ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)"
+               ontouchstart="onTouchPileStart(event, 'stock')" ontouchmove="onTouchPileMove(event)"
+               ontouchend="onTouchPileEnd(event)" ontouchcancel="onTouchPileCancel()"
                title="Stock Deck (Double-click or Drag to hand)">
             <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/BLUE_BACK.svg"
                  alt="Deck Back"
@@ -2040,6 +2338,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                onclick="onDiscardContainerClick(event)"
                ondblclick="onDiscardDoubleClick(event)"
                ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
+               ontouchstart="onTouchPileStart(event, 'discard')" ontouchmove="onTouchPileMove(event)"
+               ontouchend="onTouchPileEnd(event)" ontouchcancel="onTouchPileCancel()"
                ondragover="onDiscardPileDragOver(event)" ondragleave="onDiscardPileDragLeave(event)"
                ondrop="onDiscardPileDrop(event)"></div>
         </div>
@@ -2526,6 +2826,171 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let demoReadyTimer = null;
   let clientPingTimer = null;
   let wasMyTurn = false;
+  let currentRoundWinnerName = null;
+  let currentRoundWinnerId = null;
+
+  // --- Subtle Golden Winner Celebration Particles System ---
+  let winnerParticleAnimId = null;
+
+  class WinnerParticle {
+    constructor(canvas, sourceX, sourceY) {
+      this.canvas = canvas;
+      this.x = sourceX !== undefined ? sourceX + (Math.random() * 80 - 40) : canvas.width * 0.5 + (Math.random() * 200 - 100);
+      this.y = sourceY !== undefined ? sourceY + (Math.random() * 40 - 20) : canvas.height * 0.35 + (Math.random() * 100 - 50);
+
+      const angle = (Math.random() * Math.PI * 1.4) - (Math.PI * 0.2);
+      const speed = Math.random() * 4.2 + 1.6;
+      this.vx = Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1) * 0.85;
+      this.vy = -Math.abs(Math.sin(angle) * speed) - 1.2;
+
+      this.gravity = 0.045 + Math.random() * 0.035;
+      this.drag = 0.985;
+      this.size = Math.random() * 6 + 3.5;
+      this.alpha = 1.0;
+      this.decay = Math.random() * 0.007 + 0.005;
+
+      this.rotation = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.12;
+      this.tilt = Math.random() * Math.PI * 2;
+      this.tiltSpeed = Math.random() * 0.08 + 0.04;
+
+      const roll = Math.random();
+      this.type = roll < 0.35 ? 0 : roll < 0.65 ? 1 : roll < 0.85 ? 2 : 3;
+
+      const hues = [
+        'rgba(255, 230, 130, ',
+        'rgba(241, 210, 122, ',
+        'rgba(251, 191, 36, ',
+        'rgba(254, 240, 138, ',
+        'rgba(255, 255, 255, '
+      ];
+      this.colorBase = hues[Math.floor(Math.random() * hues.length)];
+    }
+
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += this.gravity;
+      this.vx *= this.drag;
+      this.rotation += this.rotSpeed;
+      this.tilt += this.tiltSpeed;
+      this.alpha -= this.decay;
+      return this.alpha > 0;
+    }
+
+    draw(ctx) {
+      if (this.alpha <= 0) return;
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      ctx.fillStyle = this.colorBase + Math.max(0, this.alpha) + ')';
+      ctx.shadowColor = 'rgba(241, 210, 122, 0.6)';
+      ctx.shadowBlur = 8;
+
+      if (this.type === 0) {
+        // 4-point star sparkle
+        const r = this.size;
+        ctx.beginPath();
+        ctx.moveTo(0, -r * 1.4);
+        ctx.quadraticCurveTo(0, 0, r * 1.4, 0);
+        ctx.quadraticCurveTo(0, 0, 0, r * 1.4);
+        ctx.quadraticCurveTo(0, 0, -r * 1.4, 0);
+        ctx.quadraticCurveTo(0, 0, 0, -r * 1.4);
+        ctx.fill();
+      } else if (this.type === 1) {
+        // 3D spinning gold coin / confetti flake
+        const w = this.size;
+        const h = this.size * Math.cos(this.tilt);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, Math.max(0.5, Math.abs(w)), Math.max(0.5, Math.abs(h)), 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.type === 2) {
+        // Diamond glint
+        const r = this.size * 0.8;
+        ctx.beginPath();
+        ctx.moveTo(0, -r);
+        ctx.lineTo(r, 0);
+        ctx.lineTo(0, r);
+        ctx.lineTo(-r, 0);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // Soft glowing circular ember
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+  }
+
+  function triggerWinnerParticles(winnerName) {
+    const canvas = document.getElementById('winnerCelebrationCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    if (winnerParticleAnimId) {
+      cancelAnimationFrame(winnerParticleAnimId);
+      winnerParticleAnimId = null;
+    }
+
+    let originX = width * 0.5;
+    let originY = height * 0.38;
+    const winnerEl = document.querySelector('.pokerist-seat.is-winner-seat, .bottom-user-pod.is-winner-seat');
+    if (winnerEl) {
+      const rect = winnerEl.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        originX = rect.left + rect.width * 0.5;
+        originY = rect.top + rect.height * 0.5;
+      }
+    }
+
+    const particles = [];
+    for (let i = 0; i < 70; i++) {
+      particles.push(new WinnerParticle(canvas, originX, originY));
+    }
+    for (let i = 0; i < 45; i++) {
+      particles.push(new WinnerParticle(canvas, Math.random() * width, height * 0.2 + Math.random() * height * 0.25));
+    }
+
+    const startTime = performance.now();
+    const duration = 3800;
+
+    function animate(now) {
+      const elapsed = now - startTime;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let aliveCount = 0;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        if (p.update()) {
+          p.draw(ctx);
+          aliveCount++;
+        }
+      }
+
+      if (elapsed < 1200 && Math.random() < 0.45 && particles.length < 160) {
+        particles.push(new WinnerParticle(canvas, originX + (Math.random() * 120 - 60), originY + (Math.random() * 50 - 25)));
+      }
+
+      if (aliveCount > 0 && elapsed < duration) {
+        winnerParticleAnimId = requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        winnerParticleAnimId = null;
+      }
+    }
+
+    winnerParticleAnimId = requestAnimationFrame(animate);
+  }
+  window.triggerWinnerParticles = triggerWinnerParticles;
 
   // Restore saved player name and room from previous session
   try {
@@ -2564,7 +3029,201 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     });
   }
 
+  let isDeliberateExit = false;
+  let confirmCallback = null;
+
+  function closeConfirmModal() {
+    const modal = document.getElementById('confirmModal');
+    if (modal) modal.style.display = 'none';
+    confirmCallback = null;
+  }
+
+  function showConfirmModal({ icon, title, badgeText, badgeClass, message, actionText, actionClass, onConfirm }) {
+    const modal = document.getElementById('confirmModal');
+    if (!modal) return;
+    const iconEl = document.getElementById('confirmModalIcon');
+    if (iconEl) iconEl.innerText = icon || '⚠️';
+    const titleEl = document.getElementById('confirmModalTitle');
+    if (titleEl) titleEl.innerText = title || 'Confirm Action';
+    const badge = document.getElementById('confirmModalBadge');
+    if (badge) {
+      if (badgeText) {
+        badge.innerText = badgeText;
+        badge.style.display = 'inline-block';
+        if (badgeClass === 'danger') {
+          badge.style.background = 'rgba(239,68,68,0.18)';
+          badge.style.borderColor = 'rgba(239,68,68,0.35)';
+          badge.style.color = '#fca5a5';
+        } else {
+          badge.style.background = 'rgba(99,214,165,0.15)';
+          badge.style.borderColor = 'rgba(99,214,165,0.3)';
+          badge.style.color = '#8ee6bf';
+        }
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+    const msgEl = document.getElementById('confirmModalMessage');
+    if (msgEl) msgEl.innerHTML = message;
+    const btn = document.getElementById('confirmModalActionBtn');
+    if (btn) {
+      btn.innerText = actionText || 'Confirm';
+      if (actionClass === 'danger') {
+        btn.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+        btn.style.color = '#fff';
+      } else {
+        btn.style.background = 'linear-gradient(135deg, #d9b65c, #a97d28)';
+        btn.style.color = '#172014';
+      }
+      btn.onclick = () => {
+        const cb = confirmCallback;
+        closeConfirmModal();
+        if (typeof cb === 'function') cb();
+      };
+    }
+    confirmCallback = onConfirm;
+    modal.style.display = 'flex';
+  }
+
+  function promptCloseRoom() {
+    const isPlaying = roomState && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING');
+    if (isPlaying) {
+      showConfirmModal({
+        icon: '⚠️',
+        title: 'Close Room and End Game?',
+        badgeText: 'Game In Progress',
+        badgeClass: 'danger',
+        message: '<strong>Warning: A game is currently in progress!</strong><br><br>Closing this room will immediately terminate the game for all seated players and return everyone to the start screen.<br><br>Are you sure you want to close this room?',
+        actionText: 'Close Room',
+        actionClass: 'danger',
+        onConfirm: () => {
+          executeCloseRoom();
+        }
+      });
+    } else {
+      showConfirmModal({
+        icon: '🚪',
+        title: 'Close Room?',
+        badgeText: 'Table Idle',
+        badgeClass: 'info',
+        message: 'Closing this room will return you and any other players back to the start screen.<br><br>Are you sure you want to close this room?',
+        actionText: 'Close Room',
+        actionClass: 'danger',
+        onConfirm: () => {
+          executeCloseRoom();
+        }
+      });
+    }
+  }
+
+  function executeCloseRoom() {
+    if (isDemo) {
+      resetToLobbyScreen('Test table closed.');
+      return;
+    }
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      isDeliberateExit = true;
+      ws.send(JSON.stringify({ type: 'CLOSE_ROOM' }));
+    }
+    resetToLobbyScreen('Room closed.');
+  }
+
+  function promptLeaveSession() {
+    const isPlaying = roomState && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING');
+    if (isPlaying) {
+      showConfirmModal({
+        icon: '⚠️',
+        title: 'Leave Game in Progress?',
+        badgeText: 'Mid-Scoot: 70 pts penalty',
+        badgeClass: 'danger',
+        message: '<strong>A hand is currently in progress.</strong><br><br>If you leave now, it will be scored as a <strong>Mid-Scoot (70 points penalty + winner\'s Honors)</strong>.<br><br>Are you sure you want to fold your hand and leave the session?',
+        actionText: 'Mid-Scoot & Leave',
+        actionClass: 'danger',
+        onConfirm: () => {
+          executeLeaveSession();
+        }
+      });
+    } else {
+      showConfirmModal({
+        icon: '🚪',
+        title: 'Leave Table?',
+        badgeText: 'No Penalty',
+        badgeClass: 'info',
+        message: 'Are you sure you want to leave this table and return to the start screen?',
+        actionText: 'Leave Table',
+        actionClass: 'default',
+        onConfirm: () => {
+          executeLeaveSession();
+        }
+      });
+    }
+  }
+
+  function executeLeaveSession() {
+    if (isDemo) {
+      resetToLobbyScreen('You left the test table.');
+      return;
+    }
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      isDeliberateExit = true;
+      ws.send(JSON.stringify({ type: 'LEAVE_SESSION' }));
+    }
+    resetToLobbyScreen('You left the table.');
+  }
+
+  function resetToLobbyScreen(message) {
+    isDeliberateExit = true;
+    if (clientPingTimer) {
+      clearInterval(clientPingTimer);
+      clientPingTimer = null;
+    }
+    if (ws) {
+      try {
+        ws.close();
+      } catch (e) {}
+      ws = null;
+    }
+    isDemo = false;
+    roomState = null;
+    myHand = [];
+    userStands = [];
+    selectedCardId = null;
+    declarationMode = false;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    currentRoundWinnerName = null;
+    currentRoundWinnerId = null;
+    const heroSubReset = document.getElementById('gameHeroSubtitle');
+    if (heroSubReset) heroSubReset.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
+    const bannerReset = document.getElementById('tableTurnBanner');
+    if (bannerReset) bannerReset.classList.remove('is-winner-banner');
+
+    closeConfirmModal();
+    const resultModal = document.getElementById('resultModal');
+    if (resultModal) resultModal.style.display = 'none';
+    const groupingModal = document.getElementById('groupingWaitModal');
+    if (groupingModal) groupingModal.style.display = 'none';
+    const maalModal = document.getElementById('maalModal');
+    if (maalModal) maalModal.style.display = 'none';
+    const sessionModal = document.getElementById('sessionScoresModal');
+    if (sessionModal) sessionModal.style.display = 'none';
+    const demoControls = document.getElementById('demoControls');
+    if (demoControls) demoControls.style.display = 'none';
+
+    document.getElementById('gameView').style.display = 'none';
+    document.getElementById('lobbyView').style.display = 'block';
+
+    if (message) {
+      window.alert(message);
+    }
+  }
+
+  window.promptCloseRoom = promptCloseRoom;
+  window.promptLeaveSession = promptLeaveSession;
+  window.closeConfirmModal = closeConfirmModal;
+
   function joinRoom() {
+    isDeliberateExit = false;
     const nameInput = document.getElementById('playerName');
     const roomInput = document.getElementById('roomId');
     const playerName = (nameInput?.value || '').trim() || 'Player';
@@ -2605,6 +3264,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     ws.onclose = () => {
       if (clientPingTimer) clearInterval(clientPingTimer);
+      if (isDeliberateExit) return;
       const connectionStatus = document.getElementById('connectionStatus');
       if (connectionStatus) {
         connectionStatus.innerText = 'Reconnecting...';
@@ -2613,7 +3273,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       }
       // Automatic background reconnect with fast 1.5s initial retry
       setTimeout(() => {
-        if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
+        if (!isDemo && !isDeliberateExit && document.getElementById('gameView').style.display !== 'none') {
           joinRoom();
         }
       }, 1500);
@@ -2624,6 +3284,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       if (msg.type === 'PONG') {
         // Keepalive acknowledged
+        return;
+      }
+
+      if (msg.type === 'ROOM_CLOSED') {
+        resetToLobbyScreen(msg.message || 'The room was closed. Returned to start screen.');
+        return;
+      }
+
+      if (msg.type === 'SESSION_LEFT') {
+        resetToLobbyScreen(msg.message || 'You left the session.');
         return;
       }
 
@@ -2653,6 +3323,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         }
 
         const isNewHand = prevHandNum !== undefined && roomState?.handNumber !== undefined && roomState.handNumber !== prevHandNum;
+        if (isNewHand || (roomState?.status === 'PLAYING' && !roomState?.winnerName)) {
+          currentRoundWinnerName = null;
+          currentRoundWinnerId = null;
+          const heroSub = document.getElementById('gameHeroSubtitle');
+          if (heroSub) heroSub.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
+          const tableTurnBanner = document.getElementById('tableTurnBanner');
+          if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
+        }
         if (isNewHand) {
           myHand = [];
           declarationMode = false;
@@ -3182,29 +3860,41 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
 
     // 2. Update Table Turn Banner on Felt & Top Status Pill
+    const roundWinnerName = currentRoundWinnerName || roomState.winnerName;
+    const roundWinnerId = currentRoundWinnerId || roomState.winnerId;
+    const tableTurnBanner = document.getElementById('tableTurnBanner');
+
     let bannerMsg = 'Table ready';
-    if (!playing) {
-      bannerMsg = `Waiting in lobby (${roomState.players.length} seated)`;
-      if (turnNotice) turnNotice.innerText = 'Lobby';
-      if (turnDot) turnDot.className = 'turn-indicator-dot';
-    } else if (isMyTurn) {
-      if (roomState.turnStage === 'DRAW' && myCount < 22) {
-        bannerMsg = '⚡ YOUR TURN: Draw a card from Stock or Discard pile';
-        if (stageGuideText) stageGuideText.innerHTML = '<strong>Your turn:</strong> Draw a card from Stock (double-click/drag) or Discard.';
-      } else {
-        bannerMsg = '⚡ YOUR TURN: Select a card to Discard or Show/Declare';
-        if (stageGuideText) stageGuideText.innerHTML = '<strong>Your turn:</strong> Select a card to Discard, or hit Show/Declare.';
-      }
-      if (turnNotice) turnNotice.innerText = 'YOUR TURN';
+    if (roundWinnerName) {
+      if (tableTurnBanner) tableTurnBanner.classList.add('is-winner-banner');
+      bannerMsg = `🏆 ${roundWinnerName} Wins Round! • Winner Takes Honors`;
+      if (turnNotice) turnNotice.innerText = `WINNER: ${roundWinnerName}`;
       if (turnDot) turnDot.className = 'turn-indicator-dot active';
     } else {
-      const activeName = roomState.turnPlayerName || 'Opponent';
-      bannerMsg = roomState.turnStage === 'DRAW'
-        ? `⚡ ${activeName}'s turn — Drawing a card...`
-        : `⚡ ${activeName}'s turn — Choosing discard...`;
-      if (stageGuideText) stageGuideText.innerHTML = `<strong>${activeName}'s turn:</strong> Waiting for action...`;
-      if (turnNotice) turnNotice.innerText = `Turn: ${activeName}`;
-      if (turnDot) turnDot.className = 'turn-indicator-dot active';
+      if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
+      if (!playing) {
+        bannerMsg = `Waiting in lobby (${roomState.players.length} seated)`;
+        if (turnNotice) turnNotice.innerText = 'Lobby';
+        if (turnDot) turnDot.className = 'turn-indicator-dot';
+      } else if (isMyTurn) {
+        if (roomState.turnStage === 'DRAW' && myCount < 22) {
+          bannerMsg = '⚡ YOUR TURN: Draw a card from Stock or Discard pile';
+          if (stageGuideText) stageGuideText.innerHTML = '<strong>Your turn:</strong> Draw a card from Stock (double-click/drag) or Discard.';
+        } else {
+          bannerMsg = '⚡ YOUR TURN: Select a card to Discard or Show/Declare';
+          if (stageGuideText) stageGuideText.innerHTML = '<strong>Your turn:</strong> Select a card to Discard, or hit Show/Declare.';
+        }
+        if (turnNotice) turnNotice.innerText = 'YOUR TURN';
+        if (turnDot) turnDot.className = 'turn-indicator-dot active';
+      } else {
+        const activeName = roomState.turnPlayerName || 'Opponent';
+        bannerMsg = roomState.turnStage === 'DRAW'
+          ? `⚡ ${activeName}'s turn — Drawing a card...`
+          : `⚡ ${activeName}'s turn — Choosing discard...`;
+        if (stageGuideText) stageGuideText.innerHTML = `<strong>${activeName}'s turn:</strong> Waiting for action...`;
+        if (turnNotice) turnNotice.innerText = `Turn: ${activeName}`;
+        if (turnDot) turnDot.className = 'turn-indicator-dot active';
+      }
     }
     if (tableTurnBannerText) tableTurnBannerText.innerText = bannerMsg;
 
@@ -3223,13 +3913,20 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         `;
       } else {
         opponentArea.innerHTML = opponents.map((p, idx) => {
-          const isCurrent = playing && p.id === currentId;
+          const isWinner = Boolean(
+            (roundWinnerName && p.name && p.name.toLowerCase() === roundWinnerName.toLowerCase()) ||
+            (roundWinnerId && p.id === roundWinnerId)
+          );
+          const isCurrent = playing && p.id === currentId && !isWinner;
           const forfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
           const dropped = Boolean(p.hasDropped);
           let stateText = 'Waiting';
           let stateClass = '';
 
-          if (forfeited) {
+          if (isWinner) {
+            stateText = '🏆 WINNER';
+            stateClass = 'action-winner';
+          } else if (forfeited) {
             stateText = 'Forfeited';
             stateClass = 'action-forfeited';
           } else if (dropped) {
@@ -3248,8 +3945,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           const isDealer = roomState.dealerId === p.id || (idx === 0 && !roomState.dealerId);
 
           return `
-            <div class="pokerist-seat ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${forfeited ? 'is-forfeited' : ''}">
+            <div class="pokerist-seat ${isWinner ? 'is-winner-seat' : ''} ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${forfeited ? 'is-forfeited' : ''}">
               <div class="seat-avatar-wrap">
+                ${isWinner ? '<div class="seat-winner-crown" title="Round Winner">👑</div>' : ''}
                 <div class="seat-avatar-ring">
                   <div class="seat-avatar-inner">${avatar}</div>
                 </div>
@@ -3262,7 +3960,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                   <span class="mini-card mini-card-1">🂠</span>
                   <span class="mini-card mini-card-2">🂠</span>
                   <span class="mini-card mini-card-3">🂠</span>
-                  <span class="mini-card-count">${count}</span>
+                  <span class="mini-card mini-card-count">${count}</span>
                 </div>
               </div>
             </div>
@@ -3273,9 +3971,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
     // 4. Render Bottom Seat (YOU) Pod
     if (bottomUserSeat) {
+      const isMeWinner = Boolean(
+        (roundWinnerName && (roundWinnerName === 'You' || (me?.name && me.name.toLowerCase() === roundWinnerName.toLowerCase()))) ||
+        (roundWinnerId && me?.id === roundWinnerId)
+      );
+
       let myStateText = 'Waiting';
       let myActionClass = '';
-      if (myForfeited) {
+      if (isMeWinner) {
+        myStateText = '🏆 WINNER';
+        myActionClass = 'action-winner';
+      } else if (myForfeited) {
         myStateText = 'Forfeited (100 pts)';
       } else if (myDropped) {
         const pen = me?.dropPenalty || (me?.dropType === 'FIRST_DROP' ? 30 : 70);
@@ -3287,8 +3993,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       const isMeDealer = roomState.dealerId === myId;
       bottomUserSeat.innerHTML = `
-        <div class="bottom-user-pod ${isMyTurn ? 'is-my-turn' : ''}">
+        <div class="bottom-user-pod ${isMeWinner ? 'is-winner-seat' : (isMyTurn ? 'is-my-turn' : '')}">
           <div class="seat-avatar-wrap">
+            ${isMeWinner ? '<div class="seat-winner-crown" title="Round Winner">👑</div>' : ''}
             <div class="seat-avatar-ring">
               <div class="seat-avatar-inner">🧑‍💼</div>
             </div>
@@ -3298,13 +4005,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           <div class="bottom-user-details">
             <div class="bottom-user-name">
               <span>${escapeHtml(me?.name || 'You')}</span>
-              <span class="bottom-you-tag">YOU</span>
+              <span class="bottom-you-tag" style="${isMeWinner ? 'background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:900;' : ''}">${isMeWinner ? '👑 WINNER' : 'YOU'}</span>
             </div>
             <div class="bottom-user-stats">
               <span class="stat-hand-count">🎴 <b>${myCount}</b> cards</span>
               <span>•</span>
-              <span class="stat-role-hint" style="color: ${isMyTurn ? '#7eedba' : '#94a3b8'};">
-                ${isMyTurn ? (roomState.turnStage === 'DRAW' ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn'}
+              <span class="stat-role-hint" style="color: ${isMeWinner ? '#fef08a' : (isMyTurn ? '#7eedba' : '#94a3b8')};">
+                ${isMeWinner ? '🏆 Round winner! Collects Honors from all opponents.' : (isMyTurn ? (roomState.turnStage === 'DRAW' ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn')}
               </span>
             </div>
           </div>
@@ -4063,6 +4770,88 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   window.onDiscardContainerClick = onDiscardContainerClick;
   window.onDiscardDoubleClick = onDiscardDoubleClick;
 
+  let standScrollInterval = null;
+
+  function scrollElement(elementId, direction) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const distance = Math.max(160, Math.floor(el.clientWidth * 0.75));
+    el.scrollBy({ left: direction * distance, behavior: 'smooth' });
+    setTimeout(updateAllStandScrollButtons, 120);
+  }
+
+  function scrollStand(sIdx, direction) {
+    scrollElement(`stand-cards-${sIdx}`, direction);
+  }
+
+  function startStandScroll(elementId, direction) {
+    scrollElement(elementId, direction);
+    clearInterval(standScrollInterval);
+    standScrollInterval = setInterval(() => {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.scrollBy({ left: direction * 45, behavior: 'auto' });
+        updateAllStandScrollButtons();
+      }
+    }, 60);
+  }
+
+  function stopStandScroll() {
+    if (standScrollInterval) {
+      clearInterval(standScrollInterval);
+      standScrollInterval = null;
+    }
+  }
+
+  function updateElementScrollButtons(elementId, leftBtnId, rightBtnId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const leftBtn = document.getElementById(leftBtnId);
+    const rightBtn = document.getElementById(rightBtnId);
+    if (!leftBtn || !rightBtn) return;
+
+    const hasOverflow = el.scrollWidth > el.clientWidth + 4;
+    if (!hasOverflow) {
+      leftBtn.classList.add('is-disabled');
+      rightBtn.classList.add('is-disabled');
+      return;
+    }
+    const canScrollLeft = el.scrollLeft > 6;
+    const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 6;
+
+    leftBtn.classList.toggle('is-disabled', !canScrollLeft);
+    rightBtn.classList.toggle('is-disabled', !canScrollRight);
+  }
+
+  function updateStandScrollButtons(sIdx) {
+    updateElementScrollButtons(`stand-cards-${sIdx}`, `stand-scroll-left-${sIdx}`, `stand-scroll-right-${sIdx}`);
+  }
+
+  function updateAllStandScrollButtons() {
+    if (!declarationMode) {
+      if (Array.isArray(userStands)) {
+        userStands.forEach((_, sIdx) => updateStandScrollButtons(sIdx));
+      }
+    } else {
+      updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right');
+      if (Array.isArray(declarationGroups)) {
+        declarationGroups.forEach((_, i) => updateElementScrollButtons(`decl-group-cards-${i}`, `decl-scroll-left-${i}`, `decl-scroll-right-${i}`));
+      }
+    }
+  }
+
+  window.scrollElement = scrollElement;
+  window.scrollStand = scrollStand;
+  window.startStandScroll = startStandScroll;
+  window.stopStandScroll = stopStandScroll;
+  window.updateStandScrollButtons = updateStandScrollButtons;
+  window.updateElementScrollButtons = updateElementScrollButtons;
+  window.updateAllStandScrollButtons = updateAllStandScrollButtons;
+
+  window.addEventListener('resize', () => {
+    updateAllStandScrollButtons();
+  });
+
   function renderStands() {
     const container=document.getElementById('standsContainer');
     if(!container)return;
@@ -4087,9 +4876,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             </div>
             ${closeBtn}
           </div>
-          <div class="stand-cards">${cardsContent}</div>
+          <div class="stand-scroll-container">
+            <button type="button" class="stand-scroll-btn left" id="stand-scroll-left-${sIdx}" onclick="scrollStand(${sIdx}, -1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} left" title="Scroll left">
+              <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
+            </button>
+            <div class="stand-cards" id="stand-cards-${sIdx}" onscroll="updateStandScrollButtons(${sIdx})">${cardsContent}</div>
+            <button type="button" class="stand-scroll-btn right" id="stand-scroll-right-${sIdx}" onclick="scrollStand(${sIdx}, 1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} right" title="Scroll right">
+              <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
+            </button>
+          </div>
         </div>`;
       }).join('');
+      setTimeout(updateAllStandScrollButtons, 30);
       return;
     }
     const groupedIds=new Set(declarationGroups.flatMap(g=>g.cards.map(c=>c.id)));
@@ -4117,7 +4915,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return `<div class="stand-rack declaration-group locked">
         <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span>${protectionBadge}</div>
         <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
-        <div class="stand-cards locked-cards">${g.cards.map(c=>renderCard(c,getCardTag(c),false,true)).join('')}</div></div>`;
+        <div class="stand-scroll-container">
+          <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
+            <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
+          </button>
+          <div class="stand-cards locked-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),false,true)).join('')}</div>
+          <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
+            <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </div>`;
     }).join('');
     container.innerHTML=`<div class="stand-rack declaration-ungrouped"><div class="stand-header">
       <div class="stand-title-box">
@@ -4125,7 +4932,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards to select'}</span>
       </div>
       ${selCount > 0 ? '<button class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear Selection</button>' : ''}</div>
-      <div class="stand-cards">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div></div>${groups}`;
+      <div class="stand-scroll-container">
+        <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
+          <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
+        </button>
+        <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div>
+        <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
+          <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>${groups}`;
+    setTimeout(updateAllStandScrollButtons, 30);
   }
   function setStandType(idx,type){standTypes[idx]=type;renderStands();}
   function setStandType(idx, type) { standTypes[idx]=type; renderStands(); }
@@ -5044,31 +5861,81 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   });
 
+  // --- Tactile Drag Ghost Generator for Desktop & Mobile ---
+  function createLiftedDragGhost(sourceEl, rotationDeg = -2.8, scale = 1.09) {
+    if (!sourceEl) return null;
+    const rect = sourceEl.getBoundingClientRect();
+    const ghost = sourceEl.cloneNode(true);
+    ghost.id = 'activeDragGhost';
+    ghost.classList.add('card-drag-preview');
+    ghost.style.position = 'fixed';
+    ghost.style.top = '-9999px';
+    ghost.style.left = '-9999px';
+    ghost.style.width = (rect.width || 72) + 'px';
+    ghost.style.height = (rect.height || 104) + 'px';
+    ghost.style.transform = `scale(${scale}) rotate(${rotationDeg}deg)`;
+    ghost.style.transformOrigin = 'center center';
+    ghost.style.boxShadow = '0 22px 50px rgba(0,0,0,0.72), 0 8px 18px rgba(0,0,0,0.45), 0 0 20px rgba(217,182,92,0.45)';
+    ghost.style.borderRadius = '9px';
+    ghost.style.pointerEvents = 'none';
+    ghost.style.zIndex = '999999';
+    ghost.style.opacity = '0.98';
+    document.body.appendChild(ghost);
+    return ghost;
+  }
+
   // --- Drag a Stock / Discard pile onto your board ---
-  let draggedPileType=null;
-  function onPileDragStart(e,pileType){
-    if(!canPlayerDraw()){e.preventDefault();return;}
-    if(pileType==='discard' && !canPlayerDrawFromDiscard()){
+  let draggedPileType = null;
+  function onPileDragStart(e, pileType) {
+    if (!canPlayerDraw()) { e.preventDefault(); return; }
+    if (pileType === 'discard' && !canPlayerDrawFromDiscard()) {
       e.preventDefault();
       window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
       return;
     }
-    draggedPileType=pileType;draggedCardId=null;
-    e.dataTransfer.setData('text/plain','pile:'+pileType);e.dataTransfer.effectAllowed='move';
-    document.querySelectorAll('.stand-rack').forEach(el=>el.classList.add('pile-drop-ready'));
+    draggedPileType = pileType;
+    draggedCardId = null;
+    e.dataTransfer.setData('text/plain', 'pile:' + pileType);
+    e.dataTransfer.effectAllowed = 'move';
+
+    // Tactile lifted feedback on pickup from discard pile or stock deck
+    const sourceEl = (pileType === 'discard')
+      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+      : document.getElementById('stockDeckBtn');
+
+    if (sourceEl) {
+      try {
+        const ghost = createLiftedDragGhost(sourceEl, -3.0, 1.09);
+        if (ghost && e.dataTransfer.setDragImage) {
+          const rect = sourceEl.getBoundingClientRect();
+          e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
+          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+        }
+      } catch (err) {
+        console.warn('Custom pile drag image error:', err);
+      }
+    }
+
+    if (pileType === 'discard') {
+      document.getElementById('discardContainer')?.classList.add('is-dragging-pile');
+    }
+    document.querySelectorAll('.stand-rack').forEach(el => el.classList.add('pile-drop-ready'));
   }
-  function onPileDragEnd(){
-    draggedPileType=null;
-    document.querySelectorAll('.stand-rack').forEach(el=>el.classList.remove('pile-drop-ready'));
+
+  function onPileDragEnd() {
+    draggedPileType = null;
+    document.getElementById('discardContainer')?.classList.remove('is-dragging-pile');
+    document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
   }
-  function completePileDrop(pileType){
-    if(!canPlayerDraw()){
+
+  function completePileDrop(pileType) {
+    if (!canPlayerDraw()) {
       onPileDragEnd();
       return;
     }
-    if(pileType==='stock') drawStock();
-    if(pileType==='discard') {
-      if(!canPlayerDrawFromDiscard()){
+    if (pileType === 'stock') drawStock();
+    if (pileType === 'discard') {
+      if (!canPlayerDrawFromDiscard()) {
         window.alert('A discarded Joker cannot be picked up from the discard pile. (Only the initial open card dealt at the start of the round can be picked up if it is a Joker). You must draw from the Stock deck.');
         onPileDragEnd();
         return;
@@ -5078,14 +5945,26 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     onPileDragEnd();
   }
 
-  // --- HTML5 Drag & Drop Support Across Stands ---
+  // --- HTML5 Drag & Drop Support Across Stands with Tactile Card Lift ---
   function onCardDragStart(e, cardId) {
     draggedPileType = null;
     draggedCardId = cardId;
     e.dataTransfer.setData('text/plain', cardId);
     e.dataTransfer.effectAllowed = 'move';
     const el = document.getElementById('card-' + cardId);
-    if (el) setTimeout(() => el.classList.add('is-dragging'), 0);
+    if (el) {
+      try {
+        const ghost = createLiftedDragGhost(el, -2.8, 1.09);
+        if (ghost && e.dataTransfer.setDragImage) {
+          const rect = el.getBoundingClientRect();
+          e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
+          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+        }
+      } catch (err) {
+        console.warn('Custom card drag image error:', err);
+      }
+      setTimeout(() => el.classList.add('is-dragging'), 0);
+    }
   }
 
   function onCardDragOver(e, cardId) {
@@ -5202,26 +6081,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchCardState.startY;
     const dist = Math.hypot(dx, dy);
 
-    // If moved more than 7px, transition to dragging
-    if (!touchCardState.isDragging && dist > 7) {
+    // Distinguish between horizontal scroll swipes and card dragging:
+    // When the user swipes horizontally (dx >> dy), let native horizontal scroll operate freely.
+    // Transition to card dragging only when movement is distinctly vertical (dragging upwards to discard/table)
+    // or after a deliberate drag distance exceeding threshold.
+    const isMainlyVertical = Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx) * 0.75;
+    const isDistinctDrag = dist > 26;
+    if (!touchCardState.isDragging && (isMainlyVertical || isDistinctDrag)) {
       touchCardState.isDragging = true;
       draggedCardId = cardId;
 
-      // Create floating ghost avatar
+      // Create floating ghost avatar with subtle scaling and slight rotation
       if (!touchDragGhost) {
         touchDragGhost = touchCardState.el.cloneNode(true);
         touchDragGhost.id = 'touchDragGhost';
+        touchDragGhost.className = touchCardState.el.className + ' card-touch-lifted';
         touchDragGhost.style.position = 'fixed';
         touchDragGhost.style.zIndex = '999999';
         touchDragGhost.style.pointerEvents = 'none';
         touchDragGhost.style.width = touchCardState.el.offsetWidth + 'px';
         touchDragGhost.style.height = touchCardState.el.offsetHeight + 'px';
-        touchDragGhost.style.transform = 'translate(-50%, -50%) scale(1.08)';
-        touchDragGhost.style.boxShadow = '0 18px 40px rgba(0,0,0,0.7), 0 0 14px rgba(56,189,248,0.5)';
-        touchDragGhost.style.opacity = '0.94';
+        touchDragGhost.style.transformOrigin = 'center center';
+        touchDragGhost.style.transform = 'translate(-50%, -50%) scale(1.09) rotate(-2.8deg)';
+        touchDragGhost.style.boxShadow = '0 22px 50px rgba(0,0,0,0.72), 0 8px 18px rgba(0,0,0,0.45), 0 0 20px rgba(217,182,92,0.45)';
+        touchDragGhost.style.opacity = '0.98';
         touchDragGhost.style.borderRadius = '9px';
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
+        touchDragGhost.style.transition = 'transform 0.08s ease-out, box-shadow 0.15s ease-out';
         document.body.appendChild(touchDragGhost);
       }
 
@@ -5235,6 +6122,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (touchDragGhost) {
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
+        // Subtle dynamic tilt based on drag movement velocity
+        const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
+        touchDragGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
       }
 
       const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -5359,8 +6249,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       draggedCardId = null;
       touchCardState = null;
     } else {
-      // It was a tap (movement <= 7px): trigger selection with touch flag
-      selectCard(cardId, true);
+      // Tap vs swipe check: only select card if movement was minimal (tap)
+      const touch = e.changedTouches ? e.changedTouches[0] : null;
+      const dx = touch ? touch.clientX - touchCardState.startX : 0;
+      const dy = touch ? touch.clientY - touchCardState.startY : 0;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= 10) {
+        selectCard(cardId, true);
+      }
       touchCardState = null;
     }
   }
@@ -5378,6 +6274,142 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     touchCardState = null;
     draggedCardId = null;
   }
+
+  // --- Mobile Touch Drag & Drop for Stock Deck & Discard Pile ---
+  let touchPileState = null;
+  let touchPileGhost = null;
+
+  function onTouchPileStart(e, pileType) {
+    if (!canPlayerDraw()) return;
+    if (pileType === 'discard' && !canPlayerDrawFromDiscard()) return;
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const sourceEl = (pileType === 'discard')
+      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+      : document.getElementById('stockDeckBtn');
+    if (!sourceEl) return;
+
+    touchPileState = {
+      pileType,
+      sourceEl,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startTime: Date.now(),
+      isDragging: false
+    };
+  }
+
+  function onTouchPileMove(e) {
+    if (!touchPileState) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchPileState.startX;
+    const dy = touch.clientY - touchPileState.startY;
+    const dist = Math.hypot(dx, dy);
+
+    if (!touchPileState.isDragging && dist > 16) {
+      touchPileState.isDragging = true;
+      draggedPileType = touchPileState.pileType;
+      document.querySelectorAll('.stand-rack').forEach(el => el.classList.add('pile-drop-ready'));
+
+      if (!touchPileGhost) {
+        touchPileGhost = touchPileState.sourceEl.cloneNode(true);
+        touchPileGhost.id = 'touchPileGhost';
+        touchPileGhost.className = touchPileState.sourceEl.className + ' card-touch-lifted';
+        touchPileGhost.style.position = 'fixed';
+        touchPileGhost.style.zIndex = '999999';
+        touchPileGhost.style.pointerEvents = 'none';
+        touchPileGhost.style.width = touchPileState.sourceEl.offsetWidth + 'px';
+        touchPileGhost.style.height = touchPileState.sourceEl.offsetHeight + 'px';
+        touchPileGhost.style.transformOrigin = 'center center';
+        touchPileGhost.style.transform = 'translate(-50%, -50%) scale(1.09) rotate(-2.8deg)';
+        touchPileGhost.style.boxShadow = '0 22px 50px rgba(0,0,0,0.72), 0 8px 18px rgba(0,0,0,0.45), 0 0 20px rgba(217,182,92,0.45)';
+        touchPileGhost.style.opacity = '0.98';
+        touchPileGhost.style.borderRadius = '9px';
+        touchPileGhost.style.left = touch.clientX + 'px';
+        touchPileGhost.style.top = touch.clientY + 'px';
+        touchPileGhost.style.transition = 'transform 0.08s ease-out, box-shadow 0.15s ease-out';
+        document.body.appendChild(touchPileGhost);
+      }
+
+      touchPileState.sourceEl.style.opacity = '0.4';
+    }
+
+    if (touchPileState.isDragging) {
+      if (e.cancelable) e.preventDefault();
+
+      if (touchPileGhost) {
+        touchPileGhost.style.left = touch.clientX + 'px';
+        touchPileGhost.style.top = touch.clientY + 'px';
+        const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
+        touchPileGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
+      }
+
+      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+      document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
+
+      if (targetEl) {
+        const standRackTarget = targetEl.closest('.stand-rack');
+        if (standRackTarget) {
+          standRackTarget.classList.add('stand-rack-drop-hover');
+        }
+      }
+    }
+  }
+
+  function onTouchPileEnd(e) {
+    if (!touchPileState) return;
+
+    if (touchPileGhost) {
+      touchPileGhost.remove();
+      touchPileGhost = null;
+    }
+    if (touchPileState.sourceEl) {
+      touchPileState.sourceEl.style.opacity = '';
+    }
+
+    if (touchPileState.isDragging) {
+      if (e.cancelable) e.preventDefault();
+      const touch = e.changedTouches[0];
+      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
+      document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
+
+      if (targetEl) {
+        const standRackTarget = targetEl.closest('.stand-rack');
+        if (standRackTarget) {
+          completePileDrop(touchPileState.pileType);
+          touchPileState = null;
+          draggedPileType = null;
+          return;
+        }
+      }
+      onPileDragEnd();
+      touchPileState = null;
+      draggedPileType = null;
+    } else {
+      touchPileState = null;
+    }
+  }
+
+  function onTouchPileCancel() {
+    if (touchPileGhost) {
+      touchPileGhost.remove();
+      touchPileGhost = null;
+    }
+    if (touchPileState && touchPileState.sourceEl) {
+      touchPileState.sourceEl.style.opacity = '';
+    }
+    document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
+    document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
+    touchPileState = null;
+    draggedPileType = null;
+  }
+
+  window.onTouchPileStart = onTouchPileStart;
+  window.onTouchPileMove = onTouchPileMove;
+  window.onTouchPileEnd = onTouchPileEnd;
+  window.onTouchPileCancel = onTouchPileCancel;
 
   function renderDiscardHistory() {
     const box = document.getElementById('discardHistory');
@@ -5900,11 +6932,64 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     return '';
   }
 
-  function showWinnerFanfare(data){
-    const old=document.getElementById('winnerFanfare'); if(old)old.remove();
-    const el=document.createElement('div'); el.id='winnerFanfare'; el.className='fanfare';
-    el.innerHTML=`<div class="fanfare-card"><div class="fanfare-icon">🏆 ✨ 🎉</div><div class="fanfare-title">${data.winnerName} DECLARES!</div><div class="fanfare-sub">Valid 21-card show • 3+ Pure Sequences</div></div>`;
-    document.body.appendChild(el); setTimeout(()=>el.remove(),2900);
+  function showWinnerFanfare(data) {
+    const winnerName = data.winnerName || 'Winner';
+    currentRoundWinnerName = winnerName;
+    currentRoundWinnerId = data.winnerId || null;
+
+    const winnerMaalTotal = data.winnerMaal?.total || 0;
+
+    // 1. Update Game Hero Subtitle with animated Winner Takes Honors pill
+    const heroSub = document.getElementById('gameHeroSubtitle');
+    if (heroSub) {
+      heroSub.innerHTML = `🏆 <strong>${escapeHtml(winnerName)} Wins!</strong> • <span class="winner-honors-pill active">Winner Takes Honors: <b>+${winnerMaalTotal} pts</b></span>`;
+    }
+
+    // 2. Update Live Table Felt Banner
+    const tableTurnBanner = document.getElementById('tableTurnBanner');
+    const tableTurnBannerText = document.getElementById('tableTurnBannerText');
+    if (tableTurnBanner) tableTurnBanner.classList.add('is-winner-banner');
+    if (tableTurnBannerText) {
+      tableTurnBannerText.innerHTML = `🏆 <b>${escapeHtml(winnerName)} Wins Round!</b> • Winner Takes Honors (+${winnerMaalTotal} pts)`;
+    }
+
+    // 3. Highlight Winner's Seat immediately with gold glow and crown
+    renderPlayerStrip();
+
+    // 4. Trigger subtle golden celebration particle animation
+    triggerWinnerParticles(winnerName);
+
+    // 5. Render Fanfare Modal Card with crown and Winner Takes Honors ribbon
+    const old = document.getElementById('winnerFanfare');
+    if (old) old.remove();
+
+    const el = document.createElement('div');
+    el.id = 'winnerFanfare';
+    el.className = 'fanfare';
+    el.innerHTML = `
+      <div class="fanfare-card">
+        <div class="fanfare-crown-badge">👑</div>
+        <div class="fanfare-icon">🏆 ✨ 🎉</div>
+        <div class="fanfare-title">${escapeHtml(winnerName)} Wins!</div>
+        <div class="fanfare-honors-announcement">
+          <span class="fanfare-sparkle">✨</span>
+          <span class="fanfare-honors-label">Winner Takes Honors</span>
+          <span class="fanfare-honors-pts">+${winnerMaalTotal} pts</span>
+          <span class="fanfare-sparkle">✨</span>
+        </div>
+        <div class="fanfare-sub">Valid 21-card show • Collects Honors from all opponents</div>
+        <div class="fanfare-sparkle-trail">
+          <span class="sparkle-dot s1">✦</span>
+          <span class="sparkle-dot s2">★</span>
+          <span class="sparkle-dot s3">✦</span>
+          <span class="sparkle-dot s4">★</span>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => {
+      if (el && el.parentNode) el.remove();
+    }, 3300);
   }
 
   // Auto arrange hand into valid Rummy melds (Marriages, 3 Poochies, Tunellas, Pure Sequences, Sets, Wildcard Runs)
@@ -6514,6 +7599,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   // --- Start Next Hand in Demo Mode with Anti-Clockwise Starting Turns & 3 Groups ---
   function startNextHandDemo() {
+    currentRoundWinnerName = null;
+    currentRoundWinnerId = null;
+    const heroSubNext = document.getElementById('gameHeroSubtitle');
+    if (heroSubNext) heroSubNext.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
+    const bannerNext = document.getElementById('tableTurnBanner');
+    if (bannerNext) bannerNext.classList.remove('is-winner-banner');
+
     demoHandNumber++;
     // Requirement 5: Players should take turns (anti clockwise) in starting to draw when new hand is played
     // Player seat positions: 0: You (bottom), 1: Kavita (left), 2: Sonia (top), 3: Aarav (right)
@@ -6629,6 +7721,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   // --- Offline Demo Simulation Mode ---
   function startDemoMode() {
     isDemo = true;
+    currentRoundWinnerName = null;
+    currentRoundWinnerId = null;
+    const heroSubDemo = document.getElementById('gameHeroSubtitle');
+    if (heroSubDemo) heroSubDemo.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
+    const bannerDemo = document.getElementById('tableTurnBanner');
+    if (bannerDemo) bannerDemo.classList.remove('is-winner-banner');
+
     demoHandNumber = 1;
     demoStarterIndex = 0;
     demoReadyPlayers.clear();
