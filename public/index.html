@@ -3735,11 +3735,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       ondragleave="onCardDragLeave(event, '${card.id}')"
       ondrop="onCardDrop(event, '${card.id}')"
       ondragend="onCardDragEnd(event)"
-      style="touch-action: none;"
-      onpointerdown="onPointerCardStart(event, '${card.id}')"
-      onpointermove="onPointerCardMove(event, '${card.id}')"
-      onpointerup="onPointerCardEnd(event, '${card.id}')"
-      onpointercancel="onPointerCardCancel(event, '${card.id}')" 
+      ontouchstart="onTouchCardStart(event, '${card.id}')"
+      ontouchmove="onTouchCardMove(event, '${card.id}')"
+      ontouchend="onTouchCardEnd(event, '${card.id}')"
+      ontouchcancel="onTouchCardCancel(event, '${card.id}')"
     ` : (isHand ? `id="card-${card.id}"` : '');
 
     // Floating Role Tag (positioned top-center outside card corners - NEVER obscures suit or rank)
@@ -6208,45 +6207,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   // --- Mobile Touch Drag & Drop System for Cards ---
   let touchCardState = null;
   let touchDragGhost = null;
-
-  // Pointer capture keeps Android Chrome drag releases on the original card.
-  // Adapt pointer coordinates to the existing stand insertion and ghost logic.
-  let activeCardPointerId = null;
-  function pointerAsTouch(e, ending = false) {
-    const point = { clientX: e.clientX, clientY: e.clientY };
-    return {
-      touches: ending ? [] : [point],
-      changedTouches: [point],
-      cancelable: e.cancelable,
-      preventDefault: () => { if (e.cancelable) e.preventDefault(); }
-    };
-  }
-  function onPointerCardStart(e, cardId) {
-    if (e.pointerType === 'mouse' || !e.isPrimary || declarationMode) return;
-    activeCardPointerId = e.pointerId;
-    onTouchCardStart(pointerAsTouch(e), cardId);
-    if (touchCardState && e.currentTarget.setPointerCapture) {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
-    console.debug('[card-drag] pointerdown', cardId, e.pointerType);
-  }
-  function onPointerCardMove(e, cardId) {
-    if (e.pointerId !== activeCardPointerId || !touchCardState) return;
-    onTouchCardMove(pointerAsTouch(e), cardId);
-  }
-  function onPointerCardEnd(e, cardId) {
-    if (e.pointerId !== activeCardPointerId) return;
-    const target = touchCardState && touchCardState.dropTarget;
-    console.debug('[card-drag] pointerup', cardId, target, e.clientX, e.clientY);
-    onTouchCardEnd(pointerAsTouch(e, true), cardId);
-    activeCardPointerId = null;
-  }
-  function onPointerCardCancel(e, cardId) {
-    if (e.pointerId !== activeCardPointerId) return;
-    console.warn('[card-drag] pointercancel', cardId, touchCardState && touchCardState.dropTarget);
-    onTouchCardCancel(pointerAsTouch(e, true), cardId);
-    activeCardPointerId = null;
-  }
 
   function onTouchCardStart(e, cardId) {
     if (declarationMode) return;
