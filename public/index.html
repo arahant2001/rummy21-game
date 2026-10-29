@@ -2004,8 +2004,20 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .stock-with-cut #stockDeckBtn{position:relative;z-index:5;touch-action:manipulation!important;}
 .cut-card-under-stock{position:absolute;left:-22px;top:8px;width:var(--card-h);height:var(--card-w);transform:rotate(90deg) scale(.88);transform-origin:center;z-index:2;pointer-events:none}
 .cut-card-under-stock .card{transform:none!important;opacity:.98;box-shadow:0 2px 7px rgba(0,0,0,.4),0 0 0 1px rgba(217,182,92,.25)!important}
-.pile-tap-hint{outline:2.5px solid #38bdf8!important;box-shadow:0 0 16px rgba(56,189,248,0.7)!important;transform:scale(1.05)!important;transition:transform .15s ease,box-shadow .15s ease,outline .15s ease;}
-.card, .card *, .deck-card, .deck-card *, .stand-rack, .stand-cards{-webkit-user-drag:none!important;user-drag:none!important;-webkit-touch-callout:none!important;}
+.stand-rack, .stand-cards { -webkit-touch-callout: none !important; }
+.card[draggable="true"] {
+  -webkit-user-drag: element !important;
+  user-drag: element !important;
+  cursor: grab !important;
+  touch-action: none !important;
+}
+.card[draggable="true"]:active {
+  cursor: grabbing !important;
+}
+.card:not([draggable="true"]), .cut-card-under-stock .card, .deck-card {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
 .discard-pile-wrapper{position:relative;z-index:9}
 .discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
 .discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:manipulation!important;}
@@ -5997,8 +6009,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     ghost.id = 'activeDragGhost';
     ghost.classList.add('card-drag-preview');
     ghost.style.position = 'fixed';
-    ghost.style.top = '-9999px';
-    ghost.style.left = '-9999px';
+    ghost.style.top = (rect.top || 0) + 'px';
+    ghost.style.left = (rect.left || 0) + 'px';
     ghost.style.width = (rect.width || 72) + 'px';
     ghost.style.height = (rect.height || 104) + 'px';
     ghost.style.transform = `scale(${scale}) rotate(${rotationDeg}deg)`;
@@ -6023,8 +6035,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     draggedPileType = pileType;
     draggedCardId = null;
-    e.dataTransfer.setData('text/plain', 'pile:' + pileType);
-    e.dataTransfer.effectAllowed = 'move';
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', 'pile:' + pileType);
+      e.dataTransfer.effectAllowed = 'move';
+    }
 
     // Tactile lifted feedback on pickup from discard pile or stock deck
     const sourceEl = (pileType === 'discard')
@@ -6034,10 +6048,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (sourceEl) {
       try {
         const ghost = createLiftedDragGhost(sourceEl, -3.0, 1.09);
-        if (ghost && e.dataTransfer.setDragImage) {
+        if (ghost && e.dataTransfer && e.dataTransfer.setDragImage) {
           const rect = sourceEl.getBoundingClientRect();
           e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
-          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+          setTimeout(() => { if (ghost && ghost.parentNode) ghost.remove(); }, 50);
         }
       } catch (err) {
         console.warn('Custom pile drag image error:', err);
@@ -6077,16 +6091,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onCardDragStart(e, cardId) {
     draggedPileType = null;
     draggedCardId = cardId;
-    e.dataTransfer.setData('text/plain', cardId);
-    e.dataTransfer.effectAllowed = 'move';
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', cardId);
+      e.dataTransfer.effectAllowed = 'move';
+    }
     const el = document.getElementById('card-' + cardId);
     if (el) {
       try {
         const ghost = createLiftedDragGhost(el, -2.8, 1.09);
-        if (ghost && e.dataTransfer.setDragImage) {
+        if (ghost && e.dataTransfer && e.dataTransfer.setDragImage) {
           const rect = el.getBoundingClientRect();
           e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
-          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+          setTimeout(() => { if (ghost && ghost.parentNode) ghost.remove(); }, 50);
         }
       } catch (err) {
         console.warn('Custom card drag image error:', err);
@@ -6151,6 +6167,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     draggedCardId = null;
     selectedCardId = card.id;
     myHand = userStands.flat();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
     scrollCardIntoView(card.id);
   }
@@ -6777,6 +6794,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     draggedCardId = null;
     selectedCardId = card.id;
     myHand = userStands.flat();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
     scrollCardIntoView(card.id);
   }
