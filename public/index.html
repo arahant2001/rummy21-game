@@ -2713,6 +2713,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       } catch (e) {}
     }
 
+    // Subtle card slide / move / rearrange whoosh sound
+    playCardSlide() {
+      if (!this.enabled) return;
+      this.playCardDraw();
+    }
+
+    // Crisp tactile felt snap alias for card discards
+    playDiscard() {
+      if (!this.enabled) return;
+      this.playCardDiscard();
+    }
+
     // 2. Crisp, tactile felt snap for card discards
     playCardDiscard() {
       if (!this.enabled) return;
@@ -4740,7 +4752,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (pileType === 'discard' && !canPlayerDrawFromDiscard()) return;
 
     const now = Date.now();
-    if (lastPileTapType === pileType && (now - lastPileTapTime) < 550) {
+    if (lastPileTapType === pileType && (now - lastPileTapTime) < 750) {
       lastPileTapTime = 0;
       lastPileTapType = null;
       const el = (pileType === 'discard')
@@ -4766,7 +4778,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onStockClick(e) {
     if (!canPlayerDraw()) return;
     const now = Date.now();
-    if (now - lastStockClickTime < 550) {
+    if (now - lastStockClickTime < 750) {
       onStockDoubleClick(e);
       lastStockClickTime = 0;
     } else {
@@ -4790,7 +4802,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onDiscardContainerClick(e) {
     if (!canPlayerDraw()) return;
     const now = Date.now();
-    if (now - lastDiscardClickTime < 550) {
+    if (now - lastDiscardClickTime < 750) {
       onDiscardDoubleClick(e);
       lastDiscardClickTime = 0;
     } else {
@@ -4916,11 +4928,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
         let moveHereBtn = '';
         if (selectedCardId && sIdx !== currentSelectedStandIdx) {
-<<<<<<< HEAD
           moveHereBtn = `<button type="button" class="stand-move-here-btn" ontouchend="executeStandMove('${selectedCardId}', ${sIdx}, event)" onclick="executeStandMove('${selectedCardId}', ${sIdx}, event)" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
-=======
-          moveHereBtn = `<button class="stand-move-here-btn" onclick="moveCardToStand('${selectedCardId}', ${sIdx})" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
         }
         const cardsContent = stand.length > 0
           ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
@@ -5758,28 +5766,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         let html = '';
         userStands.forEach((s, idx) => {
           if (idx !== currentStandIdx) {
-<<<<<<< HEAD
             html += `<button type="button" class="tool-btn stand-move-btn" ontouchend="executeStandMove('${selectedCardId}', ${idx}, event)" onclick="executeStandMove('${selectedCardId}', ${idx}, event)" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
           }
         });
         html += `<button type="button" class="tool-btn stand-move-btn stand-move-new-btn" ontouchend="executeStandMoveNew('${selectedCardId}', event)" onclick="executeStandMoveNew('${selectedCardId}', event)" title="Create a new stand and move this card into it">+ Stand ${userStands.length + 1}</button>`;
-=======
-            html += `<button class="tool-btn stand-move-btn" onclick="moveCardToStand('${selectedCardId}', ${idx})" title="Move to Stand ${idx + 1}">➔ Stand ${idx + 1}</button>`;
-          }
-        });
-        // Request 7: Corresponding button to move to a new stand
-        html += `<button class="tool-btn stand-move-btn stand-move-new-btn" onclick="moveCardToNewStand('${selectedCardId}')" title="Create a new stand and move this card into it">+ Move to Stand ${userStands.length + 1}</button>`;
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
         
         // If it is player's turn to discard, offer quick discard button in the mobile action bar
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
         if (canDiscard) {
-<<<<<<< HEAD
           html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); discardSelected()" onclick="event.preventDefault(); event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
-=======
-          html += `<button class="tool-btn stand-move-btn stand-discard-quick-btn" onclick="discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
         }
 
         optionsSpan.innerHTML = html;
@@ -5791,7 +5787,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
   }
 
-<<<<<<< HEAD
   let lastStandMoveActionTime = 0;
   function executeStandMove(cardId, targetStandIdx, e) {
     if (e) {
@@ -5825,10 +5820,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     if (!cardId && selectedCardId) cardId = selectedCardId;
     if (!cardId) return;
-
-=======
-  function moveCardToStand(cardId, targetStandIdx) {
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
     let sourceStandIdx = -1;
     let cardIdx = -1;
     for (let i = 0; i < userStands.length; i++) {
@@ -5844,9 +5835,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     userStands[targetStandIdx].push(card);
     myHand = userStands.flat();
     selectedCardId = null; // Clear selection after moving card to give instant clear feedback
-    soundSystem.playCardSlide();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
-<<<<<<< HEAD
 
     // Scroll target stand to immediately reveal the newly moved card
     const targetCardsRow = document.getElementById(`stand-cards-${targetStandIdx}`);
@@ -5861,12 +5851,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       cardEl.classList.add('card-just-moved');
       setTimeout(() => cardEl.classList.remove('card-just-moved'), 600);
     }
-=======
-    scrollCardIntoView(card.id);
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
   }
 
-  function moveCardToNewStand(cardId) {
+  function moveCardToNewStand(cardId, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    if (!cardId && selectedCardId) cardId = selectedCardId;
     if (!cardId) {
       addNewStand();
       return;
@@ -5874,7 +5866,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     let sourceStandIdx = -1;
     let cardIdx = -1;
     for (let i = 0; i < userStands.length; i++) {
-      const idx = userStands[i].findIndex(c => c.id === cardId);
+      const idx = userStands[i].findIndex(c => c && c.id === cardId);
       if (idx !== -1) {
         sourceStandIdx = i;
         cardIdx = idx;
@@ -5889,9 +5881,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     userStands.push([card]);
     myHand = userStands.flat();
     selectedCardId = null; // Clear selection after moving card
-    soundSystem.playCardSlide();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
-<<<<<<< HEAD
 
     const newStandIdx = userStands.length - 1;
     const targetCardsRow = document.getElementById(`stand-cards-${newStandIdx}`);
@@ -5906,9 +5897,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       cardEl.classList.add('card-just-moved');
       setTimeout(() => cardEl.classList.remove('card-just-moved'), 600);
     }
-=======
-    scrollCardIntoView(card.id);
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
   }
 
   // --- Manual Card Reordering within Stand ---
@@ -6215,6 +6203,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function updateTouchCardDropTarget(x, y, cardId) {
+      if (!touchCardState) return;
       // Clear previous hover highlights
       document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
         .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
@@ -6225,35 +6214,51 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
       if (discardEl) {
         const dRect = discardEl.getBoundingClientRect();
-        if (x >= dRect.left - 20 && x <= dRect.right + 20 &&
-            y >= dRect.top - 20 && y <= dRect.bottom + 20) {
+        if (x >= dRect.left - 25 && x <= dRect.right + 25 &&
+            y >= dRect.top - 25 && y <= dRect.bottom + 25) {
           document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
           touchCardState.dropTarget = { type: 'discard' };
           return;
         }
       }
 
-      // 2. Check Stands: find stand rack matching touch coordinates or closest vertically
-      let bestStandIdx = -1;
-      let minVerticalDist = Infinity;
+      // 2. Check Stands:
+      if (!userStands || userStands.length === 0) return;
 
-      for (let sIdx = 0; sIdx < userStands.length; sIdx++) {
-        const rackEl = document.getElementById(`stand-rack-${sIdx}`);
-        if (!rackEl) continue;
-        const rect = rackEl.getBoundingClientRect();
-        if (y >= rect.top - 25 && y <= rect.bottom + 25) {
-          bestStandIdx = sIdx;
-          break;
-        }
-        const vCenter = (rect.top + rect.bottom) / 2;
-        const vDist = Math.abs(y - vCenter);
-        if (vDist < minVerticalDist) {
-          minVerticalDist = vDist;
-          bestStandIdx = sIdx;
+      let bestStandIdx = -1;
+      const elUnderPoint = document.elementFromPoint(x, y);
+      const rackUnderPoint = elUnderPoint?.closest?.('.stand-rack');
+      if (rackUnderPoint && rackUnderPoint.id) {
+        const m = rackUnderPoint.id.match(/^stand-rack-(\d+)$/);
+        if (m) {
+          bestStandIdx = parseInt(m[1], 10);
         }
       }
 
-      if (bestStandIdx !== -1) {
+      // If elementFromPoint didn't directly hit a stand-rack (e.g. slightly outside)
+      if (bestStandIdx === -1 || bestStandIdx >= userStands.length) {
+        let bestDist = Infinity;
+        for (let sIdx = 0; sIdx < userStands.length; sIdx++) {
+          const rackEl = document.getElementById(`stand-rack-${sIdx}`);
+          if (!rackEl) continue;
+          const rect = rackEl.getBoundingClientRect();
+          // Direct hit within bounding box
+          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+            bestStandIdx = sIdx;
+            break;
+          }
+          // Distance to rect
+          const dx = Math.max(0, rect.left - x, x - rect.right);
+          const dy = Math.max(0, rect.top - y, y - rect.bottom);
+          const dist = Math.hypot(dx, dy);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestStandIdx = sIdx;
+          }
+        }
+      }
+
+      if (bestStandIdx !== -1 && bestStandIdx < userStands.length) {
         const rackEl = document.getElementById(`stand-rack-${bestStandIdx}`);
         if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
 
@@ -6297,18 +6302,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchCardState.startY;
     const dist = Math.hypot(dx, dy);
 
-<<<<<<< HEAD
     // Any deliberate motion (dist > 8px) initiates card drag immediately
     if (!touchCardState.isDragging && dist > 8) {
-=======
-    // Distinguish between horizontal scroll swipes and card dragging:
-    // When the user swipes horizontally (dx >> dy), let native horizontal scroll operate freely.
-    // Transition to card dragging only when movement is distinctly vertical (dragging upwards to discard/table)
-    // or after a deliberate drag distance exceeding threshold.
-    const isMainlyVertical = Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx) * 0.75;
-    const isDistinctDrag = dist > 26;
-    if (!touchCardState.isDragging && (isMainlyVertical || isDistinctDrag)) {
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
       touchCardState.isDragging = true;
       draggedCardId = cardId;
 
@@ -6343,50 +6338,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (touchDragGhost) {
         touchDragGhost.style.left = touch.clientX + 'px';
         touchDragGhost.style.top = touch.clientY + 'px';
-<<<<<<< HEAD
-=======
-        // Subtle dynamic tilt based on drag movement velocity
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
         const tilt = Math.max(-5.5, Math.min(5.5, -2.8 + (dx * 0.045)));
         touchDragGhost.style.transform = `translate(-50%, -50%) scale(1.09) rotate(${tilt.toFixed(1)}deg)`;
       }
 
-<<<<<<< HEAD
       updateTouchCardDropTarget(touch.clientX, touch.clientY, cardId);
-=======
-      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-      
-      // Clear previous hover highlights
-      document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
-        .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
-
-      if (!targetEl) return;
-
-      // 1. Check Discard Pile
-      const discardTarget = targetEl.closest('#discardContainer, .discard-pile-wrapper');
-      if (discardTarget) {
-        document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
-        return;
-      }
-
-      // 2. Check Another Card in hand
-      const cardTarget = targetEl.closest('.card');
-      if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-') && cardTarget.id !== 'card-' + cardId) {
-        const rect = cardTarget.getBoundingClientRect();
-        if (touch.clientX < rect.left + rect.width / 2) {
-          cardTarget.classList.add('drag-over-left');
-        } else {
-          cardTarget.classList.add('drag-over-right');
-        }
-        return;
-      }
-
-      // 3. Check Stand Rack
-      const standRackTarget = targetEl.closest('.stand-rack');
-      if (standRackTarget) {
-        standRackTarget.classList.add('stand-rack-drop-hover');
-      }
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
     }
   }
 
@@ -6407,12 +6363,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (touchCardState.isDragging) {
       if (e.cancelable) e.preventDefault();
 
-<<<<<<< HEAD
       const releaseTouch = e.changedTouches && e.changedTouches[0];
       if (releaseTouch) {
         updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
       }
-      const dropTarget = touchCardState.dropTarget;
+      let dropTarget = touchCardState.dropTarget;
+
+      // Fallback: If dropped near stands, ensure dropTarget is resolved
+      if (!dropTarget && userStands.length > 0 && releaseTouch) {
+        updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
+        dropTarget = touchCardState.dropTarget;
+      }
 
       if (dropTarget) {
         // 1. Dropped on Discard Pile
@@ -6422,7 +6383,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           if (canDiscard) {
             selectedCardId = cardId;
             discardSelected();
-            soundSystem.playDiscard();
+            try { soundSystem?.playDiscard?.(); } catch (_) {}
             touchCardState = null;
             draggedCardId = null;
             return;
@@ -6462,81 +6423,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
               myHand = userStands.flat();
               selectedCardId = card.id;
-              soundSystem.playCardSlide();
+              try { soundSystem?.playCardSlide?.(); } catch (_) {}
               renderAll(null);
               scrollCardIntoView(card.id);
               touchCardState = null;
               draggedCardId = null;
               return;
             }
-=======
-      const touch = e.changedTouches[0];
-      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-
-      document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
-        .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
-
-      if (targetEl) {
-        // 1. Dropped on Discard Pile
-        const discardTarget = targetEl.closest('#discardContainer, .discard-pile-wrapper');
-        const isMyTurn = isCurrentPlayerMe();
-        const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
-
-        if (discardTarget && canDiscard) {
-          selectedCardId = cardId;
-          discardSelected();
-          soundSystem.playDiscard();
-          touchCardState = null;
-          draggedCardId = null;
-          return;
-        }
-
-        // 2. Dropped on Another Card
-        const cardTarget = targetEl.closest('.card');
-        if (cardTarget && cardTarget.id && cardTarget.id.startsWith('card-')) {
-          const targetCardId = cardTarget.id.replace('card-', '');
-          if (targetCardId && targetCardId !== cardId) {
-            let sourceStand = null, targetStand = null;
-            let fromIdx = -1, toIdx = -1;
-            for (const s of userStands) {
-              if (fromIdx === -1) {
-                fromIdx = s.findIndex(c => c.id === cardId);
-                if (fromIdx !== -1) sourceStand = s;
-              }
-              if (toIdx === -1) {
-                toIdx = s.findIndex(c => c.id === targetCardId);
-                if (toIdx !== -1) targetStand = s;
-              }
-            }
-            if (sourceStand && targetStand) {
-              const [c] = sourceStand.splice(fromIdx, 1);
-              const rect = cardTarget.getBoundingClientRect();
-              const insertAfter = (touch.clientX >= rect.left + rect.width / 2);
-              let insertIdx = targetStand.findIndex(c => c.id === targetCardId);
-              if (insertAfter) insertIdx += 1;
-              targetStand.splice(insertIdx, 0, c);
-              selectedCardId = c.id;
-              myHand = userStands.flat();
-              soundSystem.playCardSlide();
-              renderAll(null);
-              scrollCardIntoView(c.id);
-              touchCardState = null;
-              draggedCardId = null;
-              return;
-            }
-          }
-        }
-
-        // 3. Dropped on Stand Rack
-        const standRackTarget = targetEl.closest('.stand-rack');
-        if (standRackTarget && standRackTarget.id && standRackTarget.id.startsWith('stand-rack-')) {
-          const sIdx = parseInt(standRackTarget.id.replace('stand-rack-', ''), 10);
-          if (!isNaN(sIdx) && sIdx >= 0 && sIdx < userStands.length) {
-            moveCardToStand(cardId, sIdx);
-            touchCardState = null;
-            draggedCardId = null;
-            return;
->>>>>>> parent of 378c78f (Merge pull request #22 from arahant2001/fix/mobile-drag-and-toolbar)
           }
         }
       }
@@ -6544,12 +6437,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       draggedCardId = null;
       touchCardState = null;
     } else {
-      // Tap vs swipe check: only select card if movement was minimal (tap)
+      // Tap (no drag): select/deselect card
       const touch = e.changedTouches ? e.changedTouches[0] : null;
       const dx = touch ? touch.clientX - touchCardState.startX : 0;
       const dy = touch ? touch.clientY - touchCardState.startY : 0;
       const dist = Math.hypot(dx, dy);
-      if (dist <= 10) {
+      if (dist <= 8) {
+        if (e.cancelable) e.preventDefault();
+        lastTouchSelectTime = Date.now();
         selectCard(cardId, true);
       }
       touchCardState = null;
