@@ -1291,8 +1291,66 @@
 
 :root{--bg-base:#07110d;--bg-gradient:radial-gradient(circle at 50% 0%,#163c2c 0%,#0a1b14 45%,#050b08 100%);--surface-felt:rgba(16,45,34,.94);--surface-board:#0b2a1d;--surface-panel:rgba(8,27,19,.92);--surface-stand:rgba(7,20,15,.92);--surface-border:rgba(217,182,92,.18);--surface-border-light:rgba(217,182,92,.34);--accent-blue:#63d6a5;--accent-blue-hover:#45bf8b;--accent-blue-glow:rgba(99,214,165,.25);--accent-gold:#d9b65c;--accent-gold-soft:#f1d27a;--accent-emerald:#32c58a;--accent-rose:#f06b78;--card-w:72px;--card-h:104px}
 body{padding:12px;background-image:radial-gradient(circle at 50% 35%,rgba(32,117,79,.13),transparent 38%),var(--bg-gradient)}
-.lobby-box{max-width:460px;margin:min(10vh,70px) auto;padding:34px 30px 30px;background:linear-gradient(145deg,rgba(19,54,41,.97),rgba(8,24,17,.97));border:1px solid rgba(217,182,92,.28);border-radius:20px;box-shadow:0 28px 70px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.06)}
-.lobby-title{font-size:30px;letter-spacing:-1px}.lobby-title:before{content:"♠ ♥ ♣ ♦";display:block;color:var(--accent-gold-soft);font-size:13px;letter-spacing:7px;margin-bottom:10px;opacity:.85}.lobby-subtitle{margin-bottom:28px}
+.lobby-box{max-width:480px;margin:min(7vh,50px) auto;padding:26px 28px 28px;background:linear-gradient(155deg,rgba(19,54,41,.98),rgba(8,24,17,.98));border:1px solid rgba(217,182,92,.32);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.68),0 0 30px rgba(217,182,92,.12),inset 0 1px 0 rgba(255,255,255,.08);position:relative;overflow:hidden;}
+.lobby-box:before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f1d27a,transparent);opacity:.85}
+.lobby-header-bar{display:flex;justify-content:flex-end;margin-bottom:2px}
+.lobby-sound-btn{background:rgba(12,38,27,.75);border:1px solid rgba(217,182,92,.28);border-radius:999px;color:#f1d27a;font-size:11px;font-weight:700;padding:4px 12px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all .2s ease;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.lobby-sound-btn:hover{background:rgba(23,66,48,.92);border-color:rgba(217,182,92,.5);transform:translateY(-1px);box-shadow:0 4px 12px rgba(217,182,92,.18)}
+.lobby-sound-btn.sound-muted{color:#8da498;border-color:rgba(141,164,152,.2);background:rgba(10,24,18,.6)}
+
+.lobby-brand-emblem{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:4px auto 14px;width:100%;max-width:280px;height:106px;cursor:pointer;perspective:900px}
+.lobby-fan-backdrop{position:absolute;width:160px;height:70px;bottom:8px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(217,182,92,.35) 0%,rgba(50,197,138,.14) 40%,transparent 72%);filter:blur(10px);pointer-events:none;transition:transform .4s ease,opacity .4s ease}
+.lobby-brand-emblem:hover .lobby-fan-backdrop{transform:scale(1.28);opacity:1}
+
+.lobby-card-fan{position:relative;width:200px;height:86px;display:flex;justify-content:center;align-items:flex-end;animation:emblemFloat 4.2s ease-in-out infinite}
+@keyframes emblemFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-5px)}}
+
+.fan-card{position:absolute;bottom:0;width:49px;height:74px;border-radius:6px;background:linear-gradient(155deg,#ffffff 0%,#faf8f2 55%,#ede7d8 100%);border:1px solid rgba(15,23,42,.16);box-shadow:0 8px 20px rgba(0,0,0,.52),0 2px 4px rgba(0,0,0,.25);transform-origin:50% 120%;transition:transform .38s cubic-bezier(.34,1.56,.64,1),box-shadow .38s ease,filter .38s ease;user-select:none;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:3px 4px}
+.fan-card:before{content:"";position:absolute;inset:2px;border:1px solid rgba(15,23,42,.08);border-radius:4px;pointer-events:none}
+.fan-card.is-joker:before{border-color:rgba(217,182,92,.45)}
+.fan-card.is-paplu:before{border-color:rgba(50,197,138,.45)}
+.fan-card.is-poochie{background:linear-gradient(155deg,#fffdf5 0%,#fef3c7 65%,#fde68a 100%)}
+.fan-card.is-poochie:before{border-color:rgba(245,158,11,.4)}
+
+.fan-card-corner{display:flex;flex-direction:column;align-items:center;line-height:1;position:relative;z-index:2}
+.fan-card-corner.top-left{align-self:flex-start}
+.fan-card-corner.bottom-right{align-self:flex-end;transform:rotate(180deg)}
+.fan-rank{font-size:10px;font-weight:900;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;letter-spacing:-.3px}
+.fan-suit{font-size:8.5px;line-height:1}
+.fan-card-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;line-height:1;pointer-events:none;opacity:.92;z-index:1}
+
+.suit-black{color:#0f172a}
+.suit-red{color:#dc2626}
+.suit-gold{color:#b45309}
+
+.fan-card-ribbon{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:6.5px;font-weight:900;letter-spacing:.4px;padding:1px 4px;border-radius:3px;background:linear-gradient(135deg,#f1d27a,#d9b65c);color:#1a1708;box-shadow:0 1px 3px rgba(0,0,0,.3);z-index:10;white-space:nowrap}
+.fan-card-ribbon.paplu-ribbon{background:linear-gradient(135deg,#6ee7b7,#10b981);color:#062b1b}
+.fan-card-ribbon.poochie-ribbon{background:linear-gradient(135deg,#fcd34d,#f59e0b);color:#451a03}
+
+.fan-card-1{transform:translateX(-54px) translateY(8px) rotate(-22deg);z-index:1}
+.fan-card-2{transform:translateX(-27px) translateY(2px) rotate(-11deg);z-index:2}
+.fan-card-3{transform:translateX(0px) translateY(-5px) rotate(0deg);z-index:5;box-shadow:0 12px 28px rgba(0,0,0,.58),0 0 16px rgba(217,182,92,.42);border-color:rgba(217,182,92,.45)}
+.fan-card-4{transform:translateX(27px) translateY(2px) rotate(11deg);z-index:3}
+.fan-card-5{transform:translateX(54px) translateY(8px) rotate(22deg);z-index:2}
+
+.lobby-brand-emblem:hover .fan-card-1{transform:translateX(-68px) translateY(5px) rotate(-29deg) scale(1.02)}
+.fan-card-1:hover{transform:translateX(-68px) translateY(-8px) rotate(-25deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
+.lobby-brand-emblem:hover .fan-card-2{transform:translateX(-34px) translateY(0px) rotate(-14deg) scale(1.02)}
+.fan-card-2:hover{transform:translateX(-34px) translateY(-14px) rotate(-11deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
+.lobby-brand-emblem:hover .fan-card-3{transform:translateX(0px) translateY(-10px) rotate(0deg) scale(1.06)}
+.fan-card-3:hover{transform:translateX(0px) translateY(-18px) rotate(0deg) scale(1.14)!important;z-index:15!important;box-shadow:0 22px 42px rgba(0,0,0,.75),0 0 24px rgba(217,182,92,.65)!important}
+.lobby-brand-emblem:hover .fan-card-4{transform:translateX(34px) translateY(0px) rotate(14deg) scale(1.02)}
+.fan-card-4:hover{transform:translateX(34px) translateY(-14px) rotate(11deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
+.lobby-brand-emblem:hover .fan-card-5{transform:translateX(68px) translateY(5px) rotate(29deg) scale(1.02)}
+.fan-card-5:hover{transform:translateX(68px) translateY(-8px) rotate(25deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
+
+.lobby-title{font-size:28px;font-weight:900;letter-spacing:-.6px;text-align:center;margin:0 0 4px 0;background:linear-gradient(135deg,#ffffff 20%,#f6df9e 65%,#d9b65c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.lobby-suit-divider{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 8px}
+.divider-line{flex:1;max-width:55px;height:1px;background:linear-gradient(90deg,transparent,rgba(217,182,92,.45),transparent)}
+.divider-suits{font-size:11px;letter-spacing:6px;color:#f1d27a;opacity:.88}
+.lobby-subtitle{text-align:center;font-size:12px;color:#9cb5a8;margin-bottom:8px;line-height:1.4;font-weight:500}
+.lobby-meta-bar{display:flex;align-items:center;justify-content:center;gap:7px;font-size:10.5px;color:#8da498;margin-bottom:20px;font-weight:600;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:14px}
+.meta-dot{color:rgba(217,182,92,.5);font-size:8px}
 input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .btn-primary{background:linear-gradient(135deg,#d9b65c,#a97d28);color:#172014;box-shadow:0 6px 20px rgba(217,182,92,.24)}
 .table-container{max-width:1180px;min-height:calc(100vh - 24px);gap:8px}
@@ -2004,8 +2062,20 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .stock-with-cut #stockDeckBtn{position:relative;z-index:5;touch-action:manipulation!important;}
 .cut-card-under-stock{position:absolute;left:-22px;top:8px;width:var(--card-h);height:var(--card-w);transform:rotate(90deg) scale(.88);transform-origin:center;z-index:2;pointer-events:none}
 .cut-card-under-stock .card{transform:none!important;opacity:.98;box-shadow:0 2px 7px rgba(0,0,0,.4),0 0 0 1px rgba(217,182,92,.25)!important}
-.pile-tap-hint{outline:2.5px solid #38bdf8!important;box-shadow:0 0 16px rgba(56,189,248,0.7)!important;transform:scale(1.05)!important;transition:transform .15s ease,box-shadow .15s ease,outline .15s ease;}
-.card, .card *, .deck-card, .deck-card *, .stand-rack, .stand-cards{-webkit-user-drag:none!important;user-drag:none!important;-webkit-touch-callout:none!important;}
+.stand-rack, .stand-cards { -webkit-touch-callout: none !important; }
+.card[draggable="true"] {
+  -webkit-user-drag: element !important;
+  user-drag: element !important;
+  cursor: grab !important;
+  touch-action: none !important;
+}
+.card[draggable="true"]:active {
+  cursor: grabbing !important;
+}
+.card:not([draggable="true"]), .cut-card-under-stock .card, .deck-card {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
 .discard-pile-wrapper{position:relative;z-index:9}
 .discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
 .discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:manipulation!important;}
@@ -2214,9 +2284,100 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
 <!-- Lobby View -->
 <div id="lobbyView" class="lobby-box">
+  <div class="lobby-header-bar">
+    <button type="button" class="lobby-sound-btn" onclick="toggleSoundSetting()" id="lobbySoundToggle" title="Toggle Sound Effects">
+      <span id="lobbySoundIcon">🔊</span> <span id="lobbySoundLabel">Audio: ON</span>
+    </button>
+  </div>
+
+  <div class="lobby-brand-emblem" aria-label="21 Card Rummy table cards fan">
+    <div class="lobby-fan-backdrop"></div>
+    <div class="lobby-card-fan">
+      <!-- Card 1: Ace of Spades -->
+      <div class="fan-card fan-card-1" title="Ace of Spades">
+        <div class="fan-card-corner top-left">
+          <span class="fan-rank">A</span>
+          <span class="fan-suit suit-black">♠</span>
+        </div>
+        <div class="fan-card-center suit-black">♠</div>
+        <div class="fan-card-corner bottom-right">
+          <span class="fan-rank">A</span>
+          <span class="fan-suit suit-black">♠</span>
+        </div>
+      </div>
+
+      <!-- Card 2: 7 of Spades (Tiplu / Open Cut Joker) -->
+      <div class="fan-card fan-card-2 is-joker" title="7♠ Open Cut Joker (Tiplu)">
+        <div class="fan-card-ribbon">JOKER</div>
+        <div class="fan-card-corner top-left">
+          <span class="fan-rank">7</span>
+          <span class="fan-suit suit-black">♠</span>
+        </div>
+        <div class="fan-card-center suit-black">♠</div>
+        <div class="fan-card-corner bottom-right">
+          <span class="fan-rank">7</span>
+          <span class="fan-suit suit-black">♠</span>
+        </div>
+      </div>
+
+      <!-- Card 3: 8 of Spades (Paplu - 5 Mal points) -->
+      <div class="fan-card fan-card-3 is-paplu" title="8♠ Paplu (Upper Joker)">
+        <div class="fan-card-ribbon paplu-ribbon">PAPLU</div>
+        <div class="fan-card-corner top-left">
+          <span class="fan-rank">8</span>
+          <span class="fan-suit suit-black">♠</span>
+        </div>
+        <div class="fan-card-center suit-black">♠</div>
+        <div class="fan-card-corner bottom-right">
+          <span class="fan-rank">8</span>
+          <span class="fan-suit suit-black">♠</span>
+        </div>
+      </div>
+
+      <!-- Card 4: King of Hearts -->
+      <div class="fan-card fan-card-4" title="King of Hearts (Marriage)">
+        <div class="fan-card-corner top-left">
+          <span class="fan-rank suit-red">K</span>
+          <span class="fan-suit suit-red">♥</span>
+        </div>
+        <div class="fan-card-center suit-red">♥</div>
+        <div class="fan-card-corner bottom-right">
+          <span class="fan-rank suit-red">K</span>
+          <span class="fan-suit suit-red">♥</span>
+        </div>
+      </div>
+
+      <!-- Card 5: Printed Joker (PJ★ Poochie) -->
+      <div class="fan-card fan-card-5 is-poochie" title="Poochie (Printed Joker)">
+        <div class="fan-card-ribbon poochie-ribbon">POOCHIE</div>
+        <div class="fan-card-corner top-left">
+          <span class="fan-rank suit-gold">PJ</span>
+          <span class="fan-suit suit-gold">★</span>
+        </div>
+        <div class="fan-card-center suit-gold">★</div>
+        <div class="fan-card-corner bottom-right">
+          <span class="fan-rank suit-gold">PJ</span>
+          <span class="fan-suit suit-gold">★</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <h2 class="lobby-title">21 Card Rummy</h2>
+  <div class="lobby-suit-divider">
+    <span class="divider-line"></span>
+    <span class="divider-suits">♠ &bull; ♥ &bull; ♣ &bull; ♦</span>
+    <span class="divider-line"></span>
+  </div>
   <div class="lobby-subtitle">
     South Indian Open Joker Table &bull; Winner Takes Honors
+  </div>
+  <div class="lobby-meta-bar">
+    <span>3 Decks of 53 Cards</span>
+    <span class="meta-dot">&bull;</span>
+    <span>Marriage &amp; Mal Points</span>
+    <span class="meta-dot">&bull;</span>
+    <span>Pure Sequences</span>
   </div>
   <label class="field-label">Your Name</label>
   <input id="playerName" placeholder="Enter your name" value="" autocomplete="name" />
@@ -2675,6 +2836,20 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (label) {
         label.innerText = this.enabled ? 'Audio: ON' : 'Audio: OFF';
       }
+
+      const lobbyBtn = document.getElementById('lobbySoundToggle');
+      const lobbyIcon = document.getElementById('lobbySoundIcon');
+      const lobbyLabel = document.getElementById('lobbySoundLabel');
+      if (lobbyBtn) {
+        lobbyBtn.classList.toggle('sound-muted', !this.enabled);
+        lobbyBtn.title = this.enabled ? 'Sound Effects Enabled (Click to Mute)' : 'Sound Effects Muted (Click to Unmute)';
+      }
+      if (lobbyIcon) {
+        lobbyIcon.innerText = this.enabled ? '🔊' : '🔇';
+      }
+      if (lobbyLabel) {
+        lobbyLabel.innerText = this.enabled ? 'Audio: ON' : 'Audio: OFF';
+      }
     }
 
     // 1. Subtle, realistic card slide/whoosh for draws
@@ -2822,6 +2997,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
   window.toggleSoundSetting = toggleSoundSetting;
   window.soundSystem = soundSystem;
+  soundSystem.updateUI();
 
   ['click', 'touchstart', 'keydown'].forEach(evtType => {
     document.addEventListener(evtType, () => soundSystem.init(), { once: true, passive: true });
@@ -5997,8 +6173,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     ghost.id = 'activeDragGhost';
     ghost.classList.add('card-drag-preview');
     ghost.style.position = 'fixed';
-    ghost.style.top = '-9999px';
-    ghost.style.left = '-9999px';
+    ghost.style.top = (rect.top || 0) + 'px';
+    ghost.style.left = (rect.left || 0) + 'px';
     ghost.style.width = (rect.width || 72) + 'px';
     ghost.style.height = (rect.height || 104) + 'px';
     ghost.style.transform = `scale(${scale}) rotate(${rotationDeg}deg)`;
@@ -6023,8 +6199,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     draggedPileType = pileType;
     draggedCardId = null;
-    e.dataTransfer.setData('text/plain', 'pile:' + pileType);
-    e.dataTransfer.effectAllowed = 'move';
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', 'pile:' + pileType);
+      e.dataTransfer.effectAllowed = 'move';
+    }
 
     // Tactile lifted feedback on pickup from discard pile or stock deck
     const sourceEl = (pileType === 'discard')
@@ -6034,10 +6212,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (sourceEl) {
       try {
         const ghost = createLiftedDragGhost(sourceEl, -3.0, 1.09);
-        if (ghost && e.dataTransfer.setDragImage) {
+        if (ghost && e.dataTransfer && e.dataTransfer.setDragImage) {
           const rect = sourceEl.getBoundingClientRect();
           e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
-          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+          setTimeout(() => { if (ghost && ghost.parentNode) ghost.remove(); }, 50);
         }
       } catch (err) {
         console.warn('Custom pile drag image error:', err);
@@ -6077,16 +6255,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onCardDragStart(e, cardId) {
     draggedPileType = null;
     draggedCardId = cardId;
-    e.dataTransfer.setData('text/plain', cardId);
-    e.dataTransfer.effectAllowed = 'move';
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', cardId);
+      e.dataTransfer.effectAllowed = 'move';
+    }
     const el = document.getElementById('card-' + cardId);
     if (el) {
       try {
         const ghost = createLiftedDragGhost(el, -2.8, 1.09);
-        if (ghost && e.dataTransfer.setDragImage) {
+        if (ghost && e.dataTransfer && e.dataTransfer.setDragImage) {
           const rect = el.getBoundingClientRect();
           e.dataTransfer.setDragImage(ghost, rect.width * 0.5, rect.height * 0.5);
-          setTimeout(() => { if (ghost.parentNode) ghost.remove(); }, 120);
+          setTimeout(() => { if (ghost && ghost.parentNode) ghost.remove(); }, 50);
         }
       } catch (err) {
         console.warn('Custom card drag image error:', err);
@@ -6151,6 +6331,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     draggedCardId = null;
     selectedCardId = card.id;
     myHand = userStands.flat();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
     scrollCardIntoView(card.id);
   }
@@ -6445,12 +6626,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (dist <= 8) {
         if (e.cancelable) e.preventDefault();
         lastTouchSelectTime = Date.now();
-        selectCard(cardId, true);
-      }
-      touchCardState = null;
-      const dy = touch ? touch.clientY - touchCardState.startY : 0;
-      const dist = Math.hypot(dx, dy);
-      if (dist <= 10) {
         selectCard(cardId, true);
       }
       touchCardState = null;
@@ -6783,6 +6958,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     draggedCardId = null;
     selectedCardId = card.id;
     myHand = userStands.flat();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
     scrollCardIntoView(card.id);
   }
