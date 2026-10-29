@@ -6448,12 +6448,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         selectCard(cardId, true);
       }
       touchCardState = null;
-      const dy = touch ? touch.clientY - touchCardState.startY : 0;
-      const dist = Math.hypot(dx, dy);
-      if (dist <= 10) {
-        selectCard(cardId, true);
-      }
-      touchCardState = null;
     }
   }
 
