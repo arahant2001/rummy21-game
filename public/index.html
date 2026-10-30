@@ -1012,6 +1012,28 @@
       color: #fff !important;
       font-weight: 800 !important;
     }
+    .stand-draw-quick-btn {
+      background: linear-gradient(135deg, #10b981, #047857) !important;
+      border-color: rgba(110, 231, 183, 0.5) !important;
+      color: #ffffff !important;
+      font-weight: 800 !important;
+    }
+    .btn-action.btn-draw-mode {
+      background: linear-gradient(135deg, #10b981, #047857) !important;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
+      color: #ffffff !important;
+      border-color: rgba(110, 231, 183, 0.45) !important;
+    }
+    .btn-action.btn-draw-mode:hover {
+      background: linear-gradient(135deg, #34d399, #059669) !important;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5) !important;
+      transform: translateY(-1px);
+    }
+    .card.pile-tap-hint, #stockDeckBtn.pile-tap-hint, #discardContainer.pile-tap-hint {
+      transform: scale(1.06) !important;
+      box-shadow: 0 0 18px rgba(217, 182, 92, 0.85), 0 0 0 2px rgba(217, 182, 92, 0.9) !important;
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out !important;
+    }
     .reorder-close-btn {
       background: rgba(239, 68, 68, 0.25) !important;
       border-color: rgba(239, 68, 68, 0.5) !important;
@@ -2468,8 +2490,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <div class="stock-with-cut">
           <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
           <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
-               onclick="onStockClick(event)"
-               ondblclick="onStockDoubleClick(event)"
+               onclick="handleStockInteraction(event)"
+               ondblclick="triggerStockDraw(event)"
                ondragstart="onPileDragStart(event, 'stock')" ondragend="onPileDragEnd(event)"
                ontouchstart="onTouchPileStart(event, 'stock')" ontouchmove="onTouchPileMove(event)"
                ontouchend="onTouchPileEnd(event)" ontouchcancel="onTouchPileCancel()"
@@ -2497,8 +2519,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         <div class="discard-stack-area">
           <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
           <div id="discardContainer" class="pile-drop-source" draggable="true"
-               onclick="onDiscardContainerClick(event)"
-               ondblclick="onDiscardDoubleClick(event)"
+               onclick="handleDiscardInteraction(event)"
+               ondblclick="triggerDiscardDraw(event)"
                ondragstart="onPileDragStart(event, 'discard')" ondragend="onPileDragEnd(event)"
                ontouchstart="onTouchPileStart(event, 'discard')" ontouchmove="onTouchPileMove(event)"
                ontouchend="onTouchPileEnd(event)" ontouchcancel="onTouchPileCancel()"
@@ -2566,7 +2588,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     </div>
     <div class="actions-grid">
       <button id="btnDrop" class="btn-action btn-drop" onclick="dropHand()"><span><b>Scoot</b><small class="action-sub">before drawing</small></span></button>
-      <button id="btnDiscard" class="btn-action btn-discard" onclick="discardSelected()" style="display:none;"><span><b>Discard Card</b><small class="action-sub">selected card</small></span></button>
+      <button id="btnDiscard" class="btn-action btn-discard" onclick="handleDiscardOrDrawClick()" style="display:none;"><span><b id="btnDiscardLabel">Discard Card</b><small id="btnDiscardSub" class="action-sub">selected card</small></span></button>
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
@@ -3668,10 +3690,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const currentStandIds = new Set(userStands.flatMap(stand => stand.map(c => c.id)));
     const newCards = clampedIncoming.filter(c => !currentStandIds.has(c.id));
 
-    // Place new cards at the end of the last stand (or stand 1)
+    // Requirement: When drawing a card, the drawn card should go to the end of Stand 1
     if (newCards.length > 0) {
       if (userStands.length === 0) userStands.push([]);
-      userStands[userStands.length - 1].push(...newCards);
+      userStands[0].push(...newCards);
     }
 
     // Strict deduplication across user stands
@@ -4540,8 +4562,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     const btnDiscard = document.getElementById('btnDiscard');
     if (btnDiscard) {
-      btnDiscard.classList.toggle('btn-disabled', declarationMode || !canDiscard || !selectedCardId || myDropped || myForfeited);
-      btnDiscard.style.display = canDiscard ? 'inline-flex' : 'none';
+      if (canDraw) {
+        btnDiscard.style.display = 'inline-flex';
+        btnDiscard.classList.remove('btn-disabled');
+        btnDiscard.classList.add('btn-draw-mode');
+        const b = btnDiscard.querySelector('b');
+        if (b) b.innerText = 'Draw Card';
+        const s = btnDiscard.querySelector('.action-sub');
+        if (s) s.innerText = 'from stock deck';
+        btnDiscard.title = 'Draw a card from the stock deck';
+      } else if (canDiscard) {
+        btnDiscard.style.display = 'inline-flex';
+        btnDiscard.classList.remove('btn-draw-mode');
+        btnDiscard.classList.toggle('btn-disabled', declarationMode || !selectedCardId || myDropped || myForfeited);
+        const b = btnDiscard.querySelector('b');
+        if (b) b.innerText = 'Discard Card';
+        const s = btnDiscard.querySelector('.action-sub');
+        if (s) s.innerText = selectedCardId ? 'selected card' : 'select card to discard';
+        btnDiscard.title = 'Discard the currently selected card';
+      } else {
+        btnDiscard.style.display = 'none';
+        btnDiscard.classList.remove('btn-draw-mode');
+      }
     }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
@@ -5084,96 +5126,70 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   let lastDrawActionTime = 0;
-  let lastStockClickTime = 0;
-  let lastDiscardClickTime = 0;
-  let lastPileTapTime = 0;
-  let lastPileTapType = null;
-  let pileTapFeedbackTimeout = null;
+  let lastStockInteractionTime = 0;
+  let lastDiscardInteractionTime = 0;
+  let stockTapFeedbackTimeout = null;
+  let discardTapFeedbackTimeout = null;
 
-  function showPileTapFeedback(pileType) {
-    const el = (pileType === 'discard')
-      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
-      : document.getElementById('stockDeckBtn');
+  function showStockTapFeedback() {
+    const el = document.getElementById('stockDeckBtn');
     if (!el) return;
     el.classList.add('pile-tap-hint');
-    clearTimeout(pileTapFeedbackTimeout);
-    pileTapFeedbackTimeout = setTimeout(() => {
+    clearTimeout(stockTapFeedbackTimeout);
+    stockTapFeedbackTimeout = setTimeout(() => {
       el.classList.remove('pile-tap-hint');
-    }, 550);
+    }, 600);
   }
 
-  function handlePileTap(pileType, e) {
-    if (e && e.cancelable) e.preventDefault();
-    if (!canPlayerDraw()) return;
-    if (pileType === 'discard' && !canPlayerDrawFromDiscard()) return;
-
-    const now = Date.now();
-    if (lastPileTapType === pileType && (now - lastPileTapTime) < 750) {
-      lastPileTapTime = 0;
-      lastPileTapType = null;
-      const el = (pileType === 'discard')
-        ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
-        : document.getElementById('stockDeckBtn');
-      if (el) el.classList.remove('pile-tap-hint');
-
-      if (now - lastDrawActionTime < 450) return;
-      lastDrawActionTime = now;
-
-      if (pileType === 'stock') {
-        drawStock();
-      } else {
-        drawDiscard();
-      }
-    } else {
-      lastPileTapTime = now;
-      lastPileTapType = pileType;
-      showPileTapFeedback(pileType);
-    }
+  function showDiscardTapFeedback() {
+    const el = document.querySelector('#discardContainer .card') || document.getElementById('discardContainer');
+    if (!el) return;
+    el.classList.add('pile-tap-hint');
+    clearTimeout(discardTapFeedbackTimeout);
+    discardTapFeedbackTimeout = setTimeout(() => {
+      el.classList.remove('pile-tap-hint');
+    }, 600);
   }
 
-  function onStockClick(e) {
-    if (!canPlayerDraw()) return;
-    const now = Date.now();
-    if (now - lastStockClickTime < 750) {
-      onStockDoubleClick(e);
-      lastStockClickTime = 0;
-    } else {
-      lastStockClickTime = now;
-      showPileTapFeedback('stock');
-    }
+  function showPileTapFeedback(pileType) {
+    if (pileType === 'stock') showStockTapFeedback();
+    else showDiscardTapFeedback();
   }
 
-  function onStockDoubleClick(e) {
+  function triggerStockDraw(e) {
     if (e) {
-      e.preventDefault();
-      e.stopPropagation();
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.preventDefault) e.preventDefault();
     }
     const now = Date.now();
-    if (now - lastDrawActionTime < 450) return;
+    if (now - lastDrawActionTime < 350) return;
     if (!canPlayerDraw()) return;
     lastDrawActionTime = now;
+    lastStockInteractionTime = 0;
+    const el = document.getElementById('stockDeckBtn');
+    if (el) el.classList.remove('pile-tap-hint');
     drawStock();
   }
 
-  function onDiscardContainerClick(e) {
+  function handleStockInteraction(e) {
     if (!canPlayerDraw()) return;
     const now = Date.now();
-    if (now - lastDiscardClickTime < 750) {
-      onDiscardDoubleClick(e);
-      lastDiscardClickTime = 0;
+    // If double tap/click within 850ms (and not duplicate event within 30ms) -> draw!
+    if (now - lastStockInteractionTime > 30 && now - lastStockInteractionTime < 850) {
+      triggerStockDraw(e);
     } else {
-      lastDiscardClickTime = now;
-      showPileTapFeedback('discard');
+      lastStockInteractionTime = now;
+      showStockTapFeedback();
     }
   }
 
-  function onDiscardDoubleClick(e) {
+  function triggerDiscardDraw(e) {
     if (e) {
-      e.preventDefault();
-      e.stopPropagation();
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.preventDefault) e.preventDefault();
     }
     const now = Date.now();
-    if (now - lastDrawActionTime < 450) return;
+    if (now - lastDrawActionTime < 350) return;
     if (!canPlayerDraw()) return;
     if (!roomState?.topDiscard && !isDemo) return;
     if (!canPlayerDrawFromDiscard()) {
@@ -5181,7 +5197,35 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       return;
     }
     lastDrawActionTime = now;
+    lastDiscardInteractionTime = 0;
+    const el = document.querySelector('#discardContainer .card') || document.getElementById('discardContainer');
+    if (el) el.classList.remove('pile-tap-hint');
     drawDiscard();
+  }
+
+  function handleDiscardInteraction(e) {
+    if (!canPlayerDraw()) return;
+    if (!canPlayerDrawFromDiscard()) {
+      window.alert('A discarded Joker cannot be picked up from the discard pile. You must draw from the Stock deck.');
+      return;
+    }
+    const now = Date.now();
+    if (now - lastDiscardInteractionTime > 30 && now - lastDiscardInteractionTime < 850) {
+      triggerDiscardDraw(e);
+    } else {
+      lastDiscardInteractionTime = now;
+      showDiscardTapFeedback();
+    }
+  }
+
+  // Backwards compatible aliases
+  function onStockClick(e) { handleStockInteraction(e); }
+  function onStockDoubleClick(e) { triggerStockDraw(e); }
+  function onDiscardContainerClick(e) { handleDiscardInteraction(e); }
+  function onDiscardDoubleClick(e) { triggerDiscardDraw(e); }
+  function handlePileTap(pileType, e) {
+    if (pileType === 'stock') handleStockInteraction(e);
+    else handleDiscardInteraction(e);
   }
 
   window.openMaalModal = openMaalModal;
@@ -5191,6 +5235,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   window.onStockDoubleClick = onStockDoubleClick;
   window.onDiscardContainerClick = onDiscardContainerClick;
   window.onDiscardDoubleClick = onDiscardDoubleClick;
+  window.handleStockInteraction = handleStockInteraction;
+  window.triggerStockDraw = triggerStockDraw;
+  window.handleDiscardInteraction = handleDiscardInteraction;
+  window.triggerDiscardDraw = triggerDiscardDraw;
 
   let standScrollInterval = null;
 
@@ -6127,11 +6175,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         });
         html += `<button type="button" class="tool-btn stand-move-btn stand-move-new-btn" ontouchend="executeStandMoveNew('${selectedCardId}', event)" onclick="executeStandMoveNew('${selectedCardId}', event)" title="Create a new stand and move this card into it">+ Stand ${userStands.length + 1}</button>`;
         
-        // If it is player's turn to discard, offer quick discard button in the mobile action bar
+        // When it is a player's turn to draw, the "Discard card" buttons change to "Draw card"
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+        const canDraw = canPlayerDraw();
         if (canDiscard) {
           html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); discardSelected()" onclick="event.preventDefault(); event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
+        } else if (canDraw) {
+          html += `<button type="button" class="tool-btn stand-move-btn stand-draw-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); drawStock()" onclick="event.preventDefault(); event.stopPropagation(); drawStock()" title="Draw a card from the stock deck">📥 Draw Card</button>`;
         }
 
         optionsSpan.innerHTML = html;
@@ -6863,7 +6914,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchPileState.startY;
     const dist = Math.hypot(dx, dy);
 
-    if (!touchPileState.isDragging && dist > 16) {
+    if (!touchPileState.isDragging && dist > 20) {
       touchPileState.isDragging = true;
       draggedPileType = touchPileState.pileType;
       document.querySelectorAll('.stand-rack').forEach(el => el.classList.add('pile-drop-ready'));
@@ -6903,7 +6954,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
       document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
-
       if (targetEl) {
         const standRackTarget = targetEl.closest('.stand-rack');
         if (standRackTarget) {
@@ -6924,10 +6974,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       touchPileState.sourceEl.style.opacity = '';
     }
 
-    if (touchPileState.isDragging) {
+    const pileType = touchPileState.pileType;
+    const isDragging = touchPileState.isDragging;
+
+    if (isDragging) {
       if (e.cancelable) e.preventDefault();
-      const touch = e.changedTouches[0];
-      const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+      const touch = e.changedTouches ? e.changedTouches[0] : null;
+      const targetEl = touch ? document.elementFromPoint(touch.clientX, touch.clientY) : null;
 
       document.querySelectorAll('.stand-rack-drop-hover').forEach(node => node.classList.remove('stand-rack-drop-hover'));
       document.querySelectorAll('.stand-rack').forEach(el => el.classList.remove('pile-drop-ready'));
@@ -6935,7 +6988,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (targetEl) {
         const standRackTarget = targetEl.closest('.stand-rack');
         if (standRackTarget) {
-          completePileDrop(touchPileState.pileType);
+          completePileDrop(pileType);
           touchPileState = null;
           draggedPileType = null;
           return;
@@ -6945,14 +6998,13 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       touchPileState = null;
       draggedPileType = null;
     } else {
-      const touch = e.changedTouches ? e.changedTouches[0] : null;
-      const dx = touch ? touch.clientX - touchPileState.startX : 0;
-      const dy = touch ? touch.clientY - touchPileState.startY : 0;
-      const dist = Math.hypot(dx, dy);
-      if (dist <= 12) {
-        handlePileTap(touchPileState.pileType, e);
-      }
+      // Tap (no drag): handle double-tap or tap interaction
       touchPileState = null;
+      if (pileType === 'stock') {
+        handleStockInteraction(e);
+      } else {
+        handleDiscardInteraction(e);
+      }
     }
   }
 
@@ -7254,13 +7306,28 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     ws.send(JSON.stringify({ type: 'DROP' }));
   }
 
+  function handleDiscardOrDrawClick(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (canPlayerDraw()) {
+      drawStock();
+    } else {
+      discardSelected();
+    }
+  }
+
   function discardSelected() {
+    if (canPlayerDraw()) {
+      drawStock();
+      return;
+    }
     if (!selectedCardId) return;
     soundSystem.playCardDiscard();
     if (isDemo) { simulateDiscard(); return; }
     ws.send(JSON.stringify({ type: 'DISCARD', cardId: selectedCardId }));
     selectedCardId = null;
   }
+
+  window.handleDiscardOrDrawClick = handleDiscardOrDrawClick;
 
   function declareShow() {
     if (roomState?.status === 'GROUPING') {
@@ -8511,11 +8578,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       newCard = { id: 'c_' + Date.now(), suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false };
     }
     
-    // Add to the last stand
-    if (userStands.length === 0) userStands.push([]);
-    userStands[userStands.length - 1].push(newCard);
+    // Requirement: When drawing a card, the drawn card should go to the end of Stand 1
+    if (userStands.length === 0) userStands = [[]];
+    userStands[0].push(newCard);
     myHand = userStands.flat();
-
     const meP = roomState.players.find(p => p.id === 'p_demo');
     if (meP) meP.cardCount = myHand.length;
     
@@ -8537,8 +8603,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const sourceFlight = captureCardFlight(document.getElementById('discardContainer'));
     if (!roomState.topDiscard) return;
     const drawn = roomState.topDiscard;
-    if (userStands.length === 0) userStands.push([]);
-    userStands[userStands.length - 1].push(drawn);
+
+    // Requirement: When drawing a card, the drawn card should go to the end of Stand 1
+    if (userStands.length === 0) userStands = [[]];
+    userStands[0].push(drawn);
     myHand = userStands.flat();
 
     const meP = roomState.players.find(p => p.id === 'p_demo');
