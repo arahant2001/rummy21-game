@@ -390,8 +390,30 @@
     }
     .court-art {
       display: block;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
-    }    /* Physical playing-card finish */
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.18));
+      max-width: 100%;
+      height: auto;
+    }
+    .card-center .court-art {
+      width: 44px;
+      height: 58px;
+    }
+    @media (max-width: 600px) {
+      .card-center .court-art {
+        width: 35px;
+        height: 48px;
+      }
+    }
+    .fan-card .court-art {
+      width: 32px;
+      height: 44px;
+      margin: auto;
+    }
+    .fan-card-center .pip-grid {
+      transform: scale(0.68);
+      transform-origin: center;
+    }
+    /* Physical playing-card finish */
     .card{
       background:#f7f5ef !important;
       border:1px solid rgba(20,25,30,.35) !important;
@@ -1302,47 +1324,48 @@ body{padding:12px;background-image:radial-gradient(circle at 50% 35%,rgba(32,117
 .lobby-fan-backdrop{position:absolute;width:160px;height:70px;bottom:8px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(217,182,92,.35) 0%,rgba(50,197,138,.14) 40%,transparent 72%);filter:blur(10px);pointer-events:none;transition:transform .4s ease,opacity .4s ease}
 .lobby-brand-emblem:hover .lobby-fan-backdrop{transform:scale(1.28);opacity:1}
 
-.lobby-card-fan{position:relative;width:200px;height:86px;display:flex;justify-content:center;align-items:flex-end;animation:emblemFloat 4.2s ease-in-out infinite}
+.lobby-card-fan{position:relative;width:220px;height:76px;display:flex;justify-content:center;align-items:flex-end;animation:emblemFloat 4.2s ease-in-out infinite}
 @keyframes emblemFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-5px)}}
 
-.fan-card{position:absolute;bottom:0;width:49px;height:74px;border-radius:6px;background:linear-gradient(155deg,#ffffff 0%,#faf8f2 55%,#ede7d8 100%);border:1px solid rgba(15,23,42,.16);box-shadow:0 8px 20px rgba(0,0,0,.52),0 2px 4px rgba(0,0,0,.25);transform-origin:50% 120%;transition:transform .38s cubic-bezier(.34,1.56,.64,1),box-shadow .38s ease,filter .38s ease;user-select:none;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:3px 4px}
-.fan-card:before{content:"";position:absolute;inset:2px;border:1px solid rgba(15,23,42,.08);border-radius:4px;pointer-events:none}
-.fan-card.is-joker:before{border-color:rgba(217,182,92,.45)}
-.fan-card.is-paplu:before{border-color:rgba(50,197,138,.45)}
-.fan-card.is-poochie{background:linear-gradient(155deg,#fffdf5 0%,#fef3c7 65%,#fde68a 100%)}
-.fan-card.is-poochie:before{border-color:rgba(245,158,11,.4)}
+.fan-card{position:absolute;bottom:0;width:38px;height:56px;border-radius:4.5px;background:#ffffff;border:1px solid rgba(15,23,42,.18);box-shadow:0 6px 16px rgba(0,0,0,.52),0 2px 4px rgba(0,0,0,.25);transform-origin:50% 120%;transition:transform .38s cubic-bezier(.34,1.56,.64,1),box-shadow .38s ease,filter .38s ease;user-select:none;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0}
+.fan-card-img{width:100%;height:100%;object-fit:fill;display:block;border-radius:4px;pointer-events:none}
+.fan-card:before{content:"";position:absolute;inset:0;border:1px solid rgba(15,23,42,.08);border-radius:4.5px;pointer-events:none;z-index:3}
+.fan-card.is-joker:before{border-color:rgba(217,182,92,.65);box-shadow:inset 0 0 0 1px rgba(217,182,92,.35)}
+.fan-card.is-paplu:before{border-color:rgba(50,197,138,.65);box-shadow:inset 0 0 0 1px rgba(50,197,138,.35)}
+.fan-card.is-poochie:before{border-color:rgba(245,158,11,.65);box-shadow:inset 0 0 0 1px rgba(245,158,11,.35)}
 
-.fan-card-corner{display:flex;flex-direction:column;align-items:center;line-height:1;position:relative;z-index:2}
-.fan-card-corner.top-left{align-self:flex-start}
-.fan-card-corner.bottom-right{align-self:flex-end;transform:rotate(180deg)}
-.fan-rank{font-size:10px;font-weight:900;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;letter-spacing:-.3px}
-.fan-suit{font-size:8.5px;line-height:1}
-.fan-card-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;line-height:1;pointer-events:none;opacity:.92;z-index:1}
-
-.suit-black{color:#0f172a}
-.suit-red{color:#dc2626}
-.suit-gold{color:#b45309}
-
-.fan-card-ribbon{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:6.5px;font-weight:900;letter-spacing:.4px;padding:1px 4px;border-radius:3px;background:linear-gradient(135deg,#f1d27a,#d9b65c);color:#1a1708;box-shadow:0 1px 3px rgba(0,0,0,.3);z-index:10;white-space:nowrap}
+.fan-card-ribbon{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:5.5px;font-weight:900;letter-spacing:.3px;padding:1px 3.5px;border-radius:2.5px;background:linear-gradient(135deg,#f1d27a,#d9b65c);color:#1a1708;box-shadow:0 1px 3px rgba(0,0,0,.4);z-index:10;white-space:nowrap;line-height:1.2}
 .fan-card-ribbon.paplu-ribbon{background:linear-gradient(135deg,#6ee7b7,#10b981);color:#062b1b}
 .fan-card-ribbon.poochie-ribbon{background:linear-gradient(135deg,#fcd34d,#f59e0b);color:#451a03}
 
-.fan-card-1{transform:translateX(-54px) translateY(8px) rotate(-22deg);z-index:1}
-.fan-card-2{transform:translateX(-27px) translateY(2px) rotate(-11deg);z-index:2}
-.fan-card-3{transform:translateX(0px) translateY(-5px) rotate(0deg);z-index:5;box-shadow:0 12px 28px rgba(0,0,0,.58),0 0 16px rgba(217,182,92,.42);border-color:rgba(217,182,92,.45)}
-.fan-card-4{transform:translateX(27px) translateY(2px) rotate(11deg);z-index:3}
-.fan-card-5{transform:translateX(54px) translateY(8px) rotate(22deg);z-index:2}
+.fan-card-1{transform:translateX(-66px) translateY(12px) rotate(-30deg);z-index:1}
+.fan-card-2{transform:translateX(-44px) translateY(6px) rotate(-20deg);z-index:2}
+.fan-card-3{transform:translateX(-22px) translateY(2px) rotate(-10deg);z-index:3}
+.fan-card-4{transform:translateX(0px) translateY(-4px) rotate(0deg);z-index:7;box-shadow:0 10px 24px rgba(0,0,0,.58),0 0 16px rgba(217,182,92,.45);border-color:rgba(217,182,92,.5)}
+.fan-card-5{transform:translateX(22px) translateY(2px) rotate(10deg);z-index:4}
+.fan-card-6{transform:translateX(44px) translateY(6px) rotate(20deg);z-index:2}
+.fan-card-7{transform:translateX(66px) translateY(12px) rotate(30deg);z-index:1}
 
-.lobby-brand-emblem:hover .fan-card-1{transform:translateX(-68px) translateY(5px) rotate(-29deg) scale(1.02)}
-.fan-card-1:hover{transform:translateX(-68px) translateY(-8px) rotate(-25deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
-.lobby-brand-emblem:hover .fan-card-2{transform:translateX(-34px) translateY(0px) rotate(-14deg) scale(1.02)}
-.fan-card-2:hover{transform:translateX(-34px) translateY(-14px) rotate(-11deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
-.lobby-brand-emblem:hover .fan-card-3{transform:translateX(0px) translateY(-10px) rotate(0deg) scale(1.06)}
-.fan-card-3:hover{transform:translateX(0px) translateY(-18px) rotate(0deg) scale(1.14)!important;z-index:15!important;box-shadow:0 22px 42px rgba(0,0,0,.75),0 0 24px rgba(217,182,92,.65)!important}
-.lobby-brand-emblem:hover .fan-card-4{transform:translateX(34px) translateY(0px) rotate(14deg) scale(1.02)}
-.fan-card-4:hover{transform:translateX(34px) translateY(-14px) rotate(11deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
-.lobby-brand-emblem:hover .fan-card-5{transform:translateX(68px) translateY(5px) rotate(29deg) scale(1.02)}
-.fan-card-5:hover{transform:translateX(68px) translateY(-8px) rotate(25deg) scale(1.08)!important;z-index:15!important;box-shadow:0 18px 36px rgba(0,0,0,.68),0 0 18px rgba(217,182,92,.5)!important}
+.lobby-brand-emblem:hover .fan-card-1{transform:translateX(-84px) translateY(8px) rotate(-36deg) scale(1.02)}
+.fan-card-1:hover{transform:translateX(-84px) translateY(-14px) rotate(-30deg) scale(1.15)!important;z-index:20!important;box-shadow:0 18px 36px rgba(0,0,0,.7),0 0 18px rgba(217,182,92,.5)!important}
+
+.lobby-brand-emblem:hover .fan-card-2{transform:translateX(-56px) translateY(2px) rotate(-24deg) scale(1.02)}
+.fan-card-2:hover{transform:translateX(-56px) translateY(-16px) rotate(-20deg) scale(1.15)!important;z-index:20!important;box-shadow:0 18px 36px rgba(0,0,0,.7),0 0 18px rgba(217,182,92,.5)!important}
+
+.lobby-brand-emblem:hover .fan-card-3{transform:translateX(-28px) translateY(-1px) rotate(-12deg) scale(1.02)}
+.fan-card-3:hover{transform:translateX(-28px) translateY(-16px) rotate(-10deg) scale(1.15)!important;z-index:20!important;box-shadow:0 18px 36px rgba(0,0,0,.7),0 0 18px rgba(217,182,92,.5)!important}
+
+.lobby-brand-emblem:hover .fan-card-4{transform:translateX(0px) translateY(-10px) rotate(0deg) scale(1.08)}
+.fan-card-4:hover{transform:translateX(0px) translateY(-18px) rotate(0deg) scale(1.18)!important;z-index:25!important;box-shadow:0 22px 42px rgba(0,0,0,.75),0 0 24px rgba(217,182,92,.65)!important}
+
+.lobby-brand-emblem:hover .fan-card-5{transform:translateX(28px) translateY(-1px) rotate(12deg) scale(1.02)}
+.fan-card-5:hover{transform:translateX(28px) translateY(-16px) rotate(10deg) scale(1.15)!important;z-index:20!important;box-shadow:0 18px 36px rgba(0,0,0,.7),0 0 18px rgba(217,182,92,.5)!important}
+
+.lobby-brand-emblem:hover .fan-card-6{transform:translateX(56px) translateY(2px) rotate(24deg) scale(1.02)}
+.fan-card-6:hover{transform:translateX(56px) translateY(-16px) rotate(20deg) scale(1.15)!important;z-index:20!important;box-shadow:0 18px 36px rgba(0,0,0,.7),0 0 18px rgba(217,182,92,.5)!important}
+
+.lobby-brand-emblem:hover .fan-card-7{transform:translateX(84px) translateY(8px) rotate(36deg) scale(1.02)}
+.fan-card-7:hover{transform:translateX(84px) translateY(-14px) rotate(30deg) scale(1.15)!important;z-index:20!important;box-shadow:0 18px 36px rgba(0,0,0,.7),0 0 18px rgba(217,182,92,.5)!important}
 
 .lobby-title{font-size:28px;font-weight:900;letter-spacing:-.6px;text-align:center;margin:0 0 4px 0;background:linear-gradient(135deg,#ffffff 20%,#f6df9e 65%,#d9b65c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 10px rgba(0,0,0,.4)}
 .lobby-suit-divider{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 8px}
@@ -2293,72 +2316,42 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   <div class="lobby-brand-emblem" aria-label="21 Card Rummy table cards fan">
     <div class="lobby-fan-backdrop"></div>
     <div class="lobby-card-fan">
-      <!-- Card 1: Ace of Spades -->
-      <div class="fan-card fan-card-1" title="Ace of Spades">
-        <div class="fan-card-corner top-left">
-          <span class="fan-rank">A</span>
-          <span class="fan-suit suit-black">♠</span>
-        </div>
-        <div class="fan-card-center suit-black">♠</div>
-        <div class="fan-card-corner bottom-right">
-          <span class="fan-rank">A</span>
-          <span class="fan-suit suit-black">♠</span>
-        </div>
-      </div>
-
-      <!-- Card 2: 7 of Spades (Tiplu / Open Cut Joker) -->
-      <div class="fan-card fan-card-2 is-joker" title="7♠ Open Cut Joker (Tiplu)">
+      <!-- Card 1: 7 of Spades (Tiplu / Open Cut Joker) -->
+      <div class="fan-card fan-card-1 is-joker" title="7♠ Open Cut Joker (Tiplu)">
         <div class="fan-card-ribbon">JOKER</div>
-        <div class="fan-card-corner top-left">
-          <span class="fan-rank">7</span>
-          <span class="fan-suit suit-black">♠</span>
-        </div>
-        <div class="fan-card-center suit-black">♠</div>
-        <div class="fan-card-corner bottom-right">
-          <span class="fan-rank">7</span>
-          <span class="fan-suit suit-black">♠</span>
-        </div>
+        <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/7S.svg" alt="7 of Spades" class="fan-card-img" />
       </div>
 
-      <!-- Card 3: 8 of Spades (Paplu - 5 Mal points) -->
-      <div class="fan-card fan-card-3 is-paplu" title="8♠ Paplu (Upper Joker)">
+      <!-- Card 2: 8 of Spades (Paplu - Upper Joker) -->
+      <div class="fan-card fan-card-2 is-paplu" title="8♠ Paplu (Upper Joker)">
         <div class="fan-card-ribbon paplu-ribbon">PAPLU</div>
-        <div class="fan-card-corner top-left">
-          <span class="fan-rank">8</span>
-          <span class="fan-suit suit-black">♠</span>
-        </div>
-        <div class="fan-card-center suit-black">♠</div>
-        <div class="fan-card-corner bottom-right">
-          <span class="fan-rank">8</span>
-          <span class="fan-suit suit-black">♠</span>
-        </div>
+        <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/8S.svg" alt="8 of Spades" class="fan-card-img" />
       </div>
 
-      <!-- Card 4: King of Hearts -->
-      <div class="fan-card fan-card-4" title="King of Hearts (Marriage)">
-        <div class="fan-card-corner top-left">
-          <span class="fan-rank suit-red">K</span>
-          <span class="fan-suit suit-red">♥</span>
-        </div>
-        <div class="fan-card-center suit-red">♥</div>
-        <div class="fan-card-corner bottom-right">
-          <span class="fan-rank suit-red">K</span>
-          <span class="fan-suit suit-red">♥</span>
-        </div>
+      <!-- Card 3: Jack of Hearts (Marriage Sequence) -->
+      <div class="fan-card fan-card-3" title="Jack of Hearts (Marriage)">
+        <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/JH.svg" alt="Jack of Hearts" class="fan-card-img" />
       </div>
 
-      <!-- Card 5: Printed Joker (PJ★ Poochie) -->
-      <div class="fan-card fan-card-5 is-poochie" title="Poochie (Printed Joker)">
+      <!-- Card 4: Ace of Spades (Centerpiece) -->
+      <div class="fan-card fan-card-4" title="Ace of Spades">
+        <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/AS.svg" alt="Ace of Spades" class="fan-card-img" />
+      </div>
+
+      <!-- Card 5: Queen of Hearts (Marriage Sequence) -->
+      <div class="fan-card fan-card-5" title="Queen of Hearts (Marriage)">
+        <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/QH.svg" alt="Queen of Hearts" class="fan-card-img" />
+      </div>
+
+      <!-- Card 6: King of Hearts (Marriage Sequence) -->
+      <div class="fan-card fan-card-6" title="King of Hearts (Marriage)">
+        <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/KH.svg" alt="King of Hearts" class="fan-card-img" />
+      </div>
+
+      <!-- Card 7: Printed Joker (PJ★ Poochie) -->
+      <div class="fan-card fan-card-7 is-poochie" title="Poochie (Printed Joker)">
         <div class="fan-card-ribbon poochie-ribbon">POOCHIE</div>
-        <div class="fan-card-corner top-left">
-          <span class="fan-rank suit-gold">PJ</span>
-          <span class="fan-suit suit-gold">★</span>
-        </div>
-        <div class="fan-card-center suit-gold">★</div>
-        <div class="fan-card-corner bottom-right">
-          <span class="fan-rank suit-gold">PJ</span>
-          <span class="fan-suit suit-gold">★</span>
-        </div>
+        <img src="https://cdn.jsdelivr.net/gh/djp952/external-vectorcards@master/svg/joker2.svg" alt="Poochie Joker" class="fan-card-img" />
       </div>
     </div>
   </div>
@@ -2375,7 +2368,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   <div class="lobby-meta-bar">
     <span>3 Decks of 53 Cards</span>
     <span class="meta-dot">&bull;</span>
-    <span>Marriage &amp; Mal Points</span>
+    <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
     <span>Pure Sequences</span>
   </div>
@@ -3796,66 +3789,260 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   // Standard Court Card Vector Graphics
   function getCourtArtSvg(rank, suit, isRed) {
-    const suitColor = isRed ? '#dc2626' : '#1e293b';
+    const suitMap = { '♠': 's', '♥': 'h', '♣': 'c', '♦': 'd', '★': 'star' };
+    const sCode = suitMap[suit] || 'x';
+    const uid = 'c-' + rank.toLowerCase() + '-' + sCode;
+
+    let suitColor = '#1e293b';
+    let darkColor = '#0f172a';
+    if (suit === '♥') {
+      suitColor = '#dc2626';
+      darkColor = '#881337';
+    } else if (suit === '♦') {
+      suitColor = '#c2410c';
+      darkColor = '#7c2d12';
+    } else if (suit === '♣') {
+      suitColor = '#047857';
+      darkColor = '#064e3b';
+    } else if (suit === '♠') {
+      suitColor = '#0f172a';
+      darkColor = '#020617';
+    }
+
     const gold = '#f59e0b';
-    
+    const goldLight = '#fde047';
+    const goldDark = '#b45309';
+
     if (rank === 'Q') {
       return `
-        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
-          <circle cx="25" cy="30" r="22" fill="#f8fafc" stroke="${suitColor}" stroke-width="1.5" opacity="0.12"/>
-          <path d="M15,22 L17,14 L22,18 L25,11 L28,18 L33,14 L35,22 Z" fill="${gold}" stroke="#b45309" stroke-width="1"/>
-          <circle cx="25" cy="11" r="1.5" fill="${suitColor}"/>
-          <circle cx="17" cy="14" r="1.5" fill="${suitColor}"/>
-          <circle cx="33" cy="14" r="1.5" fill="${suitColor}"/>
-          <path d="M17,23 Q25,21 33,23 Q35,32 32,38 Q25,43 18,38 Q15,32 17,23 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
-          <ellipse cx="21" cy="29" rx="1.2" ry="1.8" fill="#334155"/>
-          <ellipse cx="29" cy="29" rx="1.2" ry="1.8" fill="#334155"/>
-          <path d="M22,34 Q25,37 28,34" stroke="${suitColor}" stroke-width="1.2" fill="none"/>
-          <path d="M16,40 Q25,37 34,40 L37,54 L13,54 Z" fill="${suitColor}" opacity="0.85"/>
-          <path d="M25,40 L25,54" stroke="${gold}" stroke-width="2"/>
+        <svg viewBox="0 0 54 70" width="44" height="58" class="court-art">
+          <defs>
+            <linearGradient id="${uid}-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${goldLight}"/>
+              <stop offset="50%" stop-color="${gold}"/>
+              <stop offset="100%" stop-color="${goldDark}"/>
+            </linearGradient>
+            <linearGradient id="${uid}-robe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${suitColor}"/>
+              <stop offset="100%" stop-color="${darkColor}"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="50" height="66" rx="4" fill="none" stroke="url(#${uid}-gold)" stroke-width="0.8" opacity="0.75"/>
+          <rect x="4" y="4" width="46" height="62" rx="3" fill="#fdfcf8" stroke="${suitColor}" stroke-width="0.5" opacity="0.25"/>
+          <path d="M7,66 C9,48 15,39 27,39 C39,39 45,48 47,66 Z" fill="url(#${uid}-robe)"/>
+          <polygon points="27,42 22,54 32,54" fill="url(#${uid}-gold)" opacity="0.9"/>
+          <path d="M27,42 L27,66" stroke="url(#${uid}-gold)" stroke-width="1.2"/>
+          <path d="M18,66 L27,54 L36,66" stroke="url(#${uid}-gold)" stroke-width="1" fill="none" opacity="0.8"/>
+          <path d="M15,38 C17,33 22,31 27,31 C32,31 37,33 39,38 C35,42 32,44 27,44 C22,44 19,42 15,38 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.8"/>
+          <path d="M21,39 Q27,44 33,39" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="1.5,1.5" fill="none"/>
+          <circle cx="27" cy="45" r="3.4" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <circle cx="27" cy="45" r="1.6" fill="${suitColor}"/>
+          <path d="M43,66 L41,44" stroke="url(#${uid}-gold)" stroke-width="1.5"/>
+          <circle cx="41" cy="42" r="3" fill="#f43f5e" stroke="url(#${uid}-gold)" stroke-width="0.8"/>
+          <circle cx="41" cy="42" r="1.2" fill="url(#${uid}-gold)"/>
+          <path d="M17,21 C14,27 15,36 19,39 C21,40 23,36 27,36 C31,36 33,40 35,39 C39,36 40,27 37,21 Z" fill="#78350f"/>
+          <ellipse cx="27" cy="26" rx="8" ry="8.5" fill="#fef08a" stroke="#d97706" stroke-width="0.6"/>
+          <path d="M21,22 Q23,20 25,22 M29,22 Q31,20 33,22" stroke="#78350f" stroke-width="0.8" fill="none"/>
+          <ellipse cx="23" cy="24" rx="1" ry="1.2" fill="#1e293b"/>
+          <ellipse cx="31" cy="24" rx="1" ry="1.2" fill="#1e293b"/>
+          <circle cx="20.5" cy="27" r="1.5" fill="#f472b6" opacity="0.6"/>
+          <circle cx="33.5" cy="27" r="1.5" fill="#f472b6" opacity="0.6"/>
+          <path d="M27,24 L27.2,26.5 L26.2,27" stroke="#d97706" stroke-width="0.6" fill="none"/>
+          <path d="M24.5,29.5 Q27,32 29.5,29.5" stroke="#e11d48" stroke-width="1" fill="none"/>
+          <circle cx="17.5" cy="27" r="1.2" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.4"/>
+          <circle cx="36.5" cy="27" r="1.2" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.4"/>
+          <path d="M18,18 L19,11 L23,15 L27,8 L31,15 L35,11 L36,18 Z" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.8"/>
+          <rect x="18" y="16.5" width="18" height="2.5" rx="1" fill="#b45309"/>
+          <circle cx="27" cy="8" r="1.5" fill="#ffffff" stroke="#92400e" stroke-width="0.5"/>
+          <circle cx="19" cy="11" r="1.2" fill="#ffffff" stroke="#92400e" stroke-width="0.4"/>
+          <circle cx="35" cy="11" r="1.2" fill="#ffffff" stroke="#92400e" stroke-width="0.4"/>
+          <circle cx="23" cy="17.7" r="0.9" fill="#ef4444"/>
+          <circle cx="27" cy="17.7" r="0.9" fill="#3b82f6"/>
+          <circle cx="31" cy="17.7" r="0.9" fill="#ef4444"/>
         </svg>
       `;
     } else if (rank === 'K') {
       return `
-        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
-          <circle cx="25" cy="30" r="22" fill="#f8fafc" stroke="${suitColor}" stroke-width="1.5" opacity="0.12"/>
-          <path d="M13,20 L16,11 L21,17 L25,8 L29,17 L34,11 L37,20 Z" fill="${gold}" stroke="#b45309" stroke-width="1.2"/>
-          <path d="M16,21 Q25,19 34,21 L35,35 Q35,45 25,47 Q15,45 15,35 Z" fill="#fde68a" stroke="#b45309" stroke-width="1"/>
-          <path d="M17,33 Q25,46 33,33 Q30,42 25,44 Q20,42 17,33 Z" fill="#94a3b8"/>
-          <circle cx="21" cy="28" r="1.5" fill="#1e293b"/>
-          <circle cx="29" cy="28" r="1.5" fill="#1e293b"/>
-          <path d="M18,33 Q25,31 32,33" stroke="#475569" stroke-width="1.5" fill="none"/>
-          <path d="M12,47 Q25,43 38,47 L41,56 L9,56 Z" fill="${suitColor}" opacity="0.9"/>
+        <svg viewBox="0 0 54 70" width="44" height="58" class="court-art">
+          <defs>
+            <linearGradient id="${uid}-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${goldLight}"/>
+              <stop offset="50%" stop-color="${gold}"/>
+              <stop offset="100%" stop-color="${goldDark}"/>
+            </linearGradient>
+            <linearGradient id="${uid}-robe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${suitColor}"/>
+              <stop offset="100%" stop-color="${darkColor}"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="50" height="66" rx="4" fill="none" stroke="url(#${uid}-gold)" stroke-width="0.8" opacity="0.75"/>
+          <rect x="4" y="4" width="46" height="62" rx="3" fill="#fdfcf8" stroke="${suitColor}" stroke-width="0.5" opacity="0.25"/>
+          <path d="M6,66 C8,48 14,40 27,40 C40,40 46,48 48,66 Z" fill="url(#${uid}-robe)"/>
+          <path d="M12,66 L27,44 L42,66 M18,66 L27,52 L36,66" stroke="url(#${uid}-gold)" stroke-width="1.2" fill="none" opacity="0.85"/>
+          <path d="M14,40 C14,35 20,33 27,33 C34,33 40,35 40,40 C37,45 33,47 27,47 C21,47 17,45 14,40 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.8"/>
+          <circle cx="21" cy="40" r="0.9" fill="#0f172a"/>
+          <path d="M21,41 L21,43" stroke="#0f172a" stroke-width="0.6"/>
+          <circle cx="27" cy="42" r="0.9" fill="#0f172a"/>
+          <path d="M27,43 L27,45" stroke="#0f172a" stroke-width="0.6"/>
+          <circle cx="33" cy="40" r="0.9" fill="#0f172a"/>
+          <path d="M33,41 L33,43" stroke="#0f172a" stroke-width="0.6"/>
+          <circle cx="27" cy="49" r="4.2" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.7"/>
+          <text x="27" y="52" font-size="5.5" text-anchor="middle" font-weight="900" fill="${suitColor}">${suit}</text>
+          <path d="M10,66 L12,43" stroke="url(#${uid}-gold)" stroke-width="1.8"/>
+          <circle cx="12" cy="42" r="2.8" fill="url(#${uid}-gold)"/>
+          <circle cx="12" cy="42" r="1.2" fill="#ef4444"/>
+          <path d="M16,22 C14,28 14,34 18,37 C20,38 22,39 27,39 C32,39 34,38 36,37 C40,34 40,28 38,22 Z" fill="#e2e8f0"/>
+          <ellipse cx="27" cy="27" rx="8.5" ry="9" fill="#fde68a" stroke="#d97706" stroke-width="0.7"/>
+          <path d="M20,23 Q22,21 24,23 M30,23 Q32,21 34,23" stroke="#92400e" stroke-width="0.9" fill="none"/>
+          <circle cx="22.5" cy="25" r="1" fill="#1e293b"/>
+          <circle cx="31.5" cy="25" r="1" fill="#1e293b"/>
+          <path d="M27,24 L27.5,27.5 L26,28" stroke="#d97706" stroke-width="0.7" fill="none"/>
+          <path d="M21,29 Q27,27 27,30 Q27,27 33,29 Q27,33 21,29 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0.6"/>
+          <path d="M23,32 C23,37 31,37 31,32 C29,35 25,35 23,32 Z" fill="#cbd5e1"/>
+          <path d="M17,19 L19,10 L23,15 L27,7 L31,15 L35,10 L37,19 Z" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.9"/>
+          <rect x="17" y="17" width="20" height="3" rx="1" fill="#b45309"/>
+          <circle cx="27" cy="7" r="1.6" fill="#ef4444" stroke="#fff" stroke-width="0.4"/>
+          <circle cx="19" cy="10" r="1.3" fill="#3b82f6" stroke="#fff" stroke-width="0.3"/>
+          <circle cx="35" cy="10" r="1.3" fill="#3b82f6" stroke="#fff" stroke-width="0.3"/>
+          <circle cx="23" cy="18.5" r="1" fill="#ef4444"/>
+          <circle cx="27" cy="18.5" r="1" fill="#10b981"/>
+          <circle cx="31" cy="18.5" r="1" fill="#3b82f6"/>
         </svg>
       `;
     } else if (rank === 'J') {
       return `
-        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
-          <circle cx="25" cy="30" r="22" fill="#f8fafc" stroke="${suitColor}" stroke-width="1.5" opacity="0.12"/>
-          <path d="M13,20 Q25,15 37,20 L35,16 Q25,11 15,16 Z" fill="${suitColor}"/>
-          <path d="M33,18 Q42,8 38,2 Q30,8 34,16" fill="${gold}"/>
-          <path d="M17,21 Q25,19 33,21 L34,36 Q25,42 16,36 Z" fill="#fde68a" stroke="#b45309" stroke-width="1"/>
-          <circle cx="21" cy="28" r="1.4" fill="#1e293b"/>
-          <circle cx="29" cy="28" r="1.4" fill="#1e293b"/>
-          <path d="M22,34 Q25,37 28,34" stroke="#b45309" stroke-width="1" fill="none"/>
-          <path d="M14,40 L25,45 L36,40 L39,56 L11,56 Z" fill="${suitColor}" opacity="0.85"/>
-          <polygon points="25,45 22,54 28,54" fill="${gold}"/>
+        <svg viewBox="0 0 54 70" width="44" height="58" class="court-art">
+          <defs>
+            <linearGradient id="${uid}-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${goldLight}"/>
+              <stop offset="50%" stop-color="${gold}"/>
+              <stop offset="100%" stop-color="${goldDark}"/>
+            </linearGradient>
+            <linearGradient id="${uid}-robe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${suitColor}"/>
+              <stop offset="100%" stop-color="${darkColor}"/>
+            </linearGradient>
+            <linearGradient id="${uid}-feather" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#06b6d4"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="50" height="66" rx="4" fill="none" stroke="url(#${uid}-gold)" stroke-width="0.8" opacity="0.75"/>
+          <rect x="4" y="4" width="46" height="62" rx="3" fill="#fdfcf8" stroke="${suitColor}" stroke-width="0.5" opacity="0.25"/>
+          <path d="M7,66 C9,47 15,39 27,39 C39,39 45,47 47,66 Z" fill="url(#${uid}-robe)"/>
+          <path d="M14,66 L27,47 L40,66" stroke="url(#${uid}-gold)" stroke-width="1.8" fill="none"/>
+          <polygon points="27,49 20,59 34,59" fill="url(#${uid}-gold)" opacity="0.8"/>
+          <circle cx="27" cy="62" r="2.5" fill="url(#${uid}-gold)"/>
+          <text x="27" y="64.5" font-size="4.5" text-anchor="middle" font-weight="900" fill="${suitColor}">${suit}</text>
+          <path d="M16,39 C18,34 22,33 27,33 C32,33 36,34 38,39 C35,43 32,45 27,45 C22,45 19,43 16,39 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.8"/>
+          <path d="M19,37 L21,41 M24,36 L25,42 M27,35 L27,43 M30,36 L29,42 M33,37 L31,41" stroke="#94a3b8" stroke-width="0.6"/>
+          <path d="M9,66 L9,38" stroke="url(#${uid}-gold)" stroke-width="1.8"/>
+          <polygon points="9,34 6,38 12,38" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <circle cx="9" cy="38" r="1.5" fill="#ef4444"/>
+          <path d="M16,21 C14,28 14,35 18,38 C21,39 23,37 27,37 C31,37 33,39 36,38 C40,35 40,28 38,21 Z" fill="#d97706"/>
+          <ellipse cx="27" cy="27" rx="8" ry="8.5" fill="#fde68a" stroke="#d97706" stroke-width="0.6"/>
+          <path d="M20,23 Q22,21 24,23 M30,23 Q32,21 34,23" stroke="#92400e" stroke-width="0.8" fill="none"/>
+          <circle cx="22.5" cy="25" r="1" fill="#1e293b"/>
+          <circle cx="31.5" cy="25" r="1" fill="#1e293b"/>
+          <path d="M27,24 L27.5,27.5 L26,28" stroke="#d97706" stroke-width="0.6" fill="none"/>
+          <path d="M24,31 Q27,34 30,31" stroke="#b91c1c" stroke-width="0.9" fill="none"/>
+          <path d="M15,20 C14,13 23,11 36,15 C40,16 41,21 38,23 C34,25 18,24 15,20 Z" fill="${suitColor}" stroke="#92400e" stroke-width="0.8"/>
+          <circle cx="34" cy="18" r="3" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <circle cx="34" cy="18" r="1.4" fill="#ef4444"/>
+          <path d="M34,17 C38,10 44,5 48,7 C45,11 37,14 34,17 Z" fill="url(#${uid}-feather)" stroke="#0e7490" stroke-width="0.5"/>
+          <path d="M34,17 C32,10 26,6 18,7 C24,10 30,14 34,17 Z" fill="url(#${uid}-feather)" stroke="#f59e0b" stroke-width="0.5"/>
         </svg>
       `;
     } else if (rank === 'PJ') {
       return `
-        <svg viewBox="0 0 50 60" width="34" height="42" class="court-art">
-          <path d="M11,22 Q7,10 14,7 Q21,11 18,21" fill="#ef4444"/>
-          <circle cx="14" cy="7" r="2" fill="${gold}"/>
-          <path d="M18,21 Q25,8 25,6 Q25,8 32,21" fill="${gold}"/>
-          <circle cx="25" cy="6" r="2" fill="#ef4444"/>
-          <path d="M32,21 Q29,11 36,7 Q43,10 39,22" fill="#3b82f6"/>
-          <circle cx="36" cy="7" r="2" fill="${gold}"/>
-          <ellipse cx="25" cy="29" rx="11" ry="10" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
-          <circle cx="21" cy="28" r="1.5" fill="#1e293b"/>
-          <circle cx="29" cy="28" r="1.5" fill="#1e293b"/>
-          <path d="M19,34 Q25,40 31,34" stroke="#dc2626" stroke-width="1.8" fill="none"/>
-          <polygon points="12,41 18,48 25,43 32,48 38,41 25,44" fill="${gold}" stroke="#b45309" stroke-width="1"/>
+        <svg viewBox="0 0 54 70" width="44" height="58" class="court-art">
+          <defs>
+            <linearGradient id="${uid}-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${goldLight}"/>
+              <stop offset="50%" stop-color="${gold}"/>
+              <stop offset="100%" stop-color="${goldDark}"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="50" height="66" rx="4" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0.8"/>
+          <rect x="4" y="4" width="46" height="62" rx="3" fill="#fffbeb" stroke="#f59e0b" stroke-width="0.5" opacity="0.3"/>
+          <path d="M7,66 C9,48 15,40 27,40 C39,40 45,48 47,66 Z" fill="#1e293b"/>
+          <polygon points="27,41 20,50 27,59 34,50" fill="#ef4444"/>
+          <polygon points="15,50 8,58 15,66 22,58" fill="#3b82f6"/>
+          <polygon points="39,50 32,58 39,66 46,58" fill="#f59e0b"/>
+          <polygon points="27,59 20,66 34,66" fill="#10b981"/>
+          <circle cx="27" cy="50" r="4.5" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.7"/>
+          <polygon points="27,46.5 28.3,49.2 31.2,49.5 29,51.4 29.7,54.2 27,52.6 24.3,54.2 25,51.4 22.8,49.5 25.7,49.2" fill="#dc2626"/>
+          <path d="M13,40 L17,47 L21,41 L27,48 L33,41 L37,47 L41,40 Z" fill="url(#${uid}-gold)" stroke="#b45309" stroke-width="0.8"/>
+          <circle cx="17" cy="48" r="1.5" fill="#ef4444" stroke="url(#${uid}-gold)" stroke-width="0.5"/>
+          <circle cx="27" cy="49" r="1.7" fill="#3b82f6" stroke="url(#${uid}-gold)" stroke-width="0.5"/>
+          <circle cx="37" cy="48" r="1.5" fill="#ef4444" stroke="url(#${uid}-gold)" stroke-width="0.5"/>
+          <ellipse cx="27" cy="28" rx="9" ry="9.5" fill="#fef08a" stroke="#d97706" stroke-width="0.7"/>
+          <circle cx="19.5" cy="30" r="2.2" fill="#f87171" opacity="0.7"/>
+          <circle cx="34.5" cy="30" r="2.2" fill="#f87171" opacity="0.7"/>
+          <path d="M20,24 Q22.5,21.5 25,24 M29,24 Q31.5,21.5 34,24" stroke="#78350f" stroke-width="0.9" fill="none"/>
+          <circle cx="22.5" cy="25" r="1.2" fill="#1e293b"/>
+          <circle cx="31.5" cy="25" r="1.2" fill="#1e293b"/>
+          <path d="M20,31 Q27,39 34,31 Z" fill="#dc2626" stroke="#991b1b" stroke-width="0.6"/>
+          <path d="M21,31 Q27,35 33,31 Z" fill="#ffffff"/>
+          <path d="M18,22 C12,18 7,12 8,5 C13,9 18,14 20,20 Z" fill="#ef4444" stroke="#991b1b" stroke-width="0.7"/>
+          <circle cx="8" cy="5" r="2.2" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <path d="M20,20 C23,12 25,6 27,3 C29,6 31,12 34,20 Z" fill="url(#${uid}-gold)" stroke="#b45309" stroke-width="0.7"/>
+          <circle cx="27" cy="3" r="2.4" fill="#ef4444" stroke="url(#${uid}-gold)" stroke-width="0.6"/>
+          <path d="M34,20 C36,14 41,9 46,5 C47,12 42,18 36,22 Z" fill="#3b82f6" stroke="#1d4ed8" stroke-width="0.7"/>
+          <circle cx="46" cy="5" r="2.2" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <path d="M17,21 Q27,19 37,21 L37,24 Q27,22 17,24 Z" fill="url(#${uid}-gold)" stroke="#b45309" stroke-width="0.6"/>
+        </svg>
+      `;
+    } else if (rank === 'A' && suit === '♠') {
+      return `
+        <svg viewBox="0 0 54 70" width="44" height="58" class="court-art">
+          <defs>
+            <linearGradient id="${uid}-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${goldLight}"/>
+              <stop offset="50%" stop-color="${gold}"/>
+              <stop offset="100%" stop-color="${goldDark}"/>
+            </linearGradient>
+            <radialGradient id="${uid}-depth" cx="40%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#1e293b"/>
+              <stop offset="60%" stop-color="#0f172a"/>
+              <stop offset="100%" stop-color="#020617"/>
+            </radialGradient>
+          </defs>
+          <rect x="2" y="2" width="50" height="66" rx="4" fill="none" stroke="url(#${uid}-gold)" stroke-width="0.8" opacity="0.8"/>
+          <rect x="4" y="4" width="46" height="62" rx="3" fill="#fdfcf8" stroke="#0f172a" stroke-width="0.5" opacity="0.25"/>
+          <path d="M11,46 C9,34 11,24 18,17 M43,46 C45,34 43,24 36,17" stroke="url(#${uid}-gold)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <circle cx="10" cy="38" r="1.3" fill="url(#${uid}-gold)"/>
+          <circle cx="11" cy="30" r="1.3" fill="url(#${uid}-gold)"/>
+          <circle cx="14" cy="23" r="1.3" fill="url(#${uid}-gold)"/>
+          <circle cx="44" cy="38" r="1.3" fill="url(#${uid}-gold)"/>
+          <circle cx="43" cy="30" r="1.3" fill="url(#${uid}-gold)"/>
+          <circle cx="40" cy="23" r="1.3" fill="url(#${uid}-gold)"/>
+          <path d="M21,14 L22,9 L25,12 L27,7 L29,12 L32,9 L33,14 Z" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <circle cx="27" cy="7" r="1" fill="#ef4444"/>
+          <path d="M27,16 C25,24 14,30 14,40 C14,47 21,50 27,45 C33,50 40,47 40,40 C40,30 29,24 27,16 Z" fill="url(#${uid}-depth)" stroke="url(#${uid}-gold)" stroke-width="1"/>
+          <path d="M25,44 C26,51 21,57 19,59 L35,59 C33,57 28,51 29,44 Z" fill="url(#${uid}-depth)" stroke="url(#${uid}-gold)" stroke-width="0.8"/>
+          <circle cx="27" cy="36" r="5.5" fill="none" stroke="url(#${uid}-gold)" stroke-width="0.8" opacity="0.9"/>
+          <circle cx="27" cy="36" r="2.5" fill="url(#${uid}-gold)"/>
+          <polygon points="27,33 28,35.5 30.5,36 28,36.5 27,39 26,36.5 23.5,36 26,35.5" fill="#fef08a"/>
+        </svg>
+      `;
+    } else if (rank === 'A') {
+      return `
+        <svg viewBox="0 0 54 70" width="44" height="58" class="court-art">
+          <defs>
+            <linearGradient id="${uid}-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${goldLight}"/>
+              <stop offset="50%" stop-color="${gold}"/>
+              <stop offset="100%" stop-color="${goldDark}"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="50" height="66" rx="4" fill="none" stroke="url(#${uid}-gold)" stroke-width="0.8" opacity="0.75"/>
+          <rect x="4" y="4" width="46" height="62" rx="3" fill="#fdfcf8" stroke="${suitColor}" stroke-width="0.5" opacity="0.25"/>
+          <path d="M12,46 C10,34 12,24 18,18 M42,46 C44,34 42,24 36,18" stroke="url(#${uid}-gold)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+          <path d="M21,15 L22,11 L25,13 L27,9 L29,13 L32,11 L33,15 Z" fill="url(#${uid}-gold)" stroke="#92400e" stroke-width="0.6"/>
+          <circle cx="27" cy="38" r="16" fill="${suitColor}" opacity="0.08"/>
+          <text x="27" y="44" font-size="24" text-anchor="middle" font-weight="900" fill="${suitColor}">${suit}</text>
         </svg>
       `;
     }
@@ -3919,24 +4106,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
     }
 
-    // Standard Vector Deck Card Appearance (Chris Aguilar's open-source deck via jsDelivr CDN)
+    // Chris Aguilar's open-source SVG deck via jsDelivr CDN
     const svgUrl = getStandardCardSvgUrl(card);
     const vectorImgHtml = svgUrl
-      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" loading="lazy" onerror="this.style.display='none';" />`
+      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" loading="eager" onerror="this.style.display='none';" />`
       : '';
 
-    // Standard-deck presentation: no custom face artwork.
-    // Number cards use familiar pip layouts; J/Q/K use a clean classic court-card
-    // treatment with large rank + suit, matching the visual language of a normal deck.
     let centerHtml = '';
     if (['Q', 'K', 'J', 'PJ'].includes(card.rank)) {
-      const courtRank = card.rank === 'PJ' ? 'JOKER' : card.rank;
-      centerHtml = `
-        <div class="classic-court-card">
-          <div class="court-suit-top" title="${suitTitle}">${card.suit}</div>
-          <div class="court-rank">${courtRank}</div>
-          <div class="court-suit-bottom" title="${suitTitle}">${card.suit}</div>
-        </div>`;
+      centerHtml = getCourtArtSvg(card.rank, card.suit, isRed);
+    } else if (card.rank === 'A' && card.suit === '♠') {
+      centerHtml = getCourtArtSvg('A', '♠', false);
     } else {
       centerHtml = renderPipLayout(card.rank, card.suit);
     }
