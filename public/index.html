@@ -959,6 +959,17 @@
       color: #ffffff;
       transform: translateY(-1px);
     }
+    .status-action-btn.btn-help {
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #38bdf8;
+    }
+    .status-action-btn.btn-help:hover {
+      background: rgba(56, 189, 248, 0.28);
+      border-color: rgba(56, 189, 248, 0.7);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
 
     /* Dedicated Card Reorder & Stand Move Bar (Mobile-friendly, full width) */
     .reorder-bar {
@@ -1337,7 +1348,24 @@
       .sound-label {
         display: none;
       }
-      /* Fixed Mobile Bottom Action Dock when a card is selected */
+    }
+
+    /* Stand Scroll Button Active Drag State */
+    .stand-scroll-btn.scroll-btn-drag-active {
+      background: rgba(56, 189, 248, 0.5) !important;
+      color: #38bdf8 !important;
+      border-color: #38bdf8 !important;
+      transform: scale(1.18) !important;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.8) !important;
+      animation: pulseScrollBtn 0.4s infinite alternate ease-in-out;
+    }
+    @keyframes pulseScrollBtn {
+      from { transform: scale(1.12); box-shadow: 0 0 14px rgba(56, 189, 248, 0.6); }
+      to { transform: scale(1.22); box-shadow: 0 0 24px rgba(56, 189, 248, 0.95); }
+    }
+
+    /* Fixed Mobile & Touch Bottom Action Dock when a card is selected (Android Chrome & iOS safe) */
+    @media (max-width: 1024px), (pointer: coarse), (hover: none) {
       .reorder-bar {
         position: fixed !important;
         bottom: 0 !important;
@@ -1352,7 +1380,7 @@
         border: 2px solid #38bdf8 !important;
         border-bottom: none !important;
         box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.85), 0 0 18px rgba(56, 189, 248, 0.35) !important;
-        padding: 10px 14px 16px !important;
+        padding: 10px 14px max(16px, env(safe-area-inset-bottom)) !important;
         gap: 10px !important;
         box-sizing: border-box !important;
         animation: slideUpMobileBar 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -1362,7 +1390,7 @@
         to { transform: translateY(0); opacity: 1; }
       }
       body.card-selected-mobile {
-        padding-bottom: 140px !important;
+        padding-bottom: 150px !important;
       }
       .reorder-info {
         justify-content: space-between;
@@ -2448,6 +2476,129 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 #maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
 @media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
 
+/* Comprehensive 21-Card Rules & Guide Modal */
+.rules-modal-content {
+  max-width: 720px;
+  width: 95vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(145deg, #102d20, #081711);
+  border: 1px solid rgba(217, 182, 92, 0.35);
+  border-top: 4px solid #38bdf8;
+  padding: 22px 24px;
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
+}
+.rules-tab-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 6px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+}
+.rules-tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.rules-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+.rules-tab-btn.active {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+.rules-modal-body {
+  overflow-y: auto;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+.rules-card-box {
+  background: rgba(14, 38, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.rules-card-box h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #f1d27a;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 12.5px;
+}
+.rules-table th {
+  text-align: left;
+  padding: 7px 10px;
+  color: #94a3b8;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.rules-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+.rules-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.rules-pill-gold { background: rgba(217, 182, 92, 0.2); color: #f1d27a; border: 1px solid rgba(217, 182, 92, 0.4); }
+.rules-pill-blue { background: rgba(56, 189, 248, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+.rules-pill-green { background: rgba(50, 197, 138, 0.18); color: #7eedba; border: 1px solid rgba(50, 197, 138, 0.4); }
+.rules-pill-red { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+.lobby-rules-btn {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+.lobby-rules-btn:hover {
+  background: rgba(56, 189, 248, 0.24);
+  border-color: rgba(56, 189, 248, 0.7);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
 </style>
 </head>
 <body>
@@ -2459,13 +2610,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <button type="button" class="lobby-sound-btn" onclick="toggleSoundSetting()" id="lobbySoundToggle" title="Toggle Sound Effects">
       <span id="lobbySoundIcon">🔊</span> <span id="lobbySoundLabel">Audio: ON</span>
     </button>
+    <button type="button" class="lobby-rules-btn" onclick="openRulesModal()" title="Read complete 21-Card Rummy rules and guide">
+      <span>📖 Rules &amp; Guide</span>
+    </button>
   </div>
 
   <div class="lobby-brand-emblem" aria-label="21 Card Rummy table cards fan">
     <div class="lobby-fan-backdrop"></div>
     <div class="lobby-card-fan">
-      <!-- Card 1: 7 of Spades (Tiplu / Open Cut Joker) -->
-      <div class="fan-card fan-card-1 is-joker" title="7♠ Open Cut Joker (Tiplu)">
+      <!-- Card 1: 7 of Spades (Exact Cut Joker) -->
+      <div class="fan-card fan-card-1 is-joker" title="7♠ Exact Cut Joker">
         <div class="fan-card-ribbon">JOKER</div>
         <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/7S.svg" alt="7 of Spades" class="fan-card-img" />
       </div>
@@ -2514,7 +2668,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     South Indian Open Joker Table &bull; Winner Takes Honors
   </div>
   <div class="lobby-meta-bar">
-    <span>3 Decks of 53 Cards</span>
+    <span>3 Decks of 54 Cards (162 total)</span>
     <span class="meta-dot">&bull;</span>
     <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
@@ -2542,6 +2696,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <button id="btnSoundToggle" class="sound-toggle-btn" role="button" onclick="toggleSoundSetting()" title="Toggle Sound Effects">
         <span id="soundIcon">🔊</span>
         <span id="soundLabel" class="sound-label">Audio: ON</span>
+      </button>
+      <button id="btnHelpRules" type="button" class="status-action-btn btn-help" onclick="openRulesModal()" title="View complete 21-Card Rummy rules, melds, and honors guide">
+        <span>❓ Rules</span>
       </button>
       <div id="sessionScoresSummary" class="maal-badge session-badge" role="button" tabindex="0" onclick="openSessionScoresModal()" title="View session leaderboard and running scores">
         <span>📊</span>
@@ -2902,6 +3059,227 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:space-between; align-items:center;">
       <span style="font-size:11px; color:#8ba096;">Only the Top Card can be drawn from the discard pile.</span>
       <button type="button" class="btn-primary" style="margin-top:0; padding:6px 16px; font-size:12px;" onclick="closeDiscardHistoryModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Complete 21-Card Rummy Rules & Help Guide Modal -->
+<div id="rulesHelpModal" class="modal" onclick="if(event.target===this) closeRulesModal()">
+  <div class="modal-content rules-modal-content">
+    <div class="maal-modal-header" style="margin-bottom:6px;">
+      <div class="maal-modal-title-group">
+        <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+          <span>📖</span> 21 Card Rummy Guide &amp; Rules
+        </h2>
+        <span class="maal-modal-subtitle">Table rules, melds, jokers, honors points, and declaration requirements</span>
+      </div>
+      <button class="maal-modal-close" onclick="closeRulesModal()" aria-label="Close Rules Modal">✕</button>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="rules-tab-bar" role="tablist">
+      <button type="button" class="rules-tab-btn active" id="tabBtnOverview" onclick="switchRulesTab('overview')">🌟 Overview &amp; Setup</button>
+      <button type="button" class="rules-tab-btn" id="tabBtnMelds" onclick="switchRulesTab('melds')">🎯 Melds &amp; Show</button>
+      <button type="button" class="rules-tab-btn" id="tabBtnJokers" onclick="switchRulesTab('jokers')">🃏 Jokers &amp; Honors</button>
+      <button type="button" class="rules-tab-btn" id="tabBtnScoring" onclick="switchRulesTab('scoring')">⚡ Scoot &amp; Scoring</button>
+    </div>
+
+    <div id="rulesModalBody" class="rules-modal-body">
+      <!-- Tab 1: Overview & Table Setup -->
+      <div id="rulesTabOverview" class="rules-tab-content">
+        <div class="rules-card-box">
+          <h4><span>🎴</span> Game Essentials &amp; Table Setup</h4>
+          <p><strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 6 Printed Jokers (Poochies, 2 per deck)</strong>, totaling <strong>162 cards</strong>. Each player is dealt <strong>21 cards</strong>.</p>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>🔄</span> Turn Structure</h4>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li><strong>1. Draw:</strong> On your turn, draw 1 card from either the face-down <strong>Stock Deck</strong> or the face-up <strong>Discard Pile</strong>.</li>
+            <li><strong>2. Meld &amp; Organize:</strong> Arrange your hand into Stands (1, 2, or 3 stands). Tap any card to open the Move Pad or drag &amp; drop cards directly between stands.</li>
+            <li><strong>3. Discard:</strong> Discard 1 card to the Discard Pile to complete your turn.</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px; border-color: rgba(239, 68, 68, 0.4); background: rgba(30, 20, 20, 0.7);">
+          <h4 style="color: #fca5a5;"><span>🔒</span> Joker Pickup Rule (Discard Restriction)</h4>
+          <p style="margin: 0 0 6px;"><strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong></p>
+          <ul style="margin: 0 0 0 18px; padding: 0;">
+            <li>If a player discards any Joker (Wild Joker, Exact Cut Joker, Paplu, Taplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
+            <li><span class="rules-pill rules-pill-green">Exception</span> <strong>Initial Open Card:</strong> If the very first card turned face-up from the deck at the beginning of the round is a Joker, the first player <strong>is permitted to pick it up</strong>!</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>🖐️</span> Table Navigation &amp; Mobile Controls</h4>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li><strong>Move Pad:</strong> Tap any card to dock the Move Pad. Use <span class="rules-pill rules-pill-blue">▲</span> and <span class="rules-pill rules-pill-blue">▼</span> to shift cards between stands while maintaining ordinal position, or <span class="rules-pill rules-pill-blue">◀</span> / <span class="rules-pill rules-pill-blue">▶</span> to reorder.</li>
+            <li><strong>Stand Scroll &amp; Drag Auto-Scroll:</strong> Tap or hold the ◀ and ▶ arrows on any stand to scroll. <em>Dragging a card over either arrow button automatically activates continuous auto-scrolling!</em></li>
+            <li><strong>Zoom Size Controls:</strong> Use the <span class="rules-pill rules-pill-gold">－</span> and <span class="rules-pill rules-pill-gold">＋</span> zoom buttons in the toolbar to adjust card sizes from 60% to 130% so you can see your entire hand at once.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 2: Melds & Declaration Requirements -->
+      <div id="rulesTabMelds" class="rules-tab-content" style="display:none;">
+        <div class="rules-card-box">
+          <h4><span>✅</span> Valid Show Requirements</h4>
+          <p>To declare a winning Show, all 21 cards must be grouped into valid melds with:</p>
+          <ul style="margin: 6px 0 0 18px; padding: 0;">
+            <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.</li>
+            <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Melds that count as a Pure Sequence in this game:</strong>
+              <ul style="margin: 4px 0 0 16px; padding: 0;">
+                <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit without wild cards (e.g. <strong>4♠ - 5♠ - 6♠</strong>).</li>
+                <li><strong>Marriage Trio:</strong> Holding <strong>Taplu + Cut Joker + Paplu</strong> in the cut suit (e.g. <strong>6♦ - 7♦ - 8♦</strong>) qualifies as a Pure Sequence!</li>
+                <li><strong>Three Poochies:</strong> 3 Printed Jokers (<strong>PJ★</strong>) grouped together qualifies as a Pure Sequence!</li>
+                <li><strong>Tunnela:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) qualifies as a Pure Sequence!</li>
+              </ul>
+            </li>
+            <li><strong>Remaining Melds:</strong> All other cards must be arranged into valid Sequences (pure or using Wild Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>🏆</span> Instant Winning Hands</h4>
+          <table class="rules-table">
+            <thead>
+              <tr><th>Hand</th><th>Description</th><th>Outcome</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>3 Tunnelas</strong></td>
+                <td>3 separate Tunnelas in 3 different suits (e.g. 3× 9♠ + 3× Q♥ + 3× 4♣)</td>
+                <td><span class="rules-pill rules-pill-gold">Instant Win</span></td>
+              </tr>
+              <tr>
+                <td><strong>7 Marriages</strong></td>
+                <td>7 complete Marriage trios in your 21 cards</td>
+                <td><span class="rules-pill rules-pill-gold">Instant Win</span></td>
+              </tr>
+              <tr>
+                <td><strong>3 Pure + Valid Hand</strong></td>
+                <td>At least 3 Pure Sequences with all 21 cards melded</td>
+                <td><span class="rules-pill rules-pill-green">Valid Show</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Jokers & Honors (Maal Points) -->
+      <div id="rulesTabJokers" class="rules-tab-content" style="display:none;">
+        <div class="rules-card-box">
+          <h4><span>👑</span> The Cut Card &amp; Honors (Maal) Roles</h4>
+          <p>At the start of each hand, one card is cut from the deck. Its rank and suit establish all Jokers and Honors points:</p>
+          <table class="rules-table">
+            <thead>
+              <tr><th>Role</th><th>Card Definition</th><th>Honors (Maal) Points</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rules-pill rules-pill-gold">MARRIAGE</span></td>
+                <td>1 Taplu + 1 Cut Joker + 1 Paplu together in cut suit</td>
+                <td><strong>50 pts</strong> per Marriage</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-gold">EXACT CUT</span></td>
+                <td>Exact rank &amp; suit of Cut Card (remaining after marriages)</td>
+                <td><strong>20 pts</strong> each</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-gold">POOCHIE</span></td>
+                <td>Printed Jokers (PJ★) — 6 total in the deck</td>
+                <td><strong>Tiered:</strong> 1 = <strong>20 pts</strong> &bull; 2 = <strong>50 pts</strong> &bull; 3 = <strong>70 pts</strong> (+20 each after)</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-blue">PAPLU</span></td>
+                <td>Same suit as Cut Card, 1 rank higher (+1 rank)</td>
+                <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-green">TAPLU</span></td>
+                <td>Same suit as Cut Card, 1 rank lower (-1 rank)</td>
+                <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-blue">WILD JOKER</span></td>
+                <td>Same rank as Cut Card in other 3 suits (e.g. 7♠, 7♥, 7♣)</td>
+                <td>Free wild card in melds (0 honors pts)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>💍</span> Marriage Details</h4>
+          <p>A <strong>Marriage</strong> is formed by holding <strong>Taplu + Cut Joker + Paplu</strong> together of the cut suit in your hand (e.g. 6♦ + 7♦ + 8♦ when 7♦ is cut).</p>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li>Each completed Marriage trio awards <strong>50 points</strong>.</li>
+            <li>Any cards left over after assembling Marriages are scored in their individual categories (Exact Cut Joker: 20 pts each; Paplu &amp; Taplu: tiered pool).</li>
+            <li>A Marriage group also counts as a <strong>Pure Sequence</strong> for declaration!</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 4: Scoot, Drops & Scoring -->
+      <div id="rulesTabScoring" class="rules-tab-content" style="display:none;">
+        <div class="rules-card-box">
+          <h4><span>🚪</span> Shoots / Scoots &amp; Drop Penalties</h4>
+          <p>If dealt an unpromising hand, you may choose to scoot or drop before drawing a card:</p>
+          <table class="rules-table">
+            <thead>
+              <tr><th>Action</th><th>Condition</th><th>Penalty</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rules-pill rules-pill-blue">Scoot</span> (First Drop)</td>
+                <td>Drop out before drawing any card on your first turn</td>
+                <td><strong>30 points</strong></td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-gold">Middle Drop</span></td>
+                <td>Drop out before drawing on any subsequent turn</td>
+                <td><strong>70 points</strong></td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-red">Forfeit / Invalid Show</span></td>
+                <td>Forfeiting declaration or making an invalid show</td>
+                <td><strong>100 points</strong></td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-red">Max Deadwood</span></td>
+                <td>Deadwood cap for unmelded cards</td>
+                <td><strong>120 points</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>🛡️</span> Deadwood Protection Rules</h4>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li><strong>If you have &ge; 3 Pure Sequences:</strong> All valid melded cards (pure sequences, impure sequences, sets, and tunnelas) are protected (0 deadwood). Only loose cards count as deadwood.</li>
+            <li><strong>If you have &lt; 3 Pure Sequences:</strong> ONLY <strong>Jokers</strong>, <strong>Pure Sequences of 4 or more cards</strong>, and <strong>Tunnelas</strong> are protected! All other cards (including 3-card pure runs, sets, impure runs, and loose cards) count as deadwood up to the 120-point maximum.</li>
+            <li>Card values: Face cards (A, K, Q, J, 10) = 10 pts; number cards = face value (2 to 9).</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>💰</span> Winner Takes Honors Settlement</h4>
+          <p>Under our table rules, <strong>Winner Takes Honors</strong>:</p>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li>The winning player collects their full accumulated Honors (Maal) points from <strong>every losing player</strong> at the table.</li>
+            <li><strong>Dropped / Scooted players pay:</strong> Drop penalty (<strong>30 pts</strong> for Scoot or <strong>70 pts</strong> for Middle Drop) + <strong>Winner's Honors points</strong>.</li>
+            <li><strong>Non-dropped losing players pay:</strong> Deadwood score (up to <strong>120 pts</strong>) + <strong>Winner's Honors points</strong>.</li>
+            <li><strong>The winner receives:</strong> (Number of losers) &times; (Winner's Honors points).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:11px; color:#8ba096;">Tap ❓ Rules anytime to consult table rules.</span>
+      <button type="button" class="btn-primary" style="margin-top:0; padding:6px 18px; font-size:12px;" onclick="closeRulesModal()">Got It</button>
     </div>
   </div>
 </div>
@@ -5466,23 +5844,50 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     scrollElement(`stand-cards-${sIdx}`, direction);
   }
 
-  function startStandScroll(elementId, direction) {
-    scrollElement(elementId, direction);
+  let activeAutoScrollTarget = null;
+  function startStandScroll(elementId, direction, isDrag = false) {
+    const targetKey = elementId + '_' + direction;
+    if (isDrag && activeAutoScrollTarget === targetKey && standScrollInterval) {
+      return;
+    }
+    activeAutoScrollTarget = targetKey;
     clearInterval(standScrollInterval);
+    if (!isDrag) {
+      scrollElement(elementId, direction);
+    }
+    const step = isDrag ? 24 : 45;
+    const intervalMs = isDrag ? 35 : 60;
     standScrollInterval = setInterval(() => {
       const el = document.getElementById(elementId);
       if (el) {
-        el.scrollBy({ left: direction * 45, behavior: 'auto' });
+        el.scrollBy({ left: direction * step, behavior: 'auto' });
         updateAllStandScrollButtons();
       }
-    }, 60);
+    }, intervalMs);
   }
 
   function stopStandScroll() {
+    activeAutoScrollTarget = null;
     if (standScrollInterval) {
       clearInterval(standScrollInterval);
       standScrollInterval = null;
     }
+    document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.remove('scroll-btn-drag-active'));
+  }
+
+  function onScrollBtnDragOver(e, elementId, dir) {
+    if (!draggedCardId && !draggedPileType) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    const btn = e.currentTarget || (e.target && e.target.closest ? e.target.closest('.stand-scroll-btn') : null);
+    if (btn) btn.classList.add('scroll-btn-drag-active');
+    startStandScroll(elementId, dir, true);
+  }
+
+  function onScrollBtnDragLeave(e) {
+    const btn = e.currentTarget || (e.target && e.target.closest ? e.target.closest('.stand-scroll-btn') : null);
+    if (btn) btn.classList.remove('scroll-btn-drag-active');
+    stopStandScroll();
   }
 
   function updateElementScrollButtons(elementId, leftBtnId, rightBtnId) {
@@ -5542,10 +5947,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
-        let moveHereBtn = '';
-        if (selectedCardId && sIdx !== currentSelectedStandIdx) {
-          moveHereBtn = `<button type="button" class="stand-move-here-btn" ontouchend="executeStandMove('${selectedCardId}', ${sIdx}, event)" onclick="executeStandMove('${selectedCardId}', ${sIdx}, event)" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
-        }
         const cardsContent = stand.length > 0
           ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
           : `<div class="empty-stand-hint">Empty stand • Tap any card and use ▲/▼ or drag a card here</div>`;
@@ -5554,16 +5955,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <div class="stand-title-box">
               <span>Stand ${sIdx+1}</span>
               <span class="stand-count-badge">${stand.length} cards</span>
-              ${moveHereBtn}
             </div>
             ${closeBtn}
           </div>
           <div class="stand-scroll-container">
-            <button type="button" class="stand-scroll-btn left" id="stand-scroll-left-${sIdx}" onclick="scrollStand(${sIdx}, -1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} left" title="Scroll left">
+            <button type="button" class="stand-scroll-btn left" id="stand-scroll-left-${sIdx}" onclick="scrollStand(${sIdx}, -1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'stand-cards-${sIdx}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} left" title="Scroll left">
               <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
             </button>
             <div class="stand-cards" id="stand-cards-${sIdx}" onscroll="updateStandScrollButtons(${sIdx})">${cardsContent}</div>
-            <button type="button" class="stand-scroll-btn right" id="stand-scroll-right-${sIdx}" onclick="scrollStand(${sIdx}, 1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} right" title="Scroll right">
+            <button type="button" class="stand-scroll-btn right" id="stand-scroll-right-${sIdx}" onclick="scrollStand(${sIdx}, 1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'stand-cards-${sIdx}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} right" title="Scroll right">
               <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
             </button>
           </div>
@@ -6333,6 +6733,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   let lastTouchSelectTime = 0;
+  let lastTouchActionTime = 0;
   function deselectCard() {
     selectedCardId = null;
     document.body.classList.remove('card-selected-mobile');
@@ -6341,11 +6742,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function selectCard(cardId, fromTouch = false) {
     const now = Date.now();
-    if (!fromTouch && (now - lastTouchSelectTime < 450)) {
+    if (!fromTouch && (now - lastTouchActionTime < 650 || now - lastTouchSelectTime < 650)) {
       return; // Ignore synthetic click directly after touch
     }
     if (fromTouch) {
       lastTouchSelectTime = now;
+      lastTouchActionTime = now;
     }
     if (declarationMode) {
       const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
@@ -6359,6 +6761,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
     selectedCardId = selectedCardId === cardId ? null : cardId;
     renderAll(null);
+    if (selectedCardId) {
+      scrollCardIntoView(selectedCardId);
+    }
   }
 
   function updateReorderControls() {
@@ -6589,8 +6994,19 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function scrollCardIntoView(cardId) {
     setTimeout(() => {
       const el = document.getElementById('card-' + cardId);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-    }, 10);
+      if (!el) return;
+      const standCards = el.closest ? el.closest('.stand-cards') : null;
+      if (standCards) {
+        const cardLeft = el.offsetLeft;
+        const cardWidth = el.offsetWidth || 70;
+        const containerWidth = standCards.clientWidth;
+        const targetScrollLeft = cardLeft - (containerWidth / 2) + (cardWidth / 2);
+        standCards.scrollTo({ left: Math.max(0, targetScrollLeft), behavior: 'smooth' });
+        setTimeout(updateAllStandScrollButtons, 140);
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 35);
   }
 
   // Keyboard Navigation
@@ -6840,6 +7256,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
       touchCardState.dropTarget = null;
 
+      // 0. Check if finger is hovering over a stand scroll button to trigger auto-scroll
+      const elUnderPoint = document.elementFromPoint(x, y);
+      const scrollBtn = elUnderPoint && elUnderPoint.closest ? elUnderPoint.closest('.stand-scroll-btn') : null;
+      if (scrollBtn && scrollBtn.id) {
+        const m = scrollBtn.id.match(/^stand-scroll-(left|right)-(\d+)$/);
+        if (m) {
+          const dir = m[1] === 'left' ? -1 : 1;
+          const sIdx = parseInt(m[2], 10);
+          document.querySelectorAll('.scroll-btn-drag-active').forEach(b => {
+            if (b !== scrollBtn) b.classList.remove('scroll-btn-drag-active');
+          });
+          scrollBtn.classList.add('scroll-btn-drag-active');
+          startStandScroll(`stand-cards-${sIdx}`, dir, true);
+          touchCardState.dropTarget = null;
+          return;
+        }
+      } else {
+        document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.remove('scroll-btn-drag-active'));
+        stopStandScroll();
+      }
+
       // 1. Check Discard Pile
       const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
       if (discardEl) {
@@ -6856,7 +7293,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       if (!userStands || userStands.length === 0) return;
 
       let bestStandIdx = -1;
-      const elUnderPoint = document.elementFromPoint(x, y);
       const rackUnderPoint = elUnderPoint?.closest?.('.stand-rack');
       if (rackUnderPoint && rackUnderPoint.id) {
         const m = rackUnderPoint.id.match(/^stand-rack-(\d+)$/);
@@ -6932,8 +7368,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchCardState.startY;
     const dist = Math.hypot(dx, dy);
 
-    // Any deliberate motion (dist > 8px) initiates card drag immediately
-    if (!touchCardState.isDragging && dist > 8) {
+    // Deliberate movement of 18px threshold initiates card drag (avoids false drags on capacitive taps)
+    if (!touchCardState.isDragging && dist > 18) {
       touchCardState.isDragging = true;
       draggedCardId = cardId;
 
@@ -6987,98 +7423,109 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       touchCardState.el.style.opacity = '';
     }
 
-    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
-      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
+    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover, .scroll-btn-drag-active')
+      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover', 'scroll-btn-drag-active'));
+    stopStandScroll();
 
-    if (touchCardState.isDragging) {
+    const now = Date.now();
+    const touchDuration = now - (touchCardState.startTime || now);
+    const releaseTouch = e.changedTouches && e.changedTouches[0];
+    const dx = releaseTouch ? releaseTouch.clientX - touchCardState.startX : 0;
+    const dy = releaseTouch ? releaseTouch.clientY - touchCardState.startY : 0;
+    const dist = Math.hypot(dx, dy);
+
+    // Tap detection: either not dragging, or touch was short (< 400ms) with small movement (< 20px)
+    const isTap = !touchCardState.isDragging || (touchDuration < 400 && dist < 20);
+
+    if (isTap) {
       if (e.cancelable) e.preventDefault();
+      lastTouchSelectTime = now;
+      lastTouchActionTime = now;
+      selectCard(cardId, true);
+      touchCardState = null;
+      draggedCardId = null;
+      return;
+    }
 
-      const releaseTouch = e.changedTouches && e.changedTouches[0];
-      if (releaseTouch) {
-        updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
+    // Process drag drop
+    if (e.cancelable) e.preventDefault();
+
+    if (releaseTouch) {
+      updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
+    }
+    let dropTarget = touchCardState.dropTarget;
+
+    // Fallback: If dropped near stands, ensure dropTarget is resolved
+    if (!dropTarget && userStands.length > 0 && releaseTouch) {
+      updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
+      dropTarget = touchCardState.dropTarget;
+    }
+
+    if (dropTarget) {
+      // 1. Dropped on Discard Pile
+      if (dropTarget.type === 'discard') {
+        const isMyTurn = isCurrentPlayerMe();
+        const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+        if (canDiscard) {
+          selectedCardId = cardId;
+          lastTouchSelectTime = now;
+          lastTouchActionTime = now;
+          discardSelected();
+          try { soundSystem?.playDiscard?.(); } catch (_) {}
+          touchCardState = null;
+          draggedCardId = null;
+          return;
+        }
       }
-      let dropTarget = touchCardState.dropTarget;
 
-      // Fallback: If dropped near stands, ensure dropTarget is resolved
-      if (!dropTarget && userStands.length > 0 && releaseTouch) {
-        updateTouchCardDropTarget(releaseTouch.clientX, releaseTouch.clientY, cardId);
-        dropTarget = touchCardState.dropTarget;
-      }
+      // 2. Dropped in a Stand
+      if (dropTarget.type === 'stand') {
+        const targetStandIdx = dropTarget.targetStandIdx;
+        if (targetStandIdx >= 0 && targetStandIdx < userStands.length) {
+          let sourceStandIdx = -1;
+          let fromIdx = -1;
+          for (let i = 0; i < userStands.length; i++) {
+            const idx = userStands[i].findIndex(c => c && c.id === cardId);
+            if (idx !== -1) {
+              sourceStandIdx = i;
+              fromIdx = idx;
+              break;
+            }
+          }
 
-      if (dropTarget) {
-        // 1. Dropped on Discard Pile
-        if (dropTarget.type === 'discard') {
-          const isMyTurn = isCurrentPlayerMe();
-          const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
-          if (canDiscard) {
-            selectedCardId = cardId;
-            discardSelected();
-            try { soundSystem?.playDiscard?.(); } catch (_) {}
+          if (sourceStandIdx !== -1) {
+            let insertIdx = dropTarget.insertIdx;
+            const [card] = userStands[sourceStandIdx].splice(fromIdx, 1);
+
+            if (sourceStandIdx === targetStandIdx) {
+              // Reordered in the same stand
+              if (fromIdx < insertIdx) {
+                insertIdx = Math.max(0, insertIdx - 1);
+              }
+              userStands[sourceStandIdx].splice(insertIdx, 0, card);
+            } else {
+              // Moved to another stand
+              insertIdx = Math.min(insertIdx, userStands[targetStandIdx].length);
+              userStands[targetStandIdx].splice(insertIdx, 0, card);
+            }
+
+            myHand = userStands.flat();
+            selectedCardId = card.id;
+            lastTouchSelectTime = now;
+            lastTouchActionTime = now;
+            try { soundSystem?.playCardSlide?.(); } catch (_) {}
+            renderAll(null);
+            scrollCardIntoView(card.id);
             touchCardState = null;
             draggedCardId = null;
             return;
           }
         }
-
-        // 2. Dropped in a Stand
-        if (dropTarget.type === 'stand') {
-          const targetStandIdx = dropTarget.targetStandIdx;
-          if (targetStandIdx >= 0 && targetStandIdx < userStands.length) {
-            let sourceStandIdx = -1;
-            let fromIdx = -1;
-            for (let i = 0; i < userStands.length; i++) {
-              const idx = userStands[i].findIndex(c => c && c.id === cardId);
-              if (idx !== -1) {
-                sourceStandIdx = i;
-                fromIdx = idx;
-                break;
-              }
-            }
-
-            if (sourceStandIdx !== -1) {
-              let insertIdx = dropTarget.insertIdx;
-              const [card] = userStands[sourceStandIdx].splice(fromIdx, 1);
-
-              if (sourceStandIdx === targetStandIdx) {
-                // Reordered in the same stand
-                if (fromIdx < insertIdx) {
-                  insertIdx = Math.max(0, insertIdx - 1);
-                }
-                userStands[sourceStandIdx].splice(insertIdx, 0, card);
-              } else {
-                // Moved to another stand
-                insertIdx = Math.min(insertIdx, userStands[targetStandIdx].length);
-                userStands[targetStandIdx].splice(insertIdx, 0, card);
-              }
-
-              myHand = userStands.flat();
-              selectedCardId = card.id;
-              try { soundSystem?.playCardSlide?.(); } catch (_) {}
-              renderAll(null);
-              scrollCardIntoView(card.id);
-              touchCardState = null;
-              draggedCardId = null;
-              return;
-            }
-          }
-        }
       }
-
-      draggedCardId = null;
-      touchCardState = null;
-    } else {
-      // Tap (no drag): select/deselect card
-      const touch = e.changedTouches ? e.changedTouches[0] : null;
-      const dx = touch ? touch.clientX - touchCardState.startX : 0;
-      const dy = touch ? touch.clientY - touchCardState.startY : 0;
-      const dist = Math.hypot(dx, dy);
-      if (dist <= 8) {
-        if (e.cancelable) e.preventDefault();
-        lastTouchSelectTime = Date.now();
-        selectCard(cardId, true);
-      }
-      touchCardState = null;
     }
+
+    draggedCardId = null;
+    touchCardState = null;
   }
 
   function onTouchCardCancel(e, cardId) {
@@ -7089,8 +7536,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     if (touchCardState && touchCardState.el) {
       touchCardState.el.style.opacity = '';
     }
-    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover')
-      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover'));
+    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover, .scroll-btn-drag-active')
+      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover', 'scroll-btn-drag-active'));
+    stopStandScroll();
     
     // If dropped via cancel while dropTarget was established, complete the drop
     if (touchCardState && touchCardState.isDragging && touchCardState.dropTarget) {
@@ -7416,11 +7864,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   function onCardDragEnd(e) {
     draggedCardId = null;
     draggedPileType = null;
+    stopStandScroll();
     document.querySelectorAll('.card').forEach(el => {
       el.classList.remove('is-dragging', 'drag-over-left', 'drag-over-right');
     });
     document.querySelectorAll('.stand-rack').forEach(el => {
       el.classList.remove('drag-over-stand');
+    });
+    document.querySelectorAll('.scroll-btn-drag-active').forEach(b => {
+      b.classList.remove('scroll-btn-drag-active');
     });
   }
 
@@ -8099,6 +8551,40 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const modal = document.getElementById('sessionScoresModal');
     if (modal) modal.style.display = 'none';
   }
+
+  function openRulesModal(defaultTab = 'overview') {
+    const modal = document.getElementById('rulesHelpModal');
+    if (!modal) return;
+    switchRulesTab(defaultTab);
+    modal.style.display = 'flex';
+  }
+
+  function closeRulesModal() {
+    const modal = document.getElementById('rulesHelpModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function switchRulesTab(tabKey) {
+    const tabMap = {
+      overview: { btn: 'tabBtnOverview', content: 'rulesTabOverview' },
+      melds: { btn: 'tabBtnMelds', content: 'rulesTabMelds' },
+      jokers: { btn: 'tabBtnJokers', content: 'rulesTabJokers' },
+      scoring: { btn: 'tabBtnScoring', content: 'rulesTabScoring' }
+    };
+    Object.keys(tabMap).forEach(key => {
+      const isTarget = key === tabKey;
+      const b = document.getElementById(tabMap[key].btn);
+      const c = document.getElementById(tabMap[key].content);
+      if (b) b.classList.toggle('active', isTarget);
+      if (c) c.style.display = isTarget ? 'block' : 'none';
+    });
+    const body = document.getElementById('rulesModalBody');
+    if (body) body.scrollTop = 0;
+  }
+
+  window.openRulesModal = openRulesModal;
+  window.closeRulesModal = closeRulesModal;
+  window.switchRulesTab = switchRulesTab;
 
   function updateSessionHeaderBadge() {
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
