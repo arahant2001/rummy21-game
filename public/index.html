@@ -2618,8 +2618,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   <div class="lobby-brand-emblem" aria-label="21 Card Rummy table cards fan">
     <div class="lobby-fan-backdrop"></div>
     <div class="lobby-card-fan">
-      <!-- Card 1: 7 of Spades (Tiplu / Open Cut Joker) -->
-      <div class="fan-card fan-card-1 is-joker" title="7♠ Open Cut Joker (Tiplu)">
+      <!-- Card 1: 7 of Spades (Exact Cut Joker) -->
+      <div class="fan-card fan-card-1 is-joker" title="7♠ Exact Cut Joker">
         <div class="fan-card-ribbon">JOKER</div>
         <img src="https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/7S.svg" alt="7 of Spades" class="fan-card-img" />
       </div>
@@ -3105,7 +3105,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
           <h4 style="color: #fca5a5;"><span>🔒</span> Joker Pickup Rule (Discard Restriction)</h4>
           <p style="margin: 0 0 6px;"><strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong></p>
           <ul style="margin: 0 0 0 18px; padding: 0;">
-            <li>If a player discards any Joker (Wild Joker, Tiplu, Paplu, Tuplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
+            <li>If a player discards any Joker (Wild Joker, Exact Cut Joker, Paplu, Taplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
             <li><span class="rules-pill rules-pill-green">Exception</span> <strong>Initial Open Card:</strong> If the very first card turned face-up from the deck at the beginning of the round is a Joker, the first player <strong>is permitted to pick it up</strong>!</li>
           </ul>
         </div>
@@ -3130,7 +3130,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Melds that count as a Pure Sequence in this game:</strong>
               <ul style="margin: 4px 0 0 16px; padding: 0;">
                 <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit without wild cards (e.g. <strong>4♠ - 5♠ - 6♠</strong>).</li>
-                <li><strong>Marriage Trio:</strong> Holding <strong>Tuplu + Tiplu + Paplu</strong> in the cut suit (e.g. <strong>6♦ - 7♦ - 8♦</strong>) qualifies as a Pure Sequence!</li>
+                <li><strong>Marriage Trio:</strong> Holding <strong>Taplu + Cut Joker + Paplu</strong> in the cut suit (e.g. <strong>6♦ - 7♦ - 8♦</strong>) qualifies as a Pure Sequence!</li>
                 <li><strong>Three Poochies:</strong> 3 Printed Jokers (<strong>PJ★</strong>) grouped together qualifies as a Pure Sequence!</li>
                 <li><strong>Tunnela:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) qualifies as a Pure Sequence!</li>
               </ul>
@@ -3178,11 +3178,11 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <tbody>
               <tr>
                 <td><span class="rules-pill rules-pill-gold">MARRIAGE</span></td>
-                <td>1 Tuplu + 1 Tiplu + 1 Paplu together in cut suit</td>
+                <td>1 Taplu + 1 Cut Joker + 1 Paplu together in cut suit</td>
                 <td><strong>50 pts</strong> per Marriage</td>
               </tr>
               <tr>
-                <td><span class="rules-pill rules-pill-gold">TIPLU</span></td>
+                <td><span class="rules-pill rules-pill-gold">EXACT CUT</span></td>
                 <td>Exact rank &amp; suit of Cut Card (remaining after marriages)</td>
                 <td><strong>20 pts</strong> each</td>
               </tr>
@@ -3197,7 +3197,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
                 <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
               </tr>
               <tr>
-                <td><span class="rules-pill rules-pill-green">TUPLU / TAPLU</span></td>
+                <td><span class="rules-pill rules-pill-green">TAPLU</span></td>
                 <td>Same suit as Cut Card, 1 rank lower (-1 rank)</td>
                 <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
               </tr>
@@ -3212,10 +3212,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
         <div class="rules-card-box" style="margin-top:10px;">
           <h4><span>💍</span> Marriage Details</h4>
-          <p>A <strong>Marriage</strong> is formed by holding <strong>Tuplu + Tiplu + Paplu</strong> together of the cut suit in your hand (e.g. 6♦ + 7♦ + 8♦ when 7♦ is cut).</p>
+          <p>A <strong>Marriage</strong> is formed by holding <strong>Taplu + Cut Joker + Paplu</strong> together of the cut suit in your hand (e.g. 6♦ + 7♦ + 8♦ when 7♦ is cut).</p>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
             <li>Each completed Marriage trio awards <strong>50 points</strong>.</li>
-            <li>Any cards left over after assembling Marriages are scored in their individual categories (Tiplu: 20 pts each; Paplu &amp; Tuplu: tiered pool).</li>
+            <li>Any cards left over after assembling Marriages are scored in their individual categories (Exact Cut Joker: 20 pts each; Paplu &amp; Taplu: tiered pool).</li>
             <li>A Marriage group also counts as a <strong>Pure Sequence</strong> for declaration!</li>
           </ul>
         </div>
@@ -5947,10 +5947,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
-        let moveHereBtn = '';
-        if (selectedCardId && sIdx !== currentSelectedStandIdx) {
-          moveHereBtn = `<button type="button" class="stand-move-here-btn" ontouchend="executeStandMove('${selectedCardId}', ${sIdx}, event)" onclick="executeStandMove('${selectedCardId}', ${sIdx}, event)" title="Move selected card to Stand ${sIdx+1}">➔ Move card here</button>`;
-        }
         const cardsContent = stand.length > 0
           ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
           : `<div class="empty-stand-hint">Empty stand • Tap any card and use ▲/▼ or drag a card here</div>`;
@@ -5959,7 +5955,6 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <div class="stand-title-box">
               <span>Stand ${sIdx+1}</span>
               <span class="stand-count-badge">${stand.length} cards</span>
-              ${moveHereBtn}
             </div>
             ${closeBtn}
           </div>
