@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "node server.js --port 3000",
     "start": "node server.js",
     "build": "echo 'Build OK'",
-    "preview": "node server.js",
+    "preview": "node server.js --port 3000",
     "clean": "rm -rf dist",
     "lint": "node -c server.js && node -c rules.js"
   },

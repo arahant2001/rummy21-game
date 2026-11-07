@@ -737,7 +737,39 @@ wss.on('connection', (ws) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+function resolvePort() {
+  const args = process.argv.slice(2);
+  for (let i = 0; i < args.length; i++) {
+    if ((args[i] === '--port' || args[i] === '-p') && args[i + 1]) {
+      const p = parseInt(args[i + 1], 10);
+      if (p > 0 && p < 65536) return p;
+    }
+  }
+  if (process.env.DEFAULT_APP_PORT) {
+    const p = parseInt(process.env.DEFAULT_APP_PORT, 10);
+    if (p > 0 && p < 65536) return p;
+  }
+  // In AI Studio container environment, nginx occupies port 8080 and proxies to port 3000
+  if (process.env.NGINX_PORT || process.env.PORT === '8080') {
+    return 3000;
+  }
+  return parseInt(process.env.PORT, 10) || 3000;
+}
+
+const PORT = resolvePort();
+
+server.on('error', (err) => {
+  console.error('HTTP/WebSocket Server error:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`21 Card Rummy live on port ${PORT}`);
 });
