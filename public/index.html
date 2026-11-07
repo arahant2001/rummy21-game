@@ -2668,7 +2668,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     South Indian Open Joker Table &bull; Winner Takes Honors
   </div>
   <div class="lobby-meta-bar">
-    <span>3 Decks of 53 Cards</span>
+    <span>3 Decks of 54 Cards (162 total)</span>
     <span class="meta-dot">&bull;</span>
     <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
@@ -3088,25 +3088,34 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <!-- Tab 1: Overview & Table Setup -->
       <div id="rulesTabOverview" class="rules-tab-content">
         <div class="rules-card-box">
-          <h4><span>🎴</span> Game Essentials</h4>
-          <p><strong>21-Card Rummy</strong> (also celebrated as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 3 Printed Jokers (Poochie)</strong>, totaling <strong>159 cards</strong>. Each player is dealt 21 cards.</p>
+          <h4><span>🎴</span> Game Essentials &amp; Table Setup</h4>
+          <p><strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 6 Printed Jokers (Poochies, 2 per deck)</strong>, totaling <strong>162 cards</strong>. Each player is dealt <strong>21 cards</strong>.</p>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
           <h4><span>🔄</span> Turn Structure</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
             <li><strong>1. Draw:</strong> On your turn, draw 1 card from either the face-down <strong>Stock Deck</strong> or the face-up <strong>Discard Pile</strong>.</li>
-            <li><strong>2. Meld &amp; Organize:</strong> Arrange your hand into Stands (1, 2, or 3 stands). Tap any card to open the Move Pad or drag &amp; drop cards directly.</li>
-            <li><strong>3. Discard:</strong> Discard 1 unwanted card to the Discard Pile to complete your turn.</li>
+            <li><strong>2. Meld &amp; Organize:</strong> Arrange your hand into Stands (1, 2, or 3 stands). Tap any card to open the Move Pad or drag &amp; drop cards directly between stands.</li>
+            <li><strong>3. Discard:</strong> Discard 1 card to the Discard Pile to complete your turn.</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px; border-color: rgba(239, 68, 68, 0.4); background: rgba(30, 20, 20, 0.7);">
+          <h4 style="color: #fca5a5;"><span>🔒</span> Joker Pickup Rule (Discard Restriction)</h4>
+          <p style="margin: 0 0 6px;"><strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong></p>
+          <ul style="margin: 0 0 0 18px; padding: 0;">
+            <li>If a player discards any Joker (Wild Joker, Tiplu, Paplu, Tuplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
+            <li><span class="rules-pill rules-pill-green">Exception</span> <strong>Initial Open Card:</strong> If the very first card turned face-up from the deck at the beginning of the round is a Joker, the first player <strong>is permitted to pick it up</strong>!</li>
           </ul>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
           <h4><span>🖐️</span> Table Navigation &amp; Mobile Controls</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li><strong>Move Pad:</strong> Tap any card to dock the Move Pad. Use <span class="rules-pill rules-pill-blue">▲</span> and <span class="rules-pill rules-pill-blue">▼</span> to shift cards between stands while preserving ordinal position, or <span class="rules-pill rules-pill-blue">◀</span> / <span class="rules-pill rules-pill-blue">▶</span> to reorder.</li>
-            <li><strong>Stand Scroll &amp; Drag Auto-Scroll:</strong> Tap or hold the ◀ and ▶ arrows on any stand to scroll. <em>Dragging a card over either arrow button automatically activates smooth auto-scrolling!</em></li>
-            <li><strong>Zoom Size Controls:</strong> Use the <span class="rules-pill rules-pill-gold">－</span> and <span class="rules-pill rules-pill-gold">＋</span> zoom buttons in the toolbar to adjust card sizes from 60% to 130% so you can see your entire hand.</li>
+            <li><strong>Move Pad:</strong> Tap any card to dock the Move Pad. Use <span class="rules-pill rules-pill-blue">▲</span> and <span class="rules-pill rules-pill-blue">▼</span> to shift cards between stands while maintaining ordinal position, or <span class="rules-pill rules-pill-blue">◀</span> / <span class="rules-pill rules-pill-blue">▶</span> to reorder.</li>
+            <li><strong>Stand Scroll &amp; Drag Auto-Scroll:</strong> Tap or hold the ◀ and ▶ arrows on any stand to scroll. <em>Dragging a card over either arrow button automatically activates continuous auto-scrolling!</em></li>
+            <li><strong>Zoom Size Controls:</strong> Use the <span class="rules-pill rules-pill-gold">－</span> and <span class="rules-pill rules-pill-gold">＋</span> zoom buttons in the toolbar to adjust card sizes from 60% to 130% so you can see your entire hand at once.</li>
           </ul>
         </div>
       </div>
@@ -3115,11 +3124,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <div id="rulesTabMelds" class="rules-tab-content" style="display:none;">
         <div class="rules-card-box">
           <h4><span>✅</span> Valid Show Requirements</h4>
-          <p>To declare a winning Show, your 21 cards must meet the following mandatory criteria:</p>
+          <p>To declare a winning Show, all 21 cards must be grouped into valid melds with:</p>
           <ul style="margin: 6px 0 0 18px; padding: 0;">
-            <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit made without Wild Jokers or Poochie (e.g. <strong>4♠ - 5♠ - 6♠</strong>).</li>
-            <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Tunnela counts as Pure Sequence:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) forms a Tunnela and qualifies as a Pure Sequence!</li>
-            <li><strong>Remaining Melds:</strong> All other cards must be arranged into valid Sequences (pure or with Jokers), Sets, or Tunnelas.</li>
+            <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.</li>
+            <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Melds that count as a Pure Sequence in this game:</strong>
+              <ul style="margin: 4px 0 0 16px; padding: 0;">
+                <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit without wild cards (e.g. <strong>4♠ - 5♠ - 6♠</strong>).</li>
+                <li><strong>Marriage Trio:</strong> Holding <strong>Tuplu + Tiplu + Paplu</strong> in the cut suit (e.g. <strong>6♦ - 7♦ - 8♦</strong>) qualifies as a Pure Sequence!</li>
+                <li><strong>Three Poochies:</strong> 3 Printed Jokers (<strong>PJ★</strong>) grouped together qualifies as a Pure Sequence!</li>
+                <li><strong>Tunnela:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) qualifies as a Pure Sequence!</li>
+              </ul>
+            </li>
+            <li><strong>Remaining Melds:</strong> All other cards must be arranged into valid Sequences (pure or using Wild Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
           </ul>
         </div>
 
@@ -3132,7 +3148,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
             <tbody>
               <tr>
                 <td><strong>3 Tunnelas</strong></td>
-                <td>3 separate Tunnelas in 3 different suits</td>
+                <td>3 separate Tunnelas in 3 different suits (e.g. 3× 9♠ + 3× Q♥ + 3× 4♣)</td>
                 <td><span class="rules-pill rules-pill-gold">Instant Win</span></td>
               </tr>
               <tr>
@@ -3142,7 +3158,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
               </tr>
               <tr>
                 <td><strong>3 Pure + Valid Hand</strong></td>
-                <td>At least 3 Pure Sequences with remaining cards grouped</td>
+                <td>At least 3 Pure Sequences with all 21 cards melded</td>
                 <td><span class="rules-pill rules-pill-green">Valid Show</span></td>
               </tr>
             </tbody>
@@ -3153,48 +3169,54 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <!-- Tab 3: Jokers & Honors (Maal Points) -->
       <div id="rulesTabJokers" class="rules-tab-content" style="display:none;">
         <div class="rules-card-box">
-          <h4><span>👑</span> The Cut Card &amp; Honors (Maal)</h4>
-          <p>At the beginning of each hand, one card is cut from the closed deck. Its rank and suit establish all Jokers and Honors points:</p>
+          <h4><span>👑</span> The Cut Card &amp; Honors (Maal) Roles</h4>
+          <p>At the start of each hand, one card is cut from the deck. Its rank and suit establish all Jokers and Honors points:</p>
           <table class="rules-table">
             <thead>
-              <tr><th>Role</th><th>Card Definition</th><th>Points</th></tr>
+              <tr><th>Role</th><th>Card Definition</th><th>Honors (Maal) Points</th></tr>
             </thead>
             <tbody>
               <tr>
+                <td><span class="rules-pill rules-pill-gold">MARRIAGE</span></td>
+                <td>1 Tuplu + 1 Tiplu + 1 Paplu together in cut suit</td>
+                <td><strong>50 pts</strong> per Marriage</td>
+              </tr>
+              <tr>
                 <td><span class="rules-pill rules-pill-gold">TIPLU</span></td>
-                <td>Identical rank &amp; suit to the Cut Card (e.g. other 7♦)</td>
-                <td><strong>3 pts</strong> each</td>
-              </tr>
-              <tr>
-                <td><span class="rules-pill rules-pill-blue">PAPLU</span></td>
-                <td>Same suit as Cut Card, 1 rank higher (e.g. 8♦)</td>
-                <td><strong>2 pts</strong> each</td>
-              </tr>
-              <tr>
-                <td><span class="rules-pill rules-pill-green">NICHLU</span></td>
-                <td>Same suit as Cut Card, 1 rank lower (e.g. 6♦)</td>
-                <td><strong>2 pts</strong> each</td>
+                <td>Exact rank &amp; suit of Cut Card (remaining after marriages)</td>
+                <td><strong>20 pts</strong> each</td>
               </tr>
               <tr>
                 <td><span class="rules-pill rules-pill-gold">POOCHIE</span></td>
-                <td>The 3 Printed Jokers (PJ★ clown cards)</td>
-                <td><strong>5 pts</strong> each</td>
+                <td>Printed Jokers (PJ★) — 6 total in the deck</td>
+                <td><strong>Tiered:</strong> 1 = <strong>20 pts</strong> &bull; 2 = <strong>50 pts</strong> &bull; 3 = <strong>70 pts</strong> (+20 each after)</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-blue">PAPLU</span></td>
+                <td>Same suit as Cut Card, 1 rank higher (+1 rank)</td>
+                <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-green">TUPLU / TAPLU</span></td>
+                <td>Same suit as Cut Card, 1 rank lower (-1 rank)</td>
+                <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
               </tr>
               <tr>
                 <td><span class="rules-pill rules-pill-blue">WILD JOKER</span></td>
                 <td>Same rank as Cut Card in other 3 suits (e.g. 7♠, 7♥, 7♣)</td>
-                <td>Wild card (0 pts)</td>
+                <td>Free wild card in melds (0 honors pts)</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
-          <h4><span>💍</span> Marriage (The Grand Honor)</h4>
-          <p>A <strong>Marriage</strong> is formed by holding <strong>Paplu + Tiplu + Nichlu</strong> together of the cut suit in your hand (e.g. 6♦ + 7♦ + 8♦).</p>
+          <h4><span>💍</span> Marriage Details</h4>
+          <p>A <strong>Marriage</strong> is formed by holding <strong>Tuplu + Tiplu + Paplu</strong> together of the cut suit in your hand (e.g. 6♦ + 7♦ + 8♦ when 7♦ is cut).</p>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li><strong>Single Marriage:</strong> <strong>100 points</strong> bonus!</li>
-            <li><strong>Double Marriage:</strong> Two of each (2× Paplu + 2× Tiplu + 2× Nichlu) awards <strong>300 points</strong>!</li>
+            <li>Each completed Marriage trio awards <strong>50 points</strong>.</li>
+            <li>Any cards left over after assembling Marriages are scored in their individual categories (Tiplu: 20 pts each; Paplu &amp; Tuplu: tiered pool).</li>
+            <li>A Marriage group also counts as a <strong>Pure Sequence</strong> for declaration!</li>
           </ul>
         </div>
       </div>
@@ -3202,8 +3224,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       <!-- Tab 4: Scoot, Drops & Scoring -->
       <div id="rulesTabScoring" class="rules-tab-content" style="display:none;">
         <div class="rules-card-box">
-          <h4><span>🚪</span> Scoot &amp; Drop Penalties</h4>
-          <p>If you have an unpromising hand, you may choose to fold or drop before accumulating severe deadwood:</p>
+          <h4><span>🚪</span> Shoots / Scoots &amp; Drop Penalties</h4>
+          <p>If dealt an unpromising hand, you may choose to scoot or drop before drawing a card:</p>
           <table class="rules-table">
             <thead>
               <tr><th>Action</th><th>Condition</th><th>Penalty</th></tr>
@@ -3212,29 +3234,44 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
               <tr>
                 <td><span class="rules-pill rules-pill-blue">Scoot</span> (First Drop)</td>
                 <td>Drop out before drawing any card on your first turn</td>
-                <td><strong>20 points</strong></td>
+                <td><strong>30 points</strong></td>
               </tr>
               <tr>
-                <td><span class="rules-pill rules-pill-gold">Later Drop</span></td>
-                <td>Drop out after having drawn one or more cards</td>
-                <td><strong>40 points</strong></td>
+                <td><span class="rules-pill rules-pill-gold">Middle Drop</span></td>
+                <td>Drop out before drawing on any subsequent turn</td>
+                <td><strong>70 points</strong></td>
               </tr>
               <tr>
-                <td><span class="rules-pill rules-pill-red">Wrong Show</span></td>
-                <td>Declaring with an invalid hand or &lt; 3 Pure Sequences</td>
-                <td><strong>80 points</strong> (Max)</td>
+                <td><span class="rules-pill rules-pill-red">Forfeit / Invalid Show</span></td>
+                <td>Forfeiting declaration or making an invalid show</td>
+                <td><strong>100 points</strong></td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-red">Max Deadwood</span></td>
+                <td>Deadwood cap for unmelded cards</td>
+                <td><strong>120 points</strong></td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
-          <h4><span>💰</span> Winner Takes Honors Rule</h4>
-          <p>Under our family table rule, <strong>Winner Takes Honors</strong>:</p>
+          <h4><span>🛡️</span> Deadwood Protection Rules</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li>The winning player collects their total accumulated Honors (Maal) points from <em>every losing player</em> at the table.</li>
-            <li>Losing players who have at least 3 Pure Sequences only pay penalty for their unmatched deadwood cards.</li>
-            <li>Losing players who do not have 3 Pure Sequences pay full deadwood points (up to 80 points).</li>
+            <li><strong>If you have &ge; 3 Pure Sequences:</strong> All valid melded cards (pure sequences, impure sequences, sets, and tunnelas) are protected (0 deadwood). Only loose cards count as deadwood.</li>
+            <li><strong>If you have &lt; 3 Pure Sequences:</strong> ONLY <strong>Jokers</strong>, <strong>Pure Sequences of 4 or more cards</strong>, and <strong>Tunnelas</strong> are protected! All other cards (including 3-card pure runs, sets, impure runs, and loose cards) count as deadwood up to the 120-point maximum.</li>
+            <li>Card values: Face cards (A, K, Q, J, 10) = 10 pts; number cards = face value (2 to 9).</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>💰</span> Winner Takes Honors Settlement</h4>
+          <p>Under our table rules, <strong>Winner Takes Honors</strong>:</p>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li>The winning player collects their full accumulated Honors (Maal) points from <strong>every losing player</strong> at the table.</li>
+            <li><strong>Dropped / Scooted players pay:</strong> Drop penalty (<strong>30 pts</strong> for Scoot or <strong>70 pts</strong> for Middle Drop) + <strong>Winner's Honors points</strong>.</li>
+            <li><strong>Non-dropped losing players pay:</strong> Deadwood score (up to <strong>120 pts</strong>) + <strong>Winner's Honors points</strong>.</li>
+            <li><strong>The winner receives:</strong> (Number of losers) &times; (Winner's Honors points).</li>
           </ul>
         </div>
       </div>
