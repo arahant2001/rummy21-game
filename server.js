@@ -340,10 +340,17 @@ wss.on('connection', (ws) => {
         }
 
         // 1. Reconnection Check: Support mobile players reconnecting after tab switch / screen sleep
-        const existingPlayer = userRoom.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
+        const existingPlayer = userRoom.players.find(p => 
+          (data.playerId && p.id === data.playerId) || 
+          p.name.trim().toLowerCase() === playerName.trim().toLowerCase()
+        );
         if (existingPlayer) {
           existingPlayer.ws = ws;
           playerId = existingPlayer.id;
+          if (userRoom.cleanupTimer) {
+            clearTimeout(userRoom.cleanupTimer);
+            userRoom.cleanupTimer = null;
+          }
           // Invariant: Ensure rejoining player has strictly 21 (or 22) cards if game is active
           if (userRoom.status === 'PLAYING') {
             ensurePlayerHand(existingPlayer, userRoom, 21);
