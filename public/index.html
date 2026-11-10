@@ -3265,18 +3265,19 @@ body.is-dragging-card-mobile {
             <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.</li>
             <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Melds that count as a Pure Sequence in this game:</strong>
               <ul style="margin: 4px 0 0 16px; padding: 0;">
-                <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit without wild cards (e.g. <strong>4♠ - 5♠ - 6♠</strong>).</li>
+                <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit. <em>Note: A natural sequence can include a joker card, as long as it is played in its natural suit and number (e.g. if 5♠ is the Pukka Joker, 5♠ - 6♠ - 7♠ is a pure sequence; 5♥ - 6♥ - 7♥ is also a pure sequence).</em></li>
                 <li><strong>Marriage Trio:</strong> Holding <strong>Taplu + Pukka Joker + Paplu</strong> in the cut suit (e.g. <strong>6♦ - 7♦ - 8♦</strong>) qualifies as a Pure Sequence!</li>
                 <li><strong>Three Poochies:</strong> 3 Printed Jokers (<strong>PJ★</strong>) grouped together qualifies as a Pure Sequence!</li>
                 <li><strong>Tunnela:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) qualifies as a Pure Sequence!</li>
               </ul>
             </li>
             <li><strong>Remaining Melds:</strong> All other cards must be arranged into valid Sequences (pure or using Wild Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
+            <li><strong>Auto-Grouping Priority:</strong> When auto-grouping upon declare, <strong>Pure Sequences always take precedence over Sets</strong> (e.g. if 9♠ can participate in an 8♠-9♠-10♠ pure sequence or a 9♠-9♦-9♣ set, it will prioritize the pure sequence).</li>
           </ul>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
-          <h4><span>🏆</span> Instant Winning Hands</h4>
+          <h4><span>🏆</span> Instant Winning Hands &amp; Doubles</h4>
           <table class="rules-table">
             <thead>
               <tr><th>Hand</th><th>Description</th><th>Outcome</th></tr>
@@ -3291,6 +3292,16 @@ body.is-dragging-card-mobile {
                 <td><strong>7 Marriages</strong></td>
                 <td>7 complete Marriage trios in your 21 cards</td>
                 <td><span class="rules-pill rules-pill-gold">Instant Win</span></td>
+              </tr>
+              <tr>
+                <td><strong>7 Doubles (Dealt)</strong></td>
+                <td>Holding 7 pairs of identical cards dealt (before draw)</td>
+                <td><span class="rules-pill rules-pill-gold">Declare Without Draw</span></td>
+              </tr>
+              <tr>
+                <td><strong>8 Doubles (Drawn)</strong></td>
+                <td>Holding 8 pairs of identical cards after drawing a card</td>
+                <td><span class="rules-pill rules-pill-green">Valid Show</span></td>
               </tr>
               <tr>
                 <td><strong>3 Pure + Valid Hand</strong></td>
@@ -3368,6 +3379,16 @@ body.is-dragging-card-mobile {
             </thead>
             <tbody>
               <tr>
+                <td><span class="rules-pill rules-pill-green">Free Scoot</span></td>
+                <td>Dealt <strong>6 Doubles</strong> before drawing a card</td>
+                <td><strong>0 points &amp; 0 honors</strong></td>
+              </tr>
+              <tr>
+                <td><span class="rules-pill rules-pill-green">Free Game</span></td>
+                <td>Holding <strong>7 Doubles</strong> after drawing a card</td>
+                <td><strong>0 points &amp; 0 honors</strong></td>
+              </tr>
+              <tr>
                 <td><span class="rules-pill rules-pill-blue">Scoot</span> (First Drop)</td>
                 <td>Drop out before drawing any card on your first turn</td>
                 <td><strong>30 points</strong></td>
@@ -3394,7 +3415,7 @@ body.is-dragging-card-mobile {
         <div class="rules-card-box" style="margin-top:10px;">
           <h4><span>🛡️</span> Deadwood Protection Rules</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li><strong>If you have &ge; 3 Pure Sequences:</strong> All valid melded cards (pure sequences, impure sequences, sets, and tunnelas) are protected (0 deadwood). Only loose cards count as deadwood.</li>
+            <li><strong>If you have &ge; 3 Pure Sequences or &ge; 7 Doubles:</strong> All valid melded cards (pure sequences, impure sequences, sets, tunnelas, and double pairs) are protected (0 deadwood). Only loose cards count as deadwood.</li>
             <li><strong>If you have &lt; 3 Pure Sequences:</strong> ONLY <strong>Jokers</strong>, <strong>Pure Sequences of 4 or more cards</strong>, and <strong>Tunnelas</strong> are protected! All other cards (including 3-card pure runs, sets, impure runs, and loose cards) count as deadwood up to the 120-point maximum.</li>
             <li>Card values: Face cards (A, K, Q, J, 10) = 10 pts; number cards = face value (2 to 9).</li>
           </ul>
@@ -3404,10 +3425,11 @@ body.is-dragging-card-mobile {
           <h4><span>💰</span> Winner Takes Honors Settlement</h4>
           <p>Under our table rules, <strong>Winner Takes Honors</strong>:</p>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li>The winning player collects their full accumulated Honors (Maal) points from <strong>every losing player</strong> at the table.</li>
+            <li>The winning player collects their full accumulated Honors (Maal) points from <strong>paying losing players</strong> at the table.</li>
+            <li><strong>Free Scoot / Free Game players:</strong> Owe <strong>0 penalty points and 0 honors</strong>.</li>
             <li><strong>Dropped / Scooted players pay:</strong> Drop penalty (<strong>30 pts</strong> for Scoot or <strong>70 pts</strong> for Middle Drop) + <strong>Winner's Honors points</strong>.</li>
             <li><strong>Non-dropped losing players pay:</strong> Deadwood score (up to <strong>120 pts</strong>) + <strong>Winner's Honors points</strong>.</li>
-            <li><strong>The winner receives:</strong> (Number of losers) &times; (Winner's Honors points).</li>
+            <li><strong>The winner receives:</strong> (Number of paying losers) &times; (Winner's Honors points).</li>
           </ul>
         </div>
       </div>
@@ -5415,22 +5437,39 @@ body.is-dragging-card-mobile {
     const dropPenaltyPts = isFirstDrop ? 30 : 70;
     const dropTypeLabel = isFirstDrop ? 'First Drop' : 'Middle Drop';
 
+    const dInfo = countDoubles(myHand);
+    const isDealtTurn = isFirstDrop && !canDiscard;
+    const isFreeScootDealt = isDealtTurn && dInfo.count >= 6;
+    const isFreeGameDrawn = (myTurnsTaken > 0 || canDiscard) && dInfo.count >= 7;
+
+    const isDealt7Doubles = isDealtTurn && dInfo.count >= 7;
+    const isDrawn8Doubles = dInfo.count >= 8;
+
     const btnDrop = document.getElementById('btnDrop');
     if (btnDrop) {
-      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDraw || myDropped || myForfeited);
+      const canDropNow = canDraw || (isFreeGameDrawn && canDiscard);
+      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited);
       const b = btnDrop.querySelector('b');
       const s = btnDrop.querySelector('.action-sub');
       if (b && !dropConfirming) {
         if (myDropped) {
-          const pen = myPlayer?.dropPenalty || 30;
-          b.innerText = `Scooted (${pen} pts)`;
+          const pen = myPlayer?.dropPenalty || 0;
+          b.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scooted (0 pts)' : `Scooted (${pen} pts)`;
+        } else if (isFreeScootDealt) {
+          b.innerText = 'Free Scoot (0 pts)';
+        } else if (isFreeGameDrawn) {
+          b.innerText = 'Free Game (0 pts)';
         } else {
           b.innerText = `Scoot (${dropPenaltyPts} pts)`;
         }
       }
       if (s && !dropConfirming) {
         if (myDropped) {
-          s.innerText = 'hand folded';
+          s.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? '0 pts & 0 honors' : 'hand folded';
+        } else if (isFreeScootDealt) {
+          s.innerText = '6+ doubles dealt • 0 pts & 0 honors';
+        } else if (isFreeGameDrawn) {
+          s.innerText = '7+ doubles • 0 pts & 0 honors';
         } else {
           s.innerText = `${dropTypeLabel} (-${dropPenaltyPts} pts)`;
         }
@@ -5463,13 +5502,19 @@ body.is-dragging-card-mobile {
     }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
-      declareBtn.classList.toggle('btn-disabled', !isMyTurn || myDropped || myForfeited);
-      declareBtn.querySelector('b').innerText = declarationMode ? 'Submit Declaration' : 'Show / Declare';
+      const canDeclare = (isMyTurn && (canDiscard || isDealt7Doubles)) && !myDropped && !myForfeited;
+      declareBtn.classList.toggle('btn-disabled', !canDeclare && !declarationMode);
+      const b = declareBtn.querySelector('b');
       const sub = declareBtn.querySelector('.action-sub');
+      if (b) {
+        b.innerText = declarationMode
+          ? 'Submit Declaration'
+          : (isDealt7Doubles ? 'Declare (7 Doubles)' : isDrawn8Doubles ? 'Declare (8 Doubles)' : 'Show / Declare');
+      }
       if (sub) {
         sub.innerText = declarationMode
           ? 'submit your 21-card show'
-          : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare'));
+          : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (isDealt7Doubles ? 'win dealt without drawing!' : isDrawn8Doubles ? '8 doubles ready!' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
     const isGroupingPhase = roomState?.status === 'GROUPING';
@@ -6419,6 +6464,29 @@ body.is-dragging-card-mobile {
     if (!Array.isArray(cards) || cards.length !== 3) return false;
     return cards.every(c => c && (c.isPoochie || c.suit === '★' || c.rank === 'PJ'));
   }
+  function countDoubles(cards) {
+    if (!Array.isArray(cards)) return { count: 0, pairs: [] };
+    const counts = new Map();
+    for (const c of cards) {
+      if (!c) continue;
+      const key = (c.isPoochie || c.rank === 'PJ' || c.suit === '★') 
+        ? 'PJ_★' 
+        : `${c.suit}_${c.rank}`;
+      if (!counts.has(key)) counts.set(key, []);
+      counts.get(key).push(c);
+    }
+    let doubleCount = 0;
+    const pairs = [];
+    for (const cardList of counts.values()) {
+      const numPairs = Math.floor(cardList.length / 2);
+      for (let i = 0; i < numPairs; i++) {
+        pairs.push([cardList[i * 2], cardList[i * 2 + 1]]);
+        doubleCount++;
+      }
+    }
+    return { count: doubleCount, pairs };
+  }
+
   function declarationIsTunella(cards) {
     if (!Array.isArray(cards) || cards.length !== 3) return false;
     const first = cards[0];
@@ -6429,9 +6497,11 @@ body.is-dragging-card-mobile {
     if(!Array.isArray(cards) || cards.length<3) return false;
     if(declarationIsMarriage(cards) || declarationIsThreePoochies(cards)) return true;
     if(declarationIsTunella(cards)) return true;
-    if(cards.some(declarationIsWild)) return false;
+    // A natural pure sequence cannot contain printed jokers, but CAN include a cut joker / wild card
+    // as long as it is in its natural suit and number (e.g. 5♠-6♠-7♠ when 5♠ is pukka joker).
+    if(cards.some(c => !c || c.isPoochie || c.rank === 'PJ' || c.suit === '★')) return false;
     const suit=cards[0].suit;
-    if(!cards.every(c=>c.suit===suit)) return false;
+    if(!cards.every(c=>c && c.suit===suit)) return false;
     const vals=cards.map(c=>declarationRankOptions(c)[0]);
     if(new Set(vals).size!==vals.length) return false;
     const low=[...vals].sort((a,b)=>a-b);
@@ -6443,11 +6513,19 @@ body.is-dragging-card-mobile {
   function calculateCurrentDeadwood(groups, hand) {
     if (!Array.isArray(hand)) return { points: 0, pureSequences: 0, hasRequiredPure: false, exemptIds: new Set(), allValidMeldedIds: new Set() };
     const handCards = hand;
+    const dInfo = countDoubles(handCards);
+    if (dInfo.count >= 7) {
+      const allIds = new Set(handCards.map(c => c.id));
+      return { points: 0, pureSequences: 0, hasRequiredPure: true, exemptIds: allIds, allValidMeldedIds: allIds, isDoubles: true };
+    }
     const handIds = new Set(handCards.map(c => c.id));
     const usedIds = new Set();
     let pureSequences = 0;
     const allValidMeldedIds = new Set();
-    const exemptIds = new Set(); // 4+ card pure runs and tunellas
+    const exemptIds = new Set(); // 4+ card pure runs, tunellas, and doubles
+    for (const pair of dInfo.pairs) {
+      pair.forEach(c => exemptIds.add(c.id));
+    }
 
     if (Array.isArray(groups)) {
       for (const g of groups) {
@@ -6555,10 +6633,24 @@ body.is-dragging-card-mobile {
     const rank=naturals[0].rank;
     return naturals.every(c=>c.rank===rank) && new Set(naturals.map(c=>c.suit)).size===naturals.length;
   }
-  function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':'Set';}
+  function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':type==='DOUBLE'?'Double (Pair)':'Set';}
 
   function detectBestGroupType(cards) {
-    if (!cards || cards.length < 3) return null;
+    if (!cards || cards.length < 2) return null;
+    if (cards.length === 2) {
+      const [c1, c2] = cards;
+      const isIdentical = (c1.isPoochie && c2.isPoochie) || (c1.rank === c2.rank && c1.suit === c2.suit);
+      if (isIdentical) {
+        return {
+          type: 'DOUBLE',
+          label: 'Double',
+          verb: 'Double (Pair)',
+          badge: '2 Identical Cards',
+          icon: '👯'
+        };
+      }
+      return null;
+    }
     if (declarationIsMarriage(cards)) {
       return {
         type: 'PURE_SEQUENCE',
@@ -6748,7 +6840,7 @@ body.is-dragging-card-mobile {
       if (!foundTun) searchingTunellas = false;
     }
 
-    // 3. Natural Pure Sequences (3+ consecutive cards in same suit without wildcards)
+    // 3. Natural Pure Sequences (giving precedence to pure runs over sets)
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
@@ -6756,7 +6848,8 @@ body.is-dragging-card-mobile {
       let foundRunInSuit = true;
       while (foundRunInSuit) {
         foundRunInSuit = false;
-        const availNaturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
+        // Natural pure runs permit jokers of matching suit and number, but not printed jokers
+        const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
         if (availNaturals.length < 3) break;
 
         const rankMap = new Map();
@@ -8342,12 +8435,28 @@ body.is-dragging-card-mobile {
   function dropHand() {
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myP = roomState?.players?.find(p => p.id === myId);
-    if (!canPlayerDraw() || myP?.hasDropped || myP?.hasForfeited) return;
-
+    const dInfo = countDoubles(myHand);
     const myTurnsTaken = myP?.turnsTaken || 0;
     const isFirst = myTurnsTaken === 0;
-    const penalty = isFirst ? 30 : 70;
-    const label = isFirst ? 'First Drop' : 'Middle Drop';
+    const canDiscardNow = (roomState?.turnStage === 'DISCARD' || myHand.length >= 22);
+    const isDealtTurn = isFirst && !canDiscardNow;
+
+    const isFreeScootDealt = isDealtTurn && dInfo.count >= 6;
+    const isFreeGameDrawn = (myTurnsTaken > 0 || canDiscardNow) && dInfo.count >= 7;
+    const isFreeScoot = isFreeScootDealt || isFreeGameDrawn;
+
+    const canDropNow = canPlayerDraw() || (isFreeGameDrawn && canDiscardNow);
+    if (!canDropNow || myP?.hasDropped || myP?.hasForfeited) return;
+
+    let penalty = isFirst ? 30 : 70;
+    let label = isFirst ? 'First Drop' : 'Middle Drop';
+    if (isFreeScootDealt) {
+      penalty = 0;
+      label = 'Free Scoot (6+ Doubles dealt: 0 pts & 0 honors)';
+    } else if (isFreeGameDrawn) {
+      penalty = 0;
+      label = 'Free Game (7+ Doubles: 0 pts & 0 honors)';
+    }
 
     if (!dropConfirming) {
       dropConfirming = true;
@@ -8355,8 +8464,8 @@ body.is-dragging-card-mobile {
       if (btn) {
         const b = btn.querySelector('b');
         const s = btn.querySelector('.action-sub');
-        if (b) b.innerText = `Confirm ${label} (${penalty} pts)?`;
-        if (s) s.innerText = 'Tap again to fold hand';
+        if (b) b.innerText = isFreeScoot ? `Confirm Free Scoot (0 pts)?` : `Confirm ${label} (${penalty} pts)?`;
+        if (s) s.innerText = isFreeScoot ? 'Tap again to fold (0 pts, 0 honors)' : 'Tap again to fold hand';
       }
       setTimeout(() => {
         dropConfirming = false;
@@ -8368,12 +8477,17 @@ body.is-dragging-card-mobile {
     if (isDemo) {
       if (myP) {
         myP.hasDropped = true;
-        myP.dropType = isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP';
+        myP.isFreeScoot = isFreeScoot;
+        myP.dropType = isFreeScoot ? 'FREE_SCOOT' : (isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP');
         myP.dropPenalty = penalty;
       }
       roomState.lastAction = `${myP?.name || 'You'} scooted (${label}: ${penalty} pts)`;
       passDemoTurn();
-      window.alert(`Hand dropped: ${label} penalty of ${penalty} points (plus winner's Honors points will be owed). Turn passed to ${roomState.turnPlayerName}.`);
+      if (isFreeScoot) {
+        window.alert(`Free Scoot claimed with ${dInfo.count} doubles! 0 penalty points and 0 honors owed. Turn passed to ${roomState.turnPlayerName}.`);
+      } else {
+        window.alert(`Hand dropped: ${label} penalty of ${penalty} points (plus winner's Honors points will be owed). Turn passed to ${roomState.turnPlayerName}.`);
+      }
       return;
     }
     ws.send(JSON.stringify({ type: 'DROP' }));
@@ -8413,16 +8527,24 @@ body.is-dragging-card-mobile {
       return;
     }
 
+    const dInfo = countDoubles(myHand);
+    const myP = roomState?.players?.find(p => p.id === (isDemo ? 'p_demo' : getMyPlayerId()));
+    const myTurns = myP?.turnsTaken || 0;
+    const canDiscardNow = (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+    const isDealt7Doubles = (myTurns === 0 && !canDiscardNow && dInfo.count >= 7);
+    const isDrawn8Doubles = (dInfo.count >= 8);
+
     if (!declarationMode) {
-      if (!roomState || (roomState.turnStage !== 'DISCARD' && getHandCount() < 22)) {
-        window.alert('Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard).');
+      if (!isDealt7Doubles && !canDiscardNow) {
+        window.alert('Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard), unless you are dealt 7 doubles.');
         return;
       }
       declarationMode = true;
       declarationGroups = [];
       declarationSelectedIds.clear();
       selectedCardId = null;
-      renderAll(null);
+      // Auto-group immediately upon declaring so cards are arranged with pure runs prioritized over sets
+      autoGroupFullHand();
       setTimeout(() => {
         const dp = document.getElementById('declarationPanel');
         if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -8444,33 +8566,53 @@ body.is-dragging-card-mobile {
     const grouped = declarationGroups.flatMap(g => g.cards);
     const unique = new Set(grouped.map(c => c.id));
 
-    // Bug 2 fix: Verify no cards duplicated across groups
+    // Verify no cards duplicated across groups
     if (unique.size !== grouped.length) {
       window.alert('One or more cards were assigned to multiple groups. Please undo and re-form your groups cleanly.');
       return;
     }
 
     const remaining = myHand.filter(c => !unique.has(c.id));
-    if (unique.size !== 21 || remaining.length !== 1) {
-      window.alert(`You have grouped ${unique.size}/21 cards (${remaining.length} remaining). In 21 Card Rummy, please group exactly 21 cards; the 1 remaining card will automatically be your final discard.`);
-      return;
-    }
-    const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-    if (pure < 3) {
-      window.alert(`You currently have ${pure} Pure Sequence(s). At least 3 Pure Sequences are required for a valid 21-card declaration.`);
-      return;
+    const doubleGroups = declarationGroups.filter(g => g.type === 'DOUBLE').length;
+    const isDoublesShow = isDealt7Doubles || (isDrawn8Doubles && (doubleGroups >= 8 || dInfo.count >= 8));
+
+    let finalDiscardId = null;
+    let discardedCard = null;
+
+    if (isDealt7Doubles) {
+      // Dealt 7 doubles: declaring without drawing a card (all 21 cards shown)
+      if (dInfo.count < 7) {
+        window.alert(`Declaring without drawing requires holding at least 7 doubles dealt. You have ${dInfo.count}.`);
+        return;
+      }
+    } else {
+      // Normal declaration after drawing (22 cards: 21 grouped + 1 final discard)
+      if (remaining.length !== 1 || (unique.size !== 21 && !isDoublesShow)) {
+        window.alert(`You have grouped ${unique.size}/21 cards (${remaining.length} remaining). In 21 Card Rummy, please group 21 cards; the 1 remaining card will automatically be your final discard.`);
+        return;
+      }
+      finalDiscardId = remaining[0].id;
+      discardedCard = remaining[0];
+
+      if (!isDoublesShow) {
+        const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+        if (pure < 3) {
+          window.alert(`You currently have ${pure} Pure Sequence(s). At least 3 Pure Sequences are required for a valid 21-card declaration.`);
+          return;
+        }
+      }
     }
 
     const groups = declarationGroups.map(g => ({ type: g.type, cardIds: g.cards.map(c => c.id) }));
-    const finalDiscardId = remaining[0].id;
     if (isDemo) {
-      const discardedCard = remaining[0];
       const meP = roomState.players.find(p => p.id === 'p_demo');
       if (meP) {
         meP.isGrouped = true;
         meP.declaredGroups = declarationGroups;
       }
-      myHand = myHand.filter(c => c.id !== discardedCard.id);
+      if (discardedCard) {
+        myHand = myHand.filter(c => c.id !== discardedCard.id);
+      }
       userStands = [myHand];
       declarationMode = false;
       selectedCardId = null;
@@ -8775,7 +8917,7 @@ body.is-dragging-card-mobile {
       if (!foundTun) searchingTunellas = false;
     }
 
-    // 4. Natural Pure Sequences (3+ consecutive cards in same suit without wildcards)
+    // 4. Natural Pure Sequences (giving precedence to pure runs over sets)
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
@@ -8783,7 +8925,8 @@ body.is-dragging-card-mobile {
       let foundRun = true;
       while (foundRun) {
         foundRun = false;
-        const availNaturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
+        // Natural pure runs permit jokers of matching suit and number, but not printed jokers
+        const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
         if (availNaturals.length < 3) break;
 
         const rankMap = new Map();

@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, isWildCard, CONFIG } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, countDoubles, isWildCard, CONFIG } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,7 +114,8 @@ function finalizeRound(userRoom) {
   const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard);
 
   userRoom.sessionScores = userRoom.sessionScores || {};
-  const losersCount = Math.max(0, userRoom.players.length - 1);
+  // Paying losers: losers who are not Free Scoot (Free Scoot owes 0 honors and 0 points)
+  const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
 
   const results = userRoom.players.map(p => {
     // Ensure player session entry exists
@@ -136,7 +137,7 @@ function finalizeRound(userRoom) {
 
     if (p.id === winner.id) {
       sc.handsWon += 1;
-      const netMaal = losersCount * winnerMaal.total;
+      const netMaal = payingLosersCount * winnerMaal.total;
       sc.maal += netMaal;
       sc.honors = sc.maal;
       sc.totalScore += netMaal;
@@ -144,12 +145,27 @@ function finalizeRound(userRoom) {
         name: p.name,
         status: 'WINNER',
         points: 0,
-        maalCollected: winnerMaal.total,
-        honorsCollected: winnerMaal.total,
-        net: `Won + collects ${winnerMaal.total} Honors from each loser`
+        maalCollected: netMaal,
+        honorsCollected: netMaal,
+        net: `Won + collects ${winnerMaal.total} Honors from each paying loser (+${netMaal} pts)`
       };
     }
     if (p.hasDropped) {
+      if (p.isFreeScoot || p.dropType === 'FREE_SCOOT') {
+        sc.points += 0;
+        sc.maal += 0;
+        sc.honors = sc.maal;
+        sc.totalScore += 0;
+        return {
+          name: p.name,
+          status: 'DROPPED',
+          points: 0,
+          dropPenalty: 0,
+          maalOwed: 0,
+          honorsOwed: 0,
+          net: 'Free Scoot / Free Game (0 pts & 0 Honors owed)'
+        };
+      }
       const drop = p.dropPenalty || CONFIG.firstDrop || 30;
       const totalPay = drop + winnerMaal.total;
       sc.points += drop;
@@ -187,12 +203,13 @@ function finalizeRound(userRoom) {
     id: pl.id,
     hasDropped: pl.hasDropped,
     dropType: pl.dropType,
+    isFreeScoot: Boolean(pl.isFreeScoot || pl.dropType === 'FREE_SCOOT'),
     isWinner: pl.id === winner.id,
     hand: pl.hand,
     finalDiscard: pl.finalDiscard || null,
     groups: pl.declaredGroups || [],
     maal: calculateMaal(pl.hand, userRoom.cutCard),
-    deadwood: pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, pl.hand, userRoom.cutCard))
+    deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, pl.hand, userRoom.cutCard))
   }));
 
   userRoom.players.forEach(p => {
@@ -266,6 +283,7 @@ function dealNextHand(room) {
     p.hand = deck.splice(0, 21);
     p.hasDropped = false;
     p.hasForfeited = false;
+    p.isFreeScoot = false;
     p.dropType = null;
     p.dropPenalty = 0;
     p.turnsTaken = 0;
@@ -425,6 +443,7 @@ wss.on('connection', (ws) => {
         userRoom.players.forEach(p => {
           p.hand = deck.splice(0, 21);
           p.hasDropped = false;
+          p.isFreeScoot = false;
           p.turnsTaken = 0;
         });
 
@@ -520,17 +539,40 @@ wss.on('connection', (ws) => {
         }
       }
 
-      if (data.type === 'DROP' && isPlaying && isTurn && userRoom.turnStage === 'DRAW') {
-        activePlayer.hasDropped = true;
-        const isFirst = activePlayer.turnsTaken === 0;
-        const penalty = isFirst ? CONFIG.firstDrop : CONFIG.middleDrop;
-        const dropKind = isFirst ? 'First Drop' : 'Middle Drop';
-        activePlayer.dropType = isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP';
-        activePlayer.dropPenalty = penalty;
-        userRoom.lastAction = `${activePlayer.name} scooted (${dropKind}: ${penalty} pts)`;
+      if (data.type === 'DROP' && isPlaying && isTurn) {
+        const dInfo = countDoubles(activePlayer.hand);
+        const isDealt = activePlayer.turnsTaken === 0 && userRoom.turnStage === 'DRAW';
+        const hasDrawn = activePlayer.turnsTaken > 0 || userRoom.turnStage === 'DISCARD';
 
-        advanceTurn(userRoom);
-        broadcastRoom(userRoom);
+        // Check Free Scoot / Free Game conditions:
+        // Rule 2: If dealt 6 doubles, scoot and give 0 points and 0 honors.
+        // Rule 3: Once a card is drawn, 7 doubles for free game (0 pts & 0 honors).
+        const isFreeScootDealt = isDealt && dInfo.count >= 6;
+        const isFreeGameDrawn = hasDrawn && dInfo.count >= 7;
+
+        if (isFreeScootDealt || isFreeGameDrawn) {
+          activePlayer.hasDropped = true;
+          activePlayer.isFreeScoot = true;
+          activePlayer.dropType = 'FREE_SCOOT';
+          activePlayer.dropPenalty = 0;
+          const label = isFreeScootDealt ? 'Free Scoot (6+ Doubles dealt)' : 'Free Game (7+ Doubles)';
+          userRoom.lastAction = `${activePlayer.name} scooted (${label}: 0 pts & 0 Honors)`;
+          advanceTurn(userRoom);
+          broadcastRoom(userRoom);
+        } else if (userRoom.turnStage === 'DRAW') {
+          // Normal first drop or middle drop
+          activePlayer.hasDropped = true;
+          activePlayer.isFreeScoot = false;
+          const isFirst = activePlayer.turnsTaken === 0;
+          const penalty = isFirst ? CONFIG.firstDrop : CONFIG.middleDrop;
+          const dropKind = isFirst ? 'First Drop' : 'Middle Drop';
+          activePlayer.dropType = isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP';
+          activePlayer.dropPenalty = penalty;
+          userRoom.lastAction = `${activePlayer.name} scooted (${dropKind}: ${penalty} pts)`;
+
+          advanceTurn(userRoom);
+          broadcastRoom(userRoom);
+        }
       }
 
       if (data.type === 'FORFEIT_DECLARATION' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
@@ -546,11 +588,33 @@ wss.on('connection', (ws) => {
         broadcastRoom(userRoom);
       }
 
-      if (data.type === 'DECLARE' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
-        const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
-        if (finalIdx === -1) return;
-        const showHand = activePlayer.hand.filter(c => c.id !== data.cardId);
-        const validation = validateShow(data.groups, showHand, userRoom.cutCard);
+      if (data.type === 'DECLARE' && isPlaying && isTurn) {
+        const isDealtTurn = activePlayer.turnsTaken === 0 && userRoom.turnStage === 'DRAW';
+        const isDrawnTurn = userRoom.turnStage === 'DISCARD';
+        if (!isDealtTurn && !isDrawnTurn) return;
+
+        let showHand = [];
+        let finalDiscard = null;
+        const dInfo = countDoubles(activePlayer.hand);
+
+        if (isDealtTurn) {
+          // Rule 2: If dealt 7 doubles, can declare without drawing a card
+          if (dInfo.count < 7) {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: 'Declaring without drawing requires holding at least 7 doubles dealt.', penalty: 0 }));
+            }
+            return;
+          }
+          showHand = [...activePlayer.hand];
+        } else {
+          // Normal declaration after drawing: requires final discard
+          const finalIdx = activePlayer.hand.findIndex(c => c.id === data.cardId);
+          if (finalIdx === -1) return;
+          showHand = activePlayer.hand.filter(c => c.id !== data.cardId);
+          finalDiscard = activePlayer.hand[finalIdx];
+        }
+
+        const validation = validateShow(data.groups, showHand, userRoom.cutCard, isDealtTurn);
         if (!validation.valid) {
           activePlayer.hasDropped = true;
           activePlayer.hasForfeited = true;
@@ -565,10 +629,15 @@ wss.on('connection', (ws) => {
           return;
         }
 
-        const [finalDiscard] = activePlayer.hand.splice(finalIdx, 1);
-        userRoom.discardPile.push(finalDiscard);
-        activePlayer.finalDiscard = finalDiscard;
-        activePlayer.declaredGroups = data.groups;
+        if (finalDiscard) {
+          const finalIdx = activePlayer.hand.findIndex(c => c.id === finalDiscard.id);
+          if (finalIdx !== -1) {
+            activePlayer.hand.splice(finalIdx, 1);
+            userRoom.discardPile.push(finalDiscard);
+            activePlayer.finalDiscard = finalDiscard;
+          }
+        }
+        activePlayer.declaredGroups = data.groups || [];
         activePlayer.isGrouped = true;
         userRoom.winnerId = activePlayer.id;
         userRoom.winnerName = activePlayer.name;
@@ -582,7 +651,8 @@ wss.on('connection', (ws) => {
           userRoom.status = 'GROUPING';
           userRoom.turnStage = 'GROUPING';
           userRoom.groupingDeadline = Date.now() + 45000;
-          userRoom.lastAction = `${activePlayer.name} declared 21-card show! Players grouping their cards...`;
+          const declareTypeNotice = isDealtTurn ? '7 Doubles direct show' : (validation.isDoubles ? '8 Doubles show' : '21-card show');
+          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards...`;
 
           if (userRoom.groupingTimer) clearTimeout(userRoom.groupingTimer);
           userRoom.groupingTimer = setTimeout(() => {

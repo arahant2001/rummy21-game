@@ -150,13 +150,20 @@ export function calculateDeadwood(hand, cutCard) {
 
 export function calculateGroupedDeadwood(groups, hand, cutCard) {
   if (!Array.isArray(hand) || !cutCard) return 0;
+  const doublesInfo = countDoubles(hand);
+  if (doublesInfo.count >= 7) {
+    return 0; // Holding 7+ doubles is free game / 0 deadwood
+  }
   const roles = resolveJokerRoles(cutCard);
 
   const handIds = new Set(hand.map(c => c.id));
   const usedIds = new Set();
   let validPureSequences = 0;
   const validMeldedIds = new Set();
-  const qualifyingExemptIds = new Set(); // 4+ card pure runs and tunellas
+  const qualifyingExemptIds = new Set(); // 4+ card pure runs, tunellas, and doubles
+  for (const pair of doublesInfo.pairs) {
+    pair.forEach(c => qualifyingExemptIds.add(c.id));
+  }
 
   if (Array.isArray(groups) && groups.length > 0) {
     for (const group of groups) {
@@ -244,6 +251,29 @@ export function calculateGroupedDeadwood(groups, hand, cutCard) {
   return Math.min(points, CONFIG.maxDeadwood || 120);
 }
 
+export function countDoubles(cards) {
+  if (!Array.isArray(cards)) return { count: 0, pairs: [] };
+  const counts = new Map();
+  for (const c of cards) {
+    if (!c) continue;
+    const key = (c.isPoochie || c.rank === 'PJ' || c.suit === '★') 
+      ? 'PJ_★' 
+      : `${c.suit}_${c.rank}`;
+    if (!counts.has(key)) counts.set(key, []);
+    counts.get(key).push(c);
+  }
+  let doubleCount = 0;
+  const pairs = [];
+  for (const cardList of counts.values()) {
+    const numPairs = Math.floor(cardList.length / 2);
+    for (let i = 0; i < numPairs; i++) {
+      pairs.push([cardList[i * 2], cardList[i * 2 + 1]]);
+      doubleCount++;
+    }
+  }
+  return { count: doubleCount, pairs };
+}
+
 export function isWildCard(card, cutCard) {
   if (!card || !cutCard) return false;
   if (card.isPoochie || card.rank === 'PJ' || card.suit === '★') return true;
@@ -278,9 +308,11 @@ function isPureSequence(cards, cutCard) {
   if (isMarriageGroup(cards, cutCard)) return true;
   if (isThreePoochies(cards)) return true;
   if (isTunella(cards)) return true;
-  if (cards.some(c => isWildCard(c, cutCard))) return false;
+  // A natural pure sequence cannot contain printed jokers, but CAN include a cut joker / wild card
+  // as long as it is in its natural suit and number (e.g. 5♠-6♠-7♠ when 5♠ is pukka joker).
+  if (cards.some(c => !c || c.isPoochie || c.rank === 'PJ' || c.suit === '★')) return false;
   const suit = cards[0].suit;
-  if (!cards.every(c => c.suit === suit)) return false;
+  if (!cards.every(c => c && c.suit === suit)) return false;
   const vals = cards.map(c => rankValueForSequence(c)[0]);
   if (new Set(vals).size !== vals.length) return false;
   const low = [...vals].sort((a,b)=>a-b);
@@ -328,21 +360,43 @@ function isSet(cards, cutCard) {
   return new Set(suits).size === suits.length;
 }
 
-export function validateShow(groups, hand, cutCard) {
-  if (!Array.isArray(groups) || !Array.isArray(hand) || !cutCard) return { valid:false, reason:'Show groups are missing.' };
+export function validateShow(groups, hand, cutCard, isDealt = false) {
+  if (!Array.isArray(hand) || !cutCard) return { valid:false, reason:'Show hand is missing.' };
+
+  // Doubles declaration check:
+  // - Dealt without drawing: 7 doubles in 21 cards
+  // - Once drawn (after 1 discard): 8 doubles in 21 cards
+  const doublesInfo = countDoubles(hand);
+  const minDoublesNeeded = isDealt ? 7 : 8;
+  if (doublesInfo.count >= minDoublesNeeded) {
+    return { valid: true, pureSequences: 0, isDoubles: true, doubleCount: doublesInfo.count };
+  }
+
+  if (!Array.isArray(groups)) return { valid:false, reason:'Show groups are missing.' };
   const handIds = new Set(hand.map(c=>c.id));
   const used = new Set();
   let pureSequences = 0;
 
   for (const group of groups) {
-    if (!group || !Array.isArray(group.cardIds) || group.cardIds.length < 3) return { valid:false, reason:'Every group must contain at least 3 cards.' };
+    if (!group || !Array.isArray(group.cardIds)) return { valid:false, reason:'Invalid group format.' };
+    const type = group.type || 'SEQUENCE';
+    if (type === 'DOUBLE') {
+      if (group.cardIds.length !== 2) return { valid:false, reason:'A Double must contain exactly 2 identical cards.' };
+      const [c1, c2] = group.cardIds.map(id => hand.find(c => c.id === id));
+      if (!c1 || !c2) return { valid:false, reason:'Cards not found in hand.' };
+      const isIdentical = (c1.isPoochie && c2.isPoochie) || (c1.rank === c2.rank && c1.suit === c2.suit);
+      if (!isIdentical) return { valid:false, reason:'A Double must be two identical cards of the same rank and suit.' };
+      group.cardIds.forEach(id => { used.add(id); });
+      continue;
+    }
+
+    if (group.cardIds.length < 3) return { valid:false, reason:'Every group must contain at least 3 cards (or 2 for a double).' };
     const cards = [];
     for (const id of group.cardIds) {
       if (!handIds.has(id) || used.has(id)) return { valid:false, reason:'Each card must appear in exactly one group.' };
       used.add(id);
       cards.push(hand.find(c=>c.id===id));
     }
-    const type = group.type || 'SEQUENCE';
     if (type === 'PURE_SEQUENCE') {
       if (!isPureSequence(cards, cutCard)) return { valid:false, reason:'A Pure Sequence must be 3+ consecutive cards of one suit with no joker substitution.' };
       pureSequences++;
@@ -353,8 +407,8 @@ export function validateShow(groups, hand, cutCard) {
     } else return { valid:false, reason:'Unknown group type.' };
   }
 
-  if (used.size !== hand.length) return { valid:false, reason:`All \${hand.length} cards must be grouped; \${hand.length-used.size} card(s) are ungrouped.` };
-  if (pureSequences < 3) return { valid:false, reason:`A 21-card declaration requires at least 3 Pure Sequences. You have \${pureSequences}.` };
+  if (used.size !== hand.length) return { valid:false, reason:`All ${hand.length} cards must be grouped; ${hand.length-used.size} card(s) are ungrouped.` };
+  if (pureSequences < 3) return { valid:false, reason:`A 21-card declaration requires at least 3 Pure Sequences. You have ${pureSequences}.` };
   return { valid:true, pureSequences };
 }
 
