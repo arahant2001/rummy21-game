@@ -3070,8 +3070,11 @@ body.is-dragging-card-mobile {
   <div class="modal-content" style="max-width: 480px; text-align: center; padding: 26px 22px;">
     <div style="font-size: 38px; margin-bottom: 8px; animation: spinPulse 2.4s infinite ease-in-out;">⏳</div>
     <h2 id="groupingWaitTitle" style="color: #f1d27a; font-size: 20px; font-weight: 800; margin: 0 0 6px;">Waiting For All Players</h2>
-    <div id="groupingWaitSubtitle" style="color: #b9c8c0; font-size: 13px; margin-bottom: 16px;">
+    <div id="groupingWaitSubtitle" style="color: #b9c8c0; font-size: 13px; margin-bottom: 12px;">
       A player has declared! Waiting for all opponents to finish grouping their melds...
+    </div>
+    <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:14px; font-size:12px; font-weight:800; padding:4px 12px; border-radius:999px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35);">
+      ⏱️ <span class="groupingTimerSecSpan">60</span>s remaining
     </div>
     <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
       <div id="groupingWaitProgress" style="font-size: 14px; font-weight: 700; color: #7eedba; margin-bottom: 8px;">
@@ -3743,6 +3746,30 @@ body.is-dragging-card-mobile {
   let wasMyTurn = false;
   let currentRoundWinnerName = null;
   let currentRoundWinnerId = null;
+  let hasAutoGroupedForGroupingPhase = false;
+  let groupingCountdownInterval = null;
+
+  function updateGroupingCountdownUI() {
+    if (!roomState || roomState.status !== 'GROUPING' || !roomState.groupingDeadline) {
+      if (groupingCountdownInterval) {
+        clearInterval(groupingCountdownInterval);
+        groupingCountdownInterval = null;
+      }
+      return;
+    }
+    const remainingMs = Math.max(0, roomState.groupingDeadline - Date.now());
+    const remainingSec = Math.ceil(remainingMs / 1000);
+    const spans = document.querySelectorAll('.groupingTimerSecSpan, #groupingTimerSec');
+    spans.forEach(el => {
+      el.textContent = remainingSec;
+    });
+  }
+
+  function startGroupingCountdownTracker() {
+    if (groupingCountdownInterval) clearInterval(groupingCountdownInterval);
+    updateGroupingCountdownUI();
+    groupingCountdownInterval = setInterval(updateGroupingCountdownUI, 1000);
+  }
 
   // --- Subtle Golden Winner Celebration Particles System ---
   let winnerParticleAnimId = null;
@@ -5595,8 +5622,18 @@ body.is-dragging-card-mobile {
       } else {
         if (waitModal) waitModal.style.display = 'none';
         declarationMode = true; // Open grouping mode for the active non-declarer
+        if (!hasAutoGroupedForGroupingPhase && myHand && myHand.length > 0) {
+          hasAutoGroupedForGroupingPhase = true;
+          autoGroupFullHand(false);
+        }
       }
+      startGroupingCountdownTracker();
     } else {
+      hasAutoGroupedForGroupingPhase = false;
+      if (groupingCountdownInterval) {
+        clearInterval(groupingCountdownInterval);
+        groupingCountdownInterval = null;
+      }
       if (waitModal && !isDemoGroupingWait) waitModal.style.display = 'none';
     }
 
@@ -5658,9 +5695,14 @@ body.is-dragging-card-mobile {
                   ${roomState?.winnerName || 'Winner'} declared! Non-declarers need a <b>minimum of 3 pure sequences</b>. Otherwise, all cards apart from <b>Jokers</b>, <b>pure sequences of 4+ cards</b>, and <b>Tunellas</b> are considered deadwood.
                 </div>
               </div>
-              <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:36px;" onclick="submitGroupingMeld()">
-                <span><b>✅ Submit Melds</b></span>
-              </button>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="grouping-timer-badge" style="font-size:12px; font-weight:800; padding:6px 12px; border-radius:8px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35); display:inline-flex; align-items:center; gap:4px;">
+                  ⏱️ <span class="groupingTimerSecSpan">60</span>s left
+                </span>
+                <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:36px;" onclick="submitGroupingMeld()">
+                  <span><b>✅ Submit Melds</b></span>
+                </button>
+              </div>
             </div>
 
             <div style="margin:8px 0 10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
@@ -6388,6 +6430,10 @@ body.is-dragging-card-mobile {
             <span style="font-weight:800; color:#f1d27a;">
               ${isGroupingPhase ? '⚡ Group Your Melds' : '🏆 Declare 21-Card Show'}
             </span>
+            ${isGroupingPhase ? `
+              <span class="grouping-timer-badge" style="padding:2px 7px; border-radius:6px; font-weight:800; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3); display:inline-flex; align-items:center; gap:3px;">
+                ⏱️ <span class="groupingTimerSecSpan">60</span>s left
+              </span>` : ''}
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${pure >= 3 ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);'}">
               ${pure} / 3 Pure Runs ${pure >= 3 ? '✅' : '⏳'}
             </span>
@@ -6823,7 +6869,80 @@ body.is-dragging-card-mobile {
     }
   }
 
-  function autoGroupFullHand() {
+  function extractOptimalPureRuns(availCards) {
+    const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const windows = [];
+    for (let i = 0; i <= rankOrder.length - 3; i++) {
+      windows.push(rankOrder.slice(i, i + 3));
+    }
+    windows.push(['Q', 'K', 'A']);
+
+    function solve(remaining) {
+      let best = [];
+      for (const win of windows) {
+        const c0 = remaining.find(c => c.rank === win[0]);
+        const c1 = remaining.find(c => c.rank === win[1] && c.id !== c0?.id);
+        const c2 = remaining.find(c => c.rank === win[2] && c.id !== c0?.id && c.id !== c1?.id);
+        if (c0 && c1 && c2) {
+          const run = [c0, c1, c2];
+          const nextRemaining = remaining.filter(c => c.id !== c0.id && c.id !== c1.id && c.id !== c2.id);
+          const sub = solve(nextRemaining);
+          const candidate = [run, ...sub];
+          if (candidate.length > best.length) {
+            best = candidate;
+          }
+        }
+      }
+      return best;
+    }
+
+    const best3Runs = solve(availCards);
+    const usedIds = new Set(best3Runs.flatMap(r => r.map(c => c.id)));
+    const leftover = availCards.filter(c => !usedIds.has(c.id));
+
+    for (const run of best3Runs) {
+      let extended = true;
+      while (extended) {
+        extended = false;
+        const firstRank = run[0].rank;
+        const lastRank = run[run.length - 1].rank;
+        const firstIdx = rankOrder.indexOf(firstRank);
+        if (firstIdx > 0) {
+          const prevRank = rankOrder[firstIdx - 1];
+          const match = leftover.find(c => c.rank === prevRank && !usedIds.has(c.id));
+          if (match) {
+            run.unshift(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        const lastIdx = rankOrder.indexOf(lastRank);
+        if (lastIdx >= 0 && lastIdx < rankOrder.length - 1) {
+          const nextRank = rankOrder[lastIdx + 1];
+          const match = leftover.find(c => c.rank === nextRank && !usedIds.has(c.id));
+          if (match) {
+            run.push(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        if (lastRank === 'K') {
+          const match = leftover.find(c => c.rank === 'A' && !usedIds.has(c.id));
+          if (match) {
+            run.push(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+      }
+    }
+    return best3Runs;
+  }
+
+  function autoGroupFullHand(showNotification = true) {
     if (!declarationMode) declarationMode = true;
     declarationGroups = [];
     declarationSelectedIds.clear();
@@ -6842,7 +6961,7 @@ body.is-dragging-card-mobile {
         const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
         const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
         const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
-        if (taplu && tiplu && paplu) {
+        if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
           const trio = [taplu, tiplu, paplu];
           trio.forEach(c => usedCardIds.add(c.id));
           newGroups.push({
@@ -6901,56 +7020,22 @@ body.is-dragging-card-mobile {
       if (!foundTun) searchingTunellas = false;
     }
 
-    // 3. Natural Pure Sequences (giving precedence to pure runs over sets)
+    // 3. Natural Pure Sequences: Smart optimal solver that finds the maximum number of pure sequences
+    // (e.g. Diamond 2,3,4 and 3,4,5 form 2 separate pure runs instead of greedily eating into a single 4-card run)
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
     for (const suit of suits) {
-      let foundRunInSuit = true;
-      while (foundRunInSuit) {
-        foundRunInSuit = false;
-        // Natural pure runs permit jokers of matching suit and number, but not printed jokers
-        const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
-        if (availNaturals.length < 3) break;
-
-        const rankMap = new Map();
-        for (const c of availNaturals) {
-          if (!rankMap.has(c.rank)) rankMap.set(c.rank, []);
-          rankMap.get(c.rank).push(c);
-        }
-
-        let bestRun = null;
-        for (let len = 5; len >= 3; len--) {
-          for (let start = 0; start <= rankOrder.length - len; start++) {
-            const candidateRanks = rankOrder.slice(start, start + len);
-            if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
-              bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
-              break;
-            }
-          }
-          if (bestRun) break;
-
-          if (!bestRun) {
-            const aceHighRanks = ['10', 'J', 'Q', 'K', 'A'];
-            for (let start = 0; start <= aceHighRanks.length - len; start++) {
-              const candidateRanks = aceHighRanks.slice(start, start + len);
-              if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
-                bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
-                break;
-              }
-            }
-          }
-          if (bestRun) break;
-        }
-
-        if (bestRun && declarationPure(bestRun)) {
-          bestRun.forEach(c => usedCardIds.add(c.id));
+      const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+      if (availNaturals.length >= 3) {
+        const optimalRuns = extractOptimalPureRuns(availNaturals);
+        for (const run of optimalRuns) {
+          run.forEach(c => usedCardIds.add(c.id));
           newGroups.push({
             type: 'PURE_SEQUENCE',
-            typeLabel: `Pure Run (${bestRun.length})`,
-            cards: bestRun
+            typeLabel: `Pure Run (${run.length})`,
+            cards: run
           });
-          foundRunInSuit = true;
         }
       }
     }
@@ -6980,50 +7065,90 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // 5. Impure Sequences (using wildcards)
-    let wildcardCards = getAvailable().filter(c => declarationIsWild(c));
-    if (wildcardCards.length > 0) {
+    // 5. Impure Sequences (using wildcards) - safe loop with refreshed availability (no card reuse)
+    let searchingJokerRun = true;
+    while (searchingJokerRun) {
+      searchingJokerRun = false;
+      const availWildcards = getAvailable().filter(c => declarationIsWild(c));
+      if (availWildcards.length === 0) break;
+
       for (const suit of suits) {
-        if (wildcardCards.length === 0) break;
-        const naturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
-        if (naturals.length >= 2 && wildcardCards.length >= 1) {
-          for (let i = 0; i < naturals.length; i++) {
-            for (let j = i + 1; j < naturals.length; j++) {
-              if (wildcardCards.length === 0) break;
-              const trio = [naturals[i], naturals[j], wildcardCards[0]];
-              if (declarationSequence(trio)) {
-                trio.forEach(c => usedCardIds.add(c.id));
-                newGroups.push({
-                  type: 'SEQUENCE',
-                  typeLabel: 'Joker Run',
-                  cards: trio
-                });
-                wildcardCards = getAvailable().filter(c => declarationIsWild(c));
-                break;
-              }
+        const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !declarationIsWild(c));
+        if (suitNaturals.length < 2) continue;
+
+        let formedRun = false;
+        for (let i = 0; i < suitNaturals.length; i++) {
+          for (let j = i + 1; j < suitNaturals.length; j++) {
+            const trio = [suitNaturals[i], suitNaturals[j], availWildcards[0]];
+            if (declarationSequence(trio)) {
+              trio.forEach(c => usedCardIds.add(c.id));
+              newGroups.push({
+                type: 'SEQUENCE',
+                typeLabel: 'Joker Run',
+                cards: trio
+              });
+              formedRun = true;
+              searchingJokerRun = true;
+              break;
             }
           }
+          if (formedRun) break;
         }
+        if (formedRun) break;
       }
     }
 
-    declarationGroups = newGroups;
+    // 6. Strict deduplication invariant: ensure no card ID appears in multiple groups
+    const verifiedGroups = [];
+    const claimedIds = new Set();
+    for (const g of newGroups) {
+      if (Array.isArray(g.cards) && g.cards.every(c => c && c.id && !claimedIds.has(c.id))) {
+        g.cards.forEach(c => claimedIds.add(c.id));
+        verifiedGroups.push(g);
+      }
+    }
+
+    declarationGroups = verifiedGroups;
     renderAll(null);
 
-    const pureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-    const totalGrouped = newGroups.flatMap(g => g.cards).length;
-    if (newGroups.length > 0) {
-      if (totalGrouped === 21 && pureCount >= 3) {
-        alert(`🎉 Perfect! Auto-grouped ${newGroups.length} valid melds (${pureCount} Pure Sequences). All 21 cards are grouped and ready!`);
+    const pureCount = verifiedGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const totalGrouped = verifiedGroups.flatMap(g => g.cards).length;
+    if (showNotification) {
+      if (verifiedGroups.length > 0) {
+        if (totalGrouped === 21 && pureCount >= 3) {
+          window.alert(`🎉 Perfect! Auto-grouped ${verifiedGroups.length} valid melds (${pureCount} Pure Sequences). All 21 cards are grouped and ready!`);
+        } else {
+          window.alert(`Auto-detected ${verifiedGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Sequences). You can manually adjust below.`);
+        }
       } else {
-        alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Sequences). You can manually adjust or add more runs below.`);
+        window.alert('Could not find enough matching cards to auto-group. Tap cards below to manually select runs or sets.');
       }
-    } else {
-      alert('Could not find enough matching cards to auto-group. Tap cards below to manually select runs or sets.');
     }
   }
 
-  function submitGroupingMeld() {
+  function submitGroupingMeld(skipConfirm = false) {
+    if (!skipConfirm) {
+      const deadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
+      const pureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      const groupedCards = declarationGroups.flatMap(g => g.cards);
+      const remainingCount = myHand.length - groupedCards.length;
+
+      const has3Pure = pureCount >= 3;
+      showConfirmModal({
+        icon: has3Pure ? '✅' : '⚠️',
+        title: has3Pure ? 'Ready to Submit Melds?' : 'Submit Melds with Deadwood?',
+        badgeText: has3Pure ? `${pureCount} Pure Runs (Protected)` : `${pureCount}/3 Pure Runs`,
+        badgeClass: has3Pure ? 'success' : 'danger',
+        message: has3Pure
+          ? `You have formed <strong>${declarationGroups.length} meld groups</strong> with <strong>${pureCount} Pure Sequences</strong>. Your melds are protected (<strong>0 deadwood pts</strong>).<br><br>Ready to submit your melds and view round results?`
+          : `You currently have <strong>${pureCount} / 3 Pure Runs</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${remainingCount} card(s) ungrouped).<br><br>Are you sure you are ready to submit now, or would you like to review and form more runs first?`,
+        actionText: 'Submit Melds',
+        actionClass: has3Pure ? 'primary' : 'danger',
+        onConfirm: () => submitGroupingMeld(true)
+      });
+      return;
+    }
+
     const groups = declarationGroups.map(g => ({
       type: g.type,
       cardIds: g.cards.map(c => c.id),
@@ -7088,6 +7213,7 @@ body.is-dragging-card-mobile {
     if (!isDemo || !roomState) return;
     const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
     roomState.status = 'GROUPING';
+    roomState.groupingDeadline = Date.now() + 60000;
     roomState.winnerId = opp.id;
     roomState.winnerName = opp.name;
     opp.isGrouped = true;
@@ -7096,10 +7222,12 @@ body.is-dragging-card-mobile {
     const meP = roomState.players.find(p => p.id === 'p_demo');
     if (meP) meP.isGrouped = false;
 
+    hasAutoGroupedForGroupingPhase = false;
     declarationMode = true;
     declarationGroups = [];
     declarationSelectedIds.clear();
     renderAll(calculateLocalMaal());
+    startGroupingCountdownTracker();
     setTimeout(() => {
       const dp = document.getElementById('declarationPanel');
       if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -8932,7 +9060,7 @@ body.is-dragging-card-mobile {
         const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
         const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
         const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
-        if (taplu && tiplu && paplu) {
+        if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
           const trio = [taplu, tiplu, paplu];
           trio.forEach(c => usedIds.add(c.id));
           groups.push({
@@ -8991,54 +9119,21 @@ body.is-dragging-card-mobile {
       if (!foundTun) searchingTunellas = false;
     }
 
-    // 4. Natural Pure Sequences (giving precedence to pure runs over sets)
+    // 4. Natural Pure Sequences: Smart optimal solver to maximize count of pure sequences
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
     for (const suit of suits) {
-      let foundRun = true;
-      while (foundRun) {
-        foundRun = false;
-        // Natural pure runs permit jokers of matching suit and number, but not printed jokers
-        const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
-        if (availNaturals.length < 3) break;
-
-        const rankMap = new Map();
-        for (const c of availNaturals) {
-          if (!rankMap.has(c.rank)) rankMap.set(c.rank, []);
-          rankMap.get(c.rank).push(c);
-        }
-
-        let bestRun = null;
-        for (let len = 5; len >= 3; len--) {
-          for (let start = 0; start <= rankOrder.length - len; start++) {
-            const candidateRanks = rankOrder.slice(start, start + len);
-            if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
-              bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
-              break;
-            }
-          }
-          if (bestRun) break;
-
-          const aceHighRanks = ['10', 'J', 'Q', 'K', 'A'];
-          for (let start = 0; start <= aceHighRanks.length - len; start++) {
-            const candidateRanks = aceHighRanks.slice(start, start + len);
-            if (candidateRanks.every(rnk => rankMap.has(rnk) && rankMap.get(rnk).length > 0)) {
-              bestRun = candidateRanks.map(rnk => rankMap.get(rnk)[0]);
-              break;
-            }
-          }
-          if (bestRun) break;
-        }
-
-        if (bestRun && declarationPure(bestRun)) {
-          bestRun.forEach(c => usedIds.add(c.id));
+      const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+      if (suitNaturals.length >= 3) {
+        const optimalRuns = extractOptimalPureRuns(suitNaturals);
+        for (const run of optimalRuns) {
+          run.forEach(c => usedIds.add(c.id));
           groups.push({
             type: 'PURE_SEQUENCE',
-            typeLabel: `Pure Run (${bestRun.length})`,
-            cards: bestRun
+            typeLabel: `Pure Run (${run.length})`,
+            cards: run
           });
-          foundRun = true;
         }
       }
     }
@@ -9068,34 +9163,50 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // 6. Impure sequences (using wildcards)
-    let wildcardCards = getAvailable().filter(c => declarationIsWild(c));
-    if (wildcardCards.length > 0) {
+    // 6. Impure sequences (using wildcards) - safe loop without card reuse
+    let searchingJokerRun = true;
+    while (searchingJokerRun) {
+      searchingJokerRun = false;
+      const availWildcards = getAvailable().filter(c => declarationIsWild(c));
+      if (availWildcards.length === 0) break;
+
       for (const suit of suits) {
-        if (wildcardCards.length === 0) break;
-        const naturals = getAvailable().filter(c => c.suit === suit && !declarationIsWild(c));
-        if (naturals.length >= 2 && wildcardCards.length >= 1) {
-          for (let i = 0; i < naturals.length; i++) {
-            for (let j = i + 1; j < naturals.length; j++) {
-              if (wildcardCards.length === 0) break;
-              const trio = [naturals[i], naturals[j], wildcardCards[0]];
-              if (declarationSequence(trio)) {
-                trio.forEach(c => usedIds.add(c.id));
-                groups.push({
-                  type: 'SEQUENCE',
-                  typeLabel: 'Joker Run',
-                  cards: trio
-                });
-                wildcardCards = getAvailable().filter(c => declarationIsWild(c));
-                break;
-              }
+        const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !declarationIsWild(c));
+        if (suitNaturals.length < 2) continue;
+
+        let formedRun = false;
+        for (let i = 0; i < suitNaturals.length; i++) {
+          for (let j = i + 1; j < suitNaturals.length; j++) {
+            const trio = [suitNaturals[i], suitNaturals[j], availWildcards[0]];
+            if (declarationSequence(trio)) {
+              trio.forEach(c => usedIds.add(c.id));
+              groups.push({
+                type: 'SEQUENCE',
+                typeLabel: 'Joker Run',
+                cards: trio
+              });
+              formedRun = true;
+              searchingJokerRun = true;
+              break;
             }
           }
+          if (formedRun) break;
         }
+        if (formedRun) break;
       }
     }
 
-    return groups;
+    // 7. Strict deduplication invariant: ensure no card ID appears in multiple groups
+    const verifiedGroups = [];
+    const claimedIds = new Set();
+    for (const g of groups) {
+      if (Array.isArray(g.cards) && g.cards.every(c => c && c.id && !claimedIds.has(c.id))) {
+        g.cards.forEach(c => claimedIds.add(c.id));
+        verifiedGroups.push(g);
+      }
+    }
+
+    return verifiedGroups;
   }
 
   // --- Session Running Scoreboard Helper ---

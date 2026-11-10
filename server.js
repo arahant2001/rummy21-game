@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, countDoubles, isWildCard, CONFIG } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -182,6 +182,12 @@ function finalizeRound(userRoom) {
         net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${winnerMaal.total} winner Honors)`
       };
     }
+
+    // If player didn't manually submit groups (or timeout expired), auto-arrange their hand to minimize deadwood
+    if (!Array.isArray(p.declaredGroups) || p.declaredGroups.length === 0) {
+      p.declaredGroups = autoArrangeHandToGroups(p.hand, userRoom.cutCard);
+    }
+
     const deadwood = calculateGroupedDeadwood(p.declaredGroups, p.hand, userRoom.cutCard);
     const totalPay = deadwood + winnerMaal.total;
     sc.points += deadwood;
@@ -650,16 +656,16 @@ wss.on('connection', (ws) => {
         } else {
           userRoom.status = 'GROUPING';
           userRoom.turnStage = 'GROUPING';
-          userRoom.groupingDeadline = Date.now() + 45000;
+          userRoom.groupingDeadline = Date.now() + 60000;
           const declareTypeNotice = isDealtTurn ? '7 Doubles direct show' : (validation.isDoubles ? '8 Doubles show' : '21-card show');
-          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards...`;
+          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (60s)...`;
 
           if (userRoom.groupingTimer) clearTimeout(userRoom.groupingTimer);
           userRoom.groupingTimer = setTimeout(() => {
             if (userRoom && userRoom.status === 'GROUPING') {
               finalizeRound(userRoom);
             }
-          }, 45000);
+          }, 60000);
 
           broadcastRoom(userRoom);
         }
