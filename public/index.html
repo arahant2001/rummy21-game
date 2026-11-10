@@ -3509,6 +3509,8 @@ body.is-dragging-card-mobile {
     constructor() {
       this.ctx = null;
       this.enabled = true;
+      this.unlocked = false;
+      this.keepAliveTimer = null;
       try {
         const saved = localStorage.getItem('rummy_audio_enabled');
         if (saved !== null) {
@@ -3524,8 +3526,63 @@ body.is-dragging-card-mobile {
           this.ctx = new AudioCtx();
         }
       }
-      if (this.ctx && this.ctx.state === 'suspended') {
+      if (this.ctx && (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted')) {
         this.ctx.resume().catch(() => {});
+      }
+    }
+
+    // Explicit mobile WebAudio unlocker via user gesture (iOS Safari / Android)
+    unlock() {
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
+        this.ctx.resume().catch(() => {});
+      }
+      if (!this.unlocked && this.ctx) {
+        try {
+          const buffer = this.ctx.createBuffer(1, 1, 22050);
+          const source = this.ctx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(this.ctx.destination);
+          source.start(0);
+          this.unlocked = true;
+        } catch (_) {}
+      }
+    }
+
+    async ensureActive() {
+      this.init();
+      if (!this.ctx) return false;
+      if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
+        try {
+          await this.ctx.resume();
+        } catch (_) {}
+      }
+      return this.ctx.state === 'running';
+    }
+
+    startKeepAlive() {
+      if (this.keepAliveTimer) return;
+      this.keepAliveTimer = setInterval(() => {
+        if (!this.enabled || !this.ctx || this.ctx.state !== 'running') return;
+        try {
+          // Subtle inaudible pulse to keep mobile audio hardware clocked during opponent turns
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          gain.gain.value = 0.00001;
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          const t = this.ctx.currentTime;
+          osc.start(t);
+          osc.stop(t + 0.02);
+        } catch (_) {}
+      }, 12000);
+    }
+
+    stopKeepAlive() {
+      if (this.keepAliveTimer) {
+        clearInterval(this.keepAliveTimer);
+        this.keepAliveTimer = null;
       }
     }
 
@@ -3536,8 +3593,10 @@ body.is-dragging-card-mobile {
       } catch (e) {}
       this.updateUI();
       if (this.enabled) {
-        this.init();
-        this.playCardDraw();
+        this.unlock();
+        this.playTurn();
+      } else {
+        this.stopKeepAlive();
       }
       return this.enabled;
     }
@@ -3687,27 +3746,68 @@ body.is-dragging-card-mobile {
       } catch (e) {}
     }
 
-    // 4. Subtle turn alert chime
-    playTurn() {
+    // 4. Subtle, non-intrusive harmonic chime when it becomes the user's turn
+    async playTurn() {
       if (!this.enabled) return;
-      this.init();
-      if (!this.ctx) return;
+
+      // Subtle tactile haptic cue for mobile devices
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try { navigator.vibrate(35); } catch (_) {}
+      }
+
+      const isReady = await this.ensureActive();
+      if (!isReady || !this.ctx) return;
+
       try {
         const now = this.ctx.currentTime;
-        [880, 1108].forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          const t = now + (idx * 0.08);
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, t);
-          gain.gain.setValueAtTime(0.08, t);
-          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(t);
-          osc.stop(t + 0.2);
+        // Warm ascending major fifth chime: C5 (523.25Hz) -> G5 (783.99Hz)
+        const notes = [
+          { freq: 523.25, startOffset: 0, duration: 0.32, peakGain: 0.065 },
+          { freq: 783.99, startOffset: 0.085, duration: 0.38, peakGain: 0.075 }
+        ];
+
+        notes.forEach(({ freq, startOffset, duration, peakGain }) => {
+          const t = now + startOffset;
+
+          // Low-pass filter for smooth, warm acoustic timbre (removes harsh digital edges)
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(2400, t);
+
+          // Note envelope with smooth anti-pop attack and natural exponential release
+          const noteGain = this.ctx.createGain();
+          noteGain.gain.setValueAtTime(0.0001, t);
+          noteGain.gain.linearRampToValueAtTime(peakGain, t + 0.008);
+          noteGain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+
+          // Fundamental oscillator (warm acoustic body)
+          const oscFund = this.ctx.createOscillator();
+          oscFund.type = 'sine';
+          oscFund.frequency.setValueAtTime(freq, t);
+
+          // Subtle secondary harmonic (gentle chime shimmer at 2x frequency)
+          const oscHarm = this.ctx.createOscillator();
+          const harmGain = this.ctx.createGain();
+          oscHarm.type = 'sine';
+          oscHarm.frequency.setValueAtTime(freq * 2, t);
+          harmGain.gain.setValueAtTime(peakGain * 0.22, t);
+          harmGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+
+          oscFund.connect(noteGain);
+          oscHarm.connect(harmGain);
+          harmGain.connect(noteGain);
+
+          noteGain.connect(filter);
+          filter.connect(this.ctx.destination);
+
+          oscFund.start(t);
+          oscHarm.start(t);
+          oscFund.stop(t + duration);
+          oscHarm.stop(t + duration);
         });
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Audio playTurn warning:', e);
+      }
     }
   }
 
@@ -3719,9 +3819,21 @@ body.is-dragging-card-mobile {
   window.soundSystem = soundSystem;
   soundSystem.updateUI();
 
-  ['click', 'touchstart', 'keydown'].forEach(evtType => {
-    document.addEventListener(evtType, () => soundSystem.init(), { once: true, passive: true });
+  // Continuous mobile audio context unlocking across touch, click, and page visibility changes
+  const handleUserAudioActivation = () => {
+    soundSystem.unlock();
+  };
+
+  ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'].forEach(evtType => {
+    document.addEventListener(evtType, handleUserAudioActivation, { passive: true });
   });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      soundSystem.unlock();
+    }
+  });
+  window.addEventListener('focus', () => soundSystem.unlock());
 
   let ws;
   let roomState = null;
@@ -3744,6 +3856,24 @@ body.is-dragging-card-mobile {
   let lastServerMessageTime = Date.now();
   let lastJoinAttemptTime = 0;
   let wasMyTurn = false;
+  let lastTurnSoundTime = 0;
+
+  function checkAndTriggerTurnSound() {
+    if (!roomState || roomState.status !== 'PLAYING') {
+      wasMyTurn = false;
+      return;
+    }
+    const isMyTurnNow = isCurrentPlayerMe();
+    const now = Date.now();
+    if (isMyTurnNow && !wasMyTurn) {
+      if (now - lastTurnSoundTime > 1200) {
+        lastTurnSoundTime = now;
+        soundSystem.playTurn();
+      }
+    }
+    wasMyTurn = Boolean(isMyTurnNow);
+  }
+
   let currentRoundWinnerName = null;
   let currentRoundWinnerId = null;
   let hasAutoGroupedForGroupingPhase = false;
@@ -4166,6 +4296,8 @@ body.is-dragging-card-mobile {
     declarationSelectedIds.clear();
     currentRoundWinnerName = null;
     currentRoundWinnerId = null;
+    wasMyTurn = false;
+    soundSystem.stopKeepAlive();
     const heroSubReset = document.getElementById('gameHeroSubtitle');
     if (heroSubReset) heroSubReset.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
     const bannerReset = document.getElementById('tableTurnBanner');
@@ -4391,11 +4523,7 @@ body.is-dragging-card-mobile {
           renderAll(msg.yourMaal);
 
           // Turn change notification chime
-          const isMyTurnNow = roomState && roomState.turnPlayerId === getMyPlayerId();
-          if (isMyTurnNow && !wasMyTurn && roomState.status === 'PLAYING') {
-            soundSystem.playTurn();
-          }
-          wasMyTurn = Boolean(isMyTurnNow);
+          checkAndTriggerTurnSound();
 
           requestAnimationFrame(() => {
             if (drawnIds.length && sourceFlight) {
@@ -5429,8 +5557,13 @@ body.is-dragging-card-mobile {
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myPlayer = roomState?.players?.find(p => p.id === myId);
     const myForfeited = Boolean(myPlayer && (myPlayer.hasForfeited || myPlayer.dropType === 'FORFEIT'));
-    const myDropped = Boolean(myPlayer && myPlayer.hasDropped);
     const isMyTurn = isCurrentPlayerMe();
+    checkAndTriggerTurnSound();
+    if (roomState?.status === 'PLAYING') {
+      soundSystem.startKeepAlive();
+    } else {
+      soundSystem.stopKeepAlive();
+    }
     const myCount = totalCount;
     const canDraw = canPlayerDraw();
     const canDiscard = isMyTurn && (roomState.turnStage === 'DISCARD' || myCount >= 22);
