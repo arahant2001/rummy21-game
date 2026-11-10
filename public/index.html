@@ -6192,7 +6192,7 @@ body.is-dragging-card-mobile {
   function scrollElement(elementId, direction) {
     const el = document.getElementById(elementId);
     if (!el) return;
-    const distance = Math.max(160, Math.floor(el.clientWidth * 0.75));
+    const distance = Math.max(280, Math.floor(el.clientWidth * 0.92));
     el.scrollBy({ left: direction * distance, behavior: 'smooth' });
     setTimeout(updateAllStandScrollButtons, 120);
   }
@@ -6217,27 +6217,27 @@ body.is-dragging-card-mobile {
       scrollElement(elementId, direction);
     }
 
-    // High frequency interval (20ms, 50fps) with progressive acceleration
-    const intervalMs = 20;
+    // High frequency 60fps interval (16ms) with fast progressive acceleration
+    const intervalMs = 16;
     standScrollInterval = setInterval(() => {
       const el = document.getElementById(elementId);
       if (!el) return;
 
       const elapsedSec = (Date.now() - standScrollStartTime) / 1000;
 
-      // Progressive speed acceleration:
-      // Start at gentle base speed (6px/tick ~300px/s) for high accuracy and control,
-      // and ramp up smoothly to max speed (34px/tick ~1700px/s) over ~2.4 seconds.
-      const baseStep = isDrag ? 6 : 8;
-      const maxStep = isDrag ? 34 : 36;
-      const accelDuration = 2.4; // seconds to reach maximum speed
+      // Accelerated horizontal scroll speed:
+      // Starts fast and responsive (~875px/s drag, ~1125px/s hold) and accelerates
+      // quickly to high velocity (~3600px/s - 4000px/s) over ~1.2s.
+      const baseStep = isDrag ? 14 : 18;
+      const maxStep = isDrag ? 58 : 64;
+      const accelDuration = 1.2; // accelerates to top speed in 1.2 seconds
       const progress = Math.min(1, elapsedSec / accelDuration);
 
-      // Smooth ease-in acceleration curve: 1 + 4.6 * (progress^1.35)
-      const speedMultiplier = 1 + 4.6 * Math.pow(progress, 1.35);
+      // Smooth power acceleration curve: 1 + 3.2 * (progress^1.2)
+      const speedMultiplier = 1 + 3.2 * Math.pow(progress, 1.2);
       const step = Math.min(maxStep, Math.round(baseStep * speedMultiplier));
 
-      if (isDrag && progress > 0.45) {
+      if (isDrag && progress > 0.35) {
         document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.add('scroll-btn-fast'));
       }
 
