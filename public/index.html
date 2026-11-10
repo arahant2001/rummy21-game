@@ -2385,15 +2385,18 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .center-board{position:relative;display:flex;justify-content:center;align-items:center;gap:30px;min-height:148px;padding:38px 24px 14px;overflow:visible;user-select:none;-webkit-user-select:none;}
 .stock-pile-wrapper{position:relative;z-index:8;user-select:none;-webkit-user-select:none;}
 .stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 20px);margin:0 auto}
-.stock-with-cut #stockDeckBtn{position:relative;z-index:5;touch-action:manipulation!important;}
+.stock-with-cut #stockDeckBtn{position:relative;z-index:5;touch-action:none!important;}
 .cut-card-under-stock{position:absolute;left:-22px;top:calc((var(--card-h) - var(--card-w)) / 2);width:var(--card-w);height:var(--card-h);transform:rotate(90deg);transform-origin:center center;z-index:2;pointer-events:none}
 .cut-card-under-stock .card{width:var(--card-w)!important;height:var(--card-h)!important;transform:none!important;opacity:.98;box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 0 1px rgba(217,182,92,.3)!important}
 .stand-rack, .stand-cards { -webkit-touch-callout: none !important; }
+.card, .deck-card, #stockDeckBtn, #discardContainer, .pile-wrapper {
+  touch-action: none !important;
+  -webkit-touch-callout: none !important;
+}
 .card[draggable="true"] {
   -webkit-user-drag: element !important;
   user-drag: element !important;
   cursor: grab !important;
-  touch-action: none !important;
 }
 .card[draggable="true"]:active {
   cursor: grabbing !important;
@@ -2402,9 +2405,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   -webkit-user-drag: none !important;
   user-drag: none !important;
 }
+body.is-dragging-card-mobile {
+  overflow: hidden !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
 .discard-pile-wrapper{position:relative;z-index:9}
 .discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
-.discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:manipulation!important;}
+.discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:none!important;}
 .discard-history{position:absolute;left:108px;top:0;width:118px;height:108px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
 .discard-history-card{position:absolute;width:68px;height:98px;left:0;top:5px;display:block;opacity:.9;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
 .discard-history-card:active{cursor:grabbing}
@@ -3681,6 +3690,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   let demoReadyPlayers = new Set();
   let demoReadyTimer = null;
   let clientPingTimer = null;
+  let lastServerMessageTime = Date.now();
+  let lastJoinAttemptTime = 0;
   let wasMyTurn = false;
   let currentRoundWinnerName = null;
   let currentRoundWinnerId = null;
@@ -3874,22 +3885,46 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     window.sessionDropListenersAttached = true;
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
-          if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
-            console.log('[RECONNECT] Tab active, reconnecting socket...');
+        if (!isDemo && !isDeliberateExit && document.getElementById('gameView').style.display !== 'none') {
+          const now = Date.now();
+          const isStale = !ws || ws.readyState !== WebSocket.OPEN || (now - lastServerMessageTime > 5000);
+          if (isStale) {
+            console.log('[RECONNECT] Tab active / phone awake, refreshing live connection...');
             joinRoom();
           }
         }
       }
     });
     window.addEventListener('online', () => {
-      if (!isDemo && document.getElementById('gameView').style.display !== 'none') {
-        if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
-          console.log('[RECONNECT] Network restored, reconnecting socket...');
-          joinRoom();
-        }
+      if (!isDemo && !isDeliberateExit && document.getElementById('gameView').style.display !== 'none') {
+        console.log('[RECONNECT] Network restored, reconnecting socket...');
+        joinRoom();
       }
     });
+  }
+
+  // Active socket watchdog: runs continuously to revive frozen or silent mobile connections
+  if (!window.sessionWatchdogStarted) {
+    window.sessionWatchdogStarted = true;
+    setInterval(() => {
+      if (isDemo || isDeliberateExit) return;
+      const gameView = document.getElementById('gameView');
+      if (!gameView || gameView.style.display === 'none') return;
+
+      const now = Date.now();
+      const isDead = !ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING;
+      const isStalled = ws && ws.readyState === WebSocket.OPEN && (now - lastServerMessageTime > 13000);
+
+      if (isDead || isStalled) {
+        console.warn(`[WATCHDOG] Connection issue detected (isDead=${isDead}, silentTime=${now - lastServerMessageTime}ms). Reconnecting live session...`);
+        const connectionStatus = document.getElementById('connectionStatus');
+        if (connectionStatus) {
+          connectionStatus.innerText = 'Syncing...';
+          connectionStatus.style.color = '#f1d27a';
+        }
+        joinRoom();
+      }
+    }, 3000);
   }
 
   let isDeliberateExit = false;
@@ -4087,6 +4122,12 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 
   function joinRoom() {
     isDeliberateExit = false;
+    const now = Date.now();
+    if (now - lastJoinAttemptTime < 600) {
+      return;
+    }
+    lastJoinAttemptTime = now;
+
     const nameInput = document.getElementById('playerName');
     const roomInput = document.getElementById('roomId');
     const playerName = (nameInput?.value || '').trim() || 'Player';
@@ -4115,6 +4156,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     ws = new WebSocket(`${proto}//${location.host}`);
 
     ws.onopen = () => {
+      lastServerMessageTime = Date.now();
       ws.send(JSON.stringify({
         type: 'JOIN',
         playerName,
@@ -4131,13 +4173,19 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
       document.getElementById('gameView').style.display = 'flex';
       soundSystem.updateUI();
 
-      // Keepalive ping: prevent proxy / cloud timeouts
+      // Keepalive ping: frequent 5s ping to prevent mobile carrier NAT stalls
       if (clientPingTimer) clearInterval(clientPingTimer);
       clientPingTimer = setInterval(() => {
         if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'PING' }));
+          try {
+            ws.send(JSON.stringify({ type: 'PING' }));
+          } catch (_) {}
         }
-      }, 15000);
+      }, 5000);
+    };
+
+    ws.onerror = (err) => {
+      console.warn('[WS] Connection error:', err);
     };
 
     ws.onclose = () => {
@@ -4149,15 +4197,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
         connectionStatus.style.color = '#f1a7ad';
         connectionStatus.style.borderColor = 'rgba(240,107,120,.28)';
       }
-      // Automatic background reconnect with fast 1.5s initial retry
+      // Automatic background reconnect with fast 1.2s initial retry
       setTimeout(() => {
         if (!isDemo && !isDeliberateExit && document.getElementById('gameView').style.display !== 'none') {
           joinRoom();
         }
-      }, 1500);
+      }, 1200);
     };
 
     ws.onmessage = (evt) => {
+      lastServerMessageTime = Date.now();
       const msg = JSON.parse(evt.data);
 
       if (msg.type === 'PONG') {
@@ -7696,10 +7745,16 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchCardState.startY;
     const dist = Math.hypot(dx, dy);
 
-    // Deliberate movement of 18px threshold initiates card drag (avoids false drags on capacitive taps)
-    if (!touchCardState.isDragging && dist > 18) {
+    // Call preventDefault early so phone browser never pans or drags the page
+    if (dist > 4 && e.cancelable) {
+      e.preventDefault();
+    }
+
+    // Deliberate movement threshold initiates card drag (avoids false drags on capacitive taps)
+    if (!touchCardState.isDragging && dist > 14) {
       touchCardState.isDragging = true;
       draggedCardId = cardId;
+      document.body.classList.add('is-dragging-card-mobile');
 
       // Create floating ghost avatar with subtle scaling and slight rotation
       if (!touchDragGhost) {
@@ -7726,7 +7781,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     }
 
     if (touchCardState.isDragging) {
-      // PREVENT NATIVE SCROLL: this is what stops dragging the scrollbar on phones!
+      // PREVENT NATIVE SCROLL: this is what stops dragging the screen on phones!
       if (e.cancelable) e.preventDefault();
 
       if (touchDragGhost) {
@@ -7741,6 +7796,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function onTouchCardEnd(e, cardId) {
+    document.body.classList.remove('is-dragging-card-mobile');
     if (!touchCardState || touchCardState.cardId !== cardId) return;
 
     if (touchDragGhost) {
@@ -7858,6 +7914,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function onTouchCardCancel(e, cardId) {
+    document.body.classList.remove('is-dragging-card-mobile');
     if (touchDragGhost) {
       touchDragGhost.remove();
       touchDragGhost = null;
@@ -7916,8 +7973,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
     const dy = touch.clientY - touchPileState.startY;
     const dist = Math.hypot(dx, dy);
 
-    if (!touchPileState.isDragging && dist > 20) {
+    // Call preventDefault early so phone browser never pans or drags the page
+    if (dist > 4 && e.cancelable) {
+      e.preventDefault();
+    }
+
+    if (!touchPileState.isDragging && dist > 14) {
       touchPileState.isDragging = true;
+      document.body.classList.add('is-dragging-card-mobile');
       draggedPileType = touchPileState.pileType;
       document.querySelectorAll('.stand-rack').forEach(el => el.classList.add('pile-drop-ready'));
 
@@ -7966,6 +8029,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function onTouchPileEnd(e) {
+    document.body.classList.remove('is-dragging-card-mobile');
     if (!touchPileState) return;
 
     if (touchPileGhost) {
@@ -8011,6 +8075,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   }
 
   function onTouchPileCancel() {
+    document.body.classList.remove('is-dragging-card-mobile');
     if (touchPileGhost) {
       touchPileGhost.remove();
       touchPileGhost = null;

@@ -345,6 +345,9 @@ wss.on('connection', (ws) => {
           p.name.trim().toLowerCase() === playerName.trim().toLowerCase()
         );
         if (existingPlayer) {
+          if (existingPlayer.ws && existingPlayer.ws !== ws) {
+            try { existingPlayer.ws.close(); } catch (_) {}
+          }
           existingPlayer.ws = ws;
           playerId = existingPlayer.id;
           if (userRoom.cleanupTimer) {
@@ -720,7 +723,7 @@ wss.on('connection', (ws) => {
     clearInterval(pingInterval);
     if (userRoom) {
       const p = userRoom.players.find(x => x.id === playerId);
-      if (p) {
+      if (p && p.ws === ws) {
         p.ws = null;
       }
       if (userRoom.status === 'LOBBY') {
