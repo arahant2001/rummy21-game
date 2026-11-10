@@ -413,3 +413,243 @@ export function validateShow(groups, hand, cutCard, isDealt = false) {
 }
 
 export const calculateHonors = calculateMaal;
+
+export function extractOptimalPureRuns(availCards) {
+  const windows = [];
+  for (let i = 0; i <= RANKS.length - 3; i++) {
+    windows.push(RANKS.slice(i, i + 3));
+  }
+  windows.push(['Q', 'K', 'A']);
+
+  function solve(remaining) {
+    let best = [];
+    for (const win of windows) {
+      const c0 = remaining.find(c => c.rank === win[0]);
+      const c1 = remaining.find(c => c.rank === win[1] && c.id !== c0?.id);
+      const c2 = remaining.find(c => c.rank === win[2] && c.id !== c0?.id && c.id !== c1?.id);
+      if (c0 && c1 && c2) {
+        const run = [c0, c1, c2];
+        const nextRemaining = remaining.filter(c => c.id !== c0.id && c.id !== c1.id && c.id !== c2.id);
+        const sub = solve(nextRemaining);
+        const candidate = [run, ...sub];
+        if (candidate.length > best.length) {
+          best = candidate;
+        }
+      }
+    }
+    return best;
+  }
+
+  const best3Runs = solve(availCards);
+  const usedIds = new Set(best3Runs.flatMap(r => r.map(c => c.id)));
+  const leftover = availCards.filter(c => !usedIds.has(c.id));
+
+  for (const run of best3Runs) {
+    let extended = true;
+    while (extended) {
+      extended = false;
+      const firstRank = run[0].rank;
+      const lastRank = run[run.length - 1].rank;
+      const firstIdx = RANKS.indexOf(firstRank);
+      if (firstIdx > 0) {
+        const prevRank = RANKS[firstIdx - 1];
+        const match = leftover.find(c => c.rank === prevRank && !usedIds.has(c.id));
+        if (match) {
+          run.unshift(match);
+          usedIds.add(match.id);
+          extended = true;
+          continue;
+        }
+      }
+      const lastIdx = RANKS.indexOf(lastRank);
+      if (lastIdx >= 0 && lastIdx < RANKS.length - 1) {
+        const nextRank = RANKS[lastIdx + 1];
+        const match = leftover.find(c => c.rank === nextRank && !usedIds.has(c.id));
+        if (match) {
+          run.push(match);
+          usedIds.add(match.id);
+          extended = true;
+          continue;
+        }
+      }
+      if (lastRank === 'K') {
+        const match = leftover.find(c => c.rank === 'A' && !usedIds.has(c.id));
+        if (match) {
+          run.push(match);
+          usedIds.add(match.id);
+          extended = true;
+          continue;
+        }
+      }
+    }
+  }
+  return best3Runs;
+}
+
+export function autoArrangeHandToGroups(cards, cutCard) {
+  if (!Array.isArray(cards) || cards.length === 0) return [];
+  const pool = cards.filter(Boolean);
+  const usedIds = new Set();
+  const groups = [];
+  const getAvailable = () => pool.filter(c => c && !usedIds.has(c.id));
+
+  const effectiveRoles = cutCard ? resolveJokerRoles(cutCard) : null;
+
+  // 1. Marriages: (Taplu + Tiplu + Paplu in cut suit) -> Pure Sequence (50 pts)
+  if (effectiveRoles) {
+    const r = effectiveRoles;
+    let searchingMarriage = true;
+    while (searchingMarriage) {
+      const avail = getAvailable();
+      const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
+      const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
+      const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
+      if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
+        const trio = [taplu, tiplu, paplu];
+        trio.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel: 'Marriage Pure Run (50 pts)',
+          cardIds: trio.map(c => c.id),
+          cards: trio
+        });
+      } else {
+        searchingMarriage = false;
+      }
+    }
+  }
+
+  // 2. 3 Poochies -> Pure Sequence (Tunella)
+  let searchingPoochies = true;
+  while (searchingPoochies) {
+    const avail = getAvailable();
+    const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+    if (poochies.length >= 3) {
+      const trio = poochies.slice(0, 3);
+      trio.forEach(c => usedIds.add(c.id));
+      groups.push({
+        type: 'PURE_SEQUENCE',
+        typeLabel: '3 Poochies (Tunella)',
+        cardIds: trio.map(c => c.id),
+        cards: trio
+      });
+    } else {
+      searchingPoochies = false;
+    }
+  }
+
+  // 3. Tunellas: (3 identical cards of exact same suit and rank)
+  let searchingTunellas = true;
+  while (searchingTunellas) {
+    const avail = getAvailable().filter(c => !isWildCard(c, cutCard));
+    const suitRankMap = new Map();
+    for (const c of avail) {
+      const key = `${c.suit}_${c.rank}`;
+      if (!suitRankMap.has(key)) suitRankMap.set(key, []);
+      suitRankMap.get(key).push(c);
+    }
+    let foundTun = false;
+    for (const grp of suitRankMap.values()) {
+      if (grp.length >= 3) {
+        const trio = grp.slice(0, 3);
+        trio.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+          cardIds: trio.map(c => c.id),
+          cards: trio
+        });
+        foundTun = true;
+        break;
+      }
+    }
+    if (!foundTun) searchingTunellas = false;
+  }
+
+  // 4. Natural Pure Sequences: Smart optimizer to maximize count of pure sequences
+  for (const suit of SUITS) {
+    const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+    if (suitNaturals.length >= 3) {
+      const optimalRuns = extractOptimalPureRuns(suitNaturals);
+      for (const run of optimalRuns) {
+        run.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel: `Pure Run (${run.length})`,
+          cardIds: run.map(c => c.id),
+          cards: run
+        });
+      }
+    }
+  }
+
+  // 5. Sets (3 or 4 cards of the same rank in different suits)
+  for (const rnk of RANKS) {
+    let foundSet = true;
+    while (foundSet) {
+      foundSet = false;
+      const availSameRank = getAvailable().filter(c => c.rank === rnk && !isWildCard(c, cutCard));
+      const bySuit = new Map();
+      for (const c of availSameRank) {
+        if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+      }
+      if (bySuit.size >= 3) {
+        const setCards = Array.from(bySuit.values()).slice(0, 4);
+        setCards.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'SET',
+          typeLabel: `Set of ${rnk}s (${setCards.length})`,
+          cardIds: setCards.map(c => c.id),
+          cards: setCards
+        });
+        foundSet = true;
+      }
+    }
+  }
+
+  // 6. Impure sequences (using wildcards) - safe loop without card reuse
+  let searchingJokerRun = true;
+  while (searchingJokerRun) {
+    searchingJokerRun = false;
+    const availWildcards = getAvailable().filter(c => isWildCard(c, cutCard));
+    if (availWildcards.length === 0) break;
+
+    for (const suit of SUITS) {
+      const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !isWildCard(c, cutCard));
+      if (suitNaturals.length < 2) continue;
+
+      let formedRun = false;
+      for (let i = 0; i < suitNaturals.length; i++) {
+        for (let j = i + 1; j < suitNaturals.length; j++) {
+          const trio = [suitNaturals[i], suitNaturals[j], availWildcards[0]];
+          if (isSequence(trio, cutCard)) {
+            trio.forEach(c => usedIds.add(c.id));
+            groups.push({
+              type: 'SEQUENCE',
+              typeLabel: 'Joker Run',
+              cardIds: trio.map(c => c.id),
+              cards: trio
+            });
+            formedRun = true;
+            searchingJokerRun = true;
+            break;
+          }
+        }
+        if (formedRun) break;
+      }
+      if (formedRun) break;
+    }
+  }
+
+  // 7. Strict deduplication invariant: ensure no card ID appears in multiple groups
+  const verifiedGroups = [];
+  const claimedIds = new Set();
+  for (const g of groups) {
+    if (Array.isArray(g.cards) && g.cards.every(c => c && c.id && !claimedIds.has(c.id))) {
+      g.cards.forEach(c => claimedIds.add(c.id));
+      verifiedGroups.push(g);
+    }
+  }
+
+  return verifiedGroups;
+}
