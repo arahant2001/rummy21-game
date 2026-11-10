@@ -1351,18 +1351,26 @@
       }
     }
 
-    /* Stand Scroll Button Active Drag State */
+    /* Stand Scroll Button Active Drag State & Progressive Acceleration */
     .stand-scroll-btn.scroll-btn-drag-active {
       background: rgba(56, 189, 248, 0.5) !important;
       color: #38bdf8 !important;
       border-color: #38bdf8 !important;
       transform: scale(1.18) !important;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.8) !important;
-      animation: pulseScrollBtn 0.4s infinite alternate ease-in-out;
+      animation: pulseScrollBtn 0.35s infinite alternate ease-in-out;
+    }
+    .stand-scroll-btn.scroll-btn-drag-active.scroll-btn-fast {
+      background: rgba(56, 189, 248, 0.75) !important;
+      color: #ffffff !important;
+      border-color: #7dd3fc !important;
+      transform: scale(1.24) !important;
+      box-shadow: 0 0 28px rgba(56, 189, 248, 1) !important;
+      animation: pulseScrollBtn 0.16s infinite alternate ease-in-out;
     }
     @keyframes pulseScrollBtn {
       from { transform: scale(1.12); box-shadow: 0 0 14px rgba(56, 189, 248, 0.6); }
-      to { transform: scale(1.22); box-shadow: 0 0 24px rgba(56, 189, 248, 0.95); }
+      to { transform: scale(1.24); box-shadow: 0 0 26px rgba(56, 189, 248, 0.95); }
     }
 
     /* Fixed Mobile & Touch Bottom Action Dock when a card is selected (Android Chrome & iOS safe) */
@@ -3250,7 +3258,7 @@ body.is-dragging-card-mobile {
           <h4><span>🖐️</span> Table Navigation &amp; Mobile Controls</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
             <li><strong>Move Pad:</strong> Tap any card to dock the Move Pad. Use <span class="rules-pill rules-pill-blue">▲</span> and <span class="rules-pill rules-pill-blue">▼</span> to shift cards between stands while maintaining ordinal position, or <span class="rules-pill rules-pill-blue">◀</span> / <span class="rules-pill rules-pill-blue">▶</span> to reorder.</li>
-            <li><strong>Stand Scroll &amp; Drag Auto-Scroll:</strong> Tap or hold the ◀ and ▶ arrows on any stand to scroll. <em>Dragging a card over either arrow button automatically activates continuous auto-scrolling!</em></li>
+            <li><strong>Stand Scroll &amp; Drag Auto-Scroll:</strong> Tap or hold the ◀ and ▶ arrows on any stand to scroll. <em>Dragging a card over either arrow button activates continuous auto-scrolling that progressively accelerates for fast navigation!</em></li>
             <li><strong>Zoom Size Controls:</strong> Use the <span class="rules-pill rules-pill-gold">－</span> and <span class="rules-pill rules-pill-gold">＋</span> zoom buttons in the toolbar to adjust card sizes from 60% to 130% so you can see your entire hand at once.</li>
           </ul>
         </div>
@@ -6176,6 +6184,8 @@ body.is-dragging-card-mobile {
   }
 
   let activeAutoScrollTarget = null;
+  let standScrollStartTime = 0;
+
   function startStandScroll(elementId, direction, isDrag = false) {
     const targetKey = elementId + '_' + direction;
     if (isDrag && activeAutoScrollTarget === targetKey && standScrollInterval) {
@@ -6183,27 +6193,51 @@ body.is-dragging-card-mobile {
     }
     activeAutoScrollTarget = targetKey;
     clearInterval(standScrollInterval);
+    standScrollStartTime = Date.now();
+
     if (!isDrag) {
       scrollElement(elementId, direction);
     }
-    const step = isDrag ? 24 : 45;
-    const intervalMs = isDrag ? 35 : 60;
+
+    // High frequency interval (20ms, 50fps) with progressive acceleration
+    const intervalMs = 20;
     standScrollInterval = setInterval(() => {
       const el = document.getElementById(elementId);
-      if (el) {
-        el.scrollBy({ left: direction * step, behavior: 'auto' });
-        updateAllStandScrollButtons();
+      if (!el) return;
+
+      const elapsedSec = (Date.now() - standScrollStartTime) / 1000;
+
+      // Progressive speed acceleration:
+      // Start at gentle base speed (6px/tick ~300px/s) for high accuracy and control,
+      // and ramp up smoothly to max speed (34px/tick ~1700px/s) over ~2.4 seconds.
+      const baseStep = isDrag ? 6 : 8;
+      const maxStep = isDrag ? 34 : 36;
+      const accelDuration = 2.4; // seconds to reach maximum speed
+      const progress = Math.min(1, elapsedSec / accelDuration);
+
+      // Smooth ease-in acceleration curve: 1 + 4.6 * (progress^1.35)
+      const speedMultiplier = 1 + 4.6 * Math.pow(progress, 1.35);
+      const step = Math.min(maxStep, Math.round(baseStep * speedMultiplier));
+
+      if (isDrag && progress > 0.45) {
+        document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.add('scroll-btn-fast'));
       }
+
+      el.scrollBy({ left: direction * step, behavior: 'auto' });
+      updateAllStandScrollButtons();
     }, intervalMs);
   }
 
   function stopStandScroll() {
     activeAutoScrollTarget = null;
+    standScrollStartTime = 0;
     if (standScrollInterval) {
       clearInterval(standScrollInterval);
       standScrollInterval = null;
     }
-    document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.remove('scroll-btn-drag-active'));
+    document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => {
+      b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
+    });
   }
 
   function onScrollBtnDragOver(e, elementId, dir) {
@@ -6217,7 +6251,7 @@ body.is-dragging-card-mobile {
 
   function onScrollBtnDragLeave(e) {
     const btn = e.currentTarget || (e.target && e.target.closest ? e.target.closest('.stand-scroll-btn') : null);
-    if (btn) btn.classList.remove('scroll-btn-drag-active');
+    if (btn) btn.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
     stopStandScroll();
   }
 
@@ -6405,11 +6439,11 @@ body.is-dragging-card-mobile {
         <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span>${protectionBadge}</div>
         <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
         <div class="stand-scroll-container">
-          <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
+          <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
           </button>
           <div class="stand-cards locked-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),false,true)).join('')}</div>
-          <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
+          <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
           </button>
         </div>
@@ -6429,11 +6463,11 @@ body.is-dragging-card-mobile {
         ${selCount > 0 ? '<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear</button>' : ''}
       </div></div>
       <div class="stand-scroll-container">
-        <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
+        <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
           <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
         </button>
         <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div>
-        <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
+        <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
           <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
         </button>
       </div>
@@ -7730,20 +7764,33 @@ body.is-dragging-card-mobile {
       const elUnderPoint = document.elementFromPoint(x, y);
       const scrollBtn = elUnderPoint && elUnderPoint.closest ? elUnderPoint.closest('.stand-scroll-btn') : null;
       if (scrollBtn && scrollBtn.id) {
-        const m = scrollBtn.id.match(/^stand-scroll-(left|right)-(\d+)$/);
-        if (m) {
-          const dir = m[1] === 'left' ? -1 : 1;
-          const sIdx = parseInt(m[2], 10);
-          document.querySelectorAll('.scroll-btn-drag-active').forEach(b => {
-            if (b !== scrollBtn) b.classList.remove('scroll-btn-drag-active');
+        let targetId = null;
+        let dir = 0;
+        const mStand = scrollBtn.id.match(/^stand-scroll-(left|right)-(\d+)$/);
+        const mDeclGroup = scrollBtn.id.match(/^decl-scroll-(left|right)-(\d+)$/);
+        const mDeclUngrouped = scrollBtn.id.match(/^decl-ungrouped-(left|right)$/);
+        if (mStand) {
+          dir = mStand[1] === 'left' ? -1 : 1;
+          targetId = `stand-cards-${mStand[2]}`;
+        } else if (mDeclGroup) {
+          dir = mDeclGroup[1] === 'left' ? -1 : 1;
+          targetId = `decl-group-cards-${mDeclGroup[2]}`;
+        } else if (mDeclUngrouped) {
+          dir = mDeclUngrouped[1] === 'left' ? -1 : 1;
+          targetId = 'decl-ungrouped-cards';
+        }
+
+        if (targetId && dir !== 0) {
+          document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => {
+            if (b !== scrollBtn) b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
           });
           scrollBtn.classList.add('scroll-btn-drag-active');
-          startStandScroll(`stand-cards-${sIdx}`, dir, true);
+          startStandScroll(targetId, dir, true);
           touchCardState.dropTarget = null;
           return;
         }
       } else {
-        document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.remove('scroll-btn-drag-active'));
+        document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast'));
         stopStandScroll();
       }
 
@@ -7900,8 +7947,8 @@ body.is-dragging-card-mobile {
       touchCardState.el.style.opacity = '';
     }
 
-    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover, .scroll-btn-drag-active')
-      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover', 'scroll-btn-drag-active'));
+    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover, .scroll-btn-drag-active, .scroll-btn-fast')
+      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover', 'scroll-btn-drag-active', 'scroll-btn-fast'));
     stopStandScroll();
 
     const now = Date.now();
@@ -8015,8 +8062,8 @@ body.is-dragging-card-mobile {
     if (touchCardState && touchCardState.el) {
       touchCardState.el.style.opacity = '';
     }
-    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover, .scroll-btn-drag-active')
-      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover', 'scroll-btn-drag-active'));
+    document.querySelectorAll('.drag-over-left, .drag-over-right, .stand-rack-drop-hover, .discard-drop-hover, .scroll-btn-drag-active, .scroll-btn-fast')
+      .forEach(node => node.classList.remove('drag-over-left', 'drag-over-right', 'stand-rack-drop-hover', 'discard-drop-hover', 'scroll-btn-drag-active', 'scroll-btn-fast'));
     stopStandScroll();
     
     // If dropped via cancel while dropTarget was established, complete the drop
@@ -8366,8 +8413,8 @@ body.is-dragging-card-mobile {
     document.querySelectorAll('.stand-rack').forEach(el => {
       el.classList.remove('drag-over-stand');
     });
-    document.querySelectorAll('.scroll-btn-drag-active').forEach(b => {
-      b.classList.remove('scroll-btn-drag-active');
+    document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => {
+      b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
     });
   }
 
