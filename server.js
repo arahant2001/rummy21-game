@@ -525,6 +525,15 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DISCARD' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
+        if (activePlayer.hand.length < 22) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: 'You have already discarded or have not drawn your 22nd card yet.'
+            }));
+          }
+          return;
+        }
         const idx = activePlayer.hand.findIndex(c => c.id === data.cardId);
         if (idx !== -1) {
           const [discarded] = activePlayer.hand.splice(idx, 1);
@@ -541,6 +550,14 @@ wss.on('connection', (ws) => {
           }
 
           advanceTurn(userRoom);
+          broadcastRoom(userRoom);
+        } else {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: 'Selected card to discard not found in hand.'
+            }));
+          }
           broadcastRoom(userRoom);
         }
       }
@@ -845,7 +862,19 @@ function resolvePort() {
 const PORT = resolvePort();
 
 server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Exiting process so supervisor can restart cleanly.`);
+    process.exit(1);
+  }
   console.error('HTTP/WebSocket Server error:', err);
+});
+
+process.on('SIGTERM', () => {
+  server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+  server.close(() => process.exit(0));
 });
 
 process.on('uncaughtException', (err) => {
@@ -858,4 +887,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`21 Card Rummy live on port ${PORT}`);
+  console.log(`  ➜  Local:   http://localhost:${PORT}/`);
+  console.log(`  ➜  Network: http://0.0.0.0:${PORT}/`);
 });
