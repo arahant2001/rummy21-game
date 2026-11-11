@@ -4483,6 +4483,7 @@ body.is-dragging-card-mobile {
             if (heroSub) heroSub.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
             const tableTurnBanner = document.getElementById('tableTurnBanner');
             if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
+          }
           if (isNewHand) {
             try { sessionStorage.removeItem(getStandsStorageKey()); } catch (_) {}
             myHand = [];
