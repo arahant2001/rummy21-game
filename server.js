@@ -845,7 +845,19 @@ function resolvePort() {
 const PORT = resolvePort();
 
 server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Exiting process so supervisor can restart cleanly.`);
+    process.exit(1);
+  }
   console.error('HTTP/WebSocket Server error:', err);
+});
+
+process.on('SIGTERM', () => {
+  server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+  server.close(() => process.exit(0));
 });
 
 process.on('uncaughtException', (err) => {
@@ -858,4 +870,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`21 Card Rummy live on port ${PORT}`);
+  console.log(`  ➜  Local:   http://localhost:${PORT}/`);
+  console.log(`  ➜  Network: http://0.0.0.0:${PORT}/`);
 });
