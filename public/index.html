@@ -1392,15 +1392,19 @@
     }
 
     /* Universal Fixed Bottom Action Dock when any card is selected (All Android phones, iOS, Tablets & Desktops) */
-    body.card-selected-mobile .reorder-bar,
-    .reorder-bar:not([style*="display: none"]):not([style*="display:none"]) {
+    .reorder-bar {
+      display: none !important;
+    }
+    .reorder-bar.is-active,
+    body.card-selected-mobile .reorder-bar {
+      display: flex !important;
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
       right: 0 !important;
       width: 100% !important;
       max-width: 100vw !important;
-      z-index: 99999 !important;
+      z-index: 999999 !important;
       margin: 0 !important;
       border-radius: 18px 18px 0 0 !important;
       background: linear-gradient(180deg, rgba(14, 38, 28, 0.98), rgba(6, 20, 14, 0.99)) !important;
@@ -1411,10 +1415,6 @@
       gap: 10px !important;
       box-sizing: border-box !important;
       animation: slideUpMobileBar 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }
-    .reorder-bar[style*="display: none"],
-    .reorder-bar[style*="display:none"] {
-      display: none !important;
     }
     @keyframes slideUpMobileBar {
       from { transform: translateY(100%); opacity: 0; }
@@ -3027,7 +3027,7 @@ body.is-dragging-card-mobile {
     </div>
 
     <!-- Dedicated Responsive Card Action & Stand Move Bar (visible on mobile and desktop) -->
-    <div id="reorderBar" class="reorder-bar" style="display: none;">
+    <div id="reorderBar" class="reorder-bar">
       <div class="reorder-info">
         <span class="reorder-hint">Card <strong id="selectedCardLabel"></strong>:</span>
         <div class="reorder-nav-group">
@@ -5526,7 +5526,7 @@ body.is-dragging-card-mobile {
               <span class="stat-hand-count">🎴 <b>${myCount}</b> cards</span>
               <span>•</span>
               <span class="stat-role-hint" style="color: ${isMeWinner ? '#fef08a' : (isMyTurn ? '#7eedba' : '#94a3b8')};">
-                ${isMeWinner ? '🏆 Round winner! Collects Honors from all opponents.' : (isMyTurn ? (roomState.turnStage === 'DRAW' ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn')}
+                ${isMeWinner ? '🏆 Round winner! Collects Honors from all opponents.' : (isMyTurn ? ((roomState.turnStage === 'DRAW' || myCount < 22) ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn')}
               </span>
             </div>
           </div>
@@ -5604,7 +5604,7 @@ body.is-dragging-card-mobile {
     }
     const myCount = totalCount;
     const canDraw = canPlayerDraw();
-    const canDiscard = isMyTurn && (roomState.turnStage === 'DISCARD' || myCount >= 22);
+    const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD' && myCount >= 22;
 
     // Contextual turn guidance
     const guide = document.getElementById('stageGuideText');
@@ -7619,7 +7619,7 @@ body.is-dragging-card-mobile {
     if (selectedCardId && !declarationMode) {
       const allCards = [...(userStands ? userStands.flat() : []), ...(myHand || [])];
       const card = allCards.find(c => c && c.id === selectedCardId);
-      reorderBox.style.setProperty('display', 'flex', 'important');
+      reorderBox.classList.add('is-active');
       document.body.classList.add('card-selected-mobile');
       if (labelSpan && card) {
         const isRed = ['♥', '♦'].includes(card.suit);
@@ -7659,7 +7659,7 @@ body.is-dragging-card-mobile {
 
         // When it is a player's turn to draw, the "Discard card" buttons change to "Draw card"
         const isMyTurn = isCurrentPlayerMe();
-        const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+        const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= 22;
         const canDraw = canPlayerDraw();
         if (canDiscard) {
           html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); discardSelected()" onclick="event.preventDefault(); event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
@@ -7670,7 +7670,7 @@ body.is-dragging-card-mobile {
         optionsSpan.innerHTML = html;
       }
     } else {
-      reorderBox.style.setProperty('display', 'none', 'important');
+      reorderBox.classList.remove('is-active');
       document.body.classList.remove('card-selected-mobile');
       if (standsLabel) standsLabel.textContent = 'Stand:';
       if (optionsSpan) optionsSpan.innerHTML = '';
@@ -8235,13 +8235,13 @@ body.is-dragging-card-mobile {
     const dy = touch.clientY - touchCardState.startY;
     const dist = Math.hypot(dx, dy);
 
-    // Call preventDefault early so phone browser never pans or drags the page
-    if (dist > 4 && e.cancelable) {
+    // Call preventDefault only when movement is clearly intentional (not finger jitter during a tap)
+    if (dist > 10 && e.cancelable) {
       e.preventDefault();
     }
 
     // Deliberate movement threshold initiates card drag (avoids false drags on capacitive taps)
-    if (!touchCardState.isDragging && dist > 14) {
+    if (!touchCardState.isDragging && dist > 18) {
       touchCardState.isDragging = true;
       draggedCardId = cardId;
       document.body.classList.add('is-dragging-card-mobile');
@@ -8308,8 +8308,8 @@ body.is-dragging-card-mobile {
     const dy = releaseTouch ? releaseTouch.clientY - touchCardState.startY : 0;
     const dist = Math.hypot(dx, dy);
 
-    // Tap detection: either not dragging, or touch was short (< 500ms) with small movement (< 24px)
-    const isTap = !touchCardState.isDragging || (touchDuration < 500 && dist < 24);
+    // Tap detection: either not dragging, or touch was short (< 550ms) with small movement (< 30px)
+    const isTap = !touchCardState.isDragging || (touchDuration < 550 && dist < 30);
 
     if (isTap) {
       if (e.cancelable) e.preventDefault();
@@ -8339,7 +8339,7 @@ body.is-dragging-card-mobile {
       // 1. Dropped on Discard Pile
       if (dropTarget.type === 'discard') {
         const isMyTurn = isCurrentPlayerMe();
-        const canDiscard = isMyTurn && (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+        const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= 22;
         if (canDiscard) {
           selectedCardId = cardId;
           lastTouchSelectTime = now;
@@ -8835,7 +8835,7 @@ body.is-dragging-card-mobile {
     const dInfo = countDoubles(myHand);
     const myTurnsTaken = myP?.turnsTaken || 0;
     const isFirst = myTurnsTaken === 0;
-    const canDiscardNow = (roomState?.turnStage === 'DISCARD' || myHand.length >= 22);
+    const canDiscardNow = (roomState?.turnStage === 'DISCARD' && myHand.length >= 22);
     const isDealtTurn = isFirst && !canDiscardNow;
 
     const isFreeScootDealt = isDealtTurn && dInfo.count >= 6;
@@ -8899,16 +8899,41 @@ body.is-dragging-card-mobile {
     }
   }
 
+  let isDiscardInFlight = false;
   function discardSelected() {
     if (canPlayerDraw()) {
       drawStock();
       return;
     }
-    if (!selectedCardId) return;
+    if (!selectedCardId || isDiscardInFlight) return;
+    const isMyTurn = isCurrentPlayerMe();
+    if (!isMyTurn || roomState?.turnStage !== 'DISCARD' || getHandCount() < 22) return;
+
+    isDiscardInFlight = true;
     soundSystem.playCardDiscard();
-    if (isDemo) { simulateDiscard(); return; }
-    ws.send(JSON.stringify({ type: 'DISCARD', cardId: selectedCardId }));
+    if (isDemo) {
+      simulateDiscard();
+      isDiscardInFlight = false;
+      return;
+    }
+
+    const cardToDiscard = selectedCardId;
     selectedCardId = null;
+
+    // Optimistically remove discarded card and transition turnStage to prevent duplicate discards
+    for (const stand of userStands) {
+      const idx = stand.findIndex(c => c && c.id === cardToDiscard);
+      if (idx !== -1) {
+        stand.splice(idx, 1);
+        break;
+      }
+    }
+    myHand = userStands.flat();
+    roomState.turnStage = 'WAITING';
+    renderAll(typeof calculateLocalMaal === 'function' ? calculateLocalMaal() : null);
+
+    ws.send(JSON.stringify({ type: 'DISCARD', cardId: cardToDiscard }));
+    setTimeout(() => { isDiscardInFlight = false; }, 600);
   }
 
   window.handleDiscardOrDrawClick = handleDiscardOrDrawClick;
@@ -8927,7 +8952,7 @@ body.is-dragging-card-mobile {
     const dInfo = countDoubles(myHand);
     const myP = roomState?.players?.find(p => p.id === (isDemo ? 'p_demo' : getMyPlayerId()));
     const myTurns = myP?.turnsTaken || 0;
-    const canDiscardNow = (roomState?.turnStage === 'DISCARD' || getHandCount() >= 22);
+    const canDiscardNow = (roomState?.turnStage === 'DISCARD' && getHandCount() >= 22);
     const isDealt7Doubles = (myTurns === 0 && !canDiscardNow && dInfo.count >= 7);
     const isDrawn8Doubles = (dInfo.count >= 8);
 
@@ -10300,6 +10325,7 @@ body.is-dragging-card-mobile {
     roomState.topDiscard = card;
     selectedCardId = null;
     roomState.lastAction = `${meP?.name || 'You'} discarded ${card.rank}${card.suit}`;
+    roomState.turnStage = 'DRAW';
 
     // Immediately re-render with updated local Maal points
     renderAll(calculateLocalMaal());
