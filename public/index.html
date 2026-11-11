@@ -5595,6 +5595,7 @@ body.is-dragging-card-mobile {
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myPlayer = roomState?.players?.find(p => p.id === myId);
     const myForfeited = Boolean(myPlayer && (myPlayer.hasForfeited || myPlayer.dropType === 'FORFEIT'));
+    const myDropped = Boolean(myPlayer && myPlayer.hasDropped);
     const isMyTurn = isCurrentPlayerMe();
     checkAndTriggerTurnSound();
     if (roomState?.status === 'PLAYING') {
