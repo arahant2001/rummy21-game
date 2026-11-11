@@ -1391,34 +1391,39 @@
       }
     }
 
-    /* Fixed Mobile & Touch Bottom Action Dock when a card is selected (Android Chrome & iOS safe) */
+    /* Universal Fixed Bottom Action Dock when any card is selected (All Android phones, iOS, Tablets & Desktops) */
+    body.card-selected-mobile .reorder-bar,
+    .reorder-bar:not([style*="display: none"]):not([style*="display:none"]) {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      z-index: 99999 !important;
+      margin: 0 !important;
+      border-radius: 18px 18px 0 0 !important;
+      background: linear-gradient(180deg, rgba(14, 38, 28, 0.98), rgba(6, 20, 14, 0.99)) !important;
+      border: 2px solid #38bdf8 !important;
+      border-bottom: none !important;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.85), 0 0 18px rgba(56, 189, 248, 0.35) !important;
+      padding: 10px 14px max(16px, env(safe-area-inset-bottom, 16px)) !important;
+      gap: 10px !important;
+      box-sizing: border-box !important;
+      animation: slideUpMobileBar 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .reorder-bar[style*="display: none"],
+    .reorder-bar[style*="display:none"] {
+      display: none !important;
+    }
+    @keyframes slideUpMobileBar {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    body.card-selected-mobile {
+      padding-bottom: 160px !important;
+    }
     @media (max-width: 1024px), (pointer: coarse), (hover: none) {
-      .reorder-bar {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        max-width: 100vw !important;
-        z-index: 99999 !important;
-        margin: 0 !important;
-        border-radius: 18px 18px 0 0 !important;
-        background: linear-gradient(180deg, rgba(14, 38, 28, 0.98), rgba(6, 20, 14, 0.99)) !important;
-        border: 2px solid #38bdf8 !important;
-        border-bottom: none !important;
-        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.85), 0 0 18px rgba(56, 189, 248, 0.35) !important;
-        padding: 10px 14px max(16px, env(safe-area-inset-bottom)) !important;
-        gap: 10px !important;
-        box-sizing: border-box !important;
-        animation: slideUpMobileBar 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      }
-      @keyframes slideUpMobileBar {
-        from { transform: translateY(100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      body.card-selected-mobile {
-        padding-bottom: 150px !important;
-      }
       .reorder-info {
         justify-content: space-between;
         width: 100%;
@@ -4478,9 +4483,10 @@ body.is-dragging-card-mobile {
             if (heroSub) heroSub.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
             const tableTurnBanner = document.getElementById('tableTurnBanner');
             if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
-          }
           if (isNewHand) {
+            try { sessionStorage.removeItem(getStandsStorageKey()); } catch (_) {}
             myHand = [];
+            initDefaultStands(3);
             declarationMode = false;
             declarationGroups = [];
             declarationSelectedIds.clear();
@@ -4602,6 +4608,9 @@ body.is-dragging-card-mobile {
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed) || parsed.length === 0) return null;
 
+      // Do not restore if saved storage has fewer than 3 stands when playing full 21-card hand
+      if (incomingCards.length >= 21 && parsed.length < 3) return null;
+
       const cardMap = new Map(incomingCards.map(c => [c.id, c]));
       const restoredStands = [];
       const usedIds = new Set();
@@ -4625,6 +4634,10 @@ body.is-dragging-card-mobile {
         restoredStands[0].push(...remainingCards);
       }
 
+      while (restoredStands.length < 3) {
+        restoredStands.push([]);
+      }
+
       if (restoredStands.flat().length > 0) {
         return restoredStands;
       }
@@ -4638,10 +4651,12 @@ body.is-dragging-card-mobile {
   function syncIncomingHand(incomingCards) {
     if (!incomingCards || incomingCards.length === 0) {
       if (roomState?.status === 'PLAYING') {
-        console.warn('Received empty hand during PLAYING');
+        // Critical safeguard: never destroy an active hand if an empty payload or reconnect blip arrives
+        console.warn('Received empty hand during PLAYING - preserving current hand');
+        return;
       }
       myHand = [];
-      userStands = [[]];
+      userStands = [[], [], []];
       return;
     }
 
@@ -4664,12 +4679,11 @@ body.is-dragging-card-mobile {
 
     if (isBrandNewHand) {
       myHand = clampedIncoming;
-      // Requirement 3: Check if this hand's custom stands were already saved in sessionStorage (reconnection/refresh)
       const restored = loadStandsFromStorage(clampedIncoming);
-      if (restored && restored.length > 0) {
+      if (restored && restored.length >= 3) {
         userStands = restored;
       } else {
-        // Default 3 stands for fresh hands
+        // Default: strictly 3 stands (7, 7, 7 cards) for fresh hands
         initDefaultStands(3);
       }
       saveStandsToStorage();
@@ -4679,23 +4693,34 @@ body.is-dragging-card-mobile {
     const incomingMap = new Map(clampedIncoming.map(c => [c.id, c]));
     
     // Update existing cards and remove discarded ones across stands
-    userStands = userStands.map(stand => 
-      stand.filter(c => incomingMap.has(c.id)).map(c => incomingMap.get(c.id))
+    userStands = (userStands || []).map(stand => 
+      (stand || []).filter(c => c && incomingMap.has(c.id)).map(c => incomingMap.get(c.id))
     );
 
-    // Identify any newly drawn card
-    const currentStandIds = new Set(userStands.flatMap(stand => stand.map(c => c.id)));
-    const newCards = clampedIncoming.filter(c => !currentStandIds.has(c.id));
+    // Guarantee at least 3 stands exist
+    while (userStands.length < 3) {
+      userStands.push([]);
+    }
 
-    // Requirement 4: When drawing a card, the drawn card should go to the end of Stand 1 and be selected & visible
-    if (newCards.length > 0) {
-      if (userStands.length === 0) userStands.push([]);
-      userStands[0].push(...newCards);
-      const drawnCard = newCards[0];
-      selectedCardId = drawnCard.id;
-      setTimeout(() => {
-        scrollCardIntoView(drawnCard.id);
-      }, 60);
+    // Identify any incoming cards not yet present in any stand
+    const currentStandIds = new Set(userStands.flatMap(stand => (stand || []).map(c => c.id)));
+    const unassignedCards = clampedIncoming.filter(c => !currentStandIds.has(c.id));
+
+    if (unassignedCards.length > 0) {
+      if (userStands.flat().length === 0) {
+        // Distribute fresh hand across 3 stands
+        const a = Math.ceil(unassignedCards.length / 3);
+        const b = Math.ceil((unassignedCards.length - a) / 2);
+        userStands = [unassignedCards.slice(0, a), unassignedCards.slice(a, a + b), unassignedCards.slice(a + b)];
+      } else {
+        // Drawn card(s) go to the end of Stand 1 and become selected
+        userStands[0].push(...unassignedCards);
+        const drawnCard = unassignedCards[0];
+        selectedCardId = drawnCard.id;
+        setTimeout(() => {
+          scrollCardIntoView(drawnCard.id);
+        }, 60);
+      }
     }
 
     // Strict deduplication across user stands
@@ -4723,15 +4748,27 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // Flatten back to myHand
+    // Fail-safe: if stands somehow ended up empty while cards exist, distribute into 3 stands
+    if (userStands.flat().length === 0 && clampedIncoming.length > 0) {
+      const a = Math.ceil(clampedIncoming.length / 3);
+      const b = Math.ceil((clampedIncoming.length - a) / 2);
+      userStands = [clampedIncoming.slice(0, a), clampedIncoming.slice(a, a + b), clampedIncoming.slice(a + b)];
+    }
+
+    // Guarantee userStands has 3 stands if initialized
+    while (userStands.length < 3) {
+      userStands.push([]);
+    }
+
+    // Synchronize myHand from stands
     myHand = userStands.flat();
     saveStandsToStorage();
   }
 
   function initDefaultStands(count = 3) {
     if (!myHand || myHand.length === 0) {
-      userStands = [[]];
-      standTypes = ['SEQUENCE'];
+      userStands = [[], [], []];
+      standTypes = ['PURE_SEQUENCE', 'PURE_SEQUENCE', 'PURE_SEQUENCE'];
       return;
     }
     if (count === 1) {
@@ -4742,13 +4779,13 @@ body.is-dragging-card-mobile {
     if (count === 3) {
       const a = Math.ceil(myHand.length / 3);
       const b = Math.ceil((myHand.length - a) / 2);
-      userStands = [myHand.slice(0,a), myHand.slice(a,a+b), myHand.slice(a+b)];
-      standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE','PURE_SEQUENCE'];
+      userStands = [myHand.slice(0, a), myHand.slice(a, a + b), myHand.slice(a + b)];
+      standTypes = ['PURE_SEQUENCE', 'PURE_SEQUENCE', 'PURE_SEQUENCE'];
       return;
     }
     const mid = Math.ceil(myHand.length / 2);
     userStands = [myHand.slice(0, mid), myHand.slice(mid)];
-    standTypes = ['PURE_SEQUENCE','PURE_SEQUENCE'];
+    standTypes = ['PURE_SEQUENCE', 'PURE_SEQUENCE'];
   }
 
   // --- Hand Card Size Zoom Controls ---
@@ -5898,7 +5935,12 @@ body.is-dragging-card-mobile {
                   Group 21 cards into sequences &amp; sets. The 1 remaining card automatically serves as your final discard.
                 </div>
               </div>
-              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="btn-action btn-declare ${isShowReady ? 'is-ready-pulse' : ''}" style="padding:7px 16px; min-height:36px; font-size:12px; font-weight:800; border-radius:8px;" onclick="declareShow()">
+                  <span>🏆 Submit Declaration</span>
+                </button>
+                <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
+              </div>
             </div>
 
             <div class="declare-checklist">
@@ -5957,14 +5999,21 @@ body.is-dragging-card-mobile {
               </button>
             </div>
 
-            <div class="declare-footer">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span>Wrong arrangement?</span>
-                <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+            <div class="declare-footer" style="flex-direction:column; gap:10px; align-items:stretch;">
+              <div style="display:flex; gap:10px; width:100%;">
+                <button type="button" class="btn-action btn-declare ${isShowReady ? 'is-ready-pulse' : ''}" style="flex:1; padding:12px 18px; font-size:14px; font-weight:800; justify-content:center; box-shadow: 0 4px 16px rgba(16,185,129,0.35);" onclick="declareShow()">
+                  <span>🏆 Submit Declaration ${isShowReady ? '✨' : ''}</span>
+                </button>
               </div>
-              <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
-                ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
-              </button>
+              <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px; color:#8ba096;">Wrong arrangement?</span>
+                  <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+                </div>
+                <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
+                  ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
+                </button>
+              </div>
             </div>`;
         }
       }
@@ -6510,7 +6559,13 @@ body.is-dragging-card-mobile {
     const container=document.getElementById('standsContainer');
     if(!container)return;
     if(!declarationMode){
-      if(!userStands||userStands.length===0)userStands=[myHand];
+      if(!userStands || userStands.length === 0 || userStands.flat().length === 0){
+        if (myHand && myHand.length > 0) {
+          initDefaultStands(3);
+        } else {
+          userStands = [[], [], []];
+        }
+      }
       const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
@@ -6554,7 +6609,9 @@ body.is-dragging-card-mobile {
     const isSeqValid = declarationSequence(selectedCards);
     const isSetValid = declarationSet(selectedCards);
     const detected = detectBestGroupType(selectedCards);
-    const isShowReady = grouped === 21 && pure >= 3 && remaining.length === 1;
+    const dInfo = countHandDoubles(myHand);
+    const isDoublesReady = (dInfo.count >= 7 && myHand.length === 21) || (dInfo.count >= 8 && myHand.length === 22);
+    const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesReady;
 
     const stickyBarHtml = `
       <div class="sticky-grouping-bar" id="stickyGroupingBar">
@@ -6583,11 +6640,10 @@ body.is-dragging-card-mobile {
               <button type="button" class="sticky-submit-btn" onclick="submitGroupingMeld()">
                 ✅ Submit Melds
               </button>` : `
-              ${isShowReady ? `
-                <button type="button" class="sticky-submit-btn" onclick="declareShow()">
-                  🏆 Submit Declaration
-                </button>` : `
-                <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>`}
+              <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" style="${isShowReady ? 'background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 14px rgba(34,197,94,0.6);' : 'background: linear-gradient(135deg, #10b981, #059669);'}" onclick="declareShow()">
+                🏆 Submit Declaration ${isShowReady ? '✨' : ''}
+              </button>
+              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
             `}
           </div>
         </div>
@@ -7528,7 +7584,7 @@ body.is-dragging-card-mobile {
 
   function selectCard(cardId, fromTouch = false) {
     const now = Date.now();
-    if (!fromTouch && (now - lastTouchActionTime < 650 || now - lastTouchSelectTime < 650)) {
+    if (!fromTouch && (now - lastTouchActionTime < 250 || now - lastTouchSelectTime < 250)) {
       return; // Ignore synthetic click directly after touch
     }
     if (fromTouch) {
@@ -7560,7 +7616,8 @@ body.is-dragging-card-mobile {
     if (!reorderBox) return;
 
     if (selectedCardId && !declarationMode) {
-      const card = userStands.flat().find(c => c && c.id === selectedCardId);
+      const allCards = [...(userStands ? userStands.flat() : []), ...(myHand || [])];
+      const card = allCards.find(c => c && c.id === selectedCardId);
       reorderBox.style.setProperty('display', 'flex', 'important');
       document.body.classList.add('card-selected-mobile');
       if (labelSpan && card) {
@@ -7570,7 +7627,11 @@ body.is-dragging-card-mobile {
 
       // Compact up/down triangle icons for stand movement (maintaining ordinal position)
       if (optionsSpan) {
-        const currentStandIdx = userStands.findIndex(s => s.some(c => c && c.id === selectedCardId));
+        let currentStandIdx = userStands ? userStands.findIndex(s => s.some(c => c && c.id === selectedCardId)) : -1;
+        if (currentStandIdx === -1 && userStands && userStands.length > 0 && card) {
+          currentStandIdx = 0;
+          userStands[0].push(card);
+        }
         if (standsLabel && currentStandIdx !== -1) {
           standsLabel.textContent = `Stand ${currentStandIdx + 1}:`;
         }
@@ -8246,8 +8307,8 @@ body.is-dragging-card-mobile {
     const dy = releaseTouch ? releaseTouch.clientY - touchCardState.startY : 0;
     const dist = Math.hypot(dx, dy);
 
-    // Tap detection: either not dragging, or touch was short (< 400ms) with small movement (< 20px)
-    const isTap = !touchCardState.isDragging || (touchDuration < 400 && dist < 20);
+    // Tap detection: either not dragging, or touch was short (< 500ms) with small movement (< 24px)
+    const isTap = !touchCardState.isDragging || (touchDuration < 500 && dist < 24);
 
     if (isTap) {
       if (e.cancelable) e.preventDefault();
@@ -8946,9 +9007,12 @@ body.is-dragging-card-mobile {
         meP.declaredGroups = declarationGroups;
       }
       if (discardedCard) {
-        myHand = myHand.filter(c => c.id !== discardedCard.id);
+        myHand = myHand.filter(c => c && c.id !== discardedCard.id);
+        if (Array.isArray(userStands)) {
+          userStands = userStands.map(st => (st || []).filter(c => c && c.id !== discardedCard.id));
+          while (userStands.length < 3) userStands.push([]);
+        }
       }
-      userStands = [myHand];
       declarationMode = false;
       selectedCardId = null;
       isDemoGroupingWait = true;
@@ -9094,6 +9158,13 @@ body.is-dragging-card-mobile {
         setTimeout(() => showResultsModal(demoData), 900);
       }, 2300);
       return;
+    }
+    if (finalDiscardId) {
+      myHand = (myHand || []).filter(c => c && c.id !== finalDiscardId);
+      if (Array.isArray(userStands)) {
+        userStands = userStands.map(st => (st || []).filter(c => c && c.id !== finalDiscardId));
+        while (userStands.length < 3) userStands.push([]);
+      }
     }
     ws.send(JSON.stringify({ type: 'DECLARE', cardId: finalDiscardId, groups }));
     declarationMode = false;
@@ -10147,7 +10218,10 @@ body.is-dragging-card-mobile {
     }
     
     // Requirement: When drawing a card, the drawn card should go to the end of Stand 1
-    if (userStands.length === 0) userStands = [[]];
+    while (!userStands || userStands.length < 3) {
+      if (!userStands) userStands = [];
+      userStands.push([]);
+    }
     userStands[0].push(newCard);
     myHand = userStands.flat();
     const meP = roomState.players.find(p => p.id === 'p_demo');
@@ -10173,7 +10247,10 @@ body.is-dragging-card-mobile {
     const drawn = roomState.topDiscard;
 
     // Requirement: When drawing a card, the drawn card should go to the end of Stand 1
-    if (userStands.length === 0) userStands = [[]];
+    while (!userStands || userStands.length < 3) {
+      if (!userStands) userStands = [];
+      userStands.push([]);
+    }
     userStands[0].push(drawn);
     myHand = userStands.flat();
 
