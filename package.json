@@ -9,7 +9,7 @@
     "build": "echo 'Build OK'",
     "preview": "node server.js --port 3000",
     "clean": "rm -rf dist",
-    "lint": "node -c server.js && node -c rules.js"
+    "lint": "node -c server.js && node -c rules.js && node scripts/validate-html.js"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
