@@ -2448,15 +2448,15 @@ body.is-dragging-card-mobile {
 .discard-pile-wrapper{position:relative;z-index:9}
 .discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
 .discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:none!important;}
-.discard-history{position:absolute;left:108px;top:0;width:118px;height:108px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
-.discard-history-card{position:absolute;width:68px;height:98px;left:0;top:5px;display:block;opacity:.9;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
+.discard-history{position:absolute;left:48px;top:7px;width:170px;height:108px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
+.discard-history-card{position:absolute;width:68px;height:98px;left:0;top:0;display:block;opacity:.92;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
 .discard-history-card:active{cursor:grabbing}
 .discard-history-card .card{transform:none!important;width:68px;height:98px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
 .discard-history-card.peeked{filter:brightness(1.08);z-index:60!important;transform:translateX(calc(var(--fan-x))) translateY(-10px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translateX(calc(var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-card.peeked ~ .discard-history-card{opacity:.72}
-@media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.cut-card-under-stock{left:-18px;top:calc((var(--card-h) - var(--card-w)) / 2);transform:rotate(90deg);}.table-turn-banner{top:5px;font-size:9.5px;padding:3px 12px;}.discard-stack-area{width:190px}.discard-stack-area #discardContainer{left:22px;top:9px}.discard-history{left:88px;width:96px}.discard-history-card{width:58px;height:84px;top:9px}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
+@media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.cut-card-under-stock{left:-18px;top:calc((var(--card-h) - var(--card-w)) / 2);transform:rotate(90deg);}.table-turn-banner{top:5px;font-size:9.5px;padding:3px 12px;}.discard-stack-area{width:190px}.discard-stack-area #discardContainer{left:22px;top:9px}.discard-history{left:36px;top:9px;width:145px}.discard-history-card{width:58px;height:84px;top:0}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-index{top:-4px;right:-4px;pointer-events:none}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
@@ -3082,7 +3082,7 @@ body.is-dragging-card-mobile {
       A player has declared! Waiting for all opponents to finish grouping their melds...
     </div>
     <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:14px; font-size:12px; font-weight:800; padding:4px 12px; border-radius:999px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35);">
-      ⏱️ <span class="groupingTimerSecSpan">60</span>s remaining
+      ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> remaining
     </div>
     <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
       <div id="groupingWaitProgress" style="font-size: 14px; font-weight: 700; color: #7eedba; margin-bottom: 8px;">
@@ -3887,6 +3887,16 @@ body.is-dragging-card-mobile {
   let hasAutoGroupedForGroupingPhase = false;
   let groupingCountdownInterval = null;
 
+  function formatGroupingTime(sec) {
+    if (sec <= 0) return '0s';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    if (m > 0) {
+      return `${m}m ${s < 10 ? '0' : ''}${s}s`;
+    }
+    return `${s}s`;
+  }
+
   function updateGroupingCountdownUI() {
     if (!roomState || roomState.status !== 'GROUPING' || !roomState.groupingDeadline) {
       if (groupingCountdownInterval) {
@@ -3897,9 +3907,10 @@ body.is-dragging-card-mobile {
     }
     const remainingMs = Math.max(0, roomState.groupingDeadline - Date.now());
     const remainingSec = Math.ceil(remainingMs / 1000);
+    const formatted = formatGroupingTime(remainingSec);
     const spans = document.querySelectorAll('.groupingTimerSecSpan, #groupingTimerSec');
     spans.forEach(el => {
-      el.textContent = remainingSec;
+      el.textContent = formatted;
     });
   }
 
@@ -5285,13 +5296,17 @@ body.is-dragging-card-mobile {
   }
 
   function getCardTag(card) {
-    if (!roomState || !roomState.roles || !card) return '';
-    const r = roomState.roles;
-    if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') return 'POOCHIE';
-    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'PUKKA JOKER';
-    if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
-    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'TAPLU';
-    if (card.rank === r.tipluRank) return 'JOKER';
+    if (!card) return '';
+    if (card.isPoochie || card.suit === '★' || card.rank === 'PJ' || card.isJoker) return 'POOCHIE';
+    const r = roomState?.roles;
+    if (r) {
+      if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'PUKKA JOKER';
+      if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
+      if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'TAPLU';
+      if (card.rank === r.tipluRank) return 'JOKER';
+    }
+    const cut = roomState?.cutCard;
+    if (cut && card.rank === cut.rank) return 'JOKER';
     return '';
   }
 
@@ -5872,7 +5887,7 @@ body.is-dragging-card-mobile {
               </div>
               <div style="display:flex; align-items:center; gap:8px;">
                 <span class="grouping-timer-badge" style="font-size:12px; font-weight:800; padding:6px 12px; border-radius:8px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35); display:inline-flex; align-items:center; gap:4px;">
-                  ⏱️ <span class="groupingTimerSecSpan">60</span>s left
+                  ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> left
                 </span>
                 <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:36px;" onclick="submitGroupingMeld()">
                   <span><b>✅ Submit Melds</b></span>
@@ -5884,8 +5899,8 @@ body.is-dragging-card-mobile {
               <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; ${estDeadwood.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.35);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35);'}">
                 ${estDeadwood.pureSequences} / 3 Pure Sequences ${estDeadwood.hasRequiredPure ? '✅ (All melds protected)' : '⚠️ (Only Jokers, 4+ pure runs & Tunellas protected)'}
               </span>
-              <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.35);">
-                Current Deadwood: <b>${estDeadwood.points} pts</b> (max 120)
+              <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; ${estDeadwood.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.35);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.35);'}">
+                Current Deadwood: <b>${estDeadwood.points} pts</b> ${estDeadwood.hasRequiredPure ? '(Protected)' : `(${estDeadwood.deadwoodCount} deadwood cards, Jokers exempt)`}
               </span>
             </div>
 
@@ -6632,7 +6647,7 @@ body.is-dragging-card-mobile {
             </span>
             ${isGroupingPhase ? `
               <span class="grouping-timer-badge" style="padding:2px 7px; border-radius:6px; font-weight:800; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3); display:inline-flex; align-items:center; gap:3px;">
-                ⏱️ <span class="groupingTimerSecSpan">60</span>s left
+                ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> left
               </span>` : ''}
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${pure >= 3 ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);'}">
               ${pure} / 3 Pure Runs ${pure >= 3 ? '✅' : '⏳'}
@@ -6641,8 +6656,8 @@ body.is-dragging-card-mobile {
               ${grouped} / 21 Grouped
             </span>
             ${isGroupingPhase && deadwoodCalc ? `
-              <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);">
-                Deadwood: ${deadwoodCalc.points} pts
+              <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${deadwoodCalc.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);'}">
+                Deadwood: ${deadwoodCalc.points} pts ${deadwoodCalc.hasRequiredPure ? '(Protected)' : `(${deadwoodCalc.deadwoodCount} cards, Jokers exempt)`}
               </span>` : ''}
           </div>
           <div style="display:inline-flex; align-items:center; gap:6px;">
@@ -6761,8 +6776,16 @@ body.is-dragging-card-mobile {
     return v > 0 ? [v] : [];
   }
   function declarationIsWild(card) {
-    const r=roomState?.roles;
-    return Boolean(card && r && (card.isPoochie || card.rank===r.tipluRank || (card.suit===r.tipluSuit && (card.rank===r.papluRank || card.rank===r.nichluRank))));
+    if (!card) return false;
+    if (card.isPoochie || card.rank === 'PJ' || card.suit === '★' || card.isJoker) return true;
+    const cut = roomState?.cutCard;
+    if (cut && card.rank === cut.rank) return true;
+    const r = roomState?.roles;
+    if (r) {
+      if (card.rank === r.tipluRank) return true;
+      if (card.suit === r.tipluSuit && (card.rank === r.papluRank || card.rank === r.nichluRank)) return true;
+    }
+    return false;
   }
   function declarationIsMarriage(cards) {
     if (!Array.isArray(cards) || cards.length !== 3 || !roomState?.roles) return false;
@@ -6825,21 +6848,19 @@ body.is-dragging-card-mobile {
   }
 
   function calculateCurrentDeadwood(groups, hand) {
-    if (!Array.isArray(hand)) return { points: 0, pureSequences: 0, hasRequiredPure: false, exemptIds: new Set(), allValidMeldedIds: new Set() };
+    if (!Array.isArray(hand)) return { points: 0, pureSequences: 0, hasRequiredPure: false, exemptIds: new Set(), allValidMeldedIds: new Set(), deadwoodCount: 0, deadwoodCardIds: new Set() };
     const handCards = hand;
     const dInfo = countDoubles(handCards);
     if (dInfo.count >= 7) {
       const allIds = new Set(handCards.map(c => c.id));
-      return { points: 0, pureSequences: 0, hasRequiredPure: true, exemptIds: allIds, allValidMeldedIds: allIds, isDoubles: true };
+      return { points: 0, pureSequences: 0, hasRequiredPure: true, exemptIds: allIds, allValidMeldedIds: allIds, isDoubles: true, deadwoodCount: 0, deadwoodCardIds: new Set() };
     }
     const handIds = new Set(handCards.map(c => c.id));
     const usedIds = new Set();
     let pureSequences = 0;
     const allValidMeldedIds = new Set();
-    const exemptIds = new Set(); // 4+ card pure runs, tunellas, and doubles
-    for (const pair of dInfo.pairs) {
-      pair.forEach(c => exemptIds.add(c.id));
-    }
+    const exemptIds = new Set(); // 4+ card pure runs and tunellas (exempt without 3 pure sequences)
+    // Note: Individual pairs do NOT exempt cards from deadwood unless player holds 7+ doubles (handled above).
 
     if (Array.isArray(groups)) {
       for (const g of groups) {
@@ -6898,9 +6919,11 @@ body.is-dragging-card-mobile {
     const protectedIds = (pureSequences >= 3) ? allValidMeldedIds : exemptIds;
 
     let points = 0;
+    const deadwoodCardIds = new Set();
     for (const card of handCards) {
       if (protectedIds.has(card.id)) continue;
       if (declarationIsWild(card)) continue; // Jokers are always exempt from deadwood
+      deadwoodCardIds.add(card.id);
       if (['A', 'K', 'Q', 'J', '10'].includes(card.rank)) {
         points += 10;
       } else {
@@ -6913,7 +6936,9 @@ body.is-dragging-card-mobile {
       pureSequences,
       hasRequiredPure: pureSequences >= 3,
       exemptIds,
-      allValidMeldedIds
+      allValidMeldedIds,
+      deadwoodCount: deadwoodCardIds.size,
+      deadwoodCardIds
     };
   }
   function declarationSequence(cards) {
@@ -7350,7 +7375,7 @@ body.is-dragging-card-mobile {
         badgeClass: has3Pure ? 'success' : 'danger',
         message: has3Pure
           ? `You have formed <strong>${declarationGroups.length} meld groups</strong> with <strong>${pureCount} Pure Sequences</strong>. Your melds are protected (<strong>0 deadwood pts</strong>).<br><br>Ready to submit your melds and view round results?`
-          : `You currently have <strong>${pureCount} / 3 Pure Runs</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${remainingCount} card(s) ungrouped).<br><br>Are you sure you are ready to submit now, or would you like to review and form more runs first?`,
+          : `You currently have <strong>${pureCount} / 3 Pure Runs</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to review and form more runs first?`,
         actionText: 'Submit Melds',
         actionClass: has3Pure ? 'primary' : 'danger',
         onConfirm: () => submitGroupingMeld(true)
@@ -7422,7 +7447,7 @@ body.is-dragging-card-mobile {
     if (!isDemo || !roomState) return;
     const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
     roomState.status = 'GROUPING';
-    roomState.groupingDeadline = Date.now() + 60000;
+    roomState.groupingDeadline = Date.now() + 300000;
     roomState.winnerId = opp.id;
     roomState.winnerName = opp.name;
     opp.isGrouped = true;
@@ -8644,10 +8669,10 @@ body.is-dragging-card-mobile {
         box.innerHTML = reversed.map((card, idx) => {
           const fanX = Math.min(idx * 11, 50);
           const fanRot = Math.min(idx * 1.5, 7);
-          const z = 10 + idx;
+          const z = 25 - idx;
           const who = card.discardedBy ? ` by ${card.discardedBy}` : '';
           return `
-            <div class="discard-history-card" draggable="true" style="--fan-x:${fanX}px;--fan-rot:${fanRot}deg;z-index:${z}" title="Previous discard #${idx+1}: ${card.rank}${card.suit}${who}"
+            <div class="discard-history-card" draggable="true" style="--fan-x:${fanX}px;--fan-rot:${fanRot}deg;z-index:${z}" title="Previous discard #${idx+1} (${idx===0 ? 'Last Discard' : (idx+1)+' back'}): ${card.rank}${card.suit}${who}"
                  ondragstart="onHistoryDragStart(event,this)" onclick="toggleHistoryPeek(this)" ondragend="onHistoryDragEnd(event,this)">
               <span class="discard-history-index">${idx+1}</span>
               ${renderCard(card)}
@@ -9248,14 +9273,17 @@ body.is-dragging-card-mobile {
   }
 
   function getCardTagForRoles(card) {
-    const r = roomState?.roles;
     if (!card) return '';
-    if (card?.isPoochie || card?.suit === '★' || card?.rank === 'PJ') return 'POOCHIE';
-    if (!r) return '';
-    if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'PUKKA JOKER';
-    if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
-    if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'TAPLU';
-    if (card.rank === r.tipluRank) return 'JOKER';
+    if (card?.isPoochie || card?.suit === '★' || card?.rank === 'PJ' || card?.isJoker) return 'POOCHIE';
+    const r = roomState?.roles;
+    if (r) {
+      if (card.suit === r.tipluSuit && card.rank === r.tipluRank) return 'PUKKA JOKER';
+      if (card.suit === r.tipluSuit && card.rank === r.papluRank) return 'PAPLU';
+      if (card.suit === r.tipluSuit && card.rank === r.nichluRank) return 'TAPLU';
+      if (card.rank === r.tipluRank) return 'JOKER';
+    }
+    const cut = roomState?.cutCard;
+    if (cut && card.rank === cut.rank) return 'JOKER';
     return '';
   }
 
@@ -9802,19 +9830,28 @@ body.is-dragging-card-mobile {
           }).length;
           const hasMinPure = isWinner || p.hasDropped || pPureCount >= 3;
 
+          const handCards = Array.isArray(p.hand) ? p.hand : [];
+          const pDeadwoodCalc = (!isWinner && !p.hasDropped)
+            ? calculateCurrentDeadwood(groups, handCards)
+            : null;
+          const deadwoodCount = Array.isArray(p.deadwoodCardIds)
+            ? p.deadwoodCardIds.length
+            : (pDeadwoodCalc ? pDeadwoodCalc.deadwoodCount : 0);
+          const deadwoodCardsText = (!isWinner && !p.hasDropped && (p.deadwood || 0) > 0)
+            ? ` • ${deadwoodCount} deadwood cards`
+            : '';
+
           let statusBadge = isWinner
             ? '<span style="color:#f1d27a;background:rgba(217,182,92,0.18);border:1px solid rgba(217,182,92,0.4);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;">🏆 DECLARER (WINNER)</span>'
             : p.hasDropped
             ? `<span style="color:#f87171;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">🚫 DROPPED (${p.deadwood || p.dropPenalty || 30} pts)</span>`
-            : `<span style="color:#94a3b8;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">SETTLED (${p.deadwood || 0} pts deadwood)</span>`;
+            : `<span style="color:#94a3b8;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">SETTLED (${p.deadwood || 0} pts deadwood${deadwoodCardsText})</span>`;
 
           if (!isWinner && !p.hasDropped) {
             statusBadge += hasMinPure
               ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/3 Pure Runs (Melds Protected)</span>`
               : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/3 Pure Runs (&lt;3: Only Jokers, 4+ runs &amp; Tunellas protected)</span>`;
           }
-
-          const handCards = Array.isArray(p.hand) ? p.hand : [];
 
           let groupsHtml = '';
           const usedCardIds = new Set();
@@ -9858,6 +9895,8 @@ body.is-dragging-card-mobile {
               const isSeq = g.type === 'SEQUENCE';
               const isTun = declarationIsTunella(gCards);
               const is4PlusPure = isPure && gCards.length >= 4;
+              const gWilds = gCards.filter(c => declarationIsWild(c));
+              const gNaturals = gCards.filter(c => !declarationIsWild(c));
 
               let protectNote = '';
               let badgeBorder = '';
@@ -9869,8 +9908,13 @@ body.is-dragging-card-mobile {
                 } else if (isTun) {
                   protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Tunella Protected (0 pts)</span>';
                 } else {
-                  protectNote = '<span style="color:#f87171;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Deadwood (Needs 3 Pure Runs)</span>';
-                  badgeBorder = 'border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.06);';
+                  if (gWilds.length > 0) {
+                    protectNote = `<span style="color:#fbbf24;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Unprotected (${gNaturals.length} cards deadwood • ${gWilds.length} Joker exempt)</span>`;
+                    badgeBorder = 'border-color:rgba(234,179,8,0.4);background:rgba(234,179,8,0.06);';
+                  } else {
+                    protectNote = '<span style="color:#f87171;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Deadwood (Needs 3 Pure Runs)</span>';
+                    badgeBorder = 'border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.06);';
+                  }
                 }
               }
 
@@ -9911,18 +9955,37 @@ body.is-dragging-card-mobile {
           // For Winner: Strictly NO deadwood! In 21 Card Rummy the declarer has 21 grouped cards + 1 final discard = 22 cards.
           const ungrouped = isWinner ? [] : handCards.filter(c => c && !usedCardIds.has(c.id));
           if (ungrouped.length > 0) {
-            const label = p.hasDropped ? 'Folded / Dropped Hand' : (groups.length > 0 ? 'Deadwood' : 'Held Cards (Deadwood)');
-            groupsHtml += `
-              <div class="revealed-group-block deadwood">
-                <div class="revealed-group-badge" style="color:#f87171;">
-                  <span>${p.hasDropped ? '🚫' : '📦'}</span>
-                  <span>${label} (${ungrouped.length})</span>
+            const looseJokers = ungrouped.filter(c => declarationIsWild(c));
+            const looseDeadwood = ungrouped.filter(c => !declarationIsWild(c));
+
+            if (looseJokers.length > 0) {
+              groupsHtml += `
+                <div class="revealed-group-block" style="border-color:rgba(34,197,94,0.45);background:rgba(34,197,94,0.08);">
+                  <div class="revealed-group-badge" style="color:#86efac;">
+                    <span>🃏</span>
+                    <span>Unassigned Jokers (${looseJokers.length}) — 🛡️ Exempt (0 Deadwood)</span>
+                  </div>
+                  <div class="revealed-group-cards">
+                    ${looseJokers.map(c => renderCard(c, getCardTagForRoles(c) || 'JOKER', false)).join('')}
+                  </div>
                 </div>
-                <div class="revealed-group-cards">
-                  ${ungrouped.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+              `;
+            }
+
+            if (looseDeadwood.length > 0) {
+              const label = p.hasDropped ? 'Folded / Dropped Hand' : (groups.length > 0 ? 'Loose Deadwood Cards' : 'Held Cards (Deadwood)');
+              groupsHtml += `
+                <div class="revealed-group-block deadwood">
+                  <div class="revealed-group-badge" style="color:#f87171;">
+                    <span>${p.hasDropped ? '🚫' : '📦'}</span>
+                    <span>${label} (${looseDeadwood.length})</span>
+                  </div>
+                  <div class="revealed-group-cards">
+                    ${looseDeadwood.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+                  </div>
                 </div>
-              </div>
-            `;
+              `;
+            }
           }
 
           return `
