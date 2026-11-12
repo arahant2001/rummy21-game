@@ -70,7 +70,11 @@ function getSafeRoom(room) {
     starterIndex: room.starterIndex || 0,
     dealerId: room.dealerId || (room.players.length > 0 ? room.players[(room.starterIndex - 1 + room.players.length) % room.players.length]?.id : null),
     readyPlayers: room.players.filter(p => p.readyForNextHand).map(p => p.id),
-    sessionScores: Object.values(room.sessionScores || {}),
+    sessionScores: Object.values(room.sessionScores || {}).filter(sc => {
+      if (!sc || !sc.name) return false;
+      const isSeated = (room.players || []).some(p => (p.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
+      return sc.handsPlayed > 0 || isSeated;
+    }),
     players: room.players.map(p => ({
       id: p.id,
       name: p.name,
@@ -118,9 +122,10 @@ function finalizeRound(userRoom) {
   const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
 
   const results = userRoom.players.map(p => {
-    // Ensure player session entry exists
-    if (!userRoom.sessionScores[p.id]) {
-      userRoom.sessionScores[p.id] = {
+    // Ensure player session entry exists keyed by normalized player name
+    const scoreKey = (p.name || '').trim().toLowerCase();
+    if (!userRoom.sessionScores[scoreKey]) {
+      userRoom.sessionScores[scoreKey] = {
         id: p.id,
         name: p.name,
         handsPlayed: 0,
@@ -130,8 +135,9 @@ function finalizeRound(userRoom) {
         totalScore: 0
       };
     }
-    const sc = userRoom.sessionScores[p.id];
+    const sc = userRoom.sessionScores[scoreKey];
     sc.name = p.name;
+    sc.id = p.id;
     sc.handsPlayed += 1;
     p.readyForNextHand = false;
 
@@ -226,7 +232,11 @@ function finalizeRound(userRoom) {
         winnerMaal,
         results,
         revealedHands,
-        sessionScores: Object.values(userRoom.sessionScores),
+        sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
+          if (!sc || !sc.name) return false;
+          const isSeated = (userRoom.players || []).some(pl => (pl.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
+          return sc.handsPlayed > 0 || isSeated;
+        }),
         handNumber: userRoom.handNumber || 1,
         readyPlayers: []
       }));
@@ -388,8 +398,9 @@ wss.on('connection', (ws) => {
 
         playerId = `p_${Math.random().toString(36).substring(2, 9)}`;
 
-        if (!userRoom.sessionScores[playerId]) {
-          userRoom.sessionScores[playerId] = {
+        const scoreKey = playerName.trim().toLowerCase();
+        if (!userRoom.sessionScores[scoreKey]) {
+          userRoom.sessionScores[scoreKey] = {
             id: playerId,
             name: playerName,
             handsPlayed: 0,
@@ -399,6 +410,9 @@ wss.on('connection', (ws) => {
             maal: 0,
             totalScore: 0
           };
+        } else {
+          userRoom.sessionScores[scoreKey].id = playerId;
+          userRoom.sessionScores[scoreKey].name = playerName;
         }
 
         const newPlayer = {
@@ -741,8 +755,9 @@ wss.on('connection', (ws) => {
           leavingPlayer.dropPenalty = CONFIG.middleDrop || 70;
           leavingPlayer.hasLeft = true;
 
-          if (!userRoom.sessionScores[leavingPlayer.id]) {
-            userRoom.sessionScores[leavingPlayer.id] = {
+          const scoreKey = (leavingPlayer.name || '').trim().toLowerCase();
+          if (!userRoom.sessionScores[scoreKey]) {
+            userRoom.sessionScores[scoreKey] = {
               id: leavingPlayer.id,
               name: leavingPlayer.name,
               handsPlayed: 1,
@@ -753,7 +768,7 @@ wss.on('connection', (ws) => {
               totalScore: -70
             };
           } else {
-            const sc = userRoom.sessionScores[leavingPlayer.id];
+            const sc = userRoom.sessionScores[scoreKey];
             sc.points += 70;
             sc.totalScore -= 70;
           }

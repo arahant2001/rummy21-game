@@ -470,12 +470,15 @@
       z-index: 2;
     }
 
-    /* Locked cards inside formed declaration groups (cannot be selected into second group) */
+    /* Interactive cards inside formed declaration groups (tap card to release back to pool) */
+    .grouped-cards .card,
     .locked-cards .card {
-      cursor: default !important;
+      cursor: pointer !important;
+      position: relative;
     }
+    .grouped-cards .card:hover,
     .locked-cards .card:hover {
-      transform: none !important;
+      transform: translateY(-4px) !important;
     }
 
     /* Discard Pile Joker Pickup Lock (Requirement 4) */
@@ -5911,6 +5914,10 @@ body.is-dragging-card-mobile {
                 <span>👑 Set ${isSetValid ? '✓' : ''}</span>
                 <span class="btn-group-sub">3-4 Cards</span>
               </button>
+              <button type="button" class="btn-group-type" onclick="ungroupAllDeclaration()" title="Disband all formed melds back to Cards to Group">
+                <span>↩ Ungroup All</span>
+                <span class="btn-group-sub">Reset groups</span>
+              </button>
             </div>
 
             <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
@@ -5999,6 +6006,10 @@ body.is-dragging-card-mobile {
                 <span>⚡ From Stands</span>
                 <span class="btn-group-sub">Auto-fill racks</span>
               </button>
+              <button type="button" class="btn-group-type" onclick="ungroupAllDeclaration()" title="Disband all groups back to Cards to Group">
+                <span>↩ Ungroup All</span>
+                <span class="btn-group-sub">Reset groups</span>
+              </button>
             </div>
 
             <div class="declare-footer" style="flex-direction:column; gap:10px; align-items:stretch;">
@@ -6007,14 +6018,11 @@ body.is-dragging-card-mobile {
                   <span>🏆 Submit Declaration ${isShowReady ? '✨' : ''}</span>
                 </button>
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:11px; color:#8ba096;">Wrong arrangement?</span>
-                  <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+              <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare (Return to Normal Play)</button>
+                  <button type="button" class="stand-close-btn" onclick="ungroupAllDeclaration()">↩ Ungroup All</button>
                 </div>
-                <button type="button" class="btn-forfeit-danger" onclick="forfeitDeclaration()" title="Conceding incurs a 100 points penalty">
-                  ${forfeitConfirming ? '⚠️ Confirm Forfeit (100 pts)?' : '⚠️ Forfeit Hand (100 pts)'}
-                </button>
               </div>
             </div>`;
         }
@@ -6611,7 +6619,7 @@ body.is-dragging-card-mobile {
     const isSeqValid = declarationSequence(selectedCards);
     const isSetValid = declarationSet(selectedCards);
     const detected = detectBestGroupType(selectedCards);
-    const dInfo = countHandDoubles(myHand);
+    const dInfo = countDoubles(myHand);
     const isDoublesReady = (dInfo.count >= 7 && myHand.length === 21) || (dInfo.count >= 8 && myHand.length === 22);
     const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesReady;
 
@@ -6641,11 +6649,12 @@ body.is-dragging-card-mobile {
             ${isGroupingPhase ? `
               <button type="button" class="sticky-submit-btn" onclick="submitGroupingMeld()">
                 ✅ Submit Melds
-              </button>` : `
+              </button>
+              <button type="button" class="stand-close-btn" onclick="ungroupAllDeclaration()">↩ Ungroup All</button>` : `
               <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" style="${isShowReady ? 'background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 14px rgba(34,197,94,0.6);' : 'background: linear-gradient(135deg, #10b981, #059669);'}" onclick="declareShow()">
                 🏆 Submit Declaration ${isShowReady ? '✨' : ''}
               </button>
-              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
+              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
             `}
           </div>
         </div>
@@ -6679,6 +6688,10 @@ body.is-dragging-card-mobile {
             <span>👑 Set ${isSetValid ? '✓' : ''}</span>
             <span class="btn-group-sub">3-4 cards</span>
           </button>
+          <button type="button" class="sticky-meld-btn" onclick="ungroupAllDeclaration()" title="Disband all formed groups back to Cards to Group">
+            <span>↩ Ungroup All</span>
+            <span class="btn-group-sub">Reset groups</span>
+          </button>
         </div>
       </div>
     `;
@@ -6700,13 +6713,13 @@ body.is-dragging-card-mobile {
         }
       }
       return `<div class="stand-rack declaration-group locked">
-        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards</span>${protectionBadge}</div>
-        <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Undo Group</button></div>
+        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • tap card to release</span>${protectionBadge}</div>
+        <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Disband Group</button></div>
         <div class="stand-scroll-container">
           <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
           </button>
-          <div class="stand-cards locked-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),false,true)).join('')}</div>
+          <div class="stand-cards grouped-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),false,false)).join('')}</div>
           <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
           </button>
@@ -6724,6 +6737,7 @@ body.is-dragging-card-mobile {
         <button type="button" class="inline-meld-btn ${isSeqValid ? 'active' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''}>🃏 Joker</button>
         <button type="button" class="inline-meld-btn ${isSetValid ? 'active' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''}>👑 Set</button>
         <button type="button" class="inline-meld-btn auto" onclick="autoGroupFullHand()" title="Auto-Group all cards">⚡ Auto</button>
+        <button type="button" class="inline-meld-btn" onclick="ungroupAllDeclaration()" title="Disband all formed groups back to Cards to Group">↩ Ungroup All</button>
         ${selCount > 0 ? '<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear</button>' : ''}
       </div></div>
       <div class="stand-scroll-container">
@@ -6784,6 +6798,8 @@ body.is-dragging-card-mobile {
     }
     return { count: doubleCount, pairs };
   }
+  window.countDoubles = countDoubles;
+  window.countHandDoubles = countDoubles;
 
   function declarationIsTunella(cards) {
     if (!Array.isArray(cards) || cards.length !== 3) return false;
@@ -7019,7 +7035,7 @@ body.is-dragging-card-mobile {
     renderAll(null);
   }
 
-  function autoGroupFromStands() {
+  function autoGroupFromStands(showNotification = true) {
     if (!declarationMode) return;
     declarationGroups = [];
     declarationSelectedIds.clear();
@@ -7049,14 +7065,16 @@ body.is-dragging-card-mobile {
 
     const pureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
     const totalGrouped = newGroups.flatMap(g => g.cards).length;
-    if (newGroups.length > 0) {
-      if (totalGrouped === 21 && pureCount >= 3) {
-        alert(`Great! Auto-detected ${newGroups.length} valid groups (${pureCount} Pure Sequences). All 21 cards are grouped and ready to declare!`);
+    if (showNotification) {
+      if (newGroups.length > 0) {
+        if (totalGrouped === 21 && pureCount >= 3) {
+          alert(`Great! Auto-detected ${newGroups.length} valid groups (${pureCount} Pure Sequences). All 21 cards are grouped and ready to declare!`);
+        } else {
+          alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards. Select remaining cards below to finish your show.`);
+        }
       } else {
-        alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards. Select remaining cards below to finish your show.`);
+        alert('None of your table stands formed a complete valid run or set yet. Tap cards below to group them manually.');
       }
-    } else {
-      alert('None of your table stands formed a complete valid run or set yet. Tap cards below to group them manually.');
     }
   }
 
@@ -7528,6 +7546,13 @@ body.is-dragging-card-mobile {
   }
   function clearDeclarationSelection(){declarationSelectedIds.clear();renderAll(null);}
   function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);renderAll(null);}
+  function ungroupAllDeclaration() {
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    forfeitConfirming = false;
+    renderAll(null);
+  }
+  window.ungroupAllDeclaration = ungroupAllDeclaration;
   let forfeitConfirming = false;
   function cancelDeclaration() {
     declarationMode = false;
@@ -7536,6 +7561,7 @@ body.is-dragging-card-mobile {
     forfeitConfirming = false;
     renderAll(null);
   }
+  window.cancelDeclaration = cancelDeclaration;
 
   function forfeitDeclaration() {
     if (!declarationMode) return;
@@ -7594,8 +7620,25 @@ body.is-dragging-card-mobile {
       lastTouchActionTime = now;
     }
     if (declarationMode) {
-      const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
-      if (alreadyGrouped.has(cardId)) {
+      // Check if this card is currently inside a declaration group
+      const grpIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === cardId));
+      if (grpIdx !== -1) {
+        // Tapping a grouped card releases it back to "Cards to Group"
+        const grp = declarationGroups[grpIdx];
+        grp.cards = grp.cards.filter(c => c && c.id !== cardId);
+        if (grp.cards.length < 3) {
+          // If fewer than 3 cards remain, disband the remainder back to ungrouped pool
+          declarationGroups.splice(grpIdx, 1);
+        } else {
+          // Re-evaluate group type for remaining cards
+          const detected = detectBestGroupType(grp.cards);
+          if (detected) {
+            grp.type = detected.type;
+            grp.typeLabel = detected.label;
+          }
+        }
+        declarationSelectedIds.delete(cardId);
+        renderAll(null);
         return;
       }
       if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
@@ -8966,8 +9009,12 @@ body.is-dragging-card-mobile {
       declarationGroups = [];
       declarationSelectedIds.clear();
       selectedCardId = null;
-      // Auto-group immediately upon declaring so cards are arranged with pure runs prioritized over sets
-      autoGroupFullHand();
+      // Auto-detect groups from existing user stands first if valid (silently)
+      autoGroupFromStands(false);
+      // If no valid groups formed from stands, auto-group full hand silently
+      if (declarationGroups.length === 0) {
+        autoGroupFullHand(false);
+      }
       setTimeout(() => {
         const dp = document.getElementById('declarationPanel');
         if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -9058,33 +9105,33 @@ body.is-dragging-card-mobile {
       if (waitModal) {
         waitModal.style.display = 'flex';
         if (waitTitle) waitTitle.innerText = '🏆 Declaration Accepted!';
-        if (waitSub) waitSub.innerText = 'Waiting for opponents (Aarav, Priya, Rohan) to group their cards...';
+        if (waitSub) waitSub.innerText = 'Waiting for opponents (Kavita, Sonia, Aarav) to group their cards...';
         if (waitProg) waitProg.innerText = '1 / 4 players ready';
         if (playersList) {
           playersList.innerHTML = `
             <div class="wait-player-row ready"><span>You</span><span>✅ Declared (Ready)</span></div>
-            <div class="wait-player-row waiting" id="demoWait_p2"><span>Aarav</span><span>⏳ Grouping cards...</span></div>
-            <div class="wait-player-row waiting" id="demoWait_p3"><span>Priya</span><span>⏳ Grouping cards...</span></div>
-            <div class="wait-player-row waiting" id="demoWait_p4"><span>Rohan</span><span>⏳ Grouping cards...</span></div>
+            <div class="wait-player-row waiting" id="demoWait_p2"><span>Kavita</span><span>⏳ Grouping cards...</span></div>
+            <div class="wait-player-row waiting" id="demoWait_p3"><span>Sonia</span><span>⏳ Grouping cards...</span></div>
+            <div class="wait-player-row waiting" id="demoWait_p4"><span>Aarav</span><span>⏳ Grouping cards...</span></div>
           `;
         }
       }
 
       setTimeout(() => {
         const row = document.getElementById('demoWait_p2');
-        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Aarav</span><span>✅ Ready</span>'; }
+        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Kavita</span><span>✅ Ready</span>'; }
         if (waitProg) waitProg.innerText = '2 / 4 players ready';
       }, 700);
 
       setTimeout(() => {
         const row = document.getElementById('demoWait_p3');
-        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Priya</span><span>✅ Ready</span>'; }
+        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Sonia</span><span>✅ Ready</span>'; }
         if (waitProg) waitProg.innerText = '3 / 4 players ready';
       }, 1400);
 
       setTimeout(() => {
         const row = document.getElementById('demoWait_p4');
-        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Rohan</span><span>✅ Ready</span>'; }
+        if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Aarav</span><span>✅ Ready</span>'; }
         if (waitProg) waitProg.innerText = '4 / 4 players ready';
       }, 2000);
 
@@ -9109,12 +9156,12 @@ body.is-dragging-card-mobile {
         ];
         const aaravDeadwood = calculateCurrentDeadwood(aaravGroups, aaravHand).points;
 
-        const priyaGroups = [
+        const kavitaGroups = [
           { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
           { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] },
           { type: 'SET', cards: [{ id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' }] }
         ];
-        const priyaHand = [
+        const kavitaHand = [
           { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
           { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
           { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
@@ -9123,9 +9170,9 @@ body.is-dragging-card-mobile {
           { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
           { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
         ];
-        // Priya has only 1 pure sequence (< 3). Therefore, all cards apart from jokers,
+        // Kavita has only 1 pure sequence (< 3). Therefore, all cards apart from jokers,
         // pure sequences of 4+ cards, and tunellas are counted as deadwood!
-        const priyaDeadwood = calculateCurrentDeadwood(priyaGroups, priyaHand).points;
+        const kavitaDeadwood = calculateCurrentDeadwood(kavitaGroups, kavitaHand).points;
 
         const demoData = {
           winnerName: roomState.turnPlayerName || 'You',
@@ -9133,8 +9180,8 @@ body.is-dragging-card-mobile {
           results: [
             { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each loser` },
             { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-            { name: 'Priya', status: 'LOST', points: priyaDeadwood + winnerMaal.total, deadwood: priyaDeadwood, net: `Pays ${priyaDeadwood + winnerMaal.total} pts (${priyaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-            { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Honors)` }
+            { name: 'Kavita', status: 'LOST', points: kavitaDeadwood + winnerMaal.total, deadwood: kavitaDeadwood, net: `Pays ${kavitaDeadwood + winnerMaal.total} pts (${kavitaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+            { name: 'Sonia', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Honors)` }
           ],
           revealedHands: [
             {
@@ -9152,14 +9199,14 @@ body.is-dragging-card-mobile {
               hand: aaravHand
             },
             {
-              name: 'Priya',
+              name: 'Kavita',
               isWinner: false,
-              deadwood: priyaDeadwood,
-              groups: priyaGroups,
-              hand: priyaHand
+              deadwood: kavitaDeadwood,
+              groups: kavitaGroups,
+              hand: kavitaHand
             },
             {
-              name: 'Rohan',
+              name: 'Sonia',
               isWinner: false,
               hasDropped: true,
               dropType: 'First Drop (30 pts)',
@@ -9445,11 +9492,43 @@ body.is-dragging-card-mobile {
     if (!Array.isArray(scores) || scores.length === 0) {
       return '<div style="padding:14px; text-align:center; color:#9db0a7; font-size:12px;">No session scores recorded yet. Scores will be tallied here at the end of each round.</div>';
     }
+
+    // Consolidate entries by normalized player name to eliminate spurious or ghost entries
+    const consolidatedMap = new Map();
+    const currentRoomPlayerNames = new Set((roomState?.players || []).map(p => (p.name || '').trim().toLowerCase()));
+
+    for (const s of scores) {
+      if (!s || !s.name) continue;
+      const key = s.name.trim().toLowerCase();
+      // Filter out disconnected ghost entries with 0 hands played
+      if ((s.handsPlayed || 0) === 0 && !currentRoomPlayerNames.has(key)) {
+        continue;
+      }
+      if (!consolidatedMap.has(key)) {
+        consolidatedMap.set(key, { ...s });
+      } else {
+        const existing = consolidatedMap.get(key);
+        existing.handsPlayed = Math.max(existing.handsPlayed || 0, s.handsPlayed || 0);
+        existing.handsWon = Math.max(existing.handsWon || 0, s.handsWon || 0);
+        existing.points = Math.max(existing.points || 0, s.points || 0);
+        existing.maal = (existing.maal || 0) + (s.maal || 0);
+        existing.honors = (existing.honors || 0) + (s.honors || 0);
+        existing.totalScore = (existing.totalScore || 0) + (s.totalScore || 0);
+        if (s.playerId) existing.playerId = s.playerId;
+      }
+    }
+
+    const cleanedScores = Array.from(consolidatedMap.values());
+    if (cleanedScores.length === 0) {
+      return '<div style="padding:14px; text-align:center; color:#9db0a7; font-size:12px;">No session scores recorded yet. Scores will be tallied here at the end of each round.</div>';
+    }
+
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
-    const sorted = [...scores].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+    const myName = (document.getElementById('playerName')?.value || 'You').trim().toLowerCase();
+    const sorted = [...cleanedScores].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
 
     const rowsHtml = sorted.map((s, idx) => {
-      const isMe = s.playerId === myId || s.name === 'You' || (isDemo && s.playerId === 'p_demo');
+      const isMe = s.playerId === myId || s.name === 'You' || (isDemo && s.playerId === 'p_demo') || (s.name || '').trim().toLowerCase() === myName;
       const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
       const pts = s.points || 0;
       const maal = s.maal || 0;
@@ -9465,7 +9544,7 @@ body.is-dragging-card-mobile {
             <span style="font-weight:700;">${escapeHtml(s.name)}</span>
             ${isMe ? '<span style="margin-left:6px; font-size:9px; background:rgba(50,197,138,0.22); color:#7eedba; padding:1px 5px; border-radius:4px; font-weight:800;">YOU</span>' : ''}
           </td>
-          <td style="text-align:center;"><b>${s.handsWon || 0}</b> / ${s.handsPlayed || 1}</td>
+          <td style="text-align:center;"><b>${s.handsWon || 0}</b> / ${Math.max(1, s.handsPlayed || 0)}</td>
           <td style="text-align:right; color:#fca5a5;">${pts > 0 ? `-${pts}` : '0'}</td>
           <td style="text-align:right; color:${maal >= 0 ? '#fde047' : '#f87171'};">${maal !== 0 ? `${maalPrefix}${maal}` : '0'}</td>
           <td style="text-align:right;" class="${totalClass}">${totalPrefix}${total}</td>
