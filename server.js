@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -221,7 +221,8 @@ function finalizeRound(userRoom) {
     finalDiscard: pl.finalDiscard || null,
     groups: pl.declaredGroups || [],
     maal: calculateMaal(pl.hand, userRoom.cutCard),
-    deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, pl.hand, userRoom.cutCard))
+    deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, pl.hand, userRoom.cutCard)),
+    deadwoodCardIds: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT' || pl.hasDropped || pl.id === winner.id) ? [] : getDeadwoodCards(pl.declaredGroups, pl.hand, userRoom.cutCard).map(c => c.id)
   }));
 
   userRoom.players.forEach(p => {
@@ -232,6 +233,8 @@ function finalizeRound(userRoom) {
         winnerMaal,
         results,
         revealedHands,
+        cutCard: userRoom.cutCard,
+        roles: userRoom.cutCard ? resolveJokerRoles(userRoom.cutCard) : null,
         sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
           if (!sc || !sc.name) return false;
           const isSeated = (userRoom.players || []).some(pl => (pl.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
