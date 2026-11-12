@@ -6619,7 +6619,7 @@ body.is-dragging-card-mobile {
     const isSeqValid = declarationSequence(selectedCards);
     const isSetValid = declarationSet(selectedCards);
     const detected = detectBestGroupType(selectedCards);
-    const dInfo = countHandDoubles(myHand);
+    const dInfo = countDoubles(myHand);
     const isDoublesReady = (dInfo.count >= 7 && myHand.length === 21) || (dInfo.count >= 8 && myHand.length === 22);
     const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesReady;
 
@@ -6798,6 +6798,8 @@ body.is-dragging-card-mobile {
     }
     return { count: doubleCount, pairs };
   }
+  window.countDoubles = countDoubles;
+  window.countHandDoubles = countDoubles;
 
   function declarationIsTunella(cards) {
     if (!Array.isArray(cards) || cards.length !== 3) return false;
