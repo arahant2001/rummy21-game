@@ -118,8 +118,8 @@ function finalizeRound(userRoom) {
   const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard);
 
   userRoom.sessionScores = userRoom.sessionScores || {};
-  // Paying losers: losers who are not Free Scoot (Free Scoot owes 0 honors and 0 points)
-  const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
+  // Paying losers: active players who did not drop or fold (dropped players pay strictly their drop penalty and do not owe winner honors)
+  const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.hasDropped && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
 
   const results = userRoom.players.map(p => {
     // Ensure player session entry exists keyed by normalized player name
@@ -153,7 +153,9 @@ function finalizeRound(userRoom) {
         points: 0,
         maalCollected: netMaal,
         honorsCollected: netMaal,
-        net: `Won + collects ${winnerMaal.total} Honors from each paying loser (+${netMaal} pts)`
+        net: payingLosersCount > 0
+          ? `Won + collects ${winnerMaal.total} Honors from each paying loser (+${netMaal} pts)`
+          : `Won (all opponents dropped / folded, 0 Honors collected)`
       };
     }
     if (p.hasDropped) {
@@ -172,10 +174,11 @@ function finalizeRound(userRoom) {
           net: 'Free Scoot / Free Game (0 pts & 0 Honors owed)'
         };
       }
-      const drop = p.dropPenalty || CONFIG.firstDrop || 30;
-      const totalPay = drop + winnerMaal.total;
+      const drop = p.dropPenalty || (p.hasForfeited ? 100 : (CONFIG.firstDrop || 30));
+      // In Indian 21 Card Rummy, folded/dropped players pay ONLY their drop penalty (30 or 70) and do NOT owe winner honors
+      const totalPay = drop;
       sc.points += drop;
-      sc.maal -= winnerMaal.total;
+      sc.maal += 0;
       sc.honors = sc.maal;
       sc.totalScore -= totalPay;
       return {
@@ -183,9 +186,9 @@ function finalizeRound(userRoom) {
         status: p.hasForfeited ? 'FORFEITED' : 'DROPPED',
         points: totalPay,
         dropPenalty: drop,
-        maalOwed: winnerMaal.total,
-        honorsOwed: winnerMaal.total,
-        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${winnerMaal.total} winner Honors)`
+        maalOwed: 0,
+        honorsOwed: 0,
+        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'})`
       };
     }
 
@@ -290,8 +293,8 @@ function dealNextHand(room) {
     room.groupingTimer = null;
   }
 
-  // Refinement 5: Rotate starting player anti-clockwise around the table
-  // Array progression 0 -> 1 -> 2 -> 3 -> 0 matches anti-clockwise table rotation
+  // Refinement 5: Rotate starting player clockwise around the table
+  // Array progression 0 -> 1 -> 2 -> 3 -> 0 matches clockwise visual seating rotation
   room.starterIndex = ((room.starterIndex ?? 0) + 1) % room.players.length;
   room.turnIndex = room.starterIndex;
   // Dealer button sits on preceding player who dealt to starter
@@ -752,10 +755,16 @@ wss.on('connection', (ws) => {
         const wasPlaying = userRoom.status === 'PLAYING' || userRoom.status === 'GROUPING';
 
         if (wasPlaying) {
-          // Mid-scoot: apply 70 pts penalty and treat hand as folded mid-game
+          // If leaving after a wrong declare, invalid show, or forfeit, penalize 100 pts instead of normal mid-scoot 70 pts
+          const isForfeit = Boolean(leavingPlayer.hasForfeited || leavingPlayer.dropType === 'FORFEIT' || leavingPlayer.dropPenalty === 100 || data.forfeit);
+          const penalty = isForfeit ? 100 : (CONFIG.middleDrop || 70);
+          const dropType = isForfeit ? 'FORFEIT' : 'MIDDLE_DROP';
+          const penaltyLabel = isForfeit ? 'Wrong Declare / Forfeit: 100 pts' : 'Mid-scoot: 70 pts';
+
           leavingPlayer.hasDropped = true;
-          leavingPlayer.dropType = 'MIDDLE_DROP';
-          leavingPlayer.dropPenalty = CONFIG.middleDrop || 70;
+          leavingPlayer.hasForfeited = isForfeit;
+          leavingPlayer.dropType = dropType;
+          leavingPlayer.dropPenalty = penalty;
           leavingPlayer.hasLeft = true;
 
           const scoreKey = (leavingPlayer.name || '').trim().toLowerCase();
@@ -765,23 +774,25 @@ wss.on('connection', (ws) => {
               name: leavingPlayer.name,
               handsPlayed: 1,
               handsWon: 0,
-              points: 70,
+              points: penalty,
               honors: 0,
               maal: 0,
-              totalScore: -70
+              totalScore: -penalty
             };
           } else {
             const sc = userRoom.sessionScores[scoreKey];
-            sc.points += 70;
-            sc.totalScore -= 70;
+            sc.points += penalty;
+            sc.totalScore -= penalty;
           }
 
-          userRoom.lastAction = `${leavingPlayer.name} left the game (Mid-scoot: 70 pts)`;
+          userRoom.lastAction = `${leavingPlayer.name} left the game (${penaltyLabel})`;
 
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'SESSION_LEFT',
-              message: 'You left the game as a Mid-Scoot (70 pts penalty).'
+              message: isForfeit
+                ? 'You left the game after a wrong declare / forfeit (100 pts penalty).'
+                : 'You left the game as a Mid-Scoot (70 pts penalty).'
             }));
           }
           leavingPlayer.ws = null;

@@ -4252,19 +4252,38 @@ body.is-dragging-card-mobile {
 
   function promptLeaveSession() {
     const isPlaying = roomState && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING');
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myP = roomState?.players?.find(p => p.id === myId);
+    const isAfterWrongDeclareOrForfeit = Boolean(declarationMode || myP?.hasForfeited || myP?.dropType === 'FORFEIT' || myP?.dropPenalty === 100);
+
     if (isPlaying) {
-      showConfirmModal({
-        icon: '⚠️',
-        title: 'Leave Game in Progress?',
-        badgeText: 'Mid-Scoot: 70 pts penalty',
-        badgeClass: 'danger',
-        message: '<strong>A hand is currently in progress.</strong><br><br>If you leave now, it will be scored as a <strong>Mid-Scoot (70 points penalty + winner\'s Honors)</strong>.<br><br>Are you sure you want to fold your hand and leave the session?',
-        actionText: 'Mid-Scoot & Leave',
-        actionClass: 'danger',
-        onConfirm: () => {
-          executeLeaveSession();
-        }
-      });
+      if (isAfterWrongDeclareOrForfeit) {
+        showConfirmModal({
+          icon: '⚠️',
+          title: 'Leave After Wrong Declare?',
+          badgeText: 'Wrong Declare: 100 pts penalty',
+          badgeClass: 'danger',
+          message: '<strong>You are leaving after a wrong declaration attempt or during declare mode.</strong><br><br>Leaving now is scored as a <strong>Wrong Declare / Forfeit (100 points penalty)</strong>.<br><br>Are you sure you want to leave the table?',
+          actionText: 'Forfeit & Leave (100 pts)',
+          actionClass: 'danger',
+          onConfirm: () => {
+            executeLeaveSession(true);
+          }
+        });
+      } else {
+        showConfirmModal({
+          icon: '⚠️',
+          title: 'Leave Game in Progress?',
+          badgeText: 'Mid-Scoot: 70 pts penalty',
+          badgeClass: 'danger',
+          message: '<strong>A hand is currently in progress.</strong><br><br>If you leave now, it will be scored as a <strong>Mid-Scoot (70 points penalty)</strong>.<br><br>Are you sure you want to fold your hand and leave the session?',
+          actionText: 'Mid-Scoot & Leave (70 pts)',
+          actionClass: 'danger',
+          onConfirm: () => {
+            executeLeaveSession(false);
+          }
+        });
+      }
     } else {
       showConfirmModal({
         icon: '🚪',
@@ -4275,22 +4294,31 @@ body.is-dragging-card-mobile {
         actionText: 'Leave Table',
         actionClass: 'default',
         onConfirm: () => {
-          executeLeaveSession();
+          executeLeaveSession(false);
         }
       });
     }
   }
 
-  function executeLeaveSession() {
+  function executeLeaveSession(isForfeit = false) {
     if (isDemo) {
-      resetToLobbyScreen('You left the test table.');
+      if (globalSessionScores) {
+        const sc = globalSessionScores.find(s => s.playerId === 'p_demo' || s.name === 'You');
+        if (sc) {
+          const penalty = isForfeit ? 100 : 70;
+          sc.handsPlayed++;
+          sc.points += penalty;
+          sc.totalScore -= penalty;
+        }
+      }
+      resetToLobbyScreen(isForfeit ? 'You left the table after a wrong declare (100 pts penalty).' : 'You left the test table as a Mid-Scoot (70 pts penalty).');
       return;
     }
     if (ws && ws.readyState === WebSocket.OPEN) {
       isDeliberateExit = true;
-      ws.send(JSON.stringify({ type: 'LEAVE_SESSION' }));
+      ws.send(JSON.stringify({ type: 'LEAVE_SESSION', forfeit: isForfeit }));
     }
-    resetToLobbyScreen('You left the table.');
+    resetToLobbyScreen(isForfeit ? 'You left after a wrong declare (100 pts penalty).' : 'You left the table (70 pts penalty).');
   }
 
   function resetToLobbyScreen(message) {
@@ -4738,12 +4766,12 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // Strict deduplication across user stands
+    // Strict deduplication across user stands while preserving valid incoming cards
     const seenStandIds = new Set();
     userStands = userStands.map(stand => {
       const clean = [];
       for (const c of stand) {
-        if (c && c.id && !seenStandIds.has(c.id)) {
+        if (c && c.id && !seenStandIds.has(c.id) && incomingMap.has(c.id)) {
           seenStandIds.add(c.id);
           clean.push(c);
         }
@@ -4751,16 +4779,10 @@ body.is-dragging-card-mobile {
       return clean;
     });
 
-    // Invariant: Clamp total cards in stands to strictly at most 22
-    let totalCards = userStands.reduce((sum, s) => sum + s.length, 0);
-    while (totalCards > 22) {
-      for (let i = userStands.length - 1; i >= 0; i--) {
-        if (userStands[i].length > 0) {
-          userStands[i].pop();
-          totalCards--;
-          if (totalCards <= 22) break;
-        }
-      }
+    // Ensure every single card in clampedIncoming is present across stands without losing any card
+    const missingFromStands = clampedIncoming.filter(c => !seenStandIds.has(c.id));
+    if (missingFromStands.length > 0) {
+      userStands[0].push(...missingFromStands);
     }
 
     // Fail-safe: if stands somehow ended up empty while cards exist, distribute into 3 stands
@@ -4775,8 +4797,8 @@ body.is-dragging-card-mobile {
       userStands.push([]);
     }
 
-    // Synchronize myHand from stands
-    myHand = userStands.flat();
+    // Always keep myHand strictly synced to clampedIncoming (all 22 cards preserved)
+    myHand = clampedIncoming;
     saveStandsToStorage();
   }
 
@@ -5431,8 +5453,17 @@ body.is-dragging-card-mobile {
     }
     if (tableTurnBannerText) tableTurnBannerText.innerText = bannerMsg;
 
-    // 3. Render Opponent Seats around the Oval Table
-    const opponents = roomState.players.filter(p => p.id !== myId);
+    // 3. Render Opponent Seats around the Oval Table rotated clockwise relative to viewer (YOU at Bottom)
+    // Clockwise progression: Bottom (You) -> Left (Seat 1) -> Top (Seat 2) -> Right (Seat 3) -> Bottom (You)
+    const myIdx = roomState.players.findIndex(p => p.id === myId);
+    const opponents = [];
+    if (myIdx !== -1 && roomState.players.length > 1) {
+      for (let i = 1; i < roomState.players.length; i++) {
+        opponents.push(roomState.players[(myIdx + i) % roomState.players.length]);
+      }
+    } else {
+      opponents.push(...roomState.players.filter(p => p.id !== myId));
+    }
     if (opponentArea) {
       if (opponents.length === 0) {
         opponentArea.innerHTML = `
@@ -5475,7 +5506,7 @@ body.is-dragging-card-mobile {
 
           const count = p.cardCount ?? 21;
           const avatar = getPlayerAvatarEmoji(p.name);
-          const isDealer = roomState.dealerId === p.id || (idx === 0 && !roomState.dealerId);
+          const isDealer = roomState.dealerId === p.id;
 
           return `
             <div class="pokerist-seat ${isWinner ? 'is-winner-seat' : ''} ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${forfeited ? 'is-forfeited' : ''}">
@@ -5690,31 +5721,45 @@ body.is-dragging-card-mobile {
 
     const btnDrop = document.getElementById('btnDrop');
     if (btnDrop) {
-      const canDropNow = canDraw || (isFreeGameDrawn && canDiscard);
-      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited);
-      const b = btnDrop.querySelector('b');
-      const s = btnDrop.querySelector('.action-sub');
-      if (b && !dropConfirming) {
-        if (myDropped) {
-          const pen = myPlayer?.dropPenalty || 0;
-          b.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scooted (0 pts)' : `Scooted (${pen} pts)`;
-        } else if (isFreeScootDealt) {
-          b.innerText = 'Free Scoot (0 pts)';
-        } else if (isFreeGameDrawn) {
-          b.innerText = 'Free Game (0 pts)';
-        } else {
-          b.innerText = `Scoot (${dropPenaltyPts} pts)`;
+      if (declarationMode && roomState?.status !== 'GROUPING') {
+        btnDrop.classList.remove('btn-disabled');
+        btnDrop.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.25), rgba(185,28,28,0.35))';
+        btnDrop.style.borderColor = 'rgba(239,68,68,0.55)';
+        btnDrop.onclick = () => promptForfeitDeclaration();
+        const b = btnDrop.querySelector('b');
+        const s = btnDrop.querySelector('.action-sub');
+        if (b) b.innerText = 'Forfeit Show';
+        if (s) s.innerText = '100 pts penalty';
+      } else {
+        btnDrop.onclick = () => dropHand();
+        btnDrop.style.background = '';
+        btnDrop.style.borderColor = '';
+        const canDropNow = canDraw || (isFreeGameDrawn && canDiscard);
+        btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited);
+        const b = btnDrop.querySelector('b');
+        const s = btnDrop.querySelector('.action-sub');
+        if (b && !dropConfirming) {
+          if (myDropped) {
+            const pen = myPlayer?.dropPenalty || 0;
+            b.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scooted (0 pts)' : `Scooted (${pen} pts)`;
+          } else if (isFreeScootDealt) {
+            b.innerText = 'Free Scoot (0 pts)';
+          } else if (isFreeGameDrawn) {
+            b.innerText = 'Free Game (0 pts)';
+          } else {
+            b.innerText = `Scoot (${dropPenaltyPts} pts)`;
+          }
         }
-      }
-      if (s && !dropConfirming) {
-        if (myDropped) {
-          s.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? '0 pts & 0 honors' : 'hand folded';
-        } else if (isFreeScootDealt) {
-          s.innerText = '6+ doubles dealt • 0 pts & 0 honors';
-        } else if (isFreeGameDrawn) {
-          s.innerText = '7+ doubles • 0 pts & 0 honors';
-        } else {
-          s.innerText = `${dropTypeLabel} (-${dropPenaltyPts} pts)`;
+        if (s && !dropConfirming) {
+          if (myDropped) {
+            s.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? '0 pts & 0 honors' : 'hand folded';
+          } else if (isFreeScootDealt) {
+            s.innerText = '6+ doubles dealt • 0 pts & 0 honors';
+          } else if (isFreeGameDrawn) {
+            s.innerText = '7+ doubles • 0 pts & 0 honors';
+          } else {
+            s.innerText = `${dropTypeLabel} (-${dropPenaltyPts} pts)`;
+          }
         }
       }
     }
@@ -6669,6 +6714,9 @@ body.is-dragging-card-mobile {
               <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" style="${isShowReady ? 'background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 14px rgba(34,197,94,0.6);' : 'background: linear-gradient(135deg, #10b981, #059669);'}" onclick="declareShow()">
                 🏆 Submit Declaration ${isShowReady ? '✨' : ''}
               </button>
+              <button type="button" class="stand-close-btn" style="background:rgba(239,68,68,0.22); border:1px solid rgba(239,68,68,0.5); color:#fca5a5; font-weight:700;" onclick="promptForfeitDeclaration()" title="Forfeit declaration with 100 points penalty">
+                🚩 Forfeit Show (100 pts)
+              </button>
               <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
             `}
           </div>
@@ -6707,6 +6755,11 @@ body.is-dragging-card-mobile {
             <span>↩ Ungroup All</span>
             <span class="btn-group-sub">Reset groups</span>
           </button>
+          ${!isGroupingPhase ? `
+          <button type="button" class="sticky-meld-btn" style="border-color:rgba(239,68,68,0.45); color:#fca5a5; background:rgba(239,68,68,0.12);" onclick="promptForfeitDeclaration()" title="Forfeit declaration (100 pts penalty)">
+            <span>🚩 Forfeit</span>
+            <span class="btn-group-sub">100 pts</span>
+          </button>` : ''}
         </div>
       </div>
     `;
@@ -7499,10 +7552,10 @@ body.is-dragging-card-mobile {
       winnerName,
       winnerMaal,
       results: [
-        { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each loser` },
+        { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each paying loser` },
         { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
         { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-        { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Honors)` }
+        { name: 'Rohan', status: 'DROPPED', points: 30, dropPenalty: 30, deadwood: 0, net: 'Pays 30 pts (30 drop penalty)' }
       ],
       revealedHands: [
         {
@@ -7588,38 +7641,58 @@ body.is-dragging-card-mobile {
   }
   window.cancelDeclaration = cancelDeclaration;
 
-  function forfeitDeclaration() {
-    if (!declarationMode) return;
-    if (!forfeitConfirming) {
-      forfeitConfirming = true;
-      renderAll(null);
-      setTimeout(() => {
-        forfeitConfirming = false;
-        renderAll(null);
-      }, 4500);
-      return;
-    }
-    forfeitConfirming = false;
+  function promptForfeitDeclaration() {
+    showConfirmModal({
+      icon: '🚩',
+      title: 'Forfeit Declaration?',
+      badgeText: 'Wrong Show / Forfeit: 100 pts',
+      badgeClass: 'danger',
+      message: '<strong>Are you sure you want to forfeit this declaration?</strong><br><br>Forfeiting or making an invalid declaration incurs a <strong>100 points penalty</strong> and folds your hand for the remainder of this deal.',
+      actionText: 'Forfeit Show (100 pts)',
+      actionClass: 'danger',
+      onConfirm: () => {
+        executeForfeitDeclaration();
+      }
+    });
+  }
+
+  function executeForfeitDeclaration() {
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
 
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const meP = roomState?.players?.find(p => p.id === myId);
+    if (meP) {
+      meP.hasDropped = true;
+      meP.hasForfeited = true;
+      meP.dropType = 'FORFEIT';
+      meP.dropPenalty = 100;
+    }
+
     if (isDemo) {
-      const meP = roomState?.players?.find(p => p.id === 'p_demo');
-      if (meP) {
-        meP.hasDropped = true;
-        meP.hasForfeited = true;
-        meP.dropType = 'FORFEIT';
-        meP.dropPenalty = 100;
+      if (globalSessionScores) {
+        let sc = globalSessionScores.find(s => s.playerId === 'p_demo' || s.name === 'You');
+        if (sc) {
+          sc.handsPlayed++;
+          sc.points += 100;
+          sc.totalScore -= 100;
+        }
       }
-      roomState.lastAction = `${meP?.name || 'You'} forfeited declaration (100 pts)`;
+      updateSessionHeaderBadge();
+      roomState.lastAction = `${meP?.name || 'You'} forfeited declaration (100 pts penalty)`;
       passDemoTurn();
       window.alert('Declaration forfeited (100 points penalty). Turn passed to ' + roomState.turnPlayerName + '. Play continues.');
       return;
     }
-    ws.send(JSON.stringify({ type: 'FORFEIT_DECLARATION' }));
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'FORFEIT_DECLARATION' }));
+    }
     renderAll(null);
   }
+  window.promptForfeitDeclaration = promptForfeitDeclaration;
+  window.executeForfeitDeclaration = executeForfeitDeclaration;
+  window.forfeitDeclaration = promptForfeitDeclaration;
   function getMyPlayerId() {
     const rawName = (document.getElementById('playerName')?.value || '').trim().toLowerCase();
     const savedId = sessionStorage.getItem('rummy_player_id') || localStorage.getItem('rummy_player_id');
@@ -9034,12 +9107,9 @@ body.is-dragging-card-mobile {
       declarationGroups = [];
       declarationSelectedIds.clear();
       selectedCardId = null;
-      // Auto-detect groups from existing user stands first if valid (silently)
+      // Auto-detect groups from existing user stands first if already formed cleanly
       autoGroupFromStands(false);
-      // If no valid groups formed from stands, auto-group full hand silently
-      if (declarationGroups.length === 0) {
-        autoGroupFullHand(false);
-      }
+      // Preserve player's manual stands without silent reshuffling (player can click ⚡ Auto-Group if desired)
       setTimeout(() => {
         const dp = document.getElementById('declarationPanel');
         if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -9203,10 +9273,10 @@ body.is-dragging-card-mobile {
           winnerName: roomState.turnPlayerName || 'You',
           winnerMaal,
           results: [
-            { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each loser` },
+            { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each paying loser` },
             { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
             { name: 'Kavita', status: 'LOST', points: kavitaDeadwood + winnerMaal.total, deadwood: kavitaDeadwood, net: `Pays ${kavitaDeadwood + winnerMaal.total} pts (${kavitaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-            { name: 'Sonia', status: 'DROPPED', points: 30 + winnerMaal.total, deadwood: 30, net: `Pays ${30 + winnerMaal.total} pts (30 drop penalty + ${winnerMaal.total} winner Honors)` }
+            { name: 'Sonia', status: 'DROPPED', points: 30, dropPenalty: 30, deadwood: 0, net: 'Pays 30 pts (30 drop penalty)' }
           ],
           revealedHands: [
             {
@@ -9705,7 +9775,9 @@ body.is-dragging-card-mobile {
 
     const winner = data.winnerName;
     const winnerMaalTotal = data.winnerMaal?.total || 0;
-    const loserCount = Math.max(1, (roomState?.players || []).length - 1);
+    // Paying losers: active players who did not drop or fold
+    const payingLosers = (data.results || []).filter(r => r.name !== winner && r.status !== 'WINNER' && r.status !== 'DROPPED' && r.status !== 'FORFEITED');
+    const payingLosersCount = payingLosers.length;
 
     (data.results || []).forEach(r => {
       let sc = globalSessionScores.find(s => s.name === r.name || (r.name === 'You' && s.playerId === 'p_demo'));
@@ -9717,9 +9789,14 @@ body.is-dragging-card-mobile {
       const isWinner = r.name === winner || r.status === 'WINNER';
       if (isWinner) {
         sc.handsWon++;
-        const maalWon = winnerMaalTotal * loserCount;
+        const maalWon = winnerMaalTotal * payingLosersCount;
         sc.maal += maalWon;
         sc.totalScore += maalWon;
+      } else if (r.status === 'DROPPED' || r.status === 'FORFEITED') {
+        // Dropped/folded players pay ONLY their drop penalty (30 or 70), NOT winner honors
+        const dropPts = r.dropPenalty !== undefined ? r.dropPenalty : (r.status === 'FORFEITED' ? 100 : (r.points !== undefined ? r.points : 70));
+        sc.points += dropPts;
+        sc.totalScore -= dropPts;
       } else {
         const deadwoodPts = r.deadwood !== undefined ? r.deadwood : (r.points !== undefined ? Math.max(0, r.points - winnerMaalTotal) : 30);
         sc.points += deadwoodPts;
@@ -10037,7 +10114,7 @@ body.is-dragging-card-mobile {
     document.getElementById('resultModal').style.display = 'flex';
   }
 
-  // --- Start Next Hand in Demo Mode with Anti-Clockwise Starting Turns & 3 Groups ---
+  // --- Start Next Hand in Demo Mode with Clockwise Starting Turns & 3 Groups ---
   function startNextHandDemo() {
     currentRoundWinnerName = null;
     currentRoundWinnerId = null;
@@ -10047,9 +10124,9 @@ body.is-dragging-card-mobile {
     if (bannerNext) bannerNext.classList.remove('is-winner-banner');
 
     demoHandNumber++;
-    // Requirement 5: Players should take turns (anti clockwise) in starting to draw when new hand is played
+    // Requirement 5: Players should take turns (clockwise) in starting to draw when new hand is played
     // Player seat positions: 0: You (bottom), 1: Kavita (left), 2: Sonia (top), 3: Aarav (right)
-    // Advancing index goes anti-clockwise around the table
+    // Advancing index goes clockwise around the table (Bottom -> Left -> Top -> Right -> Bottom)
     demoStarterIndex = (demoStarterIndex + 1) % (roomState.players.length || 4);
     const starter = roomState.players[demoStarterIndex];
     const dealerIndex = (demoStarterIndex - 1 + roomState.players.length) % roomState.players.length;
@@ -10063,7 +10140,7 @@ body.is-dragging-card-mobile {
     roomState.turnPlayerName = starter.name;
     roomState.turnStage = 'DRAW';
     roomState.deckCount = 134;
-    roomState.lastAction = `Hand #${demoHandNumber} dealt! ${starter.name} opens the hand (anti-clockwise turn order).`;
+    roomState.lastAction = `Hand #${demoHandNumber} dealt! ${starter.name} opens the hand (clockwise turn order).`;
 
     roomState.players.forEach(p => {
       p.cardCount = 21;
@@ -10128,7 +10205,7 @@ body.is-dragging-card-mobile {
 
     renderAll(calculateLocalMaal());
 
-    window.alert(`🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Anti-Clockwise turn order)\nCards arranged into 3 stands.`);
+    window.alert(`🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Clockwise turn order)\nCards arranged into 3 stands.`);
 
     // If starter is an opponent, simulate their opening move
     if (starter.id !== 'p_demo') {
@@ -10177,12 +10254,12 @@ body.is-dragging-card-mobile {
       id: 'DEMO-TABLE',
       handNumber: 1,
       starterIndex: 0,
-      dealerId: 'p_4', // Aarav (dealer), so turn starts anti-clockwise at 'p_demo' (You)
+      dealerId: 'p_4', // Aarav (dealer), so turn starts clockwise at 'p_demo' (You)
       status: 'PLAYING',
       turnPlayerId: 'p_demo',
       turnPlayerName: document.getElementById('playerName').value || 'You',
       turnStage: 'DRAW',
-      lastAction: 'Hand #1 started • You are up next to draw (Anti-Clockwise turn order)',
+      lastAction: 'Hand #1 started • You are up next to draw (Clockwise turn order)',
       cutCard: { id: 'c_cut', suit: '♠', rank: '7', rankValue: 7, isPoochie: false },
       roles: {
         tipluSuit: '♠',
@@ -10265,10 +10342,10 @@ body.is-dragging-card-mobile {
         winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 } },
         results: roomState.players.map(p => {
           if (p.id === winner.id) {
-            return { name: p.name, net: 'Won (opponents folded) + collects 50 Honors from each loser' };
+            return { name: p.name, status: 'WINNER', points: 0, net: 'Won (opponents folded)' };
           }
-          const pen = p.hasForfeited ? 100 : 30;
-          return { name: p.name, net: `Pays ${pen + 50} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + 50 winner Honors)` };
+          const pen = p.hasForfeited ? 100 : (p.dropPenalty || 30);
+          return { name: p.name, status: p.hasForfeited ? 'FORFEITED' : 'DROPPED', points: pen, net: `Pays ${pen} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'})` };
         }),
         revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
       };
@@ -10284,11 +10361,10 @@ body.is-dragging-card-mobile {
     roomState.turnStage = 'DRAW';
     renderAll(calculateLocalMaal());
 
-    // In demo mode, if turn passed to opponent, simulate their move and return turn to player
+    // In demo mode, if turn passed to opponent, simulate their move and advance clockwise to next player
     if (nextPlayer.id !== 'p_demo') {
       setTimeout(() => {
         if (!isDemo || roomState?.status !== 'PLAYING') return;
-        const rRoles = roomState.roles;
         const oppDiscards = [
           { suit: '♠', rank: '7', isPoochie: false }, // Pukka Joker (20 pts)
           { suit: '★', rank: 'PJ', isPoochie: true },  // Poochie (20 pts)
@@ -10317,13 +10393,9 @@ body.is-dragging-card-mobile {
         roomState.topDiscard = oppCard;
         roomState.lastAction = `${nextPlayer.name} drew and discarded ${oppCard.rank}${oppCard.suit}`;
 
-        // Return turn to player
-        roomState.turnPlayerId = 'p_demo';
-        const meP = roomState.players.find(p => p.id === 'p_demo');
-        roomState.turnPlayerName = meP?.name || 'You';
-        roomState.turnStage = 'DRAW';
-        renderAll(calculateLocalMaal());
-      }, 1200);
+        // Advance clockwise to next seat
+        passDemoTurn();
+      }, 1100);
     }
   }
 
