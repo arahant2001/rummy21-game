@@ -687,16 +687,16 @@ wss.on('connection', (ws) => {
         } else {
           userRoom.status = 'GROUPING';
           userRoom.turnStage = 'GROUPING';
-          userRoom.groupingDeadline = Date.now() + 60000;
+          userRoom.groupingDeadline = Date.now() + 300000;
           const declareTypeNotice = isDealtTurn ? '7 Doubles direct show' : (validation.isDoubles ? '8 Doubles show' : '21-card show');
-          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (60s)...`;
+          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (5m)...`;
 
           if (userRoom.groupingTimer) clearTimeout(userRoom.groupingTimer);
           userRoom.groupingTimer = setTimeout(() => {
             if (userRoom && userRoom.status === 'GROUPING') {
               finalizeRound(userRoom);
             }
-          }, 60000);
+          }, 300000);
 
           broadcastRoom(userRoom);
         }

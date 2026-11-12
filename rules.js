@@ -160,10 +160,8 @@ export function calculateGroupedDeadwood(groups, hand, cutCard) {
   const usedIds = new Set();
   let validPureSequences = 0;
   const validMeldedIds = new Set();
-  const qualifyingExemptIds = new Set(); // 4+ card pure runs, tunellas, and doubles
-  for (const pair of doublesInfo.pairs) {
-    pair.forEach(c => qualifyingExemptIds.add(c.id));
-  }
+  const qualifyingExemptIds = new Set(); // 4+ card pure runs and tunellas (exempt without 3 pure sequences)
+  // Note: Individual pairs do NOT exempt cards from deadwood unless player holds 7+ doubles (handled above).
 
   if (Array.isArray(groups) && groups.length > 0) {
     for (const group of groups) {
