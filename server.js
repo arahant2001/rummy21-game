@@ -26,7 +26,13 @@ function ensurePlayerHand(player, room, targetCount = 21) {
   if (!room.deck || !Array.isArray(room.deck)) room.deck = createDeck();
   while (player.hand.length < targetCount) {
     if (room.deck.length === 0) {
-      room.deck = createDeck();
+      if (Array.isArray(room.discardPile) && room.discardPile.length > 1) {
+        const top = room.discardPile.pop();
+        room.deck = room.discardPile.reverse();
+        room.discardPile = top ? [top] : [];
+      } else {
+        room.deck = createDeck();
+      }
     }
     player.hand.push(room.deck.pop());
   }
@@ -74,7 +80,7 @@ function getSafeRoom(room) {
       if (!sc || !sc.name) return false;
       const isSeated = (room.players || []).some(p => (p.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
       return sc.handsPlayed > 0 || isSeated;
-    }),
+    }).map(sc => ({ ...sc, playerId: sc.id })),
     players: room.players.map(p => ({
       id: p.id,
       name: p.name,
@@ -200,8 +206,8 @@ function finalizeRound(userRoom) {
       };
     }
 
-    // If player didn't manually submit groups (or timeout expired), auto-arrange their hand to minimize deadwood
-    if (!Array.isArray(p.declaredGroups) || p.declaredGroups.length === 0) {
+    // Only auto-arrange on timeout if the player never submitted groups during GROUPING
+    if (!p.isGrouped && !p.hasDropped && (!Array.isArray(p.declaredGroups) || p.declaredGroups.length === 0)) {
       p.declaredGroups = autoArrangeHandToGroups(p.hand, userRoom.cutCard);
     }
 
@@ -223,39 +229,51 @@ function finalizeRound(userRoom) {
     };
   });
 
-  const revealedHands = userRoom.players.map(pl => ({
-    name: pl.name,
-    id: pl.id,
-    hasDropped: pl.hasDropped,
-    dropType: pl.dropType,
-    isFreeScoot: Boolean(pl.isFreeScoot || pl.dropType === 'FREE_SCOOT'),
-    isWinner: pl.id === winner.id,
-    hand: pl.hand,
-    finalDiscard: pl.finalDiscard || null,
-    groups: pl.declaredGroups || [],
-    maal: calculateMaal(pl.hand, userRoom.cutCard),
-    deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, pl.hand, userRoom.cutCard)),
-    deadwoodCardIds: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT' || pl.hasDropped || pl.id === winner.id) ? [] : getDeadwoodCards(pl.declaredGroups, pl.hand, userRoom.cutCard).map(c => c.id)
-  }));
+  const revealedHands = userRoom.players.map(pl => {
+    const handCards = (Array.isArray(pl.hand) && pl.hand.length > 0)
+      ? pl.hand
+      : (Array.isArray(pl._finalHandSnapshot) ? pl._finalHandSnapshot : []);
+    return {
+      name: pl.name,
+      id: pl.id,
+      hasDropped: Boolean(pl.hasDropped),
+      hasForfeited: Boolean(pl.hasForfeited),
+      dropType: pl.dropType || null,
+      dropPenalty: pl.dropPenalty || 0,
+      isFreeScoot: Boolean(pl.isFreeScoot || pl.dropType === 'FREE_SCOOT'),
+      isGrouped: Boolean(pl.isGrouped),
+      isWinner: pl.id === winner.id,
+      hand: handCards,
+      finalDiscard: pl.finalDiscard || null,
+      groups: pl.declaredGroups || [],
+      maal: calculateMaal(handCards, userRoom.cutCard),
+      deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, handCards, userRoom.cutCard)),
+      deadwoodCardIds: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT' || pl.hasDropped || pl.id === winner.id) ? [] : getDeadwoodCards(pl.declaredGroups, handCards, userRoom.cutCard).map(c => c.id)
+    };
+  });
+
+  const resultPayload = {
+    type: 'SHOW_RESULT',
+    winnerId: winner.id,
+    winnerName: winner.name,
+    winnerMaal,
+    results,
+    revealedHands,
+    cutCard: userRoom.cutCard,
+    roles: userRoom.cutCard ? resolveJokerRoles(userRoom.cutCard) : null,
+    sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
+      if (!sc || !sc.name) return false;
+      const isSeated = (userRoom.players || []).some(pl => (pl.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
+      return sc.handsPlayed > 0 || isSeated;
+    }).map(sc => ({ ...sc, playerId: sc.id })),
+    handNumber: userRoom.handNumber || 1,
+    readyPlayers: []
+  };
+  userRoom.lastRoundResult = resultPayload;
 
   userRoom.players.forEach(p => {
     if (p.ws && p.ws.readyState === WebSocket.OPEN) {
-      p.ws.send(JSON.stringify({
-        type: 'SHOW_RESULT',
-        winnerName: winner.name,
-        winnerMaal,
-        results,
-        revealedHands,
-        cutCard: userRoom.cutCard,
-        roles: userRoom.cutCard ? resolveJokerRoles(userRoom.cutCard) : null,
-        sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
-          if (!sc || !sc.name) return false;
-          const isSeated = (userRoom.players || []).some(pl => (pl.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
-          return sc.handsPlayed > 0 || isSeated;
-        }),
-        handNumber: userRoom.handNumber || 1,
-        readyPlayers: []
-      }));
+      p.ws.send(JSON.stringify(resultPayload));
     }
   });
 
@@ -297,6 +315,7 @@ function dealNextHand(room) {
   const deck = createDeck();
   room.winnerId = null;
   room.winnerName = null;
+  room.lastRoundResult = null;
   room.groupingDeadline = null;
   if (room.groupingTimer) {
     clearTimeout(room.groupingTimer);
@@ -313,6 +332,8 @@ function dealNextHand(room) {
 
   room.players.forEach(p => {
     p.hand = deck.splice(0, 21);
+    p._finalHandSnapshot = null;
+    p.finalDiscard = null;
     p.hasDropped = false;
     p.hasForfeited = false;
     p.isFreeScoot = false;
@@ -410,6 +431,17 @@ wss.on('connection', (ws) => {
             ensurePlayerHand(existingPlayer, userRoom, 21);
           }
           broadcastRoom(userRoom);
+          if (userRoom.status === 'ROUND_OVER' && userRoom.lastRoundResult && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              ...userRoom.lastRoundResult,
+              sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
+                if (!sc || !sc.name) return false;
+                const isSeated = (userRoom.players || []).some(pl => (pl.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
+                return sc.handsPlayed > 0 || isSeated;
+              }).map(sc => ({ ...sc, playerId: sc.id })),
+              readyPlayers: userRoom.players.filter(p => p.readyForNextHand).map(p => p.id)
+            }));
+          }
           return;
         }
 
@@ -477,11 +509,26 @@ wss.on('connection', (ws) => {
         }
 
         const deck = createDeck();
+        const priorMaxHands = Object.values(userRoom.sessionScores || {}).reduce((m, sc) => Math.max(m, sc?.handsPlayed || 0), 0);
+        if (priorMaxHands > 0) {
+          userRoom.handNumber = Math.max(userRoom.handNumber || 1, priorMaxHands + 1);
+        }
+        userRoom.winnerId = null;
+        userRoom.winnerName = null;
+        userRoom.lastRoundResult = null;
         userRoom.players.forEach(p => {
           p.hand = deck.splice(0, 21);
+          p._finalHandSnapshot = null;
+          p.finalDiscard = null;
           p.hasDropped = false;
+          p.hasForfeited = false;
           p.isFreeScoot = false;
+          p.dropType = null;
+          p.dropPenalty = 0;
           p.turnsTaken = 0;
+          p.isGrouped = false;
+          p.declaredGroups = [];
+          p.readyForNextHand = false;
           p._settledInRound = false;
         });
 
@@ -805,6 +852,7 @@ wss.on('connection', (ws) => {
             }));
           }
           leavingPlayer.ws = null;
+          leavingPlayer._finalHandSnapshot = Array.isArray(leavingPlayer.hand) ? [...leavingPlayer.hand] : [];
           leavingPlayer.hand = [];
 
           const activeIndex = userRoom.turnIndex;

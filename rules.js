@@ -16,7 +16,7 @@ export function createDeck() {
   const deck = [];
   let id = 1;
 
-  // 3 standard decks (156 cards)
+  // 3 standard decks (156 cards) + 3 printed jokers = 159 cards
   for (let d = 0; d < 3; d++) {
     for (const suit of SUITS) {
       for (let r = 0; r < RANKS.length; r++) {
@@ -29,16 +29,14 @@ export function createDeck() {
         });
       }
     }
-    // 2 printed jokers (poochies) per deck (6 total)
-    for (let j = 0; j < 2; j++) {
-      deck.push({
-        id: `c_${id++}`,
-        suit: '★',
-        rank: 'PJ',
-        rankValue: 0,
-        isPoochie: true
-      });
-    }
+    // 1 printed joker (poochie) per deck (3 total across 3 decks)
+    deck.push({
+      id: `c_${id++}`,
+      suit: '★',
+      rank: 'PJ',
+      rankValue: 0,
+      isPoochie: true
+    });
   }
 
   // Fisher-Yates shuffle

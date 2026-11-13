@@ -1880,6 +1880,15 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .wait-player-row.waiting{border-color:rgba(217,182,92,.25);background:rgba(217,182,92,.04);color:#f1d27a}
 .wait-player-row.dropped{opacity:.5;color:#94a3b8}
 
+#resultModal {
+  z-index: 245;
+}
+#sessionScoresModal,
+#maalModal,
+#rulesHelpModal,
+#discardHistoryModal {
+  z-index: 255;
+}
 #resultModal .modal-content {
   max-width: 940px !important;
   width: 95% !important;
@@ -2930,7 +2939,7 @@ body.is-dragging-card-mobile {
     South Indian Open Joker Table &bull; Winner Takes Honors
   </div>
   <div class="lobby-meta-bar">
-    <span>3 Decks of 54 Cards (162 total)</span>
+    <span>3 Decks of 53 Cards (159 total)</span>
     <span class="meta-dot">&bull;</span>
     <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
@@ -3192,8 +3201,11 @@ body.is-dragging-card-mobile {
 <!-- Modal Settlement Dialog -->
 <div id="resultModal" class="modal">
   <div class="modal-content">
-    <h2 id="winnerTitle" class="modal-winner"></h2>
-    <div id="maalDetails" class="maal-breakdown"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+      <h2 id="winnerTitle" class="modal-winner" style="margin:0;"></h2>
+      <button type="button" class="maal-modal-close" onclick="closeResultsModal()" aria-label="Close Results &amp; Inspect Table" title="Close dialog (reopen anytime via View Results)">✕</button>
+    </div>
+    <div id="maalDetails" class="maal-breakdown" style="margin-top:12px;"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
     <div id="settlementList"></div>
 
@@ -3216,7 +3228,10 @@ body.is-dragging-card-mobile {
       <div id="playersReadyList" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; font-size:11px;"></div>
     </div>
 
-    <div class="result-modal-actions" style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+    <div class="result-modal-actions" style="margin-top:20px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+      <button type="button" class="tool-btn" style="min-height:42px; padding:8px 18px; font-weight:700;" onclick="closeResultsModal()">
+        👁️ Inspect Table
+      </button>
       <button id="btnContinueResults" class="btn-action btn-declare" onclick="continueFromResults()">
         <span id="btnContinueResultsText"><b>Continue</b><small class="action-sub">next hand</small></span>
       </button>
@@ -3354,7 +3369,7 @@ body.is-dragging-card-mobile {
       <div id="rulesTabOverview" class="rules-tab-content">
         <div class="rules-card-box">
           <h4><span>🎴</span> Game Essentials &amp; Table Setup</h4>
-          <p><strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 6 Printed Jokers (Poochies, 2 per deck)</strong>, totaling <strong>162 cards</strong>. Each player is dealt <strong>21 cards</strong>.</p>
+          <p><strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 3 Printed Jokers (Poochies, 1 per deck)</strong>, totaling <strong>159 cards</strong>. Each player is dealt <strong>21 cards</strong>.</p>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
@@ -3464,7 +3479,7 @@ body.is-dragging-card-mobile {
               </tr>
               <tr>
                 <td><span class="rules-pill rules-pill-gold">POOCHIE</span></td>
-                <td>Printed Jokers (PJ★) — 6 total in the deck</td>
+                <td>Printed Jokers (PJ★) — 3 total in the deck</td>
                 <td><strong>Tiered:</strong> 1 = <strong>20 pts</strong> &bull; 2 = <strong>50 pts</strong> &bull; 3 = <strong>70 pts</strong> (+20 each after)</td>
               </tr>
               <tr>
@@ -3979,7 +3994,9 @@ body.is-dragging-card-mobile {
 
   let currentRoundWinnerName = null;
   let currentRoundWinnerId = null;
-  let hasAutoGroupedForGroupingPhase = false;
+  let hasInitializedGroupingPhase = false;
+  let lastRoundResultData = null;
+  let showScootedHandsInResults = true;
   let groupingCountdownInterval = null;
 
   function formatGroupingTime(sec) {
@@ -4436,6 +4453,13 @@ body.is-dragging-card-mobile {
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
+    lastDeclSelectedCardId = null;
+    hasInitializedGroupingPhase = false;
+    lastRoundResultData = null;
+    globalSessionScores = [];
+    updateSessionHeaderBadge();
     currentRoundWinnerName = null;
     currentRoundWinnerId = null;
     wasMyTurn = false;
@@ -4603,12 +4627,29 @@ body.is-dragging-card-mobile {
           }
 
           if (roomState?.status === 'ROUND_OVER') {
+            declarationMode = false;
+            declarationGroups = [];
+            declarationSelectedIds.clear();
+            guidedCardIds.clear();
+            guideMeState = null;
+            lastDeclSelectedCardId = null;
+            hasInitializedGroupingPhase = false;
             const readyMap = {};
             (roomState.players || []).forEach(p => {
               readyMap[p.id] = Boolean(p.readyForNextHand);
             });
             renderReadinessList(readyMap);
-          } else if (roomState?.status === 'PLAYING') {
+          } else if (roomState?.status === 'PLAYING' || roomState?.status === 'LOBBY') {
+            if (roomState?.status === 'LOBBY') {
+              declarationMode = false;
+              declarationGroups = [];
+              declarationSelectedIds.clear();
+              guidedCardIds.clear();
+              guideMeState = null;
+              lastDeclSelectedCardId = null;
+              hasInitializedGroupingPhase = false;
+              lastRoundResultData = null;
+            }
             const resModal = document.getElementById('resultModal');
             if (resModal) resModal.style.display = 'none';
           }
@@ -4718,6 +4759,19 @@ body.is-dragging-card-mobile {
 
       if (msg.type === 'DECLARATION_FORFEITED') { declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); alert('Declaration forfeited. Penalty: 100 points. Play continues.'); renderAll(null); }
       if (msg.type === 'SHOW_RESULT') {
+        declarationMode = false;
+        declarationGroups = [];
+        declarationSelectedIds.clear();
+        guidedCardIds.clear();
+        guideMeState = null;
+        lastDeclSelectedCardId = null;
+        hasInitializedGroupingPhase = false;
+        lastRoundResultData = msg;
+        if (msg.sessionScores) {
+          globalSessionScores = msg.sessionScores;
+          updateSessionHeaderBadge();
+        }
+        renderAll(null);
         soundSystem.playDeclaration();
         showWinnerFanfare(msg);
         setTimeout(() => showResultsModal(msg), 900);
@@ -6144,15 +6198,22 @@ body.is-dragging-card-mobile {
 
     // Contextual turn guidance
     const guide = document.getElementById('stageGuideText');
+    const isRoundOverPhase = roomState?.status === 'ROUND_OVER';
+    const isGroupingNow = roomState?.status === 'GROUPING';
     if (guide) {
       if (!roomState || roomState.status === 'LOBBY') {
         guide.innerHTML = '<strong>Table ready:</strong> start the game when everyone is seated.';
+      } else if (isRoundOverPhase) {
+        const wName = escapeHtml(roomState.winnerName || currentRoundWinnerName || 'Winner');
+        guide.innerHTML = `<strong>Round Complete:</strong> 🏆 ${wName} won this hand. <button type="button" class="inline-meld-btn" style="margin-left:6px; vertical-align:middle;" onclick="reopenResultsModal()">👁️ View Results &amp; All Hands</button>`;
       } else if (myForfeited) {
         guide.innerHTML = `<strong>You forfeited (100 pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
       } else if (myDropped) {
         const pen = myPlayer?.dropPenalty || (myPlayer?.dropType === 'FIRST_DROP' ? 30 : myPlayer?.dropType === 'MIDDLE_DROP' ? 70 : 30);
-        const kind = myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts';
-        guide.innerHTML = `<strong>You scooted (${kind} penalty):</strong> Hand folded. Watching ${roomState.turnPlayerName || 'other players'} finish.`;
+        const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts');
+        guide.innerHTML = `<strong>You scooted (${kind}):</strong> Hand folded. Watching ${roomState.turnPlayerName || 'other players'} finish.`;
+      } else if (isGroupingNow) {
+        guide.innerHTML = `<strong>Grouping Phase:</strong> ${escapeHtml(roomState.winnerName || 'Winner')} declared! Group your cards below (manually, Guide Me, or Auto-Group) and click Submit Groups.`;
       } else if (isMyTurn && canDraw) {
         guide.innerHTML = '<strong>Your turn:</strong> Double-click or drag Stock/Discard to draw your 22nd card.';
       } else if (isMyTurn && canDiscard) {
@@ -6173,13 +6234,17 @@ body.is-dragging-card-mobile {
         notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} seated)</button>`;
       }
       dot.classList.remove('active');
+    } else if (isRoundOverPhase) {
+      dot.classList.remove('active');
+      const wName = escapeHtml(roomState.winnerName || currentRoundWinnerName || 'Winner');
+      notice.innerHTML = `<span>🏆 ${wName} won!</span> <button type="button" class="btn-primary" style="padding:4px 12px; font-size:11.5px; margin-top:0; margin-left:6px;" onclick="reopenResultsModal()">👁️ View Hands &amp; Scores</button>`;
     } else if (myForfeited) {
       dot.classList.remove('active');
       notice.innerText = `Forfeited (100 pts) • Turn: ${roomState.turnPlayerName}`;
     } else if (myDropped) {
       dot.classList.remove('active');
       const pen = myPlayer?.dropPenalty || (myPlayer?.dropType === 'FIRST_DROP' ? 30 : myPlayer?.dropType === 'MIDDLE_DROP' ? 70 : 30);
-      const kind = myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts';
+      const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts');
       notice.innerText = `Scooted (${kind}) • Turn: ${roomState.turnPlayerName}`;
     } else if (isMyTurn) {
       dot.classList.add('active');
@@ -6280,10 +6345,6 @@ body.is-dragging-card-mobile {
           : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (isDealt7Doubles ? 'win dealt without drawing!' : isDrawn8Doubles ? '8 doubles ready!' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
-    const actionSecEl = document.querySelector('.action-section');
-    const actionsGridEl = document.querySelector('.actions-grid');
-    if (actionSecEl) actionSecEl.style.display = declarationMode ? 'none' : '';
-    if (actionsGridEl) actionsGridEl.style.display = declarationMode ? 'none' : '';
     const isGroupingPhase = roomState?.status === 'GROUPING';
     const mePlayer = isDemo
       ? roomState?.players?.find(p => p.id === 'p_demo')
@@ -6291,6 +6352,11 @@ body.is-dragging-card-mobile {
 
     const meGrouped = Boolean(mePlayer?.isGrouped);
     const meDropped = Boolean(mePlayer?.hasDropped || mePlayer?.hasForfeited);
+
+    if (roomState?.status === 'ROUND_OVER' || roomState?.status === 'LOBBY') {
+      declarationMode = false;
+      hasInitializedGroupingPhase = false;
+    }
 
     // Grouping Wait Modal handling
     const waitModal = document.getElementById('groupingWaitModal');
@@ -6335,15 +6401,19 @@ body.is-dragging-card-mobile {
         }
       } else {
         if (waitModal) waitModal.style.display = 'none';
-        declarationMode = true; // Open grouping mode for the active non-declarer
-        if (!hasAutoGroupedForGroupingPhase && myHand && myHand.length > 0) {
-          hasAutoGroupedForGroupingPhase = true;
-          autoGroupFullHand(false);
+        declarationMode = true; // Open manual grouping mode for the active non-declarer
+        if (!hasInitializedGroupingPhase) {
+          hasInitializedGroupingPhase = true;
+          declarationGroups = [];
+          declarationSelectedIds.clear();
+          guidedCardIds.clear();
+          guideMeState = null;
+          lastDeclSelectedCardId = null;
         }
       }
       startGroupingCountdownTracker();
     } else {
-      hasAutoGroupedForGroupingPhase = false;
+      hasInitializedGroupingPhase = false;
       if (groupingCountdownInterval) {
         clearInterval(groupingCountdownInterval);
         groupingCountdownInterval = null;
@@ -6351,9 +6421,15 @@ body.is-dragging-card-mobile {
       if (waitModal && !isDemoGroupingWait) waitModal.style.display = 'none';
     }
 
+    const actionSecEl = document.querySelector('.action-section');
+    const actionsGridEl = document.querySelector('.actions-grid');
+    if (actionSecEl) actionSecEl.style.display = declarationMode ? 'none' : '';
+    if (actionsGridEl) actionsGridEl.style.display = declarationMode ? 'none' : '';
+
     const dp = document.getElementById('declarationPanel');
     if (dp) {
       dp.classList.toggle('is-open', declarationMode);
+      if (!declarationMode) dp.innerHTML = '';
       if (declarationMode) {
         const groupedCards = declarationGroups.flatMap(g => g.cards);
         const grouped = groupedCards.length;
@@ -8137,35 +8213,41 @@ body.is-dragging-card-mobile {
       return;
     }
 
+    const myId = getMyPlayerId();
+    const myNameLower = (document.getElementById('playerName')?.value || '').trim().toLowerCase();
+    const localMe = roomState?.players?.find(p => (myId && p.id === myId) || (myNameLower && (p.name || '').trim().toLowerCase() === myNameLower));
+    if (localMe) localMe.isGrouped = true;
+
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: 'SUBMIT_GROUPS', groups }));
     }
-      declarationMode = false;
-      declarationSelectedIds.clear();
-      guidedCardIds.clear();
-      guideMeState = null;
-      renderAll(null);
-    }
+    declarationMode = false;
+    declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
+    lastDeclSelectedCardId = null;
+    renderAll(null);
+  }
 
-    function simulateOpponentDeclare() {
-      if (!isDemo || !roomState) return;
-      const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
-      roomState.status = 'GROUPING';
-      roomState.groupingDeadline = Date.now() + 300000;
-      roomState.winnerId = opp.id;
-      roomState.winnerName = opp.name;
-      opp.isGrouped = true;
-      roomState.lastAction = `${opp.name} declared 21-card show! Form your groups to minimize deadwood.`;
+  function simulateOpponentDeclare() {
+    if (!isDemo || !roomState) return;
+    const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
+    roomState.status = 'GROUPING';
+    roomState.groupingDeadline = Date.now() + 300000;
+    roomState.winnerId = opp.id;
+    roomState.winnerName = opp.name;
+    opp.isGrouped = true;
+    roomState.lastAction = `${opp.name} declared 21-card show! Form your groups to minimize deadwood.`;
 
-      const meP = roomState.players.find(p => p.id === 'p_demo');
-      if (meP) meP.isGrouped = false;
+    const meP = roomState.players.find(p => p.id === 'p_demo');
+    if (meP) meP.isGrouped = false;
 
-      hasAutoGroupedForGroupingPhase = false;
-      declarationMode = true;
-      declarationGroups = [];
-      declarationSelectedIds.clear();
-      guidedCardIds.clear();
-      guideMeState = null;
+    hasInitializedGroupingPhase = false;
+    declarationMode = true;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
       renderAll(calculateLocalMaal());
       startGroupingCountdownTracker();
       setTimeout(() => {
@@ -10318,7 +10400,9 @@ body.is-dragging-card-mobile {
         existing.maal = (existing.maal || 0) + (s.maal || 0);
         existing.honors = (existing.honors || 0) + (s.honors || 0);
         existing.totalScore = (existing.totalScore || 0) + (s.totalScore || 0);
-        if (s.playerId) existing.playerId = s.playerId;
+        const resolvedId = s.id || s.playerId;
+        if (resolvedId && !existing.playerId) existing.playerId = resolvedId;
+        if (resolvedId && !existing.id) existing.id = resolvedId;
       }
     }
 
@@ -10328,11 +10412,16 @@ body.is-dragging-card-mobile {
     }
 
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
-    const myName = (document.getElementById('playerName')?.value || 'You').trim().toLowerCase();
+    const myName = (document.getElementById('playerName')?.value || (isDemo ? 'You' : '')).trim().toLowerCase();
     const sorted = [...cleanedScores].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
 
     const rowsHtml = sorted.map((s, idx) => {
-      const isMe = s.playerId === myId || s.name === 'You' || (isDemo && s.playerId === 'p_demo') || (s.name || '').trim().toLowerCase() === myName;
+      const sId = s.id || s.playerId;
+      const isMe = Boolean(
+        (myId && sId && sId === myId) ||
+        (myName && (s.name || '').trim().toLowerCase() === myName) ||
+        (isDemo && (sId === 'p_demo' || s.name === 'You'))
+      );
       const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
       const pts = s.points || 0;
       const maal = s.maal || 0;
@@ -10348,7 +10437,7 @@ body.is-dragging-card-mobile {
             <span style="font-weight:700;">${escapeHtml(s.name)}</span>
             ${isMe ? '<span style="margin-left:6px; font-size:9px; background:rgba(50,197,138,0.22); color:#7eedba; padding:1px 5px; border-radius:4px; font-weight:800;">YOU</span>' : ''}
           </td>
-          <td style="text-align:center;"><b>${s.handsWon || 0}</b> / ${Math.max(1, s.handsPlayed || 0)}</td>
+          <td style="text-align:center;"><b>${s.handsWon || 0}</b> / ${s.handsPlayed || 0}</td>
           <td style="text-align:right; color:#fca5a5;">${pts > 0 ? `-${pts}` : '0'}</td>
           <td style="text-align:right; color:${maal >= 0 ? '#fde047' : '#f87171'};">${maal !== 0 ? `${maalPrefix}${maal}` : '0'}</td>
           <td style="text-align:right;" class="${totalClass}">${totalPrefix}${total}</td>
@@ -10433,7 +10522,12 @@ body.is-dragging-card-mobile {
 
   function updateSessionHeaderBadge() {
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
-    const myStat = globalSessionScores.find(s => s.playerId === myId || s.name === 'You' || (isDemo && s.playerId === 'p_demo'));
+    const myName = (document.getElementById('playerName')?.value || (isDemo ? 'You' : '')).trim().toLowerCase();
+    const myStat = (globalSessionScores || []).find(s =>
+      (myId && (s.id === myId || s.playerId === myId)) ||
+      (myName && (s.name || '').trim().toLowerCase() === myName) ||
+      (isDemo && (s.id === 'p_demo' || s.playerId === 'p_demo' || s.name === 'You'))
+    );
     const el = document.getElementById('sessionScoresText');
     if (el) {
       if (myStat) {
@@ -10580,9 +10674,51 @@ body.is-dragging-card-mobile {
 
   window.startDemo = startDemoMode;
 
+  function sortCardsForDisplay(cards) {
+    const suitOrder = { '♠': 0, '♥': 1, '♣': 2, '♦': 3, '★': 4 };
+    const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'PJ'];
+    return [...(cards || [])].sort((a, b) => {
+      const sa = suitOrder[a?.suit] ?? 9;
+      const sb = suitOrder[b?.suit] ?? 9;
+      if (sa !== sb) return sa - sb;
+      return rankOrder.indexOf(a?.rank) - rankOrder.indexOf(b?.rank);
+    });
+  }
+
+  function toggleScootedHandsVisibility(show) {
+    showScootedHandsInResults = Boolean(show);
+    document.querySelectorAll('#revealedHands .revealed-player.is-scooted').forEach(el => {
+      el.style.display = showScootedHandsInResults ? 'block' : 'none';
+    });
+  }
+  window.toggleScootedHandsVisibility = toggleScootedHandsVisibility;
+
+  function closeResultsModal() {
+    const modal = document.getElementById('resultModal');
+    if (modal) modal.style.display = 'none';
+  }
+  function reopenResultsModal() {
+    if (lastRoundResultData) {
+      showResultsModal(lastRoundResultData);
+    } else {
+      const modal = document.getElementById('resultModal');
+      if (modal) modal.style.display = 'flex';
+    }
+  }
+  window.closeResultsModal = closeResultsModal;
+  window.reopenResultsModal = reopenResultsModal;
+
   function showResultsModal(data) {
+    lastRoundResultData = data;
+    declarationMode = false;
+    hasInitializedGroupingPhase = false;
     const waitModal = document.getElementById('groupingWaitModal');
     if (waitModal) waitModal.style.display = 'none';
+    const dp = document.getElementById('declarationPanel');
+    if (dp) {
+      dp.classList.remove('is-open');
+      dp.innerHTML = '';
+    }
 
     document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
     const m = data.winnerMaal?.details || {};
@@ -10597,20 +10733,113 @@ body.is-dragging-card-mobile {
 
     document.getElementById('settlementList').innerHTML = (data.results || []).map(r => `
       <div class="settlement-row">
-        <strong>${r.name}</strong>: ${r.net}
+        <strong>${escapeHtml(r.name)}</strong>: ${escapeHtml(r.net)}
       </div>
     `).join('');
 
     const reveal = document.getElementById('revealedHands');
     if (reveal) {
-      reveal.innerHTML = '<h3 style="font-size:15px;margin:18px 0 10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;">All Hands — Show Revealed</h3>' +
+      const scootedCount = (data.revealedHands || []).filter(p => Boolean(p.hasDropped || p.hasForfeited)).length;
+      const revealHeader = `
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin:18px 0 10px;">
+          <h3 style="font-size:15px; margin:0; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px;">All Hands — Show Revealed</h3>
+          ${scootedCount > 0 ? `
+            <label style="display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:#f1d27a; cursor:pointer; background:rgba(255,255,255,0.05); border:1px solid rgba(217,182,92,0.3); padding:5px 10px; border-radius:8px; user-select:none;">
+              <input type="checkbox" id="toggleScootedHandsChk" ${showScootedHandsInResults ? 'checked' : ''} onchange="toggleScootedHandsVisibility(this.checked)" style="accent-color:#d9b65c; width:15px; height:15px; cursor:pointer;">
+              <span>Show scooted hands (${scootedCount})</span>
+            </label>
+          ` : ''}
+        </div>
+      `;
+
+      reveal.innerHTML = revealHeader +
         (data.revealedHands || []).map(p => {
           const isWinner = p.name === data.winnerName || p.isWinner;
-          // Requirement 1: In the winner dialog, auto arrange the cards, unless the user has already arranged their hand while showing
-          const userHasArranged = Array.isArray(p.groups) && p.groups.length > 0 && p.groups.some(g => (Array.isArray(g.cards) && g.cards.length >= 3) || (Array.isArray(g.cardIds) && g.cardIds.length >= 3));
-          const groups = userHasArranged 
-            ? p.groups 
-            : autoArrangeHandToGroups(p.hand, data.cutCard || roomState?.cutCard, data.roles || roomState?.roles);
+          const isForfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
+          const isFreeScoot = Boolean(p.isFreeScoot || p.dropType === 'FREE_SCOOT');
+          const isScooted = Boolean(p.hasDropped || isForfeited || isFreeScoot);
+          const handCards = Array.isArray(p.hand) ? p.hand : [];
+
+          if (isScooted) {
+            let statusBadge = '';
+            let scootGroupsHtml = '';
+
+            if (isFreeScoot) {
+              const dInfo = countDoubles(handCards);
+              statusBadge = `<span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.35);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;">🛡️ FREE SCOOT — ${dInfo.count} Doubles (0 pts &amp; 0 Honors)</span>`;
+              const pairedIds = new Set();
+              dInfo.pairs.forEach(pair => pair.forEach(c => { if (c && c.id) pairedIds.add(c.id); }));
+
+              const pairsHtml = dInfo.pairs.map((pair, idx) => `
+                <div class="revealed-group-block pure" style="border-color:rgba(50,197,138,0.45);background:rgba(50,197,138,0.07);">
+                  <div class="revealed-group-badge" style="color:#86efac;">
+                    <span>🎴</span>
+                    <span>Double #${idx + 1} (${escapeHtml(pair[0]?.rank || '')}${escapeHtml(pair[0]?.suit || '')})</span>
+                  </div>
+                  <div class="revealed-group-cards">
+                    ${pair.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+                  </div>
+                </div>
+              `).join('');
+
+              const remainingCards = sortCardsForDisplay(handCards.filter(c => c && !pairedIds.has(c.id)));
+              const remHtml = remainingCards.length > 0 ? `
+                <div class="revealed-group-block" style="border-color:rgba(217,182,92,0.3);background:rgba(255,255,255,0.03);">
+                  <div class="revealed-group-badge" style="color:#cbd5e1;">
+                    <span>🃏</span>
+                    <span>Remaining Cards (${remainingCards.length}) — Exempt (Free Scoot)</span>
+                  </div>
+                  <div class="revealed-group-cards">
+                    ${remainingCards.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+                  </div>
+                </div>
+              ` : '';
+
+              scootGroupsHtml = pairsHtml + remHtml;
+              if (!scootGroupsHtml) {
+                scootGroupsHtml = '<div style="font-size:12px; color:#94a3b8; padding:6px 2px;">No cards recorded for this hand.</div>';
+              }
+            } else {
+              const dropPts = p.dropPenalty || p.deadwood || (isForfeited ? 100 : (p.dropType === 'FIRST_DROP' ? 30 : 70));
+              const dropKindLabel = isForfeited
+                ? `🚩 FORFEITED (${dropPts} pts)`
+                : (p.dropType === 'FIRST_DROP' || dropPts === 30)
+                  ? `🚫 FIRST SCOOT (${dropPts} pts)`
+                  : `🚫 MID SCOOT (${dropPts} pts)`;
+              statusBadge = `<span style="color:#f87171;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">${dropKindLabel}</span>`;
+
+              const sortedScootCards = sortCardsForDisplay(handCards);
+              scootGroupsHtml = sortedScootCards.length > 0 ? `
+                <div class="revealed-group-block deadwood">
+                  <div class="revealed-group-badge" style="color:#fca5a5;">
+                    <span>${isForfeited ? '🚩' : '🚫'}</span>
+                    <span>${isForfeited ? 'Forfeited Hand' : 'Scooted Hand'} (${sortedScootCards.length} cards)</span>
+                  </div>
+                  <div class="revealed-group-cards">
+                    ${sortedScootCards.map(c => renderCard(c, getCardTagForRoles(c), false)).join('')}
+                  </div>
+                </div>
+              ` : '<div style="font-size:12px; color:#94a3b8; padding:6px 2px;">No cards recorded for this scooted hand.</div>';
+            }
+
+            return `
+              <div class="revealed-player is-scooted" style="display:${showScootedHandsInResults ? 'block' : 'none'};">
+                <div class="revealed-player-title">
+                  <span><b>${escapeHtml(p.name)}</b></span>
+                  ${statusBadge}
+                </div>
+                <div class="revealed-groups-container">
+                  ${scootGroupsHtml}
+                </div>
+              </div>
+            `;
+          }
+
+          // Respect manually submitted groups (even if fewer groups or empty) instead of forcing auto-arrange
+          const userHasSubmitted = Boolean(p.isGrouped) || (Array.isArray(p.groups) && p.groups.length > 0 && p.groups.some(g => (Array.isArray(g.cards) && g.cards.length >= 3) || (Array.isArray(g.cardIds) && g.cardIds.length >= 3)));
+          const groups = (isWinner || userHasSubmitted)
+            ? (Array.isArray(p.groups) ? p.groups : [])
+            : autoArrangeHandToGroups(handCards, data.cutCard || roomState?.cutCard, data.roles || roomState?.roles);
 
           const pPureCount = groups.filter(g => {
             if (!g) return false;
@@ -10618,26 +10847,23 @@ body.is-dragging-card-mobile {
             if (Array.isArray(g.cards) && declarationPure(g.cards)) return true;
             return false;
           }).length;
-          const hasMinPure = isWinner || p.hasDropped || pPureCount >= 3;
+          const hasMinPure = isWinner || pPureCount >= 3;
 
-          const handCards = Array.isArray(p.hand) ? p.hand : [];
-          const pDeadwoodCalc = (!isWinner && !p.hasDropped)
+          const pDeadwoodCalc = (!isWinner)
             ? calculateCurrentDeadwood(groups, handCards)
             : null;
           const deadwoodCount = Array.isArray(p.deadwoodCardIds)
             ? p.deadwoodCardIds.length
             : (pDeadwoodCalc ? pDeadwoodCalc.deadwoodCount : 0);
-          const deadwoodCardsText = (!isWinner && !p.hasDropped && (p.deadwood || 0) > 0)
+          const deadwoodCardsText = (!isWinner && (p.deadwood || 0) > 0)
             ? ` • ${deadwoodCount} deadwood cards`
             : '';
 
           let statusBadge = isWinner
             ? '<span style="color:#f1d27a;background:rgba(217,182,92,0.18);border:1px solid rgba(217,182,92,0.4);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;">🏆 DECLARER (WINNER)</span>'
-            : p.hasDropped
-            ? `<span style="color:#f87171;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">🚫 DROPPED (${p.deadwood || p.dropPenalty || 30} pts)</span>`
             : `<span style="color:#94a3b8;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">SETTLED (${p.deadwood || 0} pts deadwood${deadwoodCardsText})</span>`;
 
-          if (!isWinner && !p.hasDropped) {
+          if (!isWinner) {
             statusBadge += hasMinPure
               ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/3 Pure Groups (Groups Protected)</span>`
               : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/3 Pure Groups (&lt;3: Only Jokers, 4+ groups &amp; Tunellas protected)</span>`;
@@ -10690,7 +10916,7 @@ body.is-dragging-card-mobile {
 
               let protectNote = '';
               let badgeBorder = '';
-              if (!isWinner && !p.hasDropped) {
+              if (!isWinner) {
                 if (hasMinPure) {
                   protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Protected (0 pts)</span>';
                 } else if (is4PlusPure) {
@@ -10741,8 +10967,6 @@ body.is-dragging-card-mobile {
             if (p.finalDiscard.id) usedCardIds.add(p.finalDiscard.id);
           }
 
-          // Remaining ungrouped cards (deadwood)
-          // For Winner: Strictly NO deadwood! In 21 Card Rummy the declarer has 21 grouped cards + 1 final discard = 22 cards.
           const ungrouped = isWinner ? [] : handCards.filter(c => c && !usedCardIds.has(c.id));
           if (ungrouped.length > 0) {
             const looseJokers = ungrouped.filter(c => declarationIsWild(c));
@@ -10763,11 +10987,11 @@ body.is-dragging-card-mobile {
             }
 
             if (looseDeadwood.length > 0) {
-              const label = p.hasDropped ? 'Folded / Dropped Hand' : (groups.length > 0 ? 'Loose Deadwood Cards' : 'Held Cards (Deadwood)');
+              const label = groups.length > 0 ? 'Loose Deadwood Cards' : 'Held Cards (Deadwood)';
               groupsHtml += `
                 <div class="revealed-group-block deadwood">
                   <div class="revealed-group-badge" style="color:#f87171;">
-                    <span>${p.hasDropped ? '🚫' : '📦'}</span>
+                    <span>📦</span>
                     <span>${label} (${looseDeadwood.length})</span>
                   </div>
                   <div class="revealed-group-cards">
@@ -10781,7 +11005,7 @@ body.is-dragging-card-mobile {
           return `
             <div class="revealed-player ${isWinner ? 'is-winner' : ''}">
               <div class="revealed-player-title">
-                <span><b>${p.name}</b></span>
+                <span><b>${escapeHtml(p.name)}</b></span>
                 ${statusBadge}
               </div>
               <div class="revealed-groups-container">
@@ -10953,6 +11177,15 @@ body.is-dragging-card-mobile {
     isDemo = true;
     currentRoundWinnerName = null;
     currentRoundWinnerId = null;
+    lastRoundResultData = null;
+    hasInitializedGroupingPhase = false;
+    globalSessionScores = [
+      { id: 'p_demo', playerId: 'p_demo', name: document.getElementById('playerName')?.value || 'You', handsPlayed: 0, handsWon: 0, points: 0, honors: 0, maal: 0, totalScore: 0 },
+      { id: 'p_2', playerId: 'p_2', name: 'Kavita', handsPlayed: 0, handsWon: 0, points: 0, honors: 0, maal: 0, totalScore: 0 },
+      { id: 'p_3', playerId: 'p_3', name: 'Sonia', handsPlayed: 0, handsWon: 0, points: 0, honors: 0, maal: 0, totalScore: 0 },
+      { id: 'p_4', playerId: 'p_4', name: 'Aarav', handsPlayed: 0, handsWon: 0, points: 0, honors: 0, maal: 0, totalScore: 0 }
+    ];
+    updateSessionHeaderBadge();
     const heroSubDemo = document.getElementById('gameHeroSubtitle');
     if (heroSubDemo) heroSubDemo.innerHTML = 'Open Joker • <span class="winner-honors-tag">Winner Takes Honors</span>';
     const bannerDemo = document.getElementById('tableTurnBanner');
