@@ -2489,17 +2489,17 @@ body.is-dragging-card-mobile {
   -webkit-user-select: none !important;
 }
 .discard-pile-wrapper{position:relative;z-index:9}
-.discard-stack-area{position:relative;width:220px;height:96px;margin-top:0;display:flex;align-items:center;justify-content:center;overflow:visible}
+.discard-stack-area{position:relative;width:calc(var(--card-w) + 128px);min-width:190px;height:calc(var(--card-h) + 8px);margin-top:0;display:flex;align-items:center;justify-content:center;overflow:visible}
 .discard-stack-area #discardContainer{position:absolute;left:34px;top:4px;z-index:30;touch-action:none!important;}
-.discard-history{position:absolute;left:48px;top:4px;width:170px;height:96px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
-.discard-history-card{position:absolute;width:64px;height:92px;left:0;top:0;display:block;opacity:.92;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
+.discard-history{position:absolute;left:48px;top:4px;width:calc(var(--card-w) + 80px);height:calc(var(--card-h) + 4px);display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
+.discard-history-card{position:absolute;width:var(--card-w);height:var(--card-h);left:0;top:0;display:block;opacity:.92;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
 .discard-history-card:active{cursor:grabbing}
-.discard-history-card .card{transform:none!important;width:64px;height:92px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
+.discard-history-card .card{transform:none!important;width:var(--card-w);height:var(--card-h);pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
 .discard-history-card.peeked{filter:brightness(1.08);z-index:60!important;transform:translateX(calc(var(--fan-x))) translateY(-10px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translateX(calc(var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-card.peeked ~ .discard-history-card{opacity:.72}
-@media(max-width:600px){.center-board{gap:12px;min-height:104px;padding:22px 8px 6px;}.cut-card-under-stock{left:-18px;top:calc((var(--card-h) - var(--card-w)) / 2);transform:rotate(90deg);}.table-turn-banner{top:4px;font-size:9.5px;padding:2px 11px;}.discard-stack-area{width:185px;height:90px;}.discard-stack-area #discardContainer{left:22px;top:4px}.discard-history{left:36px;top:4px;width:140px;height:88px}.discard-history-card{width:54px;height:80px;top:0}.discard-history-card .card{width:54px;height:80px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
+@media(max-width:600px){.center-board{gap:12px;min-height:104px;padding:22px 8px 6px;}.cut-card-under-stock{left:-18px;top:calc((var(--card-h) - var(--card-w)) / 2);transform:rotate(90deg);}.table-turn-banner{top:4px;font-size:9.5px;padding:2px 11px;}.discard-stack-area{width:calc(var(--card-w) + 104px);min-width:160px;height:calc(var(--card-h) + 8px);}.discard-stack-area #discardContainer{left:18px;top:4px}.discard-history{left:32px;top:4px;width:calc(var(--card-w) + 64px);height:calc(var(--card-h) + 4px)}.discard-history-card{width:var(--card-w);height:var(--card-h);top:0}.discard-history-card .card{width:var(--card-w);height:var(--card-h)}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-index{top:-4px;right:-4px;pointer-events:none}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
@@ -2516,7 +2516,7 @@ body.is-dragging-card-mobile {
 .discard-item-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);transition:all .15s}
 .discard-item-row.is-top-card{background:rgba(50,197,138,.08);border-color:rgba(50,197,138,.35);box-shadow:0 0 12px rgba(50,197,138,.15)}
 .discard-item-left{display:flex;align-items:center;gap:12px}
-.discard-card-thumb{transform:scale(.85);transform-origin:center;flex-shrink:0}
+.discard-card-thumb{transform:none;flex-shrink:0}
 .discard-item-info{display:flex;flex-direction:column;gap:2px}
 .discard-card-name{font-size:13px;font-weight:800;color:#f8fafc}
 .discard-player-name{font-size:11px;color:#94a3b8}
@@ -2687,7 +2687,6 @@ body.is-dragging-card-mobile {
 #maalSummary{cursor:pointer;position:relative}
 #maalSummary:hover{filter:brightness(1.15);transform:translateY(-1px);transition:all 0.15s;}
 #maalSummary:focus-visible{outline:2px solid var(--accent-gold);outline-offset:2px}
-@media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.discard-stack-area{width:104px}.discard-history-card,.discard-history-card .card{width:58px;height:84px;left:23px}.discard-history-card .card{--card-w:58px;--card-h:84px}.discard-history-card{top:9px}}
 
 /* Comprehensive 21-Card Rules & Guide Modal */
 .rules-modal-content {
@@ -3900,6 +3899,7 @@ body.is-dragging-card-mobile {
   let declarationSelectedIds = new Set();
   let guidedCardIds = new Set();
   let guideMeState = null;
+  let lastDeclSelectedCardId = null;
   let globalSessionScores = [];
   let demoHandNumber = 1;
   let demoStarterIndex = 0;
@@ -5767,21 +5767,11 @@ body.is-dragging-card-mobile {
 
     const btnDrop = document.getElementById('btnDrop');
     if (btnDrop) {
-      if (declarationMode && roomState?.status !== 'GROUPING') {
-        btnDrop.classList.remove('btn-disabled');
-        btnDrop.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.25), rgba(185,28,28,0.35))';
-        btnDrop.style.borderColor = 'rgba(239,68,68,0.55)';
-        btnDrop.onclick = () => promptForfeitDeclaration();
-        const b = btnDrop.querySelector('b');
-        const s = btnDrop.querySelector('.action-sub');
-        if (b) b.innerText = 'Forfeit Show';
-        if (s) s.innerText = '100 pts penalty';
-      } else {
-        btnDrop.onclick = () => dropHand();
-        btnDrop.style.background = '';
-        btnDrop.style.borderColor = '';
-        const canDropNow = canDraw || (isFreeGameDrawn && canDiscard);
-        btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited);
+      btnDrop.onclick = () => dropHand();
+      btnDrop.style.background = '';
+      btnDrop.style.borderColor = '';
+      const canDropNow = canDraw || (isFreeGameDrawn && canDiscard);
+      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited);
         const b = btnDrop.querySelector('b');
         const s = btnDrop.querySelector('.action-sub');
         if (b && !dropConfirming) {
@@ -5807,7 +5797,6 @@ body.is-dragging-card-mobile {
             s.innerText = `${dropTypeLabel} (-${dropPenaltyPts} pts)`;
           }
         }
-      }
     }
     const btnDiscard = document.getElementById('btnDiscard');
     if (btnDiscard) {
@@ -6560,6 +6549,20 @@ body.is-dragging-card-mobile {
   function renderStands() {
     const container=document.getElementById('standsContainer');
     if(!container)return;
+    const savedScrolls = {};
+    container.querySelectorAll('.stand-cards').forEach(el => {
+      if (el.id) savedScrolls[el.id] = el.scrollLeft;
+    });
+    const restoreContainerScrolls = () => {
+      container.querySelectorAll('.stand-cards').forEach(el => {
+        if (el.id && savedScrolls[el.id] !== undefined) {
+          el.style.scrollBehavior = 'auto';
+          el.scrollLeft = Math.min(savedScrolls[el.id], Math.max(0, el.scrollWidth - el.clientWidth));
+          void el.offsetLeft;
+          el.style.scrollBehavior = '';
+        }
+      });
+    };
     if(!declarationMode){
       if(!userStands || userStands.length === 0 || userStands.flat().length === 0){
         if (myHand && myHand.length > 0) {
@@ -6593,6 +6596,7 @@ body.is-dragging-card-mobile {
           </div>
         </div>`;
       }).join('');
+      restoreContainerScrolls();
       setTimeout(updateAllStandScrollButtons, 30);
       return;
     }
@@ -6694,9 +6698,6 @@ body.is-dragging-card-mobile {
               <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" style="${isShowReady ? 'background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 14px rgba(34,197,94,0.6);' : 'background: linear-gradient(135deg, #10b981, #059669);'}" onclick="declareShow()">
                 🏆 Submit Declaration ${isShowReady ? '✨' : ''}
               </button>
-              <button type="button" class="stand-close-btn" style="background:rgba(239,68,68,0.22); border:1px solid rgba(239,68,68,0.5); color:#fca5a5; font-weight:700;" onclick="promptForfeitDeclaration()" title="Forfeit declaration with 100 points penalty">
-                🚩 Forfeit (100 pts)
-              </button>
               <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
             `}
           </div>
@@ -6785,6 +6786,26 @@ body.is-dragging-card-mobile {
         </button>
       </div>
     </div>${groups}`;
+    restoreContainerScrolls();
+    if (lastDeclSelectedCardId) {
+      const ungroupedTray = document.getElementById('decl-ungrouped-cards');
+      const targetCard = ungroupedTray ? ungroupedTray.querySelector(`[data-card-id="${lastDeclSelectedCardId}"]`) : null;
+      if (ungroupedTray && targetCard) {
+        const trayRect = ungroupedTray.getBoundingClientRect();
+        const cardRect = targetCard.getBoundingClientRect();
+        const pad = 10;
+        if (cardRect.left < trayRect.left + pad || cardRect.right > trayRect.right - pad) {
+          ungroupedTray.style.scrollBehavior = 'auto';
+          if (cardRect.left < trayRect.left + pad) {
+            ungroupedTray.scrollLeft += (cardRect.left - trayRect.left) - pad;
+          } else {
+            ungroupedTray.scrollLeft += (cardRect.right - trayRect.right) + pad;
+          }
+          void ungroupedTray.offsetLeft;
+          ungroupedTray.style.scrollBehavior = '';
+        }
+      }
+    }
     setTimeout(updateAllStandScrollButtons, 30);
   }
   function setStandType(idx,type){standTypes[idx]=type;renderStands();}
@@ -7223,15 +7244,8 @@ body.is-dragging-card-mobile {
       total: candidates.length,
       ...picked
     };
+    lastDeclSelectedCardId = picked.cardIds[0] || null;
     renderAll(null);
-
-    setTimeout(() => {
-      const tray = document.getElementById('decl-ungrouped-cards');
-      const targetEl = tray ? tray.querySelector(`[data-card-id="${picked.cardIds[0]}"]`) : null;
-      if (targetEl && typeof targetEl.scrollIntoView === 'function') {
-        targetEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
-    }, 40);
   }
   window.guideMeNextGroup = guideMeNextGroup;
 
@@ -7269,6 +7283,7 @@ body.is-dragging-card-mobile {
     guideMeState = null;
     guidedCardIds.clear();
     declarationSelectedIds.clear();
+    lastDeclSelectedCardId = null;
     renderAll(null);
   }
   window.dismissGuideMe = dismissGuideMe;
@@ -7294,6 +7309,7 @@ body.is-dragging-card-mobile {
     cards.forEach(c => declarationSelectedIds.delete(c.id));
     guidedCardIds.clear();
     guideMeState = null;
+    lastDeclSelectedCardId = null;
     renderAll(null);
   }
 
@@ -7303,6 +7319,7 @@ body.is-dragging-card-mobile {
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
+    lastDeclSelectedCardId = null;
 
     const usedCardIds = new Set();
     const newGroups = [];
@@ -7421,6 +7438,7 @@ body.is-dragging-card-mobile {
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
+    lastDeclSelectedCardId = null;
 
     const usedCardIds = new Set();
     const newGroups = [];
@@ -7813,15 +7831,17 @@ body.is-dragging-card-mobile {
     cards.forEach(c => declarationSelectedIds.delete(c.id));
     guidedCardIds.clear();
     guideMeState = null;
+    lastDeclSelectedCardId = null;
     renderAll(null);
   }
-  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;renderAll(null);}
-  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;renderAll(null);}
+  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;renderAll(null);}
+  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;renderAll(null);}
   function ungroupAllDeclaration() {
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
+    lastDeclSelectedCardId = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -7833,6 +7853,7 @@ body.is-dragging-card-mobile {
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
+    lastDeclSelectedCardId = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -7937,11 +7958,13 @@ body.is-dragging-card-mobile {
         declarationSelectedIds.delete(cardId);
         guidedCardIds.clear();
         guideMeState = null;
+        lastDeclSelectedCardId = cardId;
         renderAll(null);
         return;
       }
       guidedCardIds.clear();
       guideMeState = null;
+      lastDeclSelectedCardId = cardId;
       if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
       else declarationSelectedIds.add(cardId);
       renderAll(null);
