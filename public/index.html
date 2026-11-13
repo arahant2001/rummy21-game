@@ -527,8 +527,58 @@
       transition: transform 420ms cubic-bezier(0.22, 0.75, 0.25, 1), opacity 420ms ease !important;
       transform-origin: center center;
     }
+    .card-glide-clone {
+      position: fixed !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      pointer-events: none !important;
+      transform-origin: center center !important;
+      will-change: transform, box-shadow;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.5), 0 0 18px rgba(217, 182, 92, 0.35) !important;
+      transition: none !important;
+      animation: none !important;
+    }
+    .card-glide-clone.card-glide-clone--active {
+      transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35) !important;
+    }
+    .card.card-glide-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: none !important;
+    }
+    .card.card-flip-prep {
+      transform: translate3d(var(--flip-dx, 0px), var(--flip-dy, 0px), 0) scale(var(--flip-scale, 1)) rotate(var(--flip-rot, 0deg)) !important;
+      transition: none !important;
+      z-index: 60 !important;
+    }
+    .card.card-flip-active {
+      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 280ms ease !important;
+      z-index: 60 !important;
+      will-change: transform;
+    }
+    .card.card-just-moved {
+      animation: cardMoveSettle 340ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes cardMoveSettle {
+      0% { box-shadow: 0 0 0 3px rgba(241, 210, 122, 0.65), 0 12px 24px rgba(0, 0, 0, 0.45); }
+      100% { }
+    }
+    .card.card-discard-landed {
+      animation: cardDiscardSettle 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes cardDiscardSettle {
+      0% { transform: scale(1.05); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.55), 0 12px 24px rgba(0, 0, 0, 0.48); }
+      100% { transform: scale(1); }
+    }
     @media (prefers-reduced-motion: reduce) {
-      .card-flight { transition: none !important; }
+      .card-flight,
+      .card-glide-clone,
+      .card-glide-clone.card-glide-clone--active,
+      .card.card-flip-prep,
+      .card.card-flip-active { transition: none !important; }
+      .card.card-just-moved,
+      .card.card-discard-landed { animation: none !important; }
     }
 
     /* Deck Card (Stock / Store Deck) with Standard Vector Back */
@@ -4531,6 +4581,7 @@ body.is-dragging-card-mobile {
       if (msg.type === 'SYNC') {
         try {
           const prevHandNum = roomState?.handNumber;
+          const prevTopDiscardId = roomState?.topDiscard?.id;
           roomState = msg.room;
 
           // Save player ID and active session state
@@ -4619,12 +4670,40 @@ body.is-dragging-card-mobile {
           // Turn change notification chime
           checkAndTriggerTurnSound();
 
+          const newTopDiscardId = roomState?.topDiscard?.id;
+          const isRecentOptimisticDiscard = Boolean(
+            lastOptimisticDiscard &&
+            newTopDiscardId &&
+            lastOptimisticDiscard.id === newTopDiscardId &&
+            (Date.now() - lastOptimisticDiscard.at) < 2500
+          );
+
           requestAnimationFrame(() => {
             if (drawnIds.length && sourceFlight) {
               playCardFlight(sourceFlight, document.getElementById('card-' + drawnIds[0]));
             }
-            if (discardedFlight) {
-              playCardFlight(discardedFlight, document.getElementById('discardContainer'));
+            if (discardedFlight && !isRecentOptimisticDiscard) {
+              const dcCard = document.querySelector('#discardContainer .card') || document.getElementById('discardContainer');
+              playCardFlight(discardedFlight, dcCard);
+            } else if (newTopDiscardId && newTopDiscardId !== prevTopDiscardId && !isRecentOptimisticDiscard) {
+              const dcCard = document.querySelector('#discardContainer .card');
+              if (dcCard) {
+                dcCard.classList.add('card-flip-prep');
+                dcCard.style.setProperty('--flip-dx', '0px');
+                dcCard.style.setProperty('--flip-dy', '-26px');
+                dcCard.style.setProperty('--flip-scale', '1.08');
+                dcCard.style.setProperty('--flip-rot', '-2deg');
+                void dcCard.offsetWidth;
+                dcCard.classList.remove('card-flip-prep');
+                dcCard.classList.add('card-flip-active', 'card-discard-landed');
+                setTimeout(() => {
+                  dcCard.classList.remove('card-flip-active', 'card-discard-landed');
+                  dcCard.style.removeProperty('--flip-dx');
+                  dcCard.style.removeProperty('--flip-dy');
+                  dcCard.style.removeProperty('--flip-scale');
+                  dcCard.style.removeProperty('--flip-rot');
+                }, 320);
+              }
             }
           });
         } catch (syncErr) {
@@ -4672,6 +4751,363 @@ body.is-dragging-card-mobile {
       flight.clone.style.opacity = '0.72';
     });
     setTimeout(() => flight.clone.remove(), 450);
+  }
+
+  let pendingDiscardSource = null;
+  let activeDiscardGlide = null;
+  let activeStandGlide = null;
+  let lastOptimisticDiscard = null;
+
+  function prefersReducedCardMotion() {
+    try {
+      return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function clearStaleCardGlides(cardId) {
+    document.querySelectorAll('.card-glide-clone').forEach(node => {
+      if (!cardId || node.getAttribute('data-glide-card') === cardId) {
+        node.remove();
+      }
+    });
+  }
+
+  function getCardGlideOrigin(cardId) {
+    if (!cardId) return null;
+    const activeClone = document.querySelector(`.card-glide-clone[data-glide-card="${cardId}"]`);
+    if (activeClone) {
+      const r = activeClone.getBoundingClientRect();
+      return {
+        centerX: r.left + r.width / 2,
+        centerY: r.top + r.height / 2,
+        width: activeClone.offsetWidth || r.width || 72,
+        height: activeClone.offsetHeight || r.height || 104,
+        scale: 1,
+        rot: 0,
+        el: activeClone.cloneNode(true),
+        isDragOrigin: true
+      };
+    }
+    const el = document.getElementById('card-' + cardId);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return {
+      centerX: r.left + r.width / 2,
+      centerY: r.top + r.height / 2,
+      width: el.offsetWidth || r.width || 72,
+      height: el.offsetHeight || r.height || 104,
+      scale: 1,
+      rot: 0,
+      el: el.cloneNode(true),
+      isDragOrigin: false
+    };
+  }
+
+  function getPointerGlideOrigin(e, cardId) {
+    const base = getCardGlideOrigin(cardId);
+    if (e && typeof e.clientX === 'number' && typeof e.clientY === 'number' && (e.clientX > 0 || e.clientY > 0)) {
+      const dcRef = document.querySelector('#discardContainer .card') || document.querySelector('#standsContainer .card');
+      const fallbackW = dcRef ? dcRef.offsetWidth : 72;
+      const fallbackH = dcRef ? dcRef.offsetHeight : 104;
+      return {
+        centerX: e.clientX,
+        centerY: e.clientY,
+        width: base?.width || fallbackW,
+        height: base?.height || fallbackH,
+        scale: 1.07,
+        rot: -2.4,
+        el: base?.el || null,
+        isDragOrigin: true
+      };
+    }
+    return base;
+  }
+
+  function captureStandSnapshot() {
+    const map = new Map();
+    document.querySelectorAll('#standsContainer .stand-rack').forEach((rack, rackIdx) => {
+      const m = (rack.id || '').match(/^stand-rack-(\d+)$/);
+      const standIdx = m ? parseInt(m[1], 10) : rackIdx;
+      rack.querySelectorAll('.card[id^="card-"]').forEach(el => {
+        const cid = el.getAttribute('data-card-id') || (el.id ? el.id.replace(/^card-/, '') : '');
+        if (!cid) return;
+        const rect = el.getBoundingClientRect();
+        let ty = 0;
+        let tx = 0;
+        try {
+          const tf = getComputedStyle(el).transform;
+          if (tf && tf !== 'none') {
+            const mat = new DOMMatrixReadOnly(tf);
+            tx = mat.m41 || 0;
+            ty = mat.m42 || 0;
+          }
+        } catch (_) {}
+        map.set(cid, {
+          rect,
+          standIdx,
+          tx,
+          ty
+        });
+      });
+    });
+    return map;
+  }
+
+  function ensureCardVisibleInStandSync(cardId) {
+    const el = document.getElementById('card-' + cardId);
+    if (!el) return;
+    const standCards = el.closest ? el.closest('.stand-cards') : null;
+    if (!standCards) return;
+    const cardLeft = el.offsetLeft;
+    const cardWidth = el.offsetWidth || 70;
+    const viewLeft = standCards.scrollLeft;
+    const viewWidth = standCards.clientWidth;
+    if (cardLeft < viewLeft + 4 || cardLeft + cardWidth > viewLeft + viewWidth - 4) {
+      const targetScrollLeft = cardLeft - (viewWidth / 2) + (cardWidth / 2);
+      const prevBehavior = standCards.style.scrollBehavior;
+      standCards.style.scrollBehavior = 'auto';
+      standCards.scrollLeft = Math.max(0, targetScrollLeft);
+      standCards.style.scrollBehavior = prevBehavior;
+      setTimeout(updateAllStandScrollButtons, 60);
+    }
+  }
+
+  function runFlipOnCardElement(el, startDx, startDy, startScale = 1, startRot = 0, extraFinishClass = '') {
+    if (!el || prefersReducedCardMotion()) return;
+    let baseTx = 0;
+    let baseTy = 0;
+    try {
+      const tf = getComputedStyle(el).transform;
+      if (tf && tf !== 'none') {
+        const mat = new DOMMatrixReadOnly(tf);
+        baseTx = mat.m41 || 0;
+        baseTy = mat.m42 || 0;
+      }
+    } catch (_) {}
+
+    el.classList.remove('card-flip-active', 'card-flip-prep');
+    el.style.setProperty('--flip-dx', `${(startDx + baseTx).toFixed(1)}px`);
+    el.style.setProperty('--flip-dy', `${(startDy + baseTy).toFixed(1)}px`);
+    el.style.setProperty('--flip-scale', String(startScale));
+    el.style.setProperty('--flip-rot', `${startRot}deg`);
+    el.classList.add('card-flip-prep');
+    void el.offsetWidth;
+    el.classList.remove('card-flip-prep');
+    el.classList.add('card-flip-active');
+    if (extraFinishClass) el.classList.add(extraFinishClass);
+
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      el.classList.remove('card-flip-active', 'card-flip-prep');
+      if (extraFinishClass) el.classList.remove(extraFinishClass);
+      el.style.removeProperty('--flip-dx');
+      el.style.removeProperty('--flip-dy');
+      el.style.removeProperty('--flip-scale');
+      el.style.removeProperty('--flip-rot');
+      el.removeEventListener('transitionend', onEnd);
+    };
+    const onEnd = (ev) => {
+      if (ev.target === el && ev.propertyName === 'transform') cleanup();
+    };
+    el.addEventListener('transitionend', onEnd);
+    setTimeout(cleanup, 340);
+  }
+
+  function animateStandSiblings(snapshot, skipCardId) {
+    if (!snapshot || snapshot.size === 0 || prefersReducedCardMotion()) return;
+    document.querySelectorAll('#standsContainer .stand-rack').forEach((rack, rackIdx) => {
+      const m = (rack.id || '').match(/^stand-rack-(\d+)$/);
+      const standIdx = m ? parseInt(m[1], 10) : rackIdx;
+      rack.querySelectorAll('.card[id^="card-"]').forEach(el => {
+        const cid = el.getAttribute('data-card-id') || (el.id ? el.id.replace(/^card-/, '') : '');
+        if (!cid || cid === skipCardId) return;
+        const prev = snapshot.get(cid);
+        if (!prev || prev.standIdx !== standIdx) return;
+        const afterRect = el.getBoundingClientRect();
+        // Compare untransformed horizontal offset
+        let afterTx = 0;
+        try {
+          const tf = getComputedStyle(el).transform;
+          if (tf && tf !== 'none') afterTx = new DOMMatrixReadOnly(tf).m41 || 0;
+        } catch (_) {}
+        const visualDx = (prev.rect.left - prev.tx) - (afterRect.left - afterTx);
+        const visualDy = (prev.rect.top - prev.ty) - afterRect.top;
+        if (Math.abs(visualDx) > 2 && Math.abs(visualDx) < 1200 && Math.abs(visualDy) < 24) {
+          runFlipOnCardElement(el, visualDx, 0, 1, 0);
+        }
+      });
+    });
+  }
+
+  function spawnOverlayCardGlide({ cardId, sourceNode, startOrigin, targetEl, kind }) {
+    if (!targetEl || !startOrigin || prefersReducedCardMotion()) return false;
+    clearStaleCardGlides(cardId);
+
+    const targetRect = targetEl.getBoundingClientRect();
+    if (!targetRect.width || !targetRect.height) return false;
+
+    const destCenterX = targetRect.left + targetRect.width / 2;
+    const destCenterY = targetRect.top + targetRect.height / 2;
+    const dx = startOrigin.centerX - destCenterX;
+    const dy = startOrigin.centerY - destCenterY;
+
+    if (Math.hypot(dx, dy) < 2 && Math.abs((startOrigin.scale || 1) - 1) < 0.02) {
+      return false;
+    }
+
+    const rawTemplate = sourceNode || targetEl;
+    const clone = rawTemplate.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.removeAttribute('onclick');
+    clone.removeAttribute('ondragstart');
+    clone.removeAttribute('ondragover');
+    clone.removeAttribute('ondragleave');
+    clone.removeAttribute('ondrop');
+    clone.removeAttribute('ondragend');
+    clone.removeAttribute('ontouchstart');
+    clone.removeAttribute('ontouchmove');
+    clone.removeAttribute('ontouchend');
+    clone.removeAttribute('ontouchcancel');
+    clone.removeAttribute('draggable');
+    clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+    clone.classList.remove('is-dragging', 'drag-over-left', 'drag-over-right', 'is-selected', 'card-just-moved', 'card-discard-landed', 'card-glide-hidden', 'card-touch-lifted', 'card-drag-preview', 'card-flip-prep', 'card-flip-active');
+    clone.classList.add('card-glide-clone');
+    clone.setAttribute('data-glide-card', cardId || '');
+
+    // Preserve target orientation/slot coordinates while starting transformed at startOrigin
+    clone.style.position = 'fixed';
+    clone.style.left = targetRect.left + 'px';
+    clone.style.top = targetRect.top + 'px';
+    clone.style.width = targetRect.width + 'px';
+    clone.style.height = targetRect.height + 'px';
+    clone.style.opacity = '1';
+
+    const sScale = startOrigin.scale || 1;
+    const sRot = startOrigin.rot || 0;
+    clone.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(${sScale}) rotate(${sRot}deg)`;
+
+    const until = Date.now() + 360;
+    if (kind === 'discard') {
+      activeDiscardGlide = { cardId, until };
+    } else if (kind === 'stand') {
+      activeStandGlide = { cardId, until };
+    }
+
+    targetEl.classList.add('card-glide-hidden');
+    document.body.appendChild(clone);
+    void clone.offsetWidth;
+
+    clone.classList.add('card-glide-clone--active');
+    clone.style.transform = 'translate3d(0px, 0px, 0) scale(1) rotate(0deg)';
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      clone.removeEventListener('transitionend', onEnd);
+      if (clone.parentNode) clone.remove();
+
+      if (kind === 'discard') {
+        if (activeDiscardGlide && activeDiscardGlide.cardId === cardId) activeDiscardGlide = null;
+        const freshDc = document.querySelector('#discardContainer .card');
+        if (freshDc) {
+          freshDc.classList.remove('card-glide-hidden');
+          freshDc.classList.add('card-discard-landed');
+          setTimeout(() => freshDc.classList.remove('card-discard-landed'), 320);
+        }
+      } else if (kind === 'stand') {
+        if (activeStandGlide && activeStandGlide.cardId === cardId) activeStandGlide = null;
+        const freshCard = document.getElementById('card-' + cardId);
+        if (freshCard) {
+          freshCard.classList.remove('card-glide-hidden');
+          freshCard.classList.add('card-just-moved');
+          setTimeout(() => freshCard.classList.remove('card-just-moved'), 360);
+        }
+      } else {
+        targetEl.classList.remove('card-glide-hidden');
+      }
+    };
+    const onEnd = (ev) => {
+      if (ev.target === clone && ev.propertyName === 'transform') finish();
+    };
+    clone.addEventListener('transitionend', onEnd);
+    setTimeout(finish, 360);
+    return true;
+  }
+
+  function animateStandCardMove(snapshot, cardId, dragOrigin) {
+    if (!cardId) return;
+    ensureCardVisibleInStandSync(cardId);
+    animateStandSiblings(snapshot, cardId);
+
+    const destEl = document.getElementById('card-' + cardId);
+    if (!destEl) return;
+
+    const prev = snapshot ? snapshot.get(cardId) : null;
+    let newStandIdx = -1;
+    const rack = destEl.closest ? destEl.closest('.stand-rack') : null;
+    if (rack && rack.id) {
+      const m = rack.id.match(/^stand-rack-(\d+)$/);
+      if (m) newStandIdx = parseInt(m[1], 10);
+    }
+
+    const isSameStandClickMove = Boolean(
+      prev &&
+      prev.standIdx === newStandIdx &&
+      (!dragOrigin || !dragOrigin.isDragOrigin)
+    );
+
+    if (isSameStandClickMove) {
+      const afterRect = destEl.getBoundingClientRect();
+      const dx = prev.rect.left - afterRect.left;
+      const dy = prev.rect.top - afterRect.top;
+      if (Math.abs(dx) > 1.5 || Math.abs(dy) > 1.5) {
+        runFlipOnCardElement(destEl, dx, dy, 1, 0, 'card-just-moved');
+      }
+      return;
+    }
+
+    const startOrigin = dragOrigin || (prev ? {
+      centerX: prev.rect.left + prev.rect.width / 2,
+      centerY: prev.rect.top + prev.rect.height / 2,
+      width: prev.rect.width,
+      height: prev.rect.height,
+      scale: 1,
+      rot: 0,
+      el: null
+    } : null);
+
+    if (startOrigin && spawnOverlayCardGlide({
+      cardId,
+      sourceNode: startOrigin.el || destEl,
+      startOrigin,
+      targetEl: destEl,
+      kind: 'stand'
+    })) {
+      return;
+    }
+
+    destEl.classList.add('card-just-moved');
+    setTimeout(() => destEl.classList.remove('card-just-moved'), 360);
+  }
+
+  function animateDiscardGlide(cardObj, sourceOrigin, standSnapshot) {
+    if (standSnapshot) {
+      animateStandSiblings(standSnapshot, cardObj?.id);
+    }
+    const dcCard = document.querySelector('#discardContainer .card');
+    if (!dcCard || !sourceOrigin) return;
+    spawnOverlayCardGlide({
+      cardId: cardObj?.id || 'discard',
+      sourceNode: sourceOrigin.el || dcCard,
+      startOrigin: sourceOrigin,
+      targetEl: dcCard,
+      kind: 'discard'
+    });
   }
 
   function getStandsStorageKey() {
@@ -5671,6 +6107,10 @@ body.is-dragging-card-mobile {
     document.getElementById('discardContainer').innerHTML = topCard
       ? (renderCard(topCard, isLockedJoker ? 'LOCKED JOKER' : (isInitialJoker ? 'INITIAL JOKER' : 'LATEST')) + discardBadgeHtml)
       : '<div class="card" style="opacity:0.25; justify-content:center; align-items:center; color:var(--text-muted); font-size:11px;">Empty</div>';
+    if (activeDiscardGlide && topCard && activeDiscardGlide.cardId === topCard.id && Date.now() < activeDiscardGlide.until) {
+      const dcCardEl = document.querySelector('#discardContainer .card');
+      if (dcCardEl) dcCardEl.classList.add('card-glide-hidden');
+    }
     renderDiscardHistory();
 
     // Render Multiple Stands
@@ -6597,6 +7037,10 @@ body.is-dragging-card-mobile {
         </div>`;
       }).join('');
       restoreContainerScrolls();
+      if (activeStandGlide && activeStandGlide.cardId && Date.now() < activeStandGlide.until) {
+        const slidingCardEl = document.getElementById('card-' + activeStandGlide.cardId);
+        if (slidingCardEl) slidingCardEl.classList.add('card-glide-hidden');
+      }
       setTimeout(updateAllStandScrollButtons, 30);
       return;
     }
@@ -8089,6 +8533,8 @@ body.is-dragging-card-mobile {
       }
     }
     if (sourceStandIdx === -1 || targetStandIdx >= userStands.length || targetStandIdx < 0 || sourceStandIdx === targetStandIdx) return;
+    const standSnap = captureStandSnapshot();
+    const dragOrigin = getCardGlideOrigin(cardId);
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
     // Maintain ordinal position in target stand
     const insertIdx = Math.min(cardIdx, userStands[targetStandIdx].length);
@@ -8098,13 +8544,7 @@ body.is-dragging-card-mobile {
     selectedCardId = card.id; // Keep card selected so user can move up/down/left/right seamlessly
     try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
-    scrollCardIntoView(card.id);
-
-    const cardEl = document.getElementById('card-' + card.id);
-    if (cardEl) {
-      cardEl.classList.add('card-just-moved');
-      setTimeout(() => cardEl.classList.remove('card-just-moved'), 600);
-    }
+    animateStandCardMove(standSnap, card.id, dragOrigin);
   }
 
   function moveCardToNewStand(cardId, e) {
@@ -8131,6 +8571,8 @@ body.is-dragging-card-mobile {
       addNewStand();
       return;
     }
+    const standSnap = captureStandSnapshot();
+    const dragOrigin = getCardGlideOrigin(cardId);
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
     userStands.push([card]);
     myHand = userStands.flat();
@@ -8138,13 +8580,7 @@ body.is-dragging-card-mobile {
     selectedCardId = card.id; // Keep card selected
     try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
-    scrollCardIntoView(card.id);
-
-    const cardEl = document.getElementById('card-' + card.id);
-    if (cardEl) {
-      cardEl.classList.add('card-just-moved');
-      setTimeout(() => cardEl.classList.remove('card-just-moved'), 600);
-    }
+    animateStandCardMove(standSnap, card.id, dragOrigin);
   }
 
   // --- Manual Card Reordering within Stand ---
@@ -8164,12 +8600,13 @@ body.is-dragging-card-mobile {
     const newIdx = cardIdx + offset;
     if (newIdx < 0 || newIdx >= targetStand.length) return;
 
+    const standSnap = captureStandSnapshot();
     const [card] = targetStand.splice(cardIdx, 1);
     targetStand.splice(newIdx, 0, card);
     myHand = userStands.flat();
     saveStandsToStorage();
     renderAll(null);
-    scrollCardIntoView(card.id);
+    animateStandCardMove(standSnap, card.id, null);
   }
 
   function moveSelectedCardToStart() {
@@ -8184,12 +8621,13 @@ body.is-dragging-card-mobile {
       }
     }
     if (!targetStand || cardIdx === 0) return;
+    const standSnap = captureStandSnapshot();
     const [card] = targetStand.splice(cardIdx, 1);
     targetStand.unshift(card);
     myHand = userStands.flat();
     saveStandsToStorage();
     renderAll(null);
-    scrollCardIntoView(card.id);
+    animateStandCardMove(standSnap, card.id, null);
   }
 
   function moveSelectedCardToEnd() {
@@ -8204,12 +8642,13 @@ body.is-dragging-card-mobile {
       }
     }
     if (!targetStand || cardIdx === targetStand.length - 1) return;
+    const standSnap = captureStandSnapshot();
     const [card] = targetStand.splice(cardIdx, 1);
     targetStand.push(card);
     myHand = userStands.flat();
     saveStandsToStorage();
     renderAll(null);
-    scrollCardIntoView(card.id);
+    animateStandCardMove(standSnap, card.id, null);
   }
 
   function scrollCardIntoView(cardId) {
@@ -8406,6 +8845,8 @@ body.is-dragging-card-mobile {
 
     if (!sourceStand || !targetStand) return;
 
+    const standSnap = captureStandSnapshot();
+    const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
     const [card] = sourceStand.splice(fromIdx, 1);
     const rect = targetEl ? targetEl.getBoundingClientRect() : null;
     const insertAfter = rect && (e.clientX >= rect.left + rect.width / 2);
@@ -8420,7 +8861,7 @@ body.is-dragging-card-mobile {
     saveStandsToStorage();
     try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
-    scrollCardIntoView(card.id);
+    animateStandCardMove(standSnap, card.id, dragOrigin);
   }
 
   function onDiscardPileDragOver(e) {
@@ -8444,6 +8885,7 @@ body.is-dragging-card-mobile {
     const isMyTurn=roomState && roomState.turnPlayerId===getMyPlayerId();
     if (!isMyTurn || roomState.turnStage!=='DISCARD') return;
     const cardId=draggedCardId;
+    pendingDiscardSource = getPointerGlideOrigin(e, cardId);
     selectedCardId=cardId;
     discardSelected();
     draggedCardId=null;
@@ -8657,7 +9099,25 @@ body.is-dragging-card-mobile {
     document.body.classList.remove('is-dragging-card-mobile');
     if (!touchCardState || touchCardState.cardId !== cardId) return;
 
+    let touchDropOrigin = null;
     if (touchDragGhost) {
+      const ghostLeft = parseFloat(touchDragGhost.style.left);
+      const ghostTop = parseFloat(touchDragGhost.style.top);
+      const ghostW = parseFloat(touchDragGhost.style.width) || touchDragGhost.offsetWidth || 72;
+      const ghostH = parseFloat(touchDragGhost.style.height) || touchDragGhost.offsetHeight || 104;
+      const rotMatch = (touchDragGhost.style.transform || '').match(/rotate\(([-\d.]+)deg\)/);
+      if (Number.isFinite(ghostLeft) && Number.isFinite(ghostTop)) {
+        touchDropOrigin = {
+          centerX: ghostLeft,
+          centerY: ghostTop,
+          width: ghostW,
+          height: ghostH,
+          scale: 1.09,
+          rot: rotMatch ? parseFloat(rotMatch[1]) : -2.5,
+          el: touchDragGhost.cloneNode(true),
+          isDragOrigin: true
+        };
+      }
       touchDragGhost.remove();
       touchDragGhost = null;
     }
@@ -8709,6 +9169,7 @@ body.is-dragging-card-mobile {
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= 22;
         if (canDiscard) {
+          pendingDiscardSource = touchDropOrigin || getCardGlideOrigin(cardId);
           selectedCardId = cardId;
           lastTouchSelectTime = now;
           lastTouchActionTime = now;
@@ -8736,6 +9197,8 @@ body.is-dragging-card-mobile {
           }
 
           if (sourceStandIdx !== -1) {
+            const standSnap = captureStandSnapshot();
+            const dragOrigin = touchDropOrigin || getCardGlideOrigin(cardId);
             let insertIdx = dropTarget.insertIdx;
             const [card] = userStands[sourceStandIdx].splice(fromIdx, 1);
 
@@ -8758,7 +9221,7 @@ body.is-dragging-card-mobile {
             lastTouchActionTime = now;
             try { soundSystem?.playCardSlide?.(); } catch (_) {}
             renderAll(null);
-            scrollCardIntoView(card.id);
+            animateStandCardMove(standSnap, card.id, dragOrigin);
             touchCardState = null;
             draggedCardId = null;
             return;
@@ -9110,6 +9573,8 @@ body.is-dragging-card-mobile {
     }
     if (!sourceStand) return;
 
+    const standSnap = captureStandSnapshot();
+    const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
     const [card] = sourceStand.splice(fromIdx, 1);
     userStands[targetStandIdx].push(card);
     draggedCardId = null;
@@ -9118,7 +9583,7 @@ body.is-dragging-card-mobile {
     saveStandsToStorage();
     try { soundSystem?.playCardSlide?.(); } catch (_) {}
     renderAll(null);
-    scrollCardIntoView(card.id);
+    animateStandCardMove(standSnap, card.id, dragOrigin);
   }
 
   function onCardDragEnd(e) {
@@ -9286,19 +9751,34 @@ body.is-dragging-card-mobile {
     }
 
     const cardToDiscard = selectedCardId;
+    const sourceOrigin = pendingDiscardSource || getCardGlideOrigin(cardToDiscard);
+    pendingDiscardSource = null;
+    const standSnap = captureStandSnapshot();
     selectedCardId = null;
 
-    // Optimistically remove discarded card and transition turnStage to prevent duplicate discards
+    // Optimistically remove discarded card and update topDiscard so discard glides smoothly
+    let discardedCardObj = null;
     for (const stand of userStands) {
       const idx = stand.findIndex(c => c && c.id === cardToDiscard);
       if (idx !== -1) {
-        stand.splice(idx, 1);
+        [discardedCardObj] = stand.splice(idx, 1);
         break;
       }
     }
     myHand = userStands.flat();
-    roomState.turnStage = 'WAITING';
+    if (roomState) {
+      roomState.turnStage = 'WAITING';
+      if (discardedCardObj) {
+        if (!roomState.discardHistory) roomState.discardHistory = [];
+        if (roomState.topDiscard && roomState.topDiscard.id !== discardedCardObj.id) {
+          roomState.discardHistory.push(roomState.topDiscard);
+        }
+        roomState.topDiscard = { ...discardedCardObj };
+        lastOptimisticDiscard = { id: discardedCardObj.id, at: Date.now() };
+      }
+    }
     renderAll(typeof calculateLocalMaal === 'function' ? calculateLocalMaal() : null);
+    animateDiscardGlide(discardedCardObj || { id: cardToDiscard }, sourceOrigin, standSnap);
 
     ws.send(JSON.stringify({ type: 'DISCARD', cardId: cardToDiscard }));
     setTimeout(() => { isDiscardInFlight = false; }, 600);
@@ -10751,7 +11231,9 @@ body.is-dragging-card-mobile {
   function simulateDiscard() {
     if (!selectedCardId) return;
     soundSystem.playCardDiscard();
-    const sourceFlight = captureCardFlight(document.getElementById('card-' + selectedCardId));
+    const standSnap = captureStandSnapshot();
+    const sourceOrigin = pendingDiscardSource || getCardGlideOrigin(selectedCardId);
+    pendingDiscardSource = null;
     let card = null;
     for (const stand of userStands) {
       const idx = stand.findIndex(c => c.id === selectedCardId);
@@ -10781,7 +11263,7 @@ body.is-dragging-card-mobile {
 
     // Immediately re-render with updated local Maal points
     renderAll(calculateLocalMaal());
-    requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('discardContainer')));
+    animateDiscardGlide(card, sourceOrigin, standSnap);
 
     passDemoTurn();
   }
