@@ -118,8 +118,8 @@ function finalizeRound(userRoom) {
   const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard);
 
   userRoom.sessionScores = userRoom.sessionScores || {};
-  // Paying losers: active players who did not drop or fold (dropped players pay strictly their drop penalty and do not owe winner honors)
-  const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.hasDropped && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
+  // Paying losers: all opponents except Free Scoot / Free Game players owe winner Honors + their drop/deadwood points
+  const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
 
   const results = userRoom.players.map(p => {
     // Ensure player session entry exists keyed by normalized player name
@@ -131,6 +131,7 @@ function finalizeRound(userRoom) {
         handsPlayed: 0,
         handsWon: 0,
         points: 0,
+        honors: 0,
         maal: 0,
         totalScore: 0
       };
@@ -138,32 +139,38 @@ function finalizeRound(userRoom) {
     const sc = userRoom.sessionScores[scoreKey];
     sc.name = p.name;
     sc.id = p.id;
-    sc.handsPlayed += 1;
+    const alreadySettled = Boolean(p._settledInRound);
+    if (!alreadySettled) {
+      sc.handsPlayed += 1;
+      p._settledInRound = true;
+    }
     p.readyForNextHand = false;
 
     if (p.id === winner.id) {
-      sc.handsWon += 1;
-      const netMaal = payingLosersCount * winnerMaal.total;
-      sc.maal += netMaal;
-      sc.honors = sc.maal;
-      sc.totalScore += netMaal;
+      if (!alreadySettled) {
+        sc.handsWon += 1;
+        const netMaal = payingLosersCount * winnerMaal.total;
+        sc.maal += netMaal;
+        sc.honors = sc.maal;
+        sc.totalScore += netMaal;
+      }
+      const netMaalDisplay = payingLosersCount * winnerMaal.total;
       return {
         name: p.name,
         status: 'WINNER',
         points: 0,
-        maalCollected: netMaal,
-        honorsCollected: netMaal,
+        maalCollected: netMaalDisplay,
+        honorsCollected: netMaalDisplay,
         net: payingLosersCount > 0
-          ? `Won + collects ${winnerMaal.total} Honors from each paying loser (+${netMaal} pts)`
-          : `Won (all opponents dropped / folded, 0 Honors collected)`
+          ? `Won + collects ${winnerMaal.total} Honors from each paying loser (+${netMaalDisplay} pts)`
+          : `Won (all opponents Free Scooted, 0 Honors collected)`
       };
     }
     if (p.hasDropped) {
       if (p.isFreeScoot || p.dropType === 'FREE_SCOOT') {
-        sc.points += 0;
-        sc.maal += 0;
-        sc.honors = sc.maal;
-        sc.totalScore += 0;
+        if (!alreadySettled) {
+          sc.honors = sc.maal;
+        }
         return {
           name: p.name,
           status: 'DROPPED',
@@ -175,20 +182,21 @@ function finalizeRound(userRoom) {
         };
       }
       const drop = p.dropPenalty || (p.hasForfeited ? 100 : (CONFIG.firstDrop || 30));
-      // In Indian 21 Card Rummy, folded/dropped players pay ONLY their drop penalty (30 or 70) and do NOT owe winner honors
-      const totalPay = drop;
-      sc.points += drop;
-      sc.maal += 0;
-      sc.honors = sc.maal;
-      sc.totalScore -= totalPay;
+      const totalPay = drop + winnerMaal.total;
+      if (!alreadySettled) {
+        sc.points += drop;
+        sc.maal -= winnerMaal.total;
+        sc.honors = sc.maal;
+        sc.totalScore -= totalPay;
+      }
       return {
         name: p.name,
         status: p.hasForfeited ? 'FORFEITED' : 'DROPPED',
         points: totalPay,
         dropPenalty: drop,
-        maalOwed: 0,
-        honorsOwed: 0,
-        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'})`
+        maalOwed: winnerMaal.total,
+        honorsOwed: winnerMaal.total,
+        net: `Pays ${totalPay} pts (${drop} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${winnerMaal.total} winner Honors)`
       };
     }
 
@@ -199,10 +207,12 @@ function finalizeRound(userRoom) {
 
     const deadwood = calculateGroupedDeadwood(p.declaredGroups, p.hand, userRoom.cutCard);
     const totalPay = deadwood + winnerMaal.total;
-    sc.points += deadwood;
-    sc.maal -= winnerMaal.total;
-    sc.honors = sc.maal;
-    sc.totalScore -= totalPay;
+    if (!alreadySettled) {
+      sc.points += deadwood;
+      sc.maal -= winnerMaal.total;
+      sc.honors = sc.maal;
+      sc.totalScore -= totalPay;
+    }
     return {
       name: p.name,
       status: 'LOST',
@@ -312,6 +322,7 @@ function dealNextHand(room) {
     p.isGrouped = false;
     p.declaredGroups = [];
     p.readyForNextHand = false;
+    p._settledInRound = false;
   });
 
   room.cutCard = deck.pop();
@@ -471,6 +482,7 @@ wss.on('connection', (ws) => {
           p.hasDropped = false;
           p.isFreeScoot = false;
           p.turnsTaken = 0;
+          p._settledInRound = false;
         });
 
         userRoom.cutCard = deck.pop(); // Open Cut Joker immediately
@@ -767,22 +779,19 @@ wss.on('connection', (ws) => {
           leavingPlayer.dropPenalty = penalty;
           leavingPlayer.hasLeft = true;
 
+          // Ensure sessionScores entry exists; finalizeRound will settle dropPenalty + winnerMaal cleanly once per hand
           const scoreKey = (leavingPlayer.name || '').trim().toLowerCase();
           if (!userRoom.sessionScores[scoreKey]) {
             userRoom.sessionScores[scoreKey] = {
               id: leavingPlayer.id,
               name: leavingPlayer.name,
-              handsPlayed: 1,
+              handsPlayed: 0,
               handsWon: 0,
-              points: penalty,
+              points: 0,
               honors: 0,
               maal: 0,
-              totalScore: -penalty
+              totalScore: 0
             };
-          } else {
-            const sc = userRoom.sessionScores[scoreKey];
-            sc.points += penalty;
-            sc.totalScore -= penalty;
           }
 
           userRoom.lastAction = `${leavingPlayer.name} left the game (${penaltyLabel})`;

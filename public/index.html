@@ -1502,28 +1502,28 @@
 .maal-details-panel{margin:8px 0 10px;padding:11px 12px;border:1px solid rgba(217,182,92,.18);border-radius:12px;background:linear-gradient(180deg,rgba(25,38,31,.88),rgba(10,20,15,.92));box-shadow:0 7px 20px rgba(0,0,0,.16)}.maal-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.maal-details-title{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.8px;color:#f1d27a}.maal-details-subtitle{font-size:9px;color:#789086;margin-top:2px}.maal-live-total{font-size:11px;font-weight:850;color:#f8dfa0;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);border-radius:999px;padding:5px 9px;white-space:nowrap}.maal-detail-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.maal-detail-card{min-width:0;padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(148,163,184,.10)}.maal-detail-label{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.65px;color:#70857b;font-weight:800}.maal-detail-value{display:block;margin-top:3px;font-size:11px;color:#e7eee9;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pile-draggable:not(.drag-ready){cursor:default!important}.pile-drop-source:not(.drag-ready):not(.discard-drop-ready){cursor:default}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{cursor:grab!important}.pile-draggable.drag-ready:active,.pile-drop-source.drag-ready:active{cursor:grabbing!important}.pile-draggable.drag-ready,.pile-drop-source.drag-ready{border-color:#f1d27a!important;box-shadow:0 0 0 3px rgba(217,182,92,.16),0 10px 24px rgba(0,0,0,.3)!important;transform:translateY(-3px)}.pile-drop-source{display:flex;align-items:center;justify-content:center;min-height:98px}.pile-drop-source .card{pointer-events:none}.stand-rack.pile-drop-ready{border-color:#f1d27a;background:rgba(217,182,92,.09);box-shadow:0 0 0 2px rgba(217,182,92,.10)}.stage-guide.pile-mode{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.09)}.card-inner{box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 0 0 3px rgba(255,255,255,.7)}.card:not(.deck-card) .card-inner:before{content:"";position:absolute;inset:3px;border:1px solid rgba(15,23,42,.10);border-radius:5px;pointer-events:none}.pip-grid{position:relative;width:34px;height:60px;font-size:10px;line-height:1}.pip{position:absolute;display:flex;align-items:center;justify-content:center;width:10px;height:10px;font-size:12px;font-weight:700}.pip-t{left:12px;top:0}.pip-b{left:12px;bottom:0}.pip-c{left:12px;top:25px}.pip-tl{left:0;top:0}.pip-tr{right:0;top:0}.pip-ml{left:0;top:25px}.pip-mr{right:0;top:25px}.pip-bl{left:0;bottom:0}.pip-br{right:0;bottom:0}.pip-ul{left:0;top:13px}.pip-ur{right:0;top:13px}.pip-c1{left:12px;top:13px}.pip-c2{left:12px;top:38px}.pip-1{height:28px}.pip-2{height:48px}.pip-3,.pip-4,.pip-5,.pip-6,.pip-7,.pip-8,.pip-9,.pip-10{height:60px}@media(max-width:800px){.maal-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.maal-details-head{align-items:flex-start}.maal-details-subtitle{max-width:240px}.maal-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.maal-detail-value{font-size:10px}}
 
 /* ===== UI REFINEMENT ===== */
-/* ===== COMPLETE UX PASS ===== */
-.game-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid rgba(217,182,92,.16);border-radius:13px;background:linear-gradient(90deg,rgba(18,55,41,.86),rgba(7,26,18,.9));box-shadow:0 8px 24px rgba(0,0,0,.18)}
-.game-hero-copy{min-width:0}.game-kicker{font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#7f998e;font-weight:800}.game-title{margin:2px 0 0;font-size:17px;letter-spacing:-.2px}.game-subtitle{font-size:11px;color:#91a69c;margin-top:2px}
-.connection-pill{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 9px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;border:1px solid rgba(50,197,138,.25);color:#8ee6bf;background:rgba(50,197,138,.08)}
+/* ===== COMPLETE UX PASS (COMPACT VERTICAL SPACING) ===== */
+.game-hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 12px;border:1px solid rgba(217,182,92,.16);border-radius:10px;background:linear-gradient(90deg,rgba(18,55,41,.86),rgba(7,26,18,.9));box-shadow:0 4px 14px rgba(0,0,0,.16)}
+.game-hero-copy{min-width:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.game-kicker{font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;color:#7f998e;font-weight:800}.game-title{margin:0;font-size:15px;font-weight:800;letter-spacing:-.2px}.game-subtitle{font-size:10.5px;color:#91a69c;margin:0}
+.connection-pill{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:3px 8px;border-radius:999px;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;border:1px solid rgba(50,197,138,.25);color:#8ee6bf;background:rgba(50,197,138,.08)}
 .connection-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:#32c58a;box-shadow:0 0 8px rgba(50,197,138,.75)}
-.stage-guide{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:10px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13);color:#b6c7bf;font-size:11px}
-.stage-guide strong{color:#f1d27a}.stage-icon{font-size:14px}.stage-guide .hint{margin-left:auto;color:#758c81;font-size:10px}
-.center-board .pile-wrapper{position:relative}.pile-action-hint{font-size:9px;color:#71887d;margin-top:4px;text-align:center;min-height:11px}
+.stage-guide{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:9px;background:rgba(217,182,92,.055);border:1px solid rgba(217,182,92,.13);color:#b6c7bf;font-size:11px}
+.stage-guide strong{color:#f1d27a}.stage-icon{font-size:13px}.stage-guide .hint{margin-left:auto;color:#758c81;font-size:10px}
+.center-board .pile-wrapper{position:relative}.pile-action-hint{font-size:8.5px;color:#71887d;margin-top:2px;text-align:center;min-height:10px}
 .pile-wrapper.active-pile .pile-title{color:#f1d27a}.pile-wrapper.active-pile .card,.pile-wrapper.active-pile .deck-card{box-shadow:0 0 0 2px rgba(241,210,122,.42),0 10px 24px rgba(0,0,0,.38)}
-.hand-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 7px}.hand-heading-main{display:flex;align-items:center;gap:8px}.hand-heading-title{font-size:13px;font-weight:800}.hand-heading-count{font-size:10px;color:#9db0a7;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);padding:3px 7px;border-radius:999px}.hand-heading-hint{font-size:10px;color:#71877d}
+.hand-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 4px}.hand-heading-main{display:flex;align-items:center;gap:7px}.hand-heading-title{font-size:12.5px;font-weight:800}.hand-heading-count{font-size:10px;color:#9db0a7;background:rgba(217,182,92,.09);border:1px solid rgba(217,182,92,.18);padding:2px 7px;border-radius:999px}.hand-heading-hint{font-size:10px;color:#71877d}
 .stand-rack:first-child{border-color:rgba(217,182,92,.20)}.stand-rack:hover{border-color:rgba(217,182,92,.30)}
 .stand-title-box:before{content:"";width:6px;height:6px;border-radius:50%;background:#5d766b;display:inline-block}.stand-rack:first-child .stand-title-box:before{background:#d9b65c;box-shadow:0 0 7px rgba(217,182,92,.45)}
-.action-section{margin-top:3px}.action-label{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:#71877d;font-weight:800;margin:7px 3px 5px}.actions-grid .btn-action{position:relative}.btn-action .action-sub{display:block;font-size:9px;font-weight:600;opacity:.7;margin-top:2px}
-.btn-draw-stock:after,.btn-draw-discard:after,.btn-discard:after,.btn-drop:after,.btn-declare:after{content:"";position:absolute;inset:auto 12px 4px;height:2px;border-radius:2px;background:rgba(255,255,255,.13);opacity:.0;transition:opacity .15s}.btn-action:hover:after{opacity:1}
-.maal-mini{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0 1px}.maal-mini-item{flex:1 1 120px;min-width:0;padding:7px 9px;border-radius:9px;background:rgba(8,27,19,.68);border:1px solid rgba(217,182,92,.12)}.maal-mini-label{font-size:8px;text-transform:uppercase;letter-spacing:.8px;color:#71877d}.maal-mini-value{font-size:11px;font-weight:800;color:#dfe9e3;margin-top:2px}
+.action-section{margin-top:2px}.action-label{font-size:8.5px;letter-spacing:1.1px;text-transform:uppercase;color:#71877d;font-weight:800;margin:3px 3px 2px}.actions-grid .btn-action{position:relative}.btn-action .action-sub{display:block;font-size:9px;font-weight:600;opacity:.72;margin-top:1px}
+.btn-draw-stock:after,.btn-draw-discard:after,.btn-discard:after,.btn-drop:after,.btn-declare:after{content:"";position:absolute;inset:auto 12px 3px;height:2px;border-radius:2px;background:rgba(255,255,255,.13);opacity:.0;transition:opacity .15s}.btn-action:hover:after{opacity:1}
+.maal-mini{display:flex;gap:6px;flex-wrap:wrap;margin:5px 0 1px}.maal-mini-item{flex:1 1 120px;min-width:0;padding:6px 8px;border-radius:9px;background:rgba(8,27,19,.68);border:1px solid rgba(217,182,92,.12)}.maal-mini-label{font-size:8px;text-transform:uppercase;letter-spacing:.8px;color:#71877d}.maal-mini-value{font-size:11px;font-weight:800;color:#dfe9e3;margin-top:2px}
 .modal-content{border-top:3px solid #d9b65c}.settlement-row strong{color:#e7efe9}.settlement-row:last-child{border-bottom:0}
-@media(max-width:760px){.game-hero{padding:10px 11px}.game-title{font-size:15px}.connection-pill{font-size:9px}.stage-guide .hint{display:none}.hand-heading-hint{display:none}}
-@media(max-width:520px){.game-hero-copy{max-width:72%}.player-strip{padding:7px}.player-row{padding:7px 8px}.center-board{margin:6px 0;padding-top:24px}.pile-action-hint{font-size:8px}.maal-mini-item{flex-basis:calc(50% - 6px)}}
+@media(max-width:760px){.game-hero{padding:5px 10px}.game-title{font-size:13.5px}.game-kicker{display:none}.connection-pill{font-size:9px}.stage-guide .hint{display:none}.hand-heading-hint{display:none}}
+@media(max-width:520px){.game-hero-copy{max-width:74%}.player-strip{padding:6px}.player-row{padding:6px 8px}.center-board{margin:2px 0;padding-top:20px}.pile-action-hint{font-size:8px}.maal-mini-item{flex-basis:calc(50% - 6px)}}
 
 :root{--bg-base:#07110d;--bg-gradient:radial-gradient(circle at 50% 0%,#163c2c 0%,#0a1b14 45%,#050b08 100%);--surface-felt:rgba(16,45,34,.94);--surface-board:#0b2a1d;--surface-panel:rgba(8,27,19,.92);--surface-stand:rgba(7,20,15,.92);--surface-border:rgba(217,182,92,.18);--surface-border-light:rgba(217,182,92,.34);--accent-blue:#63d6a5;--accent-blue-hover:#45bf8b;--accent-blue-glow:rgba(99,214,165,.25);--accent-gold:#d9b65c;--accent-gold-soft:#f1d27a;--accent-emerald:#32c58a;--accent-rose:#f06b78;--card-scale:0.85;--card-base-w:72px;--card-base-h:104px;--card-w:calc(var(--card-base-w)*var(--card-scale));--card-h:calc(var(--card-base-h)*var(--card-scale))}
 @media(max-width:760px){:root{--card-base-w:60px;--card-base-h:88px;}}
-body{padding:12px;background-image:radial-gradient(circle at 50% 35%,rgba(32,117,79,.13),transparent 38%),var(--bg-gradient)}
+body{padding:6px 10px;background-image:radial-gradient(circle at 50% 35%,rgba(32,117,79,.13),transparent 38%),var(--bg-gradient)}
 .lobby-box{max-width:480px;margin:min(7vh,50px) auto;padding:26px 28px 28px;background:linear-gradient(155deg,rgba(19,54,41,.98),rgba(8,24,17,.98));border:1px solid rgba(217,182,92,.32);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.68),0 0 30px rgba(217,182,92,.12),inset 0 1px 0 rgba(255,255,255,.08);position:relative;overflow:hidden;}
 .lobby-box:before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f1d27a,transparent);opacity:.85}
 .lobby-header-bar{display:flex;justify-content:flex-end;margin-bottom:2px}
@@ -1587,66 +1587,109 @@ body{padding:12px;background-image:radial-gradient(circle at 50% 35%,rgba(32,117
 .meta-dot{color:rgba(217,182,92,.5);font-size:8px}
 input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .btn-primary{background:linear-gradient(135deg,#d9b65c,#a97d28);color:#172014;box-shadow:0 6px 20px rgba(217,182,92,.24)}
-.table-container{max-width:1180px;min-height:calc(100vh - 24px);gap:8px}
-.status-bar{min-height:52px;padding:9px 14px;border-color:rgba(217,182,92,.20);background:rgba(6,23,16,.92);box-shadow:0 8px 25px rgba(0,0,0,.20)}
-.turn-chip #turnNotice{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:8px}.turn-indicator-dot.active{background:var(--accent-gold-soft);box-shadow:0 0 12px rgba(241,210,122,.85)}
+.table-container{max-width:1180px;min-height:auto;justify-content:flex-start;gap:5px}
+.status-bar{min-height:38px;padding:5px 12px;border-color:rgba(217,182,92,.20);background:rgba(6,23,16,.92);box-shadow:0 6px 18px rgba(0,0,0,.20)}
+.turn-chip #turnNotice{display:inline-flex;align-items:center;min-height:26px;padding:0 8px;border-radius:7px}.turn-indicator-dot.active{background:var(--accent-gold-soft);box-shadow:0 0 12px rgba(241,210,122,.85)}
 .maal-badge{background:rgba(217,182,92,.10);border-color:rgba(217,182,92,.30);color:var(--accent-gold-soft)}
-.center-board{position:relative;gap:clamp(18px,5vw,54px);min-height:160px;padding:22px 24px;margin:8px 0;border:1px solid rgba(217,182,92,.20);border-radius:20px;background:radial-gradient(circle at center,rgba(35,126,85,.20),transparent 60%),linear-gradient(145deg,#0c3323,#082117);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 15px 38px rgba(0,0,0,.32)}
-.center-board:before{content:"21 CARD RUMMY";position:absolute;top:9px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;letter-spacing:2px;color:rgba(241,210,122,.38);pointer-events:none}
-.pile-title{color:#b9c8c0;font-size:10px;margin-bottom:8px}.pile-wrapper{min-width:78px}
-.card{border-radius:9px;box-shadow:0 5px 12px rgba(0,0,0,.34),0 1px 2px rgba(0,0,0,.18)}.card:hover{transform:translateY(-6px);box-shadow:0 10px 22px rgba(0,0,0,.42)}
-.card.is-selected{transform:translateY(-16px)!important;box-shadow:0 0 0 3px var(--accent-gold-soft),0 14px 28px rgba(217,182,92,.30)!important}.card-inner{border-radius:9px;background:linear-gradient(145deg,#fff,#f7f5ee)}.card.poochie .card-inner{background:linear-gradient(145deg,#fff9df,#f4df9a)}
-.stand-rack{background:linear-gradient(180deg,rgba(12,35,26,.95),rgba(6,20,14,.95));border-color:rgba(217,182,92,.15);border-radius:14px;padding:9px 10px 8px}.stand-title-box{color:#a9bbb2}.stand-count-badge{background:rgba(217,182,92,.10);color:#e6eee9}.stand-cards{gap:9px;padding-top:14px}
-.tool-btn{background:rgba(19,39,31,.95)!important;border-color:rgba(255,255,255,.10)!important}.tool-btn:hover{background:rgba(34,65,51,.98)!important;border-color:rgba(99,214,165,.45)!important}.tool-btn-highlight{border-color:rgba(217,182,92,.35)!important;color:var(--accent-gold-soft)!important}
+.center-board{position:relative;gap:clamp(16px,4vw,44px);min-height:112px;padding:24px 18px 8px;margin:2px 0;border:1px solid rgba(217,182,92,.20);border-radius:18px;background:radial-gradient(circle at center,rgba(35,126,85,.20),transparent 60%),linear-gradient(145deg,#0c3323,#082117);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 10px 28px rgba(0,0,0,.30)}
+.center-board:before{content:"21 CARD RUMMY";position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:7.5px;font-weight:800;letter-spacing:2px;color:rgba(241,210,122,.34);pointer-events:none}
+.pile-title{color:#b9c8c0;font-size:10px;margin-bottom:3px}.pile-wrapper{min-width:78px}
+.card{border-radius:9px;box-shadow:0 5px 12px rgba(0,0,0,.34),0 1px 2px rgba(0,0,0,.18)}.card:hover{transform:translateY(-5px);box-shadow:0 10px 22px rgba(0,0,0,.42)}
+.card.is-selected{transform:translateY(-14px)!important;box-shadow:0 0 0 3px var(--accent-gold-soft),0 14px 28px rgba(217,182,92,.35)!important}
+.card.is-guided{box-shadow:0 0 0 3px #32c58a,0 0 18px rgba(50,197,138,.65)!important;animation:guideCardPulse 1.4s infinite ease-in-out}
+@keyframes guideCardPulse{0%,100%{transform:translateY(-13px)}50%{transform:translateY(-17px)}}
+.card-inner{border-radius:9px;background:linear-gradient(145deg,#fff,#f7f5ee)}.card.poochie .card-inner{background:linear-gradient(145deg,#fff9df,#f4df9a)}
+.stands-toolbar{margin-bottom:5px;gap:6px}.stands-container{gap:5px;margin-bottom:6px}
+.stand-rack{background:linear-gradient(180deg,rgba(12,35,26,.95),rgba(6,20,14,.95));border-color:rgba(217,182,92,.15);border-radius:12px;padding:5px 8px}.stand-header{margin-bottom:2px}.stand-title-box{color:#a9bbb2}.stand-count-badge{background:rgba(217,182,92,.10);color:#e6eee9}.stand-cards{gap:8px;padding:8px 4px 4px 4px;min-height:calc(var(--card-h) + 10px)}.stand-scroll-btn{min-height:76px}
+.tool-btn{background:rgba(19,39,31,.95)!important;border-color:rgba(255,255,255,.10)!important;padding:5px 10px!important}.tool-btn:hover{background:rgba(34,65,51,.98)!important;border-color:rgba(99,214,165,.45)!important}.tool-btn-highlight{border-color:rgba(217,182,92,.35)!important;color:var(--accent-gold-soft)!important}
 .reorder-bar{background:rgba(16,61,45,.38);border-color:rgba(99,214,165,.22)}
-.actions-grid{gap:9px;margin-top:7px;padding:4px 0 2px}.btn-action{min-height:48px;border-radius:11px}.btn-draw-stock{background:linear-gradient(135deg,#177e5a,#0c6044)}.btn-draw-discard{background:linear-gradient(135deg,#3c8065,#28624c)}.btn-discard{background:linear-gradient(135deg,#c08e2e,#966c1f)}.btn-drop{background:rgba(41,20,24,.72);border-color:rgba(240,107,120,.25)}.btn-declare{background:linear-gradient(135deg,#e1bd62,#ae7d27);box-shadow:0 5px 18px rgba(217,182,92,.24);color:#172014}
+.actions-grid{gap:7px;margin-top:4px;padding:2px 0}.btn-action{min-height:40px;padding:7px 8px;border-radius:10px}.btn-draw-stock{background:linear-gradient(135deg,#177e5a,#0c6044)}.btn-draw-discard{background:linear-gradient(135deg,#3c8065,#28624c)}.btn-discard{background:linear-gradient(135deg,#c08e2e,#966c1f)}.btn-drop{background:rgba(41,20,24,.72);border-color:rgba(240,107,120,.25)}.btn-declare{background:linear-gradient(135deg,#e1bd62,#ae7d27);box-shadow:0 5px 18px rgba(217,182,92,.24);color:#172014;padding:9px 12px;margin-top:2px}
 .modal-content{background:linear-gradient(145deg,#143728,#091b13);border-color:rgba(217,182,92,.28)}
-@media(max-width:760px){body{padding:7px}.table-container{min-height:calc(100vh - 14px)}.center-board{min-height:145px;gap:16px;padding:22px 10px 14px}.btn-action{min-height:46px;padding:10px 5px;font-size:12px}}
+@media(max-width:760px){body{padding:4px 6px}.table-container{min-height:auto;gap:4px}.center-board{min-height:106px;gap:12px;padding:20px 8px 6px}.btn-action{min-height:38px;padding:6px 5px;font-size:12px}}
 @media(max-width:430px){.lobby-box{margin:28px auto;padding:28px 20px 22px}.lobby-title{font-size:25px}.center-board{gap:8px}.pile-wrapper{min-width:78px}.stand-cards{gap:6px}.actions-grid{grid-template-columns:repeat(2,1fr)}.btn-declare{grid-column:span 2}}
-.declare-panel{display:none;margin:8px 0 12px;padding:14px;border:1px solid rgba(217,182,92,.35);border-radius:14px;background:linear-gradient(180deg,rgba(16,40,29,.98),rgba(7,22,15,.98));box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.declare-panel{display:none;margin:2px 0 4px;padding:10px 12px;border:1px solid rgba(217,182,92,.35);border-radius:12px;background:linear-gradient(180deg,rgba(16,40,29,.98),rgba(7,22,15,.98));box-shadow:0 8px 22px rgba(0,0,0,.32)}
 .declare-panel.is-open{display:block;animation:slideDown .22s ease-out}
-@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.declare-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:10px}
-.declare-title{font-size:14px;font-weight:900;color:#f1d27a;display:flex;align-items:center;gap:6px}
-.declare-subtitle{font-size:11px;color:#9db0a7;margin-top:3px;line-height:1.4}
-.declare-checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.checklist-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);font-size:11px;color:#b9c8c0}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.declare-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:7px}
+.declare-title{font-size:13.5px;font-weight:900;color:#f1d27a;display:flex;align-items:center;gap:6px}
+.declare-subtitle{font-size:11px;color:#9db0a7;margin-top:2px;line-height:1.35}
+.declare-checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:6px;margin-bottom:0}
+.checklist-item{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);font-size:11px;color:#b9c8c0}
 .checklist-item.done{border-color:rgba(50,197,138,.40);background:rgba(50,197,138,.09);color:#7eedba}
 .checklist-item.pending{border-color:rgba(217,182,92,.30);background:rgba(217,182,92,.06);color:#f1d27a}
-.checklist-icon{font-size:14px}
-.declare-smart-box{margin-bottom:10px}
-.btn-declare-smart{width:100%;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;transition:all .18s;border:1px solid transparent}
-.btn-declare-smart.btn-declare-valid{background:linear-gradient(135deg,#1f8b65,#106042);border-color:rgba(99,214,165,.60);color:#fff;box-shadow:0 0 16px rgba(50,197,138,.35)}
-.btn-declare-smart.btn-declare-valid:hover{transform:translateY(-1px);box-shadow:0 0 22px rgba(50,197,138,.55)}
+.checklist-icon{font-size:13px}
+.declare-smart-box{margin-bottom:6px}
+.btn-declare-smart{width:100%;min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 12px;border-radius:9px;font-size:12.5px;font-weight:800;cursor:pointer;transition:all .18s;border:1px solid transparent}
+.btn-declare-smart.btn-declare-valid{background:linear-gradient(135deg,#1f8b65,#106042);border-color:rgba(99,214,165,.60);color:#fff;box-shadow:0 0 14px rgba(50,197,138,.32)}
+.btn-declare-smart.btn-declare-valid:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(50,197,138,.52)}
 .btn-declare-smart.btn-declare-invalid{background:rgba(40,20,24,.75);border-color:rgba(240,107,120,.30);color:#f1a7ad;cursor:not-allowed;opacity:.85}
 .btn-declare-smart.btn-declare-hint{background:rgba(217,182,92,.06);border-color:rgba(217,182,92,.22);color:#dcd6be;cursor:default}
-.declare-btn-sub{font-size:10px;font-weight:500;opacity:.85;margin-top:2px}
-.declare-actions-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px;margin-bottom:10px}
-.btn-group-type{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 6px;min-height:46px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);color:#cfdad4;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
+.declare-btn-sub{font-size:10px;font-weight:500;opacity:.85;margin-top:1px}
+.declare-actions-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:8px}
+.btn-group-type{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;min-height:40px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);color:#cfdad4;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
 .btn-group-type:hover:not(:disabled){background:rgba(255,255,255,.08);border-color:rgba(99,214,165,.40)}
 .btn-group-type.is-eligible{background:rgba(50,197,138,.14);border-color:rgba(50,197,138,.50);color:#7eedba;box-shadow:0 0 10px rgba(50,197,138,.25)}
 .btn-group-type:disabled{opacity:.35;cursor:not-allowed}
-.btn-group-sub{font-size:8.5px;color:#8ba096;margin-top:2px;font-weight:500}
-.declare-banner-ready{padding:10px 14px;border-radius:9px;background:linear-gradient(90deg,rgba(217,182,92,.18),rgba(50,197,138,.14));border:1px solid rgba(217,182,92,.45);color:#f1d27a;font-size:12px;font-weight:800;text-align:center;margin-bottom:10px;animation:pulse 2s infinite}
-.declare-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#7e9389}
+.btn-group-sub{font-size:8.5px;color:#8ba096;margin-top:1px;font-weight:500}
+.declare-banner-ready{padding:7px 12px;border-radius:8px;background:linear-gradient(90deg,rgba(217,182,92,.18),rgba(50,197,138,.14));border:1px solid rgba(217,182,92,.45);color:#f1d27a;font-size:11.5px;font-weight:800;text-align:center;margin-top:6px}
+.declare-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#7e9389}
 .btn-forfeit-danger{background:rgba(240,107,120,.09);border:1px solid rgba(240,107,120,.26);color:#f87171;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
 .btn-forfeit-danger:hover{background:rgba(240,107,120,.20);border-color:rgba(240,107,120,.45);color:#fca5a5}
 .declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
 
-/* Sticky Meld Grouping Bar directly above cards during Show / Declaration */
+/* Guide Me Interactive Coach Banner */
+.guide-me-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(217, 182, 92, 0.12));
+  border: 1px solid rgba(50, 197, 138, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  font-size: 11.5px;
+  color: #e2e8f0;
+}
+.guide-me-copy {
+  flex: 1 1 220px;
+  line-height: 1.35;
+}
+.guide-me-copy strong {
+  color: #7eedba;
+}
+.guide-me-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.guide-me-btn-trigger {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35)) !important;
+  border-color: #32c58a !important;
+  color: #86efac !important;
+  box-shadow: 0 0 12px rgba(50, 197, 138, 0.22);
+}
+.guide-me-btn-trigger:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.5)) !important;
+  color: #ffffff !important;
+}
+
+/* Unified Sticky Group Builder Bar directly above cards during Show / Grouping */
 .sticky-grouping-bar {
   position: sticky;
-  top: 6px;
+  top: 4px;
   z-index: 150;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  border-radius: 14px;
+  gap: 6px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 12px;
   background: linear-gradient(180deg, rgba(16, 42, 32, 0.98), rgba(8, 24, 17, 0.98));
   border: 1.5px solid rgba(217, 182, 92, 0.5);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6), 0 0 16px rgba(217, 182, 92, 0.2);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 12px rgba(217, 182, 92, 0.16);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   animation: fadeInSlide .18s ease-out;
@@ -1656,7 +1699,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   font-size: 11px;
 }
 .sticky-grouping-badges {
@@ -1667,8 +1710,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 }
 .sticky-grouping-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 5px;
   width: 100%;
 }
 .sticky-meld-btn {
@@ -1676,8 +1719,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 8px;
-  min-height: 40px;
+  padding: 5px 6px;
+  min-height: 36px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1707,7 +1750,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   color: #172014 !important;
   font-weight: 850 !important;
   border-radius: 8px !important;
-  padding: 6px 12px !important;
+  padding: 5px 12px !important;
   font-size: 12px !important;
   cursor: pointer;
   border: 1px solid #f1d27a !important;
@@ -1811,27 +1854,27 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 
-/* ===== POKERIST-STYLE CASINO RUMMY TABLE FELT ===== */
+/* ===== POKERIST-STYLE CASINO RUMMY TABLE FELT (COMPACT VERTICAL FIT) ===== */
 .rummy-table-felt {
   position: relative;
   width: 100%;
   max-width: 1180px;
-  margin: 8px auto 12px;
-  border-radius: 140px;
+  margin: 2px auto 4px;
+  border-radius: 105px;
   background: radial-gradient(ellipse at 50% 48%, #1a5c3e 0%, #10422c 42%, #082618 80%, #03100a 100%);
-  border: 14px solid #140d07;
+  border: 10px solid #140d07;
   outline: 2px solid rgba(217, 182, 92, 0.45);
   box-shadow: 
     0 0 0 1px rgba(0, 0, 0, 0.9),
-    inset 0 0 35px rgba(0, 0, 0, 0.75),
-    inset 0 0 80px rgba(0, 0, 0, 0.45),
-    0 24px 60px rgba(0, 0, 0, 0.85);
-  padding: 22px 24px 18px;
+    inset 0 0 30px rgba(0, 0, 0, 0.72),
+    inset 0 0 65px rgba(0, 0, 0, 0.42),
+    0 14px 40px rgba(0, 0, 0, 0.75);
+  padding: 12px 18px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-height: 440px;
+  min-height: 295px;
   overflow: visible;
   user-select: none;
   -webkit-user-select: none;
@@ -1841,8 +1884,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .rummy-table-felt::before {
   content: "";
   position: absolute;
-  inset: 16px;
-  border-radius: 115px;
+  inset: 10px;
+  border-radius: 92px;
   border: 1.5px dashed rgba(217, 182, 92, 0.22);
   pointer-events: none;
   z-index: 1;
@@ -1888,8 +1931,8 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   width: 100%;
   max-width: 980px;
   z-index: 10;
-  gap: 16px;
-  margin-bottom: 6px;
+  gap: 12px;
+  margin-bottom: 2px;
 }
 
 /* Pokerist Player Seat Pod */
@@ -1900,7 +1943,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   align-items: center;
   text-align: center;
   transition: transform 0.25s ease, filter 0.25s ease;
-  min-width: 105px;
+  min-width: 96px;
 }
 .pokerist-seat.is-dropped {
   opacity: 0.55;
@@ -1910,9 +1953,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 /* Avatar Frame with Pokerist Turn Timer Ring */
 .seat-avatar-wrap {
   position: relative;
-  width: 58px;
-  height: 58px;
-  margin-bottom: 6px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 3px;
 }
 .seat-avatar-ring {
   width: 100%;
@@ -1933,7 +1976,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   border: 1.5px solid rgba(255, 255, 255, 0.15);
   display: grid;
   place-items: center;
-  font-size: 26px;
+  font-size: 21px;
   color: #f8fafc;
   box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
 }
@@ -2125,14 +2168,14 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 8px 18px 8px 12px;
+  gap: 12px;
+  padding: 5px 14px 5px 10px;
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(16, 45, 34, 0.94), rgba(7, 20, 15, 0.94));
   border: 1.5px solid rgba(217, 182, 92, 0.35);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   z-index: 10;
-  margin-top: 8px;
+  margin-top: 2px;
 }
 .bottom-user-pod.is-my-turn {
   border-color: rgba(99, 214, 165, 0.8);
@@ -2287,36 +2330,36 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 /* Responsive Table Felt */
 @media(max-width: 768px) {
   .rummy-table-felt {
-    border-radius: 54px;
-    border-width: 10px;
-    padding: 16px 10px 14px;
-    min-height: 390px;
+    border-radius: 44px;
+    border-width: 7px;
+    padding: 10px 8px 7px;
+    min-height: 255px;
   }
   .rummy-table-felt::before {
-    border-radius: 44px;
-    inset: 8px;
+    border-radius: 36px;
+    inset: 6px;
   }
   .opponent-seats-area {
-    gap: 8px;
+    gap: 6px;
   }
   .pokerist-seat {
-    min-width: 78px;
+    min-width: 72px;
   }
   .seat-avatar-wrap {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
   }
   .seat-avatar-inner {
-    font-size: 20px;
+    font-size: 18px;
   }
   .seat-player-name {
-    font-size: 10.5px;
+    font-size: 10px;
   }
   .center-board {
-    gap: 16px;
+    gap: 14px;
   }
   .bottom-user-pod {
-    padding: 6px 14px 6px 10px;
+    padding: 4px 12px 4px 8px;
   }
 }
 
@@ -2416,9 +2459,9 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   @media(max-width:600px){.demo-controls{display:grid;grid-template-columns:1fr 1fr}.demo-controls-title{grid-column:1/-1}}
   
 /* ===== COMPACT TABLE LAYOUT ===== */
-.center-board{position:relative;display:flex;justify-content:center;align-items:center;gap:30px;min-height:148px;padding:38px 24px 14px;overflow:visible;user-select:none;-webkit-user-select:none;}
+.center-board{position:relative;display:flex;justify-content:center;align-items:center;gap:24px;min-height:112px;padding:24px 16px 8px;overflow:visible;user-select:none;-webkit-user-select:none;}
 .stock-pile-wrapper{position:relative;z-index:8;user-select:none;-webkit-user-select:none;}
-.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 20px);margin:0 auto}
+.stock-with-cut{position:relative;width:var(--card-w);height:calc(var(--card-h) + 12px);margin:0 auto}
 .stock-with-cut #stockDeckBtn{position:relative;z-index:5;touch-action:none!important;}
 .cut-card-under-stock{position:absolute;left:-22px;top:calc((var(--card-h) - var(--card-w)) / 2);width:var(--card-w);height:var(--card-h);transform:rotate(90deg);transform-origin:center center;z-index:2;pointer-events:none}
 .cut-card-under-stock .card{width:var(--card-w)!important;height:var(--card-h)!important;transform:none!important;opacity:.98;box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 0 1px rgba(217,182,92,.3)!important}
@@ -2446,17 +2489,17 @@ body.is-dragging-card-mobile {
   -webkit-user-select: none !important;
 }
 .discard-pile-wrapper{position:relative;z-index:9}
-.discard-stack-area{position:relative;width:230px;height:112px;margin-top:2px;display:flex;align-items:center;justify-content:center;overflow:visible}
-.discard-stack-area #discardContainer{position:absolute;left:34px;top:7px;z-index:30;touch-action:none!important;}
-.discard-history{position:absolute;left:48px;top:7px;width:170px;height:108px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
-.discard-history-card{position:absolute;width:68px;height:98px;left:0;top:0;display:block;opacity:.92;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
+.discard-stack-area{position:relative;width:220px;height:96px;margin-top:0;display:flex;align-items:center;justify-content:center;overflow:visible}
+.discard-stack-area #discardContainer{position:absolute;left:34px;top:4px;z-index:30;touch-action:none!important;}
+.discard-history{position:absolute;left:48px;top:4px;width:170px;height:96px;display:block;overflow:visible;min-height:0;padding:0;pointer-events:none}
+.discard-history-card{position:absolute;width:64px;height:92px;left:0;top:0;display:block;opacity:.92;pointer-events:auto;cursor:grab;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,opacity .18s ease;transform:translateX(calc(var(--fan-x))) rotate(var(--fan-rot));}
 .discard-history-card:active{cursor:grabbing}
-.discard-history-card .card{transform:none!important;width:68px;height:98px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
+.discard-history-card .card{transform:none!important;width:64px;height:92px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.28)!important}
 .discard-history-card.peeked{filter:brightness(1.08);z-index:60!important;transform:translateX(calc(var(--fan-x))) translateY(-10px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card:hover{filter:brightness(1.08);z-index:55!important;transform:translateX(calc(var(--fan-x))) translateY(-8px) rotate(0deg) scale(1.03)!important;opacity:1}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-card.peeked ~ .discard-history-card{opacity:.72}
-@media(max-width:600px){.center-board{gap:16px;min-height:140px;padding:34px 10px 10px;}.cut-card-under-stock{left:-18px;top:calc((var(--card-h) - var(--card-w)) / 2);transform:rotate(90deg);}.table-turn-banner{top:5px;font-size:9.5px;padding:3px 12px;}.discard-stack-area{width:190px}.discard-stack-area #discardContainer{left:22px;top:9px}.discard-history{left:36px;top:9px;width:145px}.discard-history-card{width:58px;height:84px;top:0}.discard-history-card .card{width:58px;height:84px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
+@media(max-width:600px){.center-board{gap:12px;min-height:104px;padding:22px 8px 6px;}.cut-card-under-stock{left:-18px;top:calc((var(--card-h) - var(--card-w)) / 2);transform:rotate(90deg);}.table-turn-banner{top:4px;font-size:9.5px;padding:2px 11px;}.discard-stack-area{width:185px;height:90px;}.discard-stack-area #discardContainer{left:22px;top:4px}.discard-history{left:36px;top:4px;width:140px;height:88px}.discard-history-card{width:54px;height:80px;top:0}.discard-history-card .card{width:54px;height:80px}.discard-history-card.peeked,.discard-history-card:hover{transform:translateX(var(--fan-x)) translateY(-8px) rotate(0deg) scale(1.02)!important}}
 .discard-history-card.peeked .card{box-shadow:0 7px 18px rgba(0,0,0,.42)!important}
 .discard-history-index{top:-4px;right:-4px;pointer-events:none}
 .discard-history-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#64748b;padding:0}
@@ -2867,7 +2910,7 @@ body.is-dragging-card-mobile {
         <span id="soundIcon">🔊</span>
         <span id="soundLabel" class="sound-label">Audio: ON</span>
       </button>
-      <button id="btnHelpRules" type="button" class="status-action-btn btn-help" onclick="openRulesModal()" title="View complete 21-Card Rummy rules, melds, and honors guide">
+      <button id="btnHelpRules" type="button" class="status-action-btn btn-help" onclick="openRulesModal()" title="View complete 21-Card Rummy rules, groups, and honors guide">
         <span>❓ Rules</span>
       </button>
       <div id="sessionScoresSummary" class="maal-badge session-badge" role="button" tabindex="0" onclick="openSessionScoresModal()" title="View session leaderboard and running scores">
@@ -3048,7 +3091,7 @@ body.is-dragging-card-mobile {
     </div>
 
     <!-- Multi-Stand Cards Racks -->
-    <div class="show-help"><strong>Show builder:</strong> arrange your cards into groups. A valid 21-card show needs at least 3 Pure Sequences.</div><div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container"></div>
+    <div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container"></div>
 
     <div class="action-section">
       <div class="action-label">Your Move</div>
@@ -3079,7 +3122,7 @@ body.is-dragging-card-mobile {
     <div style="font-size: 38px; margin-bottom: 8px; animation: spinPulse 2.4s infinite ease-in-out;">⏳</div>
     <h2 id="groupingWaitTitle" style="color: #f1d27a; font-size: 20px; font-weight: 800; margin: 0 0 6px;">Waiting For All Players</h2>
     <div id="groupingWaitSubtitle" style="color: #b9c8c0; font-size: 13px; margin-bottom: 12px;">
-      A player has declared! Waiting for all opponents to finish grouping their melds...
+      A player has declared! Waiting for all opponents to finish grouping their cards...
     </div>
     <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:14px; font-size:12px; font-weight:800; padding:4px 12px; border-radius:999px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35);">
       ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> remaining
@@ -3244,7 +3287,7 @@ body.is-dragging-card-mobile {
         <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
           <span>📖</span> 21 Card Rummy Guide &amp; Rules
         </h2>
-        <span class="maal-modal-subtitle">Table rules, melds, jokers, honors points, and declaration requirements</span>
+        <span class="maal-modal-subtitle">Table rules, card groups, jokers, honors points, and declaration requirements</span>
       </div>
       <button class="maal-modal-close" onclick="closeRulesModal()" aria-label="Close Rules Modal">✕</button>
     </div>
@@ -3252,7 +3295,7 @@ body.is-dragging-card-mobile {
     <!-- Category Tabs -->
     <div class="rules-tab-bar" role="tablist">
       <button type="button" class="rules-tab-btn active" id="tabBtnOverview" onclick="switchRulesTab('overview')">🌟 Overview &amp; Setup</button>
-      <button type="button" class="rules-tab-btn" id="tabBtnMelds" onclick="switchRulesTab('melds')">🎯 Melds &amp; Show</button>
+      <button type="button" class="rules-tab-btn" id="tabBtnMelds" onclick="switchRulesTab('melds')">🎯 Groups &amp; Show</button>
       <button type="button" class="rules-tab-btn" id="tabBtnJokers" onclick="switchRulesTab('jokers')">🃏 Jokers &amp; Honors</button>
       <button type="button" class="rules-tab-btn" id="tabBtnScoring" onclick="switchRulesTab('scoring')">⚡ Scoot &amp; Scoring</button>
     </div>
@@ -3269,7 +3312,7 @@ body.is-dragging-card-mobile {
           <h4><span>🔄</span> Turn Structure</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
             <li><strong>1. Draw:</strong> On your turn, draw 1 card from either the face-down <strong>Stock Deck</strong> or the face-up <strong>Discard Pile</strong>.</li>
-            <li><strong>2. Meld &amp; Organize:</strong> Arrange your hand into Stands (1, 2, or 3 stands). Tap any card to open the Move Pad or drag &amp; drop cards directly between stands.</li>
+            <li><strong>2. Group &amp; Organize:</strong> Arrange your hand into Stands (1, 2, or 3 stands). Tap any card to open the Move Pad or drag &amp; drop cards directly between stands.</li>
             <li><strong>3. Discard:</strong> Discard 1 card to the Discard Pile to complete your turn.</li>
           </ul>
         </div>
@@ -3293,14 +3336,14 @@ body.is-dragging-card-mobile {
         </div>
       </div>
 
-      <!-- Tab 2: Melds & Declaration Requirements -->
+      <!-- Tab 2: Groups & Declaration Requirements -->
       <div id="rulesTabMelds" class="rules-tab-content" style="display:none;">
         <div class="rules-card-box">
           <h4><span>✅</span> Valid Show Requirements</h4>
-          <p>To declare a winning Show, all 21 cards must be grouped into valid melds with:</p>
+          <p>To declare a winning Show, all 21 cards must be arranged into valid groups with:</p>
           <ul style="margin: 6px 0 0 18px; padding: 0;">
             <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.</li>
-            <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Melds that count as a Pure Sequence in this game:</strong>
+            <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Groups that count as a Pure Sequence in this game:</strong>
               <ul style="margin: 4px 0 0 16px; padding: 0;">
                 <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit. <em>Note: A natural sequence can include a joker card, as long as it is played in its natural suit and number (e.g. if 5♠ is the Pukka Joker, 5♠ - 6♠ - 7♠ is a pure sequence; 5♥ - 6♥ - 7♥ is also a pure sequence).</em></li>
                 <li><strong>Marriage Trio:</strong> Holding <strong>Taplu + Pukka Joker + Paplu</strong> in the cut suit (e.g. <strong>6♦ - 7♦ - 8♦</strong>) qualifies as a Pure Sequence!</li>
@@ -3308,7 +3351,7 @@ body.is-dragging-card-mobile {
                 <li><strong>Tunnela:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) qualifies as a Pure Sequence!</li>
               </ul>
             </li>
-            <li><strong>Remaining Melds:</strong> All other cards must be arranged into valid Sequences (pure or using Wild Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
+            <li><strong>Remaining Groups:</strong> All other cards must be arranged into valid Sequences (pure or using Wild Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
             <li><strong>Auto-Grouping Priority:</strong> When auto-grouping upon declare, <strong>Pure Sequences always take precedence over Sets</strong> (e.g. if 9♠ can participate in an 8♠-9♠-10♠ pure sequence or a 9♠-9♦-9♣ set, it will prioritize the pure sequence).</li>
           </ul>
         </div>
@@ -3855,6 +3898,8 @@ body.is-dragging-card-mobile {
   let declarationMode = false;
   let declarationGroups = [];
   let declarationSelectedIds = new Set();
+  let guidedCardIds = new Set();
+  let guideMeState = null;
   let globalSessionScores = [];
   let demoHandNumber = 1;
   let demoStarterIndex = 0;
@@ -5252,6 +5297,7 @@ body.is-dragging-card-mobile {
     const suitClass = card.suit === '♠' ? 'suit-spades' : card.suit === '♣' ? 'suit-clubs' : card.suit === '♥' ? 'suit-hearts' : card.suit === '♦' ? 'suit-diamonds' : '';
     const suitTitle = card.suit === '♣' ? 'Clubs (♣)' : card.suit === '♠' ? 'Spades (♠)' : card.suit === '♥' ? 'Hearts (♥)' : card.suit === '♦' ? 'Diamonds (♦)' : '';
     const selClass = isLocked ? '' : (declarationMode ? (declarationSelectedIds.has(card.id) ? 'is-selected' : '') : (selectedCardId === card.id ? 'is-selected' : ''));
+    const guidedClass = (!isLocked && declarationMode && guidedCardIds.has(card.id)) ? 'is-guided' : '';
     const lockedClass = isLocked ? 'locked-card-item' : '';
     const clickAttr = isLocked ? '' : `onclick="selectCard('${card.id}')"`;
     const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
@@ -5297,7 +5343,7 @@ body.is-dragging-card-mobile {
     }
 
     return `
-      <div class="card ${redClass} ${poochieClass} ${selClass} ${suitClass} ${lockedClass}" ${dragAttrs} ${clickAttr}>
+      <div class="card ${redClass} ${poochieClass} ${selClass} ${guidedClass} ${suitClass} ${lockedClass}" data-card-id="${card.id}" ${dragAttrs} ${clickAttr}>
         ${tagHtml}
         <div class="card-inner">
           ${vectorImgHtml}
@@ -5832,12 +5878,12 @@ body.is-dragging-card-mobile {
           if (waitTitle) {
             waitTitle.innerText = mePlayer?.id === roomState.winnerId
               ? '🏆 Declaration Accepted!'
-              : '✅ Melds Submitted!';
+              : '✅ Groups Submitted!';
           }
           if (waitSub) {
             waitSub.innerText = mePlayer?.id === roomState.winnerId
               ? 'Waiting for all other players to finish grouping their cards...'
-              : 'Waiting for remaining opponents to finish grouping their melds...';
+              : 'Waiting for remaining opponents to finish grouping their cards...';
           }
           if (waitProg) {
             waitProg.innerText = `${readyCount} / ${totalActive} players finished grouping`;
@@ -5879,136 +5925,75 @@ body.is-dragging-card-mobile {
         const groupedCards = declarationGroups.flatMap(g => g.cards);
         const grouped = groupedCards.length;
         const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-        const selectedCards = myHand.filter(c => declarationSelectedIds.has(c.id));
-        const selected = selectedCards.length;
         const groupedIds = new Set(groupedCards.map(c => c.id));
         const remaining = myHand.filter(c => !groupedIds.has(c.id));
-
-        const isPureValid = declarationPure(selectedCards);
-        const isSeqValid = declarationSequence(selectedCards);
-        const isSetValid = declarationSet(selectedCards);
-        const detected = detectBestGroupType(selectedCards);
-
-        const isShowReady = grouped === 21 && pure >= 3 && remaining.length === 1;
-
-        let smartButtonHtml = '';
-        if (detected) {
-          smartButtonHtml = `
-            <button type="button" class="btn-declare-smart btn-declare-valid" onclick="autoGroupSelected()">
-              <span>${detected.icon} <b>Form ${detected.verb}</b> (${selected} cards)</span>
-              <small class="declare-btn-sub">${detected.badge} • Click to lock this group</small>
-            </button>`;
-        } else if (selected >= 3) {
-          smartButtonHtml = `
-            <button type="button" class="btn-declare-smart btn-declare-invalid" disabled>
-              <span>⚠️ <b>Not a Valid Run or Set</b> (${selected} cards selected)</span>
-              <small class="declare-btn-sub">Cards must be consecutive in same suit, or 3-4 cards of same rank</small>
-            </button>`;
-        } else if (selected === 0) {
-          smartButtonHtml = `
-            <button type="button" class="btn-declare-smart btn-declare-hint" disabled>
-              <span>👆 <b>Tap 3+ cards in "Cards to Group" below</b></span>
-              <small class="declare-btn-sub">Cards highlight in gold as you select them</small>
-            </button>`;
-        } else {
-          smartButtonHtml = `
-            <button type="button" class="btn-declare-smart btn-declare-hint" disabled>
-              <span>👆 <b>Select at least ${3 - selected} more card${3 - selected > 1 ? 's' : ''}</b> (${selected}/3 min)</span>
-              <small class="declare-btn-sub">Sequences and sets require a minimum of 3 cards</small>
-            </button>`;
-        }
+        const dInfoPanel = countDoubles(myHand);
+        const isDoublesPanelReady = (dInfoPanel.count >= 7 && myHand.length === 21) || (dInfoPanel.count >= 8 && myHand.length === 22);
+        const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesPanelReady;
 
         if (isGroupingPhase) {
           const estDeadwood = calculateCurrentDeadwood(declarationGroups, myHand);
           dp.innerHTML = `
-            <div class="declare-panel-head">
+            <div class="declare-panel-head" style="margin-bottom:6px; padding-bottom:6px;">
               <div>
                 <div class="declare-title" style="color:#7eedba;">
-                  <span>⚡</span> Group Your Melds to Minimize Deadwood
+                  <span>⚡</span> Group Your Cards to Minimize Deadwood
                 </div>
-                <div class="declare-subtitle" style="max-width:700px; line-height:1.45;">
-                  ${roomState?.winnerName || 'Winner'} declared! Non-declarers need a <b>minimum of 3 pure sequences</b>. Otherwise, all cards apart from <b>Jokers</b>, <b>pure sequences of 4+ cards</b>, and <b>Tunellas</b> are considered deadwood.
+                <div class="declare-subtitle">
+                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Form <b>3+ Pure Groups</b> to protect all your groups. Otherwise, only Jokers, 4+ Pure Groups, and Tunellas are exempt.
                 </div>
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span class="grouping-timer-badge" style="font-size:12px; font-weight:800; padding:6px 12px; border-radius:8px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35); display:inline-flex; align-items:center; gap:4px;">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span class="grouping-timer-badge" style="font-size:11.5px; font-weight:800; padding:5px 10px; border-radius:8px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35); display:inline-flex; align-items:center; gap:4px;">
                   ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> left
                 </span>
-                <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:36px;" onclick="submitGroupingMeld()">
-                  <span><b>✅ Submit Melds</b></span>
+                <button type="button" class="btn-action btn-declare" style="padding:6px 14px; min-height:34px; font-size:12px;" onclick="submitGroupingMeld()">
+                  <span><b>✅ Submit Groups</b></span>
                 </button>
               </div>
             </div>
-
-            <div style="margin:8px 0 10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-              <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; ${estDeadwood.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.35);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35);'}">
-                ${estDeadwood.pureSequences} / 3 Pure Sequences ${estDeadwood.hasRequiredPure ? '✅ (All melds protected)' : '⚠️ (Only Jokers, 4+ pure runs & Tunellas protected)'}
-              </span>
-              <span style="font-size:11px; padding:3px 10px; border-radius:8px; font-weight:700; ${estDeadwood.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.35);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.35);'}">
-                Current Deadwood: <b>${estDeadwood.points} pts</b> ${estDeadwood.hasRequiredPure ? '(Protected)' : `(${estDeadwood.deadwoodCount} deadwood cards, Jokers exempt)`}
-              </span>
-            </div>
-
-            <div class="declare-smart-box">
-              ${smartButtonHtml}
-            </div>
-
-            <div class="declare-actions-row">
-              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFullHand()" title="Automatically scan and group your entire hand into valid runs, tunellas, and sets">
-                <span>⚡ Auto-Group</span>
-                <span class="btn-group-sub">Find all melds</span>
-              </button>
-              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFromStands()" title="Automatically convert your stands into valid sequences or sets">
-                <span>⚡ From Stands</span>
-                <span class="btn-group-sub">Auto-fill racks</span>
-              </button>
-              <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''}>
-                <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
-                <span class="btn-group-sub">Min 3</span>
-              </button>
-              <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''}>
-                <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
-                <span class="btn-group-sub">Wilds Allowed</span>
-              </button>
-              <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''}>
-                <span>👑 Set ${isSetValid ? '✓' : ''}</span>
-                <span class="btn-group-sub">3-4 Cards</span>
-              </button>
-              <button type="button" class="btn-group-type" onclick="ungroupAllDeclaration()" title="Disband all formed melds back to Cards to Group">
-                <span>↩ Ungroup All</span>
-                <span class="btn-group-sub">Reset groups</span>
-              </button>
-            </div>
-
-            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
-              <div>
-                <div style="font-size:12px; font-weight:800; color:#cfdad4;">
-                  ${grouped} cards grouped • ${estDeadwood.pureSequences} pure runs • Deadwood: ${estDeadwood.points} pts
-                </div>
-                <div style="font-size:10px; color:#8ba096;">
-                  All other players are waiting for your submission. Tap "Submit Melds" when done.
+            <div class="declare-checklist">
+              <div class="checklist-item ${estDeadwood.hasRequiredPure ? 'done' : 'pending'}">
+                <span class="checklist-icon">${estDeadwood.hasRequiredPure ? '✅' : '⏳'}</span>
+                <div>
+                  <div><strong>${estDeadwood.pureSequences} / 3</strong> Pure Groups</div>
+                  <div style="font-size:9px; opacity:0.85;">${estDeadwood.hasRequiredPure ? 'All groups protected!' : 'Need 3 to protect Sets/Joker Groups'}</div>
                 </div>
               </div>
-              <button type="button" class="btn-action btn-declare" onclick="submitGroupingMeld()">
-                <span><b>Submit &amp; Finish</b></span>
-              </button>
+              <div class="checklist-item ${grouped >= 18 ? 'done' : 'pending'}">
+                <span class="checklist-icon">${grouped >= 18 ? '✅' : '🃏'}</span>
+                <div>
+                  <div><strong>${grouped} / ${myHand.length}</strong> Cards Grouped</div>
+                  <div style="font-size:9px; opacity:0.85;">${declarationGroups.length} group(s) formed</div>
+                </div>
+              </div>
+              <div class="checklist-item ${estDeadwood.points === 0 ? 'done' : 'pending'}">
+                <span class="checklist-icon">${estDeadwood.points === 0 ? '🛡️' : '📊'}</span>
+                <div>
+                  <div><strong>${estDeadwood.points} pts</strong> Est. Deadwood</div>
+                  <div style="font-size:9px; opacity:0.85;">${estDeadwood.hasRequiredPure ? 'Protected' : `${estDeadwood.deadwoodCount} loose cards (Jokers exempt)`}</div>
+                </div>
+              </div>
             </div>`;
         } else {
           dp.innerHTML = `
-            <div class="declare-panel-head">
+            <div class="declare-panel-head" style="margin-bottom:6px; padding-bottom:6px;">
               <div>
                 <div class="declare-title">
                   <span>🏆</span> Declare 21-Card Show
                 </div>
                 <div class="declare-subtitle">
-                  Group 21 cards into sequences &amp; sets. The 1 remaining card automatically serves as your final discard.
+                  Group 21 cards below using <b>🧭 Guide Me</b>, <b>⚡ Auto-Group</b>, or by tapping cards. The 1 remaining card becomes your final discard.
                 </div>
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <button type="button" class="btn-action btn-declare ${isShowReady ? 'is-ready-pulse' : ''}" style="padding:7px 16px; min-height:36px; font-size:12px; font-weight:800; border-radius:8px;" onclick="declareShow()">
-                  <span>🏆 Submit Declaration</span>
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-action btn-declare ${isShowReady ? 'is-ready-pulse' : ''}" style="padding:6px 14px; min-height:34px; font-size:12px; font-weight:800; border-radius:8px;" onclick="declareShow()">
+                  <span>🏆 Submit Declaration ${isShowReady ? '✨' : ''}</span>
                 </button>
-                <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">Cancel</button>
+                <button type="button" class="btn-forfeit-danger" onclick="promptForfeitDeclaration()" title="Forfeit declaration with 100 pts penalty">
+                  🚩 Forfeit (100 pts)
+                </button>
+                <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
               </div>
             </div>
 
@@ -6016,75 +6001,30 @@ body.is-dragging-card-mobile {
               <div class="checklist-item ${pure >= 3 ? 'done' : 'pending'}">
                 <span class="checklist-icon">${pure >= 3 ? '✅' : '⏳'}</span>
                 <div>
-                  <div><strong>${pure} / 3</strong> Pure Sequences</div>
-                  <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 required'}</div>
+                  <div><strong>${pure} / 3</strong> Pure Groups</div>
+                  <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 natural runs'}</div>
                 </div>
               </div>
               <div class="checklist-item ${grouped === 21 ? 'done' : 'pending'}">
                 <span class="checklist-icon">${grouped === 21 ? '✅' : '⏳'}</span>
                 <div>
                   <div><strong>${grouped} / 21</strong> Cards Grouped</div>
-                  <div style="font-size:9px; opacity:0.85;">${grouped === 21 ? 'Complete (21 cards)' : `${21 - grouped} left to group`}</div>
+                  <div style="font-size:9px; opacity:0.85;">${grouped === 21 ? 'All 21 cards grouped' : `${21 - grouped} left to group`}</div>
                 </div>
               </div>
               <div class="checklist-item ${remaining.length === 1 ? 'done' : 'pending'}">
                 <span class="checklist-icon">${remaining.length === 1 ? '🎴' : '⏳'}</span>
                 <div>
                   <div><strong>${remaining.length === 1 ? (remaining[0].rank + remaining[0].suit) : `${remaining.length} cards`}</strong> Finish Discard</div>
-                  <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected discard' : '1 card must remain'}</div>
+                  <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected finish card' : 'Leave 1 card ungrouped'}</div>
                 </div>
               </div>
             </div>
 
             ${isShowReady ? `
               <div class="declare-banner-ready">
-                ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
-              </div>` : ''}
-
-            <div class="declare-smart-box">
-              ${smartButtonHtml}
-            </div>
-
-            <div class="declare-actions-row">
-              <button type="button" class="btn-group-type is-eligible" onclick="autoGroupFullHand()" title="Automatically scan and group your entire hand into valid runs and sets">
-                <span>⚡ Auto-Group</span>
-                <span class="btn-group-sub">Auto-detect runs</span>
-              </button>
-              <button type="button" class="btn-group-type ${isPureValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Sequence: Consecutive natural cards in the same suit with NO jokers">
-                <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
-                <span class="btn-group-sub">No Jokers • Min 3</span>
-              </button>
-              <button type="button" class="btn-group-type ${isSeqValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Sequence: Consecutive cards in the same suit, jokers allowed">
-                <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
-                <span class="btn-group-sub">Wilds Allowed • Min 3</span>
-              </button>
-              <button type="button" class="btn-group-type ${isSetValid ? 'is-eligible' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of the same rank in different suits">
-                <span>👑 Set ${isSetValid ? '✓' : ''}</span>
-                <span class="btn-group-sub">Same Rank • 3-4 Cards</span>
-              </button>
-              <button type="button" class="btn-group-type" onclick="autoGroupFromStands()" title="Automatically convert any valid sequences or sets from your racks">
-                <span>⚡ From Stands</span>
-                <span class="btn-group-sub">Auto-fill racks</span>
-              </button>
-              <button type="button" class="btn-group-type" onclick="ungroupAllDeclaration()" title="Disband all groups back to Cards to Group">
-                <span>↩ Ungroup All</span>
-                <span class="btn-group-sub">Reset groups</span>
-              </button>
-            </div>
-
-            <div class="declare-footer" style="flex-direction:column; gap:10px; align-items:stretch;">
-              <div style="display:flex; gap:10px; width:100%;">
-                <button type="button" class="btn-action btn-declare ${isShowReady ? 'is-ready-pulse' : ''}" style="flex:1; padding:12px 18px; font-size:14px; font-weight:800; justify-content:center; box-shadow: 0 4px 16px rgba(16,185,129,0.35);" onclick="declareShow()">
-                  <span>🏆 Submit Declaration ${isShowReady ? '✨' : ''}</span>
-                </button>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                  <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare (Return to Normal Play)</button>
-                  <button type="button" class="stand-close-btn" onclick="ungroupAllDeclaration()">↩ Ungroup All</button>
-                </div>
-              </div>
-            </div>`;
+                ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> above to claim your win.
+              </div>` : ''}`;
         }
       }
     }
@@ -6683,19 +6623,75 @@ body.is-dragging-card-mobile {
     const isDoublesReady = (dInfo.count >= 7 && myHand.length === 21) || (dInfo.count >= 8 && myHand.length === 22);
     const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesReady;
 
+    let coachBannerHtml = '';
+    if (guideMeState && guideMeState.active) {
+      if (guideMeState.cardIds && guideMeState.cardIds.length >= 3) {
+        coachBannerHtml = `
+          <div class="guide-me-banner">
+            <div class="guide-me-copy">
+              🧭 <strong>${guideMeState.title}</strong> (${guideMeState.index + 1}/${guideMeState.total}) — ${guideMeState.reason}
+            </div>
+            <div class="guide-me-actions">
+              <button type="button" class="sticky-submit-btn" onclick="confirmGuidedGroup()">✓ Lock Group (${guideMeState.cardIds.length})</button>
+              <button type="button" class="stand-close-btn" onclick="guideMeNextGroup(true)">⏭ Next Tip</button>
+              <button type="button" class="stand-close-btn" onclick="dismissGuideMe()">✕ Hide</button>
+            </div>
+          </div>`;
+      } else {
+        coachBannerHtml = `
+          <div class="guide-me-banner">
+            <div class="guide-me-copy">
+              🧭 <strong>Guide Me Tip</strong> — ${guideMeState.reason}
+            </div>
+            <div class="guide-me-actions">
+              <button type="button" class="stand-close-btn" onclick="dismissGuideMe()">✕ Got it</button>
+            </div>
+          </div>`;
+      }
+    } else if (detected) {
+      coachBannerHtml = `
+        <div style="width:100%;">
+          <button type="button" class="btn-declare-smart btn-declare-valid" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="autoGroupSelected()">
+            <span>${detected.icon} <b>Lock ${detected.verb}</b> (${selCount} cards selected)</span>
+            <small class="declare-btn-sub">${detected.badge} • Click to lock group</small>
+          </button>
+        </div>`;
+    } else if (selCount >= 3) {
+      coachBannerHtml = `
+        <div class="guide-me-banner" style="border-color:rgba(240,107,120,0.45); background:rgba(40,20,24,0.75);">
+          <div class="guide-me-copy" style="color:#fca5a5;">
+            ⚠️ <strong>Not a valid group yet</strong> (${selCount} cards selected) — Need consecutive same-suit cards, a set of 3–4 same rank, or tap Guide Me.
+          </div>
+          <div class="guide-me-actions">
+            <button type="button" class="stand-close-btn" onclick="guideMeNextGroup(false)">🧭 Guide Me</button>
+            <button type="button" class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear</button>
+          </div>
+        </div>`;
+    } else {
+      const tipMsg = selCount > 0
+        ? `👆 Select <b>${3 - selCount} more card${3 - selCount > 1 ? 's' : ''}</b> (${selCount}/3 min) below, or tap <b>Guide Me</b> for a suggestion.`
+        : isShowReady
+          ? `✨ All 21 cards are grouped! Tap <b>Submit Declaration</b> to win.`
+          : `💡 New to grouping? Tap <b>🧭 Guide Me</b> to step through suggested groups one by one, or <b>⚡ Auto-Group</b> to group your whole hand.`;
+      coachBannerHtml = `
+        <div class="guide-me-banner" style="padding:6px 10px; background:rgba(255,255,255,0.035); border-color:rgba(255,255,255,0.10);">
+          <div class="guide-me-copy" style="font-size:11px; color:#cfdad4;">${tipMsg}</div>
+        </div>`;
+    }
+
     const stickyBarHtml = `
       <div class="sticky-grouping-bar" id="stickyGroupingBar">
         <div class="sticky-grouping-summary">
           <div class="sticky-grouping-badges">
             <span style="font-weight:800; color:#f1d27a;">
-              ${isGroupingPhase ? '⚡ Group Your Melds' : '🏆 Declare 21-Card Show'}
+              ${isGroupingPhase ? '⚡ Group Your Cards' : '🏆 Declare 21-Card Show'}
             </span>
             ${isGroupingPhase ? `
               <span class="grouping-timer-badge" style="padding:2px 7px; border-radius:6px; font-weight:800; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3); display:inline-flex; align-items:center; gap:3px;">
                 ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> left
               </span>` : ''}
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${pure >= 3 ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);'}">
-              ${pure} / 3 Pure Runs ${pure >= 3 ? '✅' : '⏳'}
+              ${pure} / 3 Pure Groups ${pure >= 3 ? '✅' : '⏳'}
             </span>
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(255,255,255,0.06); color:#cfdad4; border:1px solid rgba(255,255,255,0.1);">
               ${grouped} / 21 Grouped
@@ -6708,46 +6704,43 @@ body.is-dragging-card-mobile {
           <div style="display:inline-flex; align-items:center; gap:6px;">
             ${isGroupingPhase ? `
               <button type="button" class="sticky-submit-btn" onclick="submitGroupingMeld()">
-                ✅ Submit Melds
-              </button>
-              <button type="button" class="stand-close-btn" onclick="ungroupAllDeclaration()">↩ Ungroup All</button>` : `
+                ✅ Submit Groups
+              </button>` : `
               <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" style="${isShowReady ? 'background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 14px rgba(34,197,94,0.6);' : 'background: linear-gradient(135deg, #10b981, #059669);'}" onclick="declareShow()">
                 🏆 Submit Declaration ${isShowReady ? '✨' : ''}
               </button>
               <button type="button" class="stand-close-btn" style="background:rgba(239,68,68,0.22); border:1px solid rgba(239,68,68,0.5); color:#fca5a5; font-weight:700;" onclick="promptForfeitDeclaration()" title="Forfeit declaration with 100 points penalty">
-                🚩 Forfeit Show (100 pts)
+                🚩 Forfeit (100 pts)
               </button>
-              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Exit Declare</button>
+              <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
             `}
           </div>
         </div>
 
-        ${detected ? `
-          <div style="width:100%;">
-            <button type="button" class="btn-declare-smart btn-declare-valid" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="autoGroupSelected()">
-              <span>${detected.icon} <b>Form ${detected.verb}</b> (${selCount} cards selected)</span>
-              <small class="declare-btn-sub">${detected.badge} • Click to lock group</small>
-            </button>
-          </div>` : ''}
+        ${coachBannerHtml}
 
         <div class="sticky-grouping-actions">
-          <button type="button" class="sticky-meld-btn active" onclick="autoGroupFullHand()" title="Automatically scan and group entire hand into runs, tunellas, and sets">
+          <button type="button" class="sticky-meld-btn guide-me-btn-trigger" onclick="guideMeNextGroup(${guideMeState?.active ? 'true' : 'false'})" title="Highlight the best next group from your remaining cards">
+            <span>🧭 Guide Me</span>
+            <span class="btn-group-sub">${guideMeState?.active ? 'Next suggestion' : 'Suggest group'}</span>
+          </button>
+          <button type="button" class="sticky-meld-btn active" onclick="autoGroupFullHand()" title="Automatically scan and group entire hand into Pure Groups, Joker Groups, and Sets">
             <span>⚡ Auto-Group</span>
             <span class="btn-group-sub">All hand</span>
           </button>
-          <button type="button" class="sticky-meld-btn active" onclick="autoGroupFromStands()" title="Automatically convert your stands into valid sequences or sets">
+          <button type="button" class="sticky-meld-btn active" onclick="autoGroupFromStands()" title="Convert your table stands into valid groups">
             <span>⚡ From Stands</span>
             <span class="btn-group-sub">From racks</span>
           </button>
-          <button type="button" class="sticky-meld-btn ${isPureValid ? 'active' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Sequence: Consecutive cards in same suit, no jokers">
-            <span>💎 Pure Run ${isPureValid ? '✓' : ''}</span>
+          <button type="button" class="sticky-meld-btn ${isPureValid ? 'active' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Group: Consecutive cards in same suit, no printed jokers">
+            <span>💎 Pure Group ${isPureValid ? '✓' : ''}</span>
             <span class="btn-group-sub">Min 3</span>
           </button>
-          <button type="button" class="sticky-meld-btn ${isSeqValid ? 'active' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Sequence: Consecutive cards in same suit, jokers allowed">
-            <span>🃏 Joker Run ${isSeqValid ? '✓' : ''}</span>
+          <button type="button" class="sticky-meld-btn ${isSeqValid ? 'active' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Joker Group: Consecutive cards in same suit, wilds allowed">
+            <span>🃏 Joker Group ${isSeqValid ? '✓' : ''}</span>
             <span class="btn-group-sub">Wilds ok</span>
           </button>
-          <button type="button" class="sticky-meld-btn ${isSetValid ? 'active' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: Same rank in different suits">
+          <button type="button" class="sticky-meld-btn ${isSetValid ? 'active' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of same rank in different suits">
             <span>👑 Set ${isSetValid ? '✓' : ''}</span>
             <span class="btn-group-sub">3-4 cards</span>
           </button>
@@ -6755,11 +6748,6 @@ body.is-dragging-card-mobile {
             <span>↩ Ungroup All</span>
             <span class="btn-group-sub">Reset groups</span>
           </button>
-          ${!isGroupingPhase ? `
-          <button type="button" class="sticky-meld-btn" style="border-color:rgba(239,68,68,0.45); color:#fca5a5; background:rgba(239,68,68,0.12);" onclick="promptForfeitDeclaration()" title="Forfeit declaration (100 pts penalty)">
-            <span>🚩 Forfeit</span>
-            <span class="btn-group-sub">100 pts</span>
-          </button>` : ''}
         </div>
       </div>
     `;
@@ -6773,7 +6761,7 @@ body.is-dragging-card-mobile {
         if (deadwoodCalc.hasRequiredPure) {
           protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Protected (0 pts)</span>`;
         } else if (is4Plus) {
-          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ 4+ Run (Protected)</span>`;
+          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ 4+ Group (Protected)</span>`;
         } else if (isTun) {
           protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Tunella (Protected)</span>`;
         } else {
@@ -6797,16 +6785,10 @@ body.is-dragging-card-mobile {
     container.innerHTML=`${stickyBarHtml}<div class="stand-rack declaration-ungrouped"><div class="stand-header">
       <div class="stand-title-box">
         <span>Cards to Group (${selectable.length} remaining)</span>
-        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards to select'}</span>
+        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards below to select'}</span>
       </div>
       <div class="stand-group-inline-btns">
-        ${detected ? `<button type="button" class="inline-meld-btn valid" onclick="autoGroupSelected()">${detected.icon} Form ${detected.verb}</button>` : ''}
-        <button type="button" class="inline-meld-btn ${isPureValid ? 'active' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''}>💎 Pure</button>
-        <button type="button" class="inline-meld-btn ${isSeqValid ? 'active' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''}>🃏 Joker</button>
-        <button type="button" class="inline-meld-btn ${isSetValid ? 'active' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''}>👑 Set</button>
-        <button type="button" class="inline-meld-btn auto" onclick="autoGroupFullHand()" title="Auto-Group all cards">⚡ Auto</button>
-        <button type="button" class="inline-meld-btn" onclick="ungroupAllDeclaration()" title="Disband all formed groups back to Cards to Group">↩ Ungroup All</button>
-        ${selCount > 0 ? '<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear</button>' : ''}
+        ${selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
       </div></div>
       <div class="stand-scroll-container">
         <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
@@ -7025,7 +7007,7 @@ body.is-dragging-card-mobile {
     const rank=naturals[0].rank;
     return naturals.every(c=>c.rank===rank) && new Set(naturals.map(c=>c.suit)).size===naturals.length;
   }
-  function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Sequence':type==='SEQUENCE'?'Sequence':type==='DOUBLE'?'Double (Pair)':'Set';}
+  function declarationTypeLabel(type){return type==='PURE_SEQUENCE'?'Pure Group':type==='SEQUENCE'?'Joker Group':type==='DOUBLE'?'Double (Pair)':'Set';}
 
   function detectBestGroupType(cards) {
     if (!cards || cards.length < 2) return null;
@@ -7046,8 +7028,8 @@ body.is-dragging-card-mobile {
     if (declarationIsMarriage(cards)) {
       return {
         type: 'PURE_SEQUENCE',
-        label: 'Marriage Sequence',
-        verb: 'Marriage Sequence',
+        label: 'Marriage Pure Group',
+        verb: 'Marriage Pure Group',
         badge: 'Taplu + Pukka Joker + Paplu',
         icon: '💍'
       };
@@ -7055,8 +7037,8 @@ body.is-dragging-card-mobile {
     if (declarationIsThreePoochies(cards)) {
       return {
         type: 'PURE_SEQUENCE',
-        label: '3 Poochies Run',
-        verb: '3 Poochies Run',
+        label: '3 Poochies Group',
+        verb: '3 Poochies Group',
         badge: '3 Printed Jokers',
         icon: '🃏'
       };
@@ -7064,18 +7046,18 @@ body.is-dragging-card-mobile {
     if (declarationPure(cards)) {
       return {
         type: 'PURE_SEQUENCE',
-        label: 'Pure Sequence',
-        verb: 'Pure Run',
-        badge: 'Natural (No Jokers)',
+        label: 'Pure Group',
+        verb: 'Pure Group',
+        badge: 'Natural Run (No Printed Jokers)',
         icon: '💎'
       };
     }
     if (declarationSequence(cards)) {
       return {
         type: 'SEQUENCE',
-        label: 'Sequence',
-        verb: 'Run with Joker',
-        badge: 'Wilds Allowed',
+        label: 'Joker Group',
+        verb: 'Joker Group',
+        badge: 'Sequence with Wilds',
         icon: '🃏'
       };
     }
@@ -7091,6 +7073,221 @@ body.is-dragging-card-mobile {
     return null;
   }
 
+  function cardDeadwoodVal(c) {
+    if (!c || declarationIsWild(c)) return 0;
+    if (['A', 'K', 'Q', 'J', '10'].includes(c.rank)) return 10;
+    return parseInt(c.rank, 10) || 0;
+  }
+
+  function findGuidedGroupCandidates(availCards) {
+    if (!Array.isArray(availCards) || availCards.length < 3) return [];
+    const candidates = [];
+    const seenKeys = new Set();
+    const isGroupingPhase = roomState?.status === 'GROUPING';
+    const currentPure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+
+    const addCandidate = (cards, type, label, title, reason) => {
+      if (!Array.isArray(cards) || cards.length < 3) return;
+      const key = cards.map(c => c.id).sort().join('|');
+      if (seenKeys.has(key)) return;
+      seenKeys.add(key);
+      candidates.push({ cardIds: cards.map(c => c.id), cards, type, label, title, reason });
+    };
+
+    // 1. Marriage (50 pts Honors + counts as Pure Group)
+    if (roomState?.roles) {
+      const r = roomState.roles;
+      const taplu = availCards.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
+      const tiplu = availCards.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
+      const paplu = availCards.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
+      if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
+        addCandidate([taplu, tiplu, paplu], 'PURE_SEQUENCE', 'Marriage Pure Group (50 pts)',
+          'Marriage Pure Group',
+          'Counts as a Pure Group toward 3/3 and scores +50 Honors pts.');
+      }
+    }
+
+    // 2. 3 Poochies
+    const poochies = availCards.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+    if (poochies.length >= 3) {
+      addCandidate(poochies.slice(0, 3), 'PURE_SEQUENCE', '3 Poochies Group',
+        '3 Poochies Pure Group',
+        'Counts as a Pure Group & Tunella (protected even with fewer than 3 Pure Groups).');
+    }
+
+    // 3. Tunellas (3 identical cards)
+    const tunMap = new Map();
+    for (const c of availCards) {
+      if (declarationIsWild(c)) continue;
+      const k = `${c.suit}_${c.rank}`;
+      if (!tunMap.has(k)) tunMap.set(k, []);
+      tunMap.get(k).push(c);
+    }
+    for (const grp of tunMap.values()) {
+      if (grp.length >= 3) {
+        const trio = grp.slice(0, 3);
+        addCandidate(trio, 'PURE_SEQUENCE', `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+          `Tunella: ${trio[0].rank}${trio[0].suit} ×3`,
+          'Counts as a Pure Group and stays protected even if you finish under 3 Pure Groups.');
+      }
+    }
+
+    // 4. Natural Pure Groups per suit
+    const suits = ['♠', '♥', '♣', '♦'];
+    for (const suit of suits) {
+      const suitNaturals = availCards.filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+      if (suitNaturals.length >= 3) {
+        const runs = extractOptimalPureRuns(suitNaturals);
+        for (const run of runs) {
+          const pts = run.reduce((s, c) => s + cardDeadwoodVal(c), 0);
+          const names = run.map(c => `${c.rank}${c.suit}`).join('-');
+          const msg = (isGroupingPhase && currentPure < 3 && run.length >= 4)
+            ? `${run.length}-card Pure Group (${pts} pts) — Protected immediately & advances Pure Groups (${currentPure}/3).`
+            : `${names} (${pts} pts) — Natural run advancing Pure Groups (${Math.min(3, currentPure + 1)}/3).`;
+          addCandidate(run, 'PURE_SEQUENCE', `Pure Group (${run.length})`, `Pure Group: ${names}`, msg);
+        }
+      }
+    }
+
+    // 5. Sets (sorted by highest deadwood points shed)
+    const rankOrder = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
+    for (const rnk of rankOrder) {
+      const availSameRank = availCards.filter(c => c.rank === rnk && !declarationIsWild(c));
+      const bySuit = new Map();
+      for (const c of availSameRank) {
+        if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+      }
+      if (bySuit.size >= 3) {
+        const setCards = Array.from(bySuit.values()).slice(0, 4);
+        if (declarationSet(setCards)) {
+          const pts = setCards.reduce((s, c) => s + cardDeadwoodVal(c), 0);
+          const names = setCards.map(c => `${c.rank}${c.suit}`).join(' ');
+          addCandidate(setCards, 'SET', `Set of ${rnk}s (${setCards.length})`,
+            `Set of ${rnk}s: ${names}`,
+            `Sheds ${pts} pts once you have 3 Pure Groups.`);
+        }
+      }
+    }
+
+    // 6. Joker Groups (2 same-suit near-consecutive cards + 1 wildcard)
+    const availWilds = availCards.filter(c => declarationIsWild(c));
+    if (availWilds.length > 0) {
+      for (const suit of suits) {
+        const suitNaturals = availCards.filter(c => c && c.suit === suit && !declarationIsWild(c));
+        if (suitNaturals.length < 2) continue;
+        let foundInSuit = false;
+        for (let i = 0; i < suitNaturals.length && !foundInSuit; i++) {
+          for (let j = i + 1; j < suitNaturals.length; j++) {
+            const trio = [suitNaturals[i], suitNaturals[j], availWilds[0]];
+            if (declarationSequence(trio)) {
+              const pts = trio.reduce((s, c) => s + cardDeadwoodVal(c), 0);
+              const names = trio.map(c => c.isPoochie ? 'JOKER' : `${c.rank}${c.suit}`).join(' + ');
+              addCandidate(trio, 'SEQUENCE', 'Joker Group',
+                `Joker Group: ${names}`,
+                `Uses a Joker wildcard to complete a sequence and shed ${pts} pts.`);
+              foundInSuit = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return candidates;
+  }
+
+  function guideMeNextGroup(advance = false) {
+    if (!declarationMode) return;
+    const groupedIds = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+    const remaining = (myHand || []).filter(c => c && !groupedIds.has(c.id));
+    const candidates = findGuidedGroupCandidates(remaining);
+
+    if (candidates.length === 0) {
+      declarationSelectedIds.clear();
+      guidedCardIds.clear();
+      const pureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      const isGroupingPhase = roomState?.status === 'GROUPING';
+      let reason = '';
+      if (!isGroupingPhase && remaining.length === 1 && pureCount >= 3 && declarationGroups.flatMap(g => g.cards).length === 21) {
+        reason = `All 21 cards are grouped and ${remaining[0].rank}${remaining[0].suit} is ready as your final discard. Tap Submit Declaration above!`;
+      } else if (remaining.length < 3) {
+        reason = isGroupingPhase
+          ? `Only ${remaining.length} ungrouped card(s) left — tap Submit Groups when ready.`
+          : `Only ${remaining.length} card(s) ungrouped. Tap an existing group to release cards if you need to rearrange toward 21 grouped + 1 finish card.`;
+      } else {
+        reason = `No complete 3-card groups found among the remaining ${remaining.length} cards. You can rearrange cards between groups (tap a card inside a formed group to release it) or submit now.`;
+      }
+      guideMeState = { active: true, cardIds: [], index: 0, total: 0, title: 'No More Groups Found', reason };
+      renderAll(null);
+      return;
+    }
+
+    const nextIdx = (advance && guideMeState && guideMeState.active && candidates.length > 0)
+      ? ((guideMeState.index + 1) % candidates.length)
+      : 0;
+    const picked = candidates[nextIdx];
+    declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    picked.cardIds.forEach(id => {
+      declarationSelectedIds.add(id);
+      guidedCardIds.add(id);
+    });
+    guideMeState = {
+      active: true,
+      index: nextIdx,
+      total: candidates.length,
+      ...picked
+    };
+    renderAll(null);
+
+    setTimeout(() => {
+      const tray = document.getElementById('decl-ungrouped-cards');
+      const targetEl = tray ? tray.querySelector(`[data-card-id="${picked.cardIds[0]}"]`) : null;
+      if (targetEl && typeof targetEl.scrollIntoView === 'function') {
+        targetEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }, 40);
+  }
+  window.guideMeNextGroup = guideMeNextGroup;
+
+  function confirmGuidedGroup() {
+    if (!declarationMode || !guideMeState || !Array.isArray(guideMeState.cardIds) || guideMeState.cardIds.length < 3) return;
+    const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+    const cards = guideMeState.cardIds
+      .map(id => myHand.find(c => c && c.id === id && !alreadyGrouped.has(c.id)))
+      .filter(Boolean);
+    if (cards.length < 3) {
+      guideMeNextGroup(false);
+      return;
+    }
+    declarationGroups.push({
+      type: guideMeState.type,
+      typeLabel: guideMeState.label,
+      cards
+    });
+    declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
+
+    // Auto-advance Guide Me to the next remaining suggestion if more valid groups exist
+    const groupedIds = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+    const remaining = (myHand || []).filter(c => c && !groupedIds.has(c.id));
+    if (findGuidedGroupCandidates(remaining).length > 0) {
+      guideMeNextGroup(false);
+    } else {
+      guideMeNextGroup(false); // Shows concise completion/next-step message
+    }
+  }
+  window.confirmGuidedGroup = confirmGuidedGroup;
+
+  function dismissGuideMe() {
+    guideMeState = null;
+    guidedCardIds.clear();
+    declarationSelectedIds.clear();
+    renderAll(null);
+  }
+  window.dismissGuideMe = dismissGuideMe;
+
   function autoGroupSelected() {
     if (!declarationMode) return;
     const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
@@ -7101,7 +7298,7 @@ body.is-dragging-card-mobile {
     }
     const detected = detectBestGroupType(cards);
     if (!detected) {
-      alert('Selected cards do not form a valid Pure Sequence, Sequence, or Set. Check ranks, suits, or jokers.');
+      alert('Selected cards do not form a valid Pure Group, Joker Group, or Set. Check ranks, suits, or jokers.');
       return;
     }
     declarationGroups.push({
@@ -7110,6 +7307,8 @@ body.is-dragging-card-mobile {
       cards
     });
     cards.forEach(c => declarationSelectedIds.delete(c.id));
+    guidedCardIds.clear();
+    guideMeState = null;
     renderAll(null);
   }
 
@@ -7117,6 +7316,8 @@ body.is-dragging-card-mobile {
     if (!declarationMode) return;
     declarationGroups = [];
     declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
 
     const usedCardIds = new Set();
     const newGroups = [];
@@ -7233,13 +7434,15 @@ body.is-dragging-card-mobile {
     if (!declarationMode) declarationMode = true;
     declarationGroups = [];
     declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
 
     const usedCardIds = new Set();
     const newGroups = [];
     const pool = Array.isArray(myHand) ? [...myHand] : [];
     const getAvailable = () => pool.filter(c => c && !usedCardIds.has(c.id));
 
-    // 1. Marriages: (Taplu + Pukka Joker + Paplu in cut joker suit) -> Pure Sequence (50 pts)
+    // 1. Marriages: (Taplu + Pukka Joker + Paplu in cut joker suit) -> Pure Group (50 pts)
     if (roomState?.roles) {
       const r = roomState.roles;
       let searchingMarriage = true;
@@ -7253,7 +7456,7 @@ body.is-dragging-card-mobile {
           trio.forEach(c => usedCardIds.add(c.id));
           newGroups.push({
             type: 'PURE_SEQUENCE',
-            typeLabel: 'Marriage Pure Run (50 pts)',
+            typeLabel: 'Marriage Pure Group (50 pts)',
             cards: trio
           });
         } else {
@@ -7262,7 +7465,7 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // 2. 3 Poochies: (Tunnella) -> Pure Sequence
+    // 2. 3 Poochies: (Tunella) -> Pure Group
     let searchingPoochies = true;
     while (searchingPoochies) {
       const avail = getAvailable();
@@ -7272,7 +7475,7 @@ body.is-dragging-card-mobile {
         trio.forEach(c => usedCardIds.add(c.id));
         newGroups.push({
           type: 'PURE_SEQUENCE',
-          typeLabel: '3 Poochies (Tunnella)',
+          typeLabel: '3 Poochies (Tunella)',
           cards: trio
         });
       } else {
@@ -7280,7 +7483,7 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // 2b. Tunellas: (3 identical cards of exact same suit and rank) -> Pure Sequence (Protected)
+    // 2b. Tunellas: (3 identical cards of exact same suit and rank) -> Pure Group (Protected)
     let searchingTunellas = true;
     while (searchingTunellas) {
       const avail = getAvailable().filter(c => !declarationIsWild(c));
@@ -7307,8 +7510,7 @@ body.is-dragging-card-mobile {
       if (!foundTun) searchingTunellas = false;
     }
 
-    // 3. Natural Pure Sequences: Smart optimal solver that finds the maximum number of pure sequences
-    // (e.g. Diamond 2,3,4 and 3,4,5 form 2 separate pure runs instead of greedily eating into a single 4-card run)
+    // 3. Natural Pure Groups: Smart optimal solver that finds the maximum number of pure sequences
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
@@ -7320,7 +7522,7 @@ body.is-dragging-card-mobile {
           run.forEach(c => usedCardIds.add(c.id));
           newGroups.push({
             type: 'PURE_SEQUENCE',
-            typeLabel: `Pure Run (${run.length})`,
+            typeLabel: `Pure Group (${run.length})`,
             cards: run
           });
         }
@@ -7352,7 +7554,7 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // 5. Impure Sequences (using wildcards) - safe loop with refreshed availability (no card reuse)
+    // 5. Joker Groups (using wildcards) - safe loop with refreshed availability (no card reuse)
     let searchingJokerRun = true;
     while (searchingJokerRun) {
       searchingJokerRun = false;
@@ -7371,7 +7573,7 @@ body.is-dragging-card-mobile {
               trio.forEach(c => usedCardIds.add(c.id));
               newGroups.push({
                 type: 'SEQUENCE',
-                typeLabel: 'Joker Run',
+                typeLabel: 'Joker Group',
                 cards: trio
               });
               formedRun = true;
@@ -7403,12 +7605,12 @@ body.is-dragging-card-mobile {
     if (showNotification) {
       if (verifiedGroups.length > 0) {
         if (totalGrouped === 21 && pureCount >= 3) {
-          window.alert(`🎉 Perfect! Auto-grouped ${verifiedGroups.length} valid melds (${pureCount} Pure Sequences). All 21 cards are grouped and ready!`);
+          window.alert(`🎉 Perfect! Auto-grouped ${verifiedGroups.length} valid groups (${pureCount} Pure Groups). All 21 cards are grouped and ready!`);
         } else {
-          window.alert(`Auto-detected ${verifiedGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Sequences). You can manually adjust below.`);
+          window.alert(`Auto-detected ${verifiedGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Groups). Use Guide Me or tap cards below to adjust.`);
         }
       } else {
-        window.alert('Could not find enough matching cards to auto-group. Tap cards below to manually select runs or sets.');
+        window.alert('Could not find enough matching cards to auto-group. Tap cards below to manually form groups.');
       }
     }
   }
@@ -7417,19 +7619,17 @@ body.is-dragging-card-mobile {
     if (!skipConfirm) {
       const deadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
       const pureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-      const groupedCards = declarationGroups.flatMap(g => g.cards);
-      const remainingCount = myHand.length - groupedCards.length;
 
       const has3Pure = pureCount >= 3;
       showConfirmModal({
         icon: has3Pure ? '✅' : '⚠️',
-        title: has3Pure ? 'Ready to Submit Melds?' : 'Submit Melds with Deadwood?',
-        badgeText: has3Pure ? `${pureCount} Pure Runs (Protected)` : `${pureCount}/3 Pure Runs`,
+        title: has3Pure ? 'Ready to Submit Groups?' : 'Submit Groups with Deadwood?',
+        badgeText: has3Pure ? `${pureCount} Pure Groups (Protected)` : `${pureCount}/3 Pure Groups`,
         badgeClass: has3Pure ? 'success' : 'danger',
         message: has3Pure
-          ? `You have formed <strong>${declarationGroups.length} meld groups</strong> with <strong>${pureCount} Pure Sequences</strong>. Your melds are protected (<strong>0 deadwood pts</strong>).<br><br>Ready to submit your melds and view round results?`
-          : `You currently have <strong>${pureCount} / 3 Pure Runs</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to review and form more runs first?`,
-        actionText: 'Submit Melds',
+          ? `You have formed <strong>${declarationGroups.length} groups</strong> with <strong>${pureCount} Pure Groups</strong>. All your groups are protected (<strong>0 deadwood pts</strong>).<br><br>Ready to submit your groups and view round results?`
+          : `You currently have <strong>${pureCount} / 3 Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to form more groups first?`,
+        actionText: 'Submit Groups',
         actionClass: has3Pure ? 'primary' : 'danger',
         onConfirm: () => submitGroupingMeld(true)
       });
@@ -7450,6 +7650,8 @@ body.is-dragging-card-mobile {
       }
       declarationMode = false;
       declarationSelectedIds.clear();
+      guidedCardIds.clear();
+      guideMeState = null;
       isDemoGroupingWait = true;
 
       const waitModal = document.getElementById('groupingWaitModal');
@@ -7460,21 +7662,21 @@ body.is-dragging-card-mobile {
 
       if (waitModal) {
         waitModal.style.display = 'flex';
-        if (waitTitle) waitTitle.innerText = '✅ Melds Submitted!';
+        if (waitTitle) waitTitle.innerText = '✅ Groups Submitted!';
         if (waitSub) waitSub.innerText = 'Waiting for remaining opponents to finish grouping their cards...';
         if (waitProg) waitProg.innerText = '3 / 4 players ready';
         if (playersList) {
           playersList.innerHTML = `
             <div class="wait-player-row ready"><span>${roomState?.winnerName || 'Opponent'}</span><span>🏆 Declared (Winner)</span></div>
-            <div class="wait-player-row ready"><span>You</span><span>✅ Melds Submitted</span></div>
-            <div class="wait-player-row ready"><span>Kavita</span><span>✅ Melds Submitted</span></div>
+            <div class="wait-player-row ready"><span>You</span><span>✅ Groups Submitted</span></div>
+            <div class="wait-player-row ready"><span>Kavita</span><span>✅ Groups Submitted</span></div>
             <div class="wait-player-row waiting" id="demoWait_opp_last"><span>Sonia</span><span>⏳ Grouping cards...</span></div>
           `;
         }
 
         setTimeout(() => {
           const row = document.getElementById('demoWait_opp_last');
-          if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Sonia</span><span>✅ Melds Submitted</span>'; }
+          if (row) { row.className = 'wait-player-row ready'; row.innerHTML = '<span>Sonia</span><span>✅ Groups Submitted</span>'; }
           if (waitProg) waitProg.innerText = '4 / 4 players ready';
         }, 1100);
 
@@ -7491,72 +7693,76 @@ body.is-dragging-card-mobile {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: 'SUBMIT_GROUPS', groups }));
     }
-    declarationMode = false;
-    declarationSelectedIds.clear();
-    renderAll(null);
-  }
+      declarationMode = false;
+      declarationSelectedIds.clear();
+      guidedCardIds.clear();
+      guideMeState = null;
+      renderAll(null);
+    }
 
-  function simulateOpponentDeclare() {
-    if (!isDemo || !roomState) return;
-    const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
-    roomState.status = 'GROUPING';
-    roomState.groupingDeadline = Date.now() + 300000;
-    roomState.winnerId = opp.id;
-    roomState.winnerName = opp.name;
-    opp.isGrouped = true;
-    roomState.lastAction = `${opp.name} declared 21-card show! Form your runs and sets to minimize deadwood.`;
+    function simulateOpponentDeclare() {
+      if (!isDemo || !roomState) return;
+      const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
+      roomState.status = 'GROUPING';
+      roomState.groupingDeadline = Date.now() + 300000;
+      roomState.winnerId = opp.id;
+      roomState.winnerName = opp.name;
+      opp.isGrouped = true;
+      roomState.lastAction = `${opp.name} declared 21-card show! Form your groups to minimize deadwood.`;
 
-    const meP = roomState.players.find(p => p.id === 'p_demo');
-    if (meP) meP.isGrouped = false;
+      const meP = roomState.players.find(p => p.id === 'p_demo');
+      if (meP) meP.isGrouped = false;
 
-    hasAutoGroupedForGroupingPhase = false;
-    declarationMode = true;
-    declarationGroups = [];
-    declarationSelectedIds.clear();
-    renderAll(calculateLocalMaal());
-    startGroupingCountdownTracker();
-    setTimeout(() => {
-      const dp = document.getElementById('declarationPanel');
-      if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
-  }
+      hasAutoGroupedForGroupingPhase = false;
+      declarationMode = true;
+      declarationGroups = [];
+      declarationSelectedIds.clear();
+      guidedCardIds.clear();
+      guideMeState = null;
+      renderAll(calculateLocalMaal());
+      startGroupingCountdownTracker();
+      setTimeout(() => {
+        const dp = document.getElementById('declarationPanel');
+        if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
 
-  function finishDemoRoundWithOpponentWinner() {
-    const winnerName = roomState?.winnerName || 'Kavita';
-    const winnerMaal = {
-      total: 50,
-      details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
-    };
+    function finishDemoRoundWithOpponentWinner() {
+      const winnerName = roomState?.winnerName || 'Kavita';
+      const winnerMaal = {
+        total: 50,
+        details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
+      };
 
-    const myDeadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
-    const myDeadwood = myDeadwoodCalc.points;
+      const myDeadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
+      const myDeadwood = myDeadwoodCalc.points;
 
-    const soniaGroups = [
-      { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
-      { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
-    ];
-    const soniaHand = [
-      { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
-      { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
-      { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
-      { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
-      { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
-      { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
-      { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
-    ];
-    // Sonia only has 1 pure sequence (< 3), so her deadwood is computed under the rule:
-    // All cards apart from jokers, 4+ pure runs, and tunellas count as deadwood!
-    const soniaDeadwood = calculateCurrentDeadwood(soniaGroups, soniaHand).points;
+      const soniaGroups = [
+        { type: 'PURE_SEQUENCE', cards: [{ id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' }] },
+        { type: 'SEQUENCE', cards: [{ id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true }] }
+      ];
+      const soniaHand = [
+        { id: 'pr1', suit: '♦', rank: 'A' }, { id: 'pr2', suit: '♦', rank: '2' }, { id: 'pr3', suit: '♦', rank: '3' },
+        { id: 'pr4', suit: '♠', rank: '5' }, { id: 'pr5', suit: '♠', rank: '6' }, { id: 'pr6', suit: '★', rank: 'PJ', isPoochie: true },
+        { id: 'pr7', suit: '♥', rank: '8' }, { id: 'pr8', suit: '♦', rank: '8' }, { id: 'pr9', suit: '♣', rank: '8' },
+        { id: 'pr10', suit: '♠', rank: 'K' }, { id: 'pr11', suit: '♥', rank: 'Q' }, { id: 'pr12', suit: '♦', rank: 'J' },
+        { id: 'pr13', suit: '♣', rank: '10' }, { id: 'pr14', suit: '♠', rank: '9' }, { id: 'pr15', suit: '♥', rank: '7' },
+        { id: 'pr16', suit: '♦', rank: '6' }, { id: 'pr17', suit: '♣', rank: '5' }, { id: 'pr18', suit: '♠', rank: '2' },
+        { id: 'pr19', suit: '♥', rank: '4' }, { id: 'pr20', suit: '♦', rank: '7' }, { id: 'pr21', suit: '♣', rank: 'A' }
+      ];
+      // Sonia only has 1 pure sequence (< 3), so her deadwood is computed under the rule:
+      // All cards apart from jokers, 4+ pure runs, and tunellas count as deadwood!
+      const soniaDeadwood = calculateCurrentDeadwood(soniaGroups, soniaHand).points;
 
-    const demoData = {
-      winnerName,
-      winnerMaal,
-      results: [
-        { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each paying loser` },
-        { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-        { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-        { name: 'Rohan', status: 'DROPPED', points: 30, dropPenalty: 30, deadwood: 0, net: 'Pays 30 pts (30 drop penalty)' }
-      ],
+      const demoData = {
+        winnerName,
+        winnerMaal,
+        results: [
+          { name: winnerName, status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each paying loser` },
+          { name: 'You', status: 'LOST', points: myDeadwood + winnerMaal.total, deadwood: myDeadwood, net: `Pays ${myDeadwood + winnerMaal.total} pts (${myDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+          { name: 'Sonia', status: 'LOST', points: soniaDeadwood + winnerMaal.total, deadwood: soniaDeadwood, net: `Pays ${soniaDeadwood + winnerMaal.total} pts (${soniaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
+          { name: 'Rohan', status: 'DROPPED', points: 30 + winnerMaal.total, dropPenalty: 30, deadwood: 0, net: `Pays ${30 + winnerMaal.total} pts (30 First Drop + ${winnerMaal.total} winner Honors)` }
+        ],
       revealedHands: [
         {
           name: winnerName,
@@ -7620,13 +7826,17 @@ body.is-dragging-card-mobile {
     if(!valid){ alert(`${declarationTypeLabel(type)} is not valid for the selected cards. Try a different group type or adjust the selection.`); return; }
     declarationGroups.push({ type, typeLabel: declarationTypeLabel(type), cards });
     cards.forEach(c => declarationSelectedIds.delete(c.id));
+    guidedCardIds.clear();
+    guideMeState = null;
     renderAll(null);
   }
-  function clearDeclarationSelection(){declarationSelectedIds.clear();renderAll(null);}
-  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);renderAll(null);}
+  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;renderAll(null);}
+  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;renderAll(null);}
   function ungroupAllDeclaration() {
     declarationGroups = [];
     declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -7636,6 +7846,8 @@ body.is-dragging-card-mobile {
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -7660,6 +7872,8 @@ body.is-dragging-card-mobile {
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
 
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const meP = roomState?.players?.find(p => p.id === myId);
@@ -7736,9 +7950,13 @@ body.is-dragging-card-mobile {
           }
         }
         declarationSelectedIds.delete(cardId);
+        guidedCardIds.clear();
+        guideMeState = null;
         renderAll(null);
         return;
       }
+      guidedCardIds.clear();
+      guideMeState = null;
       if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
       else declarationSelectedIds.add(cardId);
       renderAll(null);
@@ -9276,7 +9494,7 @@ body.is-dragging-card-mobile {
             { name: roomState.turnPlayerName || 'You', status: 'WINNER', points: 0, net: `Won + collects ${winnerMaal.total} Honors from each paying loser` },
             { name: 'Aarav', status: 'LOST', points: aaravDeadwood + winnerMaal.total, deadwood: aaravDeadwood, net: `Pays ${aaravDeadwood + winnerMaal.total} pts (${aaravDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
             { name: 'Kavita', status: 'LOST', points: kavitaDeadwood + winnerMaal.total, deadwood: kavitaDeadwood, net: `Pays ${kavitaDeadwood + winnerMaal.total} pts (${kavitaDeadwood} deadwood + ${winnerMaal.total} winner Honors)` },
-            { name: 'Sonia', status: 'DROPPED', points: 30, dropPenalty: 30, deadwood: 0, net: 'Pays 30 pts (30 drop penalty)' }
+            { name: 'Sonia', status: 'DROPPED', points: 30 + winnerMaal.total, dropPenalty: 30, deadwood: 0, net: `Pays ${30 + winnerMaal.total} pts (30 First Drop + ${winnerMaal.total} winner Honors)` }
           ],
           revealedHands: [
             {
@@ -9775,14 +9993,14 @@ body.is-dragging-card-mobile {
 
     const winner = data.winnerName;
     const winnerMaalTotal = data.winnerMaal?.total || 0;
-    // Paying losers: active players who did not drop or fold
-    const payingLosers = (data.results || []).filter(r => r.name !== winner && r.status !== 'WINNER' && r.status !== 'DROPPED' && r.status !== 'FORFEITED');
+    // Paying losers: every non-winner except Free Scoot (7+ Doubles)
+    const payingLosers = (data.results || []).filter(r => r.name !== winner && r.status !== 'WINNER' && !r.isFreeScoot && r.dropPenalty !== 0);
     const payingLosersCount = payingLosers.length;
 
     (data.results || []).forEach(r => {
       let sc = globalSessionScores.find(s => s.name === r.name || (r.name === 'You' && s.playerId === 'p_demo'));
       if (!sc) {
-        sc = { playerId: 'p_' + r.name, name: r.name, handsPlayed: 0, handsWon: 0, points: 0, maal: 0, totalScore: 0 };
+        sc = { playerId: 'p_' + r.name, name: r.name, handsPlayed: 0, handsWon: 0, points: 0, maal: 0, honors: 0, totalScore: 0 };
         globalSessionScores.push(sc);
       }
       sc.handsPlayed++;
@@ -9791,16 +10009,23 @@ body.is-dragging-card-mobile {
         sc.handsWon++;
         const maalWon = winnerMaalTotal * payingLosersCount;
         sc.maal += maalWon;
+        sc.honors = sc.maal;
         sc.totalScore += maalWon;
       } else if (r.status === 'DROPPED' || r.status === 'FORFEITED') {
-        // Dropped/folded players pay ONLY their drop penalty (30 or 70), NOT winner honors
-        const dropPts = r.dropPenalty !== undefined ? r.dropPenalty : (r.status === 'FORFEITED' ? 100 : (r.points !== undefined ? r.points : 70));
-        sc.points += dropPts;
-        sc.totalScore -= dropPts;
+        if (r.isFreeScoot || r.dropPenalty === 0) {
+          // Free Scoot pays 0 base and 0 honors
+        } else {
+          const dropPts = r.dropPenalty !== undefined ? r.dropPenalty : (r.status === 'FORFEITED' ? 100 : 70);
+          sc.points += dropPts;
+          sc.maal -= winnerMaalTotal;
+          sc.honors = sc.maal;
+          sc.totalScore -= (dropPts + winnerMaalTotal);
+        }
       } else {
         const deadwoodPts = r.deadwood !== undefined ? r.deadwood : (r.points !== undefined ? Math.max(0, r.points - winnerMaalTotal) : 30);
         sc.points += deadwoodPts;
         sc.maal -= winnerMaalTotal;
+        sc.honors = sc.maal;
         sc.totalScore -= (deadwoodPts + winnerMaalTotal);
       }
     });
@@ -9926,8 +10151,8 @@ body.is-dragging-card-mobile {
 
           if (!isWinner && !p.hasDropped) {
             statusBadge += hasMinPure
-              ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/3 Pure Runs (Melds Protected)</span>`
-              : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/3 Pure Runs (&lt;3: Only Jokers, 4+ runs &amp; Tunellas protected)</span>`;
+              ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/3 Pure Groups (Groups Protected)</span>`
+              : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/3 Pure Groups (&lt;3: Only Jokers, 4+ groups &amp; Tunellas protected)</span>`;
           }
 
           let groupsHtml = '';
@@ -10337,15 +10562,19 @@ body.is-dragging-card-mobile {
     const activeRemaining = roomState.players.filter(p => !p.hasDropped);
     if (activeRemaining.length <= 1) {
       const winner = activeRemaining[0] || roomState.players[0];
+      const wMaalTotal = 50;
       const demoData = {
         winnerName: winner.name,
-        winnerMaal: { total: 50, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 } },
+        winnerMaal: { total: wMaalTotal, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 } },
         results: roomState.players.map(p => {
           if (p.id === winner.id) {
-            return { name: p.name, status: 'WINNER', points: 0, net: 'Won (opponents folded)' };
+            return { name: p.name, status: 'WINNER', points: 0, net: `Won (opponents folded) + collects ${wMaalTotal} Honors from each paying loser` };
+          }
+          if (p.isFreeScoot || p.dropType === 'FREE_SCOOT') {
+            return { name: p.name, status: 'DROPPED', isFreeScoot: true, dropPenalty: 0, points: 0, net: 'Pays 0 pts (Free Scoot: 7+ Doubles)' };
           }
           const pen = p.hasForfeited ? 100 : (p.dropPenalty || 30);
-          return { name: p.name, status: p.hasForfeited ? 'FORFEITED' : 'DROPPED', points: pen, net: `Pays ${pen} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'})` };
+          return { name: p.name, status: p.hasForfeited ? 'FORFEITED' : 'DROPPED', dropPenalty: pen, points: pen + wMaalTotal, net: `Pays ${pen + wMaalTotal} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${wMaalTotal} winner Honors)` };
         }),
         revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
       };
