@@ -330,26 +330,49 @@
     /* Floating Role Badge (NEVER Obscures Suit or Rank) */
     .card-role-tag {
       position: absolute;
-      top: clamp(-11px, calc(-9px * var(--card-scale, 1)), -5px);
+      top: clamp(-12px, calc(-10px * var(--card-scale, 1)), -5px);
       left: 50%;
       transform: translateX(-50%);
-      font-size: clamp(5.8px, calc(7.65px * var(--card-scale, 1)), 10px);
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      padding: 1.5px 6px;
-      border-radius: 10px;
+      font-size: clamp(6px, calc(7.8px * var(--card-scale, 1)), 10px);
+      font-weight: 900;
+      letter-spacing: 0.45px;
+      padding: 2px 7px;
+      border-radius: 999px;
       text-align: center;
       text-transform: uppercase;
       white-space: nowrap;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      z-index: 10;      pointer-events: none;    }
-    .role-pukka { background: #4f46e5; color: #ffffff; border: 1px solid #6366f1; }
-    .role-tiplu { background: #4f46e5; color: #ffffff; border: 1px solid #6366f1; }
-    .role-paplu { background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; }
-    .role-nichlu { background: #0369a1; color: #ffffff; border: 1px solid #0284c7; }
-    .role-poochie { background: #d97706; color: #ffffff; border: 1px solid #f59e0b; }
-    .role-joker { background: #475569; color: #ffffff; border: 1px solid #64748b; }
-    .role-cut { background: #059669; color: #ffffff; border: 1px solid #10b981; }
+      box-shadow: 0 3px 8px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.28);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .role-pukka { background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff; border: 1px solid #a5b4fc; }
+    .role-tiplu { background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff; border: 1px solid #a5b4fc; }
+    .role-paplu { background: linear-gradient(135deg, #0ea5e9, #0369a1); color: #fff; border: 1px solid #7dd3fc; }
+    .role-nichlu { background: linear-gradient(135deg, #14b8a6, #0f766e); color: #fff; border: 1px solid #5eead4; }
+    .role-poochie { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; border: 1px solid #fde68a; }
+    .role-joker { background: linear-gradient(135deg, #9333ea, #6b21a8); color: #fff; border: 1px solid #d8b4fe; }
+    .role-cut { background: linear-gradient(135deg, #10b981, #047857); color: #fff; border: 1px solid #6ee7b7; }
+    .card.has-role-pukka { box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.85), 0 6px 14px rgba(67, 56, 202, 0.4); }
+    .card.has-role-paplu { box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.82), 0 6px 14px rgba(3, 105, 161, 0.35); }
+    .card.has-role-nichlu { box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.82), 0 6px 14px rgba(15, 118, 110, 0.35); }
+    .card.has-role-poochie { box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.9), 0 6px 16px rgba(217, 119, 6, 0.4); }
+    .card.has-role-wild { box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.8), 0 5px 12px rgba(107, 33, 168, 0.35); }
+    .card.has-role-cut { box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.85), 0 6px 14px rgba(4, 120, 87, 0.35); }
+    .card-pts-chip {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      font-size: clamp(7px, calc(8.5px * var(--card-scale, 1)), 10px);
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 5px;
+      background: rgba(15, 23, 42, 0.86);
+      color: #fca5a5;
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      z-index: 9;
+      pointer-events: none;
+    }
+    .card-pts-chip.is-wild-chip { color: #86efac; border-color: rgba(52, 211, 153, 0.5); }
 
     /* Corner Indices */
     .card-corner {
@@ -1650,7 +1673,17 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 @keyframes guideCardPulse{0%,100%{transform:translateY(-13px)}50%{transform:translateY(-17px)}}
 .card-inner{border-radius:9px;background:linear-gradient(145deg,#fff,#f7f5ee)}.card.poochie .card-inner{background:linear-gradient(145deg,#fff9df,#f4df9a)}
 .stands-toolbar{margin-bottom:5px;gap:6px}.stands-container{gap:5px;margin-bottom:6px}
-.stand-rack{background:linear-gradient(180deg,rgba(12,35,26,.95),rgba(6,20,14,.95));border-color:rgba(217,182,92,.15);border-radius:12px;padding:5px 8px}.stand-header{margin-bottom:2px}.stand-title-box{color:#a9bbb2}.stand-count-badge{background:rgba(217,182,92,.10);color:#e6eee9}.stand-cards{gap:8px;padding:8px 4px 4px 4px;min-height:calc(var(--card-h) + 10px)}.stand-scroll-btn{min-height:76px}
+.stand-rack{background:linear-gradient(180deg,rgba(12,35,26,.95),rgba(6,20,14,.95));border-color:rgba(217,182,92,.15);border-radius:12px;padding:5px 8px;transition:border-color .18s ease, box-shadow .18s ease}.stand-header{margin-bottom:2px}.stand-title-box{color:#a9bbb2}.stand-count-badge{background:rgba(217,182,92,.10);color:#e6eee9}.stand-cards{gap:8px;padding:14px 4px 4px 4px;min-height:calc(var(--card-h) + 16px)}.stand-scroll-btn{min-height:76px}
+.stand-rack.stand-valid-pure{border-left:4px solid #22c55e;border-color:rgba(34,197,94,.42);box-shadow:inset 0 0 0 1px rgba(34,197,94,.12)}
+.stand-rack.stand-valid-seq{border-left:4px solid #38bdf8;border-color:rgba(56,189,248,.4)}
+.stand-rack.stand-valid-set{border-left:4px solid #f59e0b;border-color:rgba(245,158,11,.4)}
+.stand-rack.stand-valid-double{border-left:4px solid #c084fc;border-color:rgba(192,132,252,.4)}
+.stand-meld-pill{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;letter-spacing:.25px;display:inline-flex;align-items:center;gap:4px}
+.stand-meld-pill.pure{background:rgba(34,197,94,.16);color:#86efac;border:1px solid rgba(34,197,94,.38)}
+.stand-meld-pill.seq{background:rgba(56,189,248,.16);color:#7dd3fc;border:1px solid rgba(56,189,248,.38)}
+.stand-meld-pill.set{background:rgba(245,158,11,.16);color:#fde68a;border:1px solid rgba(245,158,11,.38)}
+.stand-meld-pill.double{background:rgba(192,132,252,.16);color:#e9d5ff;border:1px solid rgba(192,132,252,.38)}
+.stand-meld-pill.loose{background:rgba(255,255,255,.06);color:#9db0a7;border:1px solid rgba(255,255,255,.12)}
 .tool-btn{background:rgba(19,39,31,.95)!important;border-color:rgba(255,255,255,.10)!important;padding:5px 10px!important}.tool-btn:hover{background:rgba(34,65,51,.98)!important;border-color:rgba(99,214,165,.45)!important}.tool-btn-highlight{border-color:rgba(217,182,92,.35)!important;color:var(--accent-gold-soft)!important}
 .reorder-bar{background:rgba(16,61,45,.38);border-color:rgba(99,214,165,.22)}
 .actions-grid{gap:7px;margin-top:4px;padding:2px 0}.btn-action{min-height:40px;padding:7px 8px;border-radius:10px}.btn-draw-stock{background:linear-gradient(135deg,#177e5a,#0c6044)}.btn-draw-discard{background:linear-gradient(135deg,#3c8065,#28624c)}.btn-discard{background:linear-gradient(135deg,#c08e2e,#966c1f)}.btn-drop{background:rgba(41,20,24,.72);border-color:rgba(240,107,120,.25)}.btn-declare{background:linear-gradient(135deg,#e1bd62,#ae7d27);box-shadow:0 5px 18px rgba(217,182,92,.24);color:#172014;padding:9px 12px;margin-top:2px}
@@ -1685,7 +1718,10 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .declare-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#7e9389}
 .btn-forfeit-danger{background:rgba(240,107,120,.09);border:1px solid rgba(240,107,120,.26);color:#f87171;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:750;cursor:pointer;transition:all .15s}
 .btn-forfeit-danger:hover{background:rgba(240,107,120,.20);border-color:rgba(240,107,120,.45);color:#fca5a5}
-.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.28)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
+.declaration-group .stand-header{cursor:default}.declaration-group.locked{border-color:rgba(50,197,138,.32)}.declaration-group.locked .stand-title-box:before{background:#32c58a}.declaration-ungrouped{border-style:dashed}
+.declaration-group.group-pure{border-left:4px solid #22c55e;background:linear-gradient(180deg,rgba(16,45,32,.95),rgba(6,20,14,.95))}
+.declaration-group.group-seq{border-left:4px solid #38bdf8;background:linear-gradient(180deg,rgba(12,38,48,.95),rgba(6,18,24,.95))}
+.declaration-group.group-set{border-left:4px solid #f59e0b;background:linear-gradient(180deg,rgba(45,35,16,.95),rgba(20,15,6,.95))}
 
 /* Guide Me Interactive Coach Banner */
 .guide-me-banner {
@@ -2870,6 +2906,232 @@ body.is-dragging-card-mobile {
   transform: translateY(-1px);
 }
 
+/* 1. Single-screen Compact Fit Preset */
+body.compact-fit-mode { padding: 3px 6px; }
+body.compact-fit-mode .game-hero,
+body.compact-fit-mode .stage-guide { display: none !important; }
+body.compact-fit-mode .table-container { gap: 3px; }
+body.compact-fit-mode .status-bar { min-height: 32px; padding: 3px 10px; }
+body.compact-fit-mode .rummy-table-felt { padding: 6px 10px 4px; gap: 4px; }
+body.compact-fit-mode .opponent-seats-area { min-height: 52px; }
+body.compact-fit-mode .seat-avatar-ring { width: 38px; height: 38px; }
+body.compact-fit-mode .center-board { min-height: 86px; padding: 14px 12px 4px; gap: 14px; }
+body.compact-fit-mode .stand-rack { padding: 3px 6px; }
+body.compact-fit-mode .stand-cards { padding: 11px 3px 3px 3px; min-height: calc(var(--card-h) + 12px); }
+body.compact-fit-mode .btn-action { min-height: 34px; padding: 4px 8px; }
+body.compact-fit-mode .hand-heading { margin-bottom: 2px; }
+body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
+
+/* 2. Pile tap-to-draw & tap-to-discard polish */
+#stockDeckBtn.drag-ready {
+  box-shadow: 0 0 0 2px rgba(50,197,138,.85), 0 0 22px rgba(50,197,138,.45);
+  animation: pileReadyGlow 1.7s infinite ease-in-out;
+}
+#discardContainer.drag-ready .card {
+  box-shadow: 0 0 0 2px rgba(56,189,248,.85), 0 0 20px rgba(56,189,248,.4);
+}
+#discardContainer.discard-selected-target {
+  box-shadow: 0 0 0 3px #f1d27a, 0 0 26px rgba(241,210,122,.6);
+  border-radius: 11px;
+  cursor: pointer;
+}
+@keyframes pileReadyGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(50,197,138,.45)); }
+  50% { filter: drop-shadow(0 0 12px rgba(50,197,138,.85)); }
+}
+.pile-action-hint.is-hot {
+  color: #fde047 !important;
+  font-weight: 800;
+}
+
+/* 5. Persistent Rejoin Banner */
+.rejoin-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(217, 182, 92, 0.14));
+  border: 1px solid rgba(50, 197, 138, 0.45);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+}
+.rejoin-banner.is-visible { display: flex; }
+.rejoin-banner-info { font-size: 12px; line-height: 1.35; color: #e2e8f0; }
+.rejoin-banner-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(50,197,138,0.22);
+  color: #7eedba;
+  border: 1px solid rgba(50,197,138,0.45);
+  margin-bottom: 3px;
+}
+.rejoin-banner-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.btn-rejoin-now {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.btn-rejoin-dismiss {
+  background: rgba(255,255,255,0.08);
+  color: #cbd5e1;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  padding: 6px 9px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* 6. House Rules Customizer Styles */
+.lobby-rules-panel {
+  margin: 10px 0 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(217, 182, 92, 0.28);
+  background: rgba(6, 20, 14, 0.72);
+  overflow: hidden;
+}
+.lobby-rules-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #f1d27a;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.lobby-rules-body {
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: none;
+}
+.lobby-rules-body.is-open { display: block; }
+.rules-preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.rules-preset-chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.05);
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rules-preset-chip.active {
+  background: rgba(217, 182, 92, 0.22);
+  border-color: rgba(217, 182, 92, 0.65);
+  color: #fde68a;
+}
+.rules-custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 8px;
+}
+.rules-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10.5px;
+  color: #a9bbb2;
+}
+.rules-field input[type="number"], .rules-field select {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 7px;
+  color: #f8fafc;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.rules-check-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: #e2e8f0;
+}
+.rules-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.rules-check-item input { accent-color: #d9b65c; width: 15px; height: 15px; }
+.custom-rules-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  color: #fde68a;
+  font-size: 9.5px;
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+/* Portrait & mobile single-row Arrange toolbar */
+.tb-short { display: none; }
+.tb-full { display: inline; }
+@media (max-width: 760px), (orientation: portrait) and (max-width: 900px) {
+  .hand-heading { margin: 0 2px 2px; }
+  .stands-toolbar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 4px;
+    margin-bottom: 3px;
+  }
+  .stands-toolbar::-webkit-scrollbar { display: none; }
+  .stands-toolbar .hand-toolbar-label { display: none; }
+  .stands-toolbar .tb-full { display: none; }
+  .stands-toolbar .tb-short { display: inline; }
+  .stands-toolbar .toolbar-left,
+  .stands-toolbar .toolbar-right {
+    flex-wrap: nowrap;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .stands-toolbar .tool-btn {
+    padding: 3px 6px !important;
+    font-size: 11px !important;
+    min-height: 26px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    gap: 2px;
+  }
+  .stands-toolbar .card-size-btns { padding: 1px 2px; gap: 1px; }
+  .stands-toolbar .card-size-btn {
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    min-height: 22px !important;
+    font-size: 13px !important;
+    padding: 0 !important;
+  }
+  .stands-toolbar .card-size-badge {
+    min-width: 30px;
+    padding: 1px 3px;
+    font-size: 10px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2945,10 +3207,24 @@ body.is-dragging-card-mobile {
     <span class="meta-dot">&bull;</span>
     <span>Pure Sequences</span>
   </div>
+  <div id="rejoinBanner" class="rejoin-banner">
+    <div class="rejoin-banner-info">
+      <div id="rejoinBannerBadge" class="rejoin-banner-badge">Recent Room</div>
+      <div id="rejoinBannerText"></div>
+    </div>
+    <div class="rejoin-banner-actions">
+      <button type="button" id="btnRejoinSaved" class="btn-rejoin-now" onclick="rejoinSavedRoom()">Rejoin</button>
+      <button type="button" class="btn-rejoin-dismiss" onclick="dismissRejoinBanner()" title="Dismiss">✕</button>
+    </div>
+  </div>
+
   <label class="field-label">Your Name</label>
   <input id="playerName" placeholder="Enter your name" value="" autocomplete="name" />
   <label class="field-label">Room Code</label>
   <input id="roomId" placeholder="e.g. FAMILY" value="FAMILY" />
+
+  <div id="lobbyRulesPanel" class="lobby-rules-panel"></div>
+
   <button class="btn-primary" onclick="joinRoom()">Enter Table</button>
   <button type="button" class="btn-demo" onclick="startDemoMode()">
     🧪 Open Test Table (No Server Required)
@@ -2968,8 +3244,12 @@ body.is-dragging-card-mobile {
         <span id="soundIcon">🔊</span>
         <span id="soundLabel" class="sound-label">Audio: ON</span>
       </button>
-      <button id="btnHelpRules" type="button" class="status-action-btn btn-help" onclick="openRulesModal()" title="View complete 21-Card Rummy rules, groups, and honors guide">
-        <span>❓ Rules</span>
+      <button id="btnLayoutToggle" type="button" class="status-action-btn" onclick="toggleLayoutMode()" title="Switch between Standard and Compact single-screen layout">
+        <span id="layoutModeIcon">🖥️</span>
+        <span id="layoutModeLabel">Fit: Standard</span>
+      </button>
+      <button id="btnHelpRules" type="button" class="status-action-btn btn-help" onclick="openRulesModal()" title="View or customize 21-Card Rummy rules, groups, and honors guide">
+        <span id="btnHelpRulesLabel">❓ Rules</span>
       </button>
       <div id="sessionScoresSummary" class="maal-badge session-badge" role="button" tabindex="0" onclick="openSessionScoresModal()" title="View session leaderboard and running scores">
         <span>📊</span>
@@ -3040,7 +3320,7 @@ body.is-dragging-card-mobile {
       <!-- Stock Deck Pile with 3D Stack & Cut Joker -->
       <div class="pile-wrapper stock-pile-wrapper">
         <div class="pile-title">Stock Deck</div>
-        <div class="pile-action-hint">Double-click or drag to draw</div>
+        <div id="stockActionHint" class="pile-action-hint">Double-tap or drag to draw</div>
         <div class="stock-with-cut">
           <div id="cutCardContainer" class="cut-card-under-stock" aria-label="Cut Joker"></div>
           <div id="stockDeckBtn" class="card deck-card pile-draggable" draggable="true"
@@ -3069,7 +3349,7 @@ body.is-dragging-card-mobile {
             📜 History (<span id="discardHistoryCount">0</span>)
           </button>
         </div>
-        <div class="pile-action-hint">Double-click to pick up • Drag card here to discard</div>
+        <div id="discardActionHint" class="pile-action-hint">Double-tap to pick up • Tap or drag card here to discard</div>
         <div class="discard-stack-area">
           <div id="discardHistory" class="discard-history" aria-label="Previous discard cards"></div>
           <div id="discardContainer" class="pile-drop-source" draggable="true"
@@ -3103,7 +3383,10 @@ body.is-dragging-card-mobile {
       <div class="toolbar-left">
         <span class="hand-toolbar-label">Arrange</span>
         <button class="tool-btn" onclick="sortHand()" title="Sort hand by Suit & Rank (Poochies to start)">
-          <span>↕</span> Sort Suit/Rank
+          <span>↕</span><span class="tb-full"> Sort Suit/Rank</span><span class="tb-short"> Sort</span>
+        </button>
+        <button class="tool-btn" onclick="groupDoublesIntoStands()" title="Group matching pairs together to spot Doubles & Free Scoots">
+          <span>👯</span><span> Pairs</span>
         </button>
         <div class="card-size-ctrl" title="Adjust card size so more of the hand can be viewed">
           <span class="hand-toolbar-label">Size</span>
@@ -3123,10 +3406,10 @@ body.is-dragging-card-mobile {
 
       <div class="toolbar-right">
         <!-- Stand management buttons (Consistent Stand terminology) -->
-        <button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 stands">3 Stands</button>
-        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands">2 Stands</button>
-        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand">1 Stand</button>
-        <button class="tool-btn tool-btn-highlight" onclick="addNewStand()" title="Add a new empty stand">+ Add Stand</button>
+        <button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 stands"><span class="tb-full">3 Stands</span><span class="tb-short">3S</span></button>
+        <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands"><span class="tb-full">2 Stands</span><span class="tb-short">2S</span></button>
+        <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand"><span class="tb-full">1 Stand</span><span class="tb-short">1S</span></button>
+        <button class="tool-btn tool-btn-highlight" onclick="addNewStand()" title="Add a new empty stand"><span class="tb-full">+ Add Stand</span><span class="tb-short">+Stand</span></button>
       </div>
     </div>
 
@@ -3362,6 +3645,7 @@ body.is-dragging-card-mobile {
       <button type="button" class="rules-tab-btn" id="tabBtnMelds" onclick="switchRulesTab('melds')">🎯 Groups &amp; Show</button>
       <button type="button" class="rules-tab-btn" id="tabBtnJokers" onclick="switchRulesTab('jokers')">🃏 Jokers &amp; Honors</button>
       <button type="button" class="rules-tab-btn" id="tabBtnScoring" onclick="switchRulesTab('scoring')">⚡ Scoot &amp; Scoring</button>
+      <button type="button" class="rules-tab-btn" id="tabBtnCustomize" onclick="switchRulesTab('customize')">⚙️ Customize</button>
     </div>
 
     <div id="rulesModalBody" class="rules-modal-body">
@@ -3577,6 +3861,9 @@ body.is-dragging-card-mobile {
           </ul>
         </div>
       </div>
+
+      <!-- Tab 5: Customize Rules & Scoring -->
+      <div id="rulesTabCustomize" class="rules-tab-content" style="display:none;"></div>
     </div>
 
     <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:space-between; align-items:center;">
@@ -4195,6 +4482,261 @@ body.is-dragging-card-mobile {
   }
   window.triggerWinnerParticles = triggerWinnerParticles;
 
+  // --- 1, 5, 6: Layout Preset, Rejoin Banner, & Custom House Rules ---
+  const DEFAULT_RULES = {
+    presetName: 'Classic South Indian',
+    decks: 3,
+    poochiesPerDeck: 1,
+    marriagePts: 50,
+    tipluPts: 20,
+    poochie1: 20,
+    poochie2: 50,
+    poochie3: 70,
+    papluTaplu1: 10,
+    papluTaplu2: 30,
+    papluTaplu3: 50,
+    firstDrop: 30,
+    middleDrop: 70,
+    forfeitPenalty: 100,
+    maxDeadwood: 120,
+    minPureSequences: 3,
+    allowTunnelaAsPure: true,
+    allow3PoochiesAsPure: true,
+    allowMarriageAsPure: true,
+    allowDoublesShow: true,
+    dealtDoublesForShow: 7,
+    drawnDoublesForShow: 8,
+    freeScootDealtDoubles: 6,
+    freeGameDrawnDoubles: 7,
+    blockDiscardedJokerPickup: true,
+    groupingTimeSec: 300
+  };
+  const RULE_PRESETS = {
+    classic: { ...DEFAULT_RULES, presetName: 'Classic South Indian' },
+    casual: {
+      ...DEFAULT_RULES,
+      presetName: 'Casual Family',
+      firstDrop: 20,
+      middleDrop: 50,
+      forfeitPenalty: 80,
+      maxDeadwood: 100,
+      minPureSequences: 2,
+      blockDiscardedJokerPickup: false,
+      groupingTimeSec: 360
+    },
+    highStakes: {
+      ...DEFAULT_RULES,
+      presetName: 'High-Stakes Marriage',
+      poochiesPerDeck: 2,
+      marriagePts: 75,
+      tipluPts: 30,
+      poochie1: 30,
+      poochie2: 75,
+      poochie3: 110,
+      papluTaplu1: 15,
+      papluTaplu2: 40,
+      papluTaplu3: 70,
+      firstDrop: 40,
+      middleDrop: 80,
+      forfeitPenalty: 120,
+      maxDeadwood: 150
+    }
+  };
+  function clampRuleInt(val, min, max, fallback) {
+    const n = Number(val);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.max(min, Math.min(max, Math.round(n)));
+  }
+  function sanitizeClientRules(raw) {
+    const src = (raw && typeof raw === 'object') ? raw : {};
+    const presetName = typeof src.presetName === 'string' && src.presetName.trim()
+      ? src.presetName.trim().slice(0, 40)
+      : DEFAULT_RULES.presetName;
+    const dealtDoublesForShow = clampRuleInt(src.dealtDoublesForShow, 5, 10, DEFAULT_RULES.dealtDoublesForShow);
+    const drawnDoublesForShow = clampRuleInt(src.drawnDoublesForShow, 6, 10, DEFAULT_RULES.drawnDoublesForShow);
+    const freeScootDealtDoubles = clampRuleInt(src.freeScootDealtDoubles, 4, 9, DEFAULT_RULES.freeScootDealtDoubles);
+    const freeGameDrawnDoubles = clampRuleInt(src.freeGameDrawnDoubles, 5, 10, DEFAULT_RULES.freeGameDrawnDoubles);
+    return {
+      presetName,
+      decks: 3,
+      poochiesPerDeck: clampRuleInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
+      marriagePts: clampRuleInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
+      tipluPts: clampRuleInt(src.tipluPts, 0, 150, DEFAULT_RULES.tipluPts),
+      poochie1: clampRuleInt(src.poochie1, 0, 150, DEFAULT_RULES.poochie1),
+      poochie2: clampRuleInt(src.poochie2, 0, 250, DEFAULT_RULES.poochie2),
+      poochie3: clampRuleInt(src.poochie3, 0, 350, DEFAULT_RULES.poochie3),
+      papluTaplu1: clampRuleInt(src.papluTaplu1, 0, 100, DEFAULT_RULES.papluTaplu1),
+      papluTaplu2: clampRuleInt(src.papluTaplu2, 0, 200, DEFAULT_RULES.papluTaplu2),
+      papluTaplu3: clampRuleInt(src.papluTaplu3, 0, 300, DEFAULT_RULES.papluTaplu3),
+      firstDrop: clampRuleInt(src.firstDrop, 0, 120, DEFAULT_RULES.firstDrop),
+      middleDrop: clampRuleInt(src.middleDrop, 0, 200, DEFAULT_RULES.middleDrop),
+      forfeitPenalty: clampRuleInt(src.forfeitPenalty, 0, 300, DEFAULT_RULES.forfeitPenalty),
+      maxDeadwood: clampRuleInt(src.maxDeadwood, 40, 300, DEFAULT_RULES.maxDeadwood),
+      minPureSequences: clampRuleInt(src.minPureSequences, 1, 4, DEFAULT_RULES.minPureSequences),
+      allowTunnelaAsPure: src.allowTunnelaAsPure !== false,
+      allow3PoochiesAsPure: src.allow3PoochiesAsPure !== false,
+      allowMarriageAsPure: src.allowMarriageAsPure !== false,
+      allowDoublesShow: src.allowDoublesShow !== false,
+      dealtDoublesForShow,
+      drawnDoublesForShow: Math.max(dealtDoublesForShow, drawnDoublesForShow),
+      freeScootDealtDoubles,
+      freeGameDrawnDoubles: Math.max(freeScootDealtDoubles, freeGameDrawnDoubles),
+      blockDiscardedJokerPickup: src.blockDiscardedJokerPickup !== false,
+      groupingTimeSec: clampRuleInt(src.groupingTimeSec, 60, 600, DEFAULT_RULES.groupingTimeSec)
+    };
+  }
+  let customLobbyRules = { ...DEFAULT_RULES };
+  try {
+    const storedRules = localStorage.getItem('rummy_custom_rules');
+    if (storedRules) customLobbyRules = sanitizeClientRules(JSON.parse(storedRules));
+  } catch (_) {}
+  function saveLobbyRules() {
+    try { localStorage.setItem('rummy_custom_rules', JSON.stringify(customLobbyRules)); } catch (_) {}
+  }
+  function getActiveRules() {
+    return sanitizeClientRules(roomState?.rules || customLobbyRules);
+  }
+  function hasCustomRules(r = getActiveRules()) {
+    return Object.keys(DEFAULT_RULES).some(k => k !== 'presetName' && r[k] !== DEFAULT_RULES[k]);
+  }
+  function renderRulesButtonState() {
+    const r = getActiveRules();
+    const isCust = hasCustomRules(r);
+    const lbl = document.getElementById('btnHelpRulesLabel');
+    if (lbl) lbl.innerHTML = isCust ? '⚙️ Custom Rules <span class="custom-rules-badge">CUSTOM</span>' : '❓ Rules';
+  }
+
+  let lobbyRulesOpen = false;
+  function toggleLobbyRulesEditor() {
+    lobbyRulesOpen = !lobbyRulesOpen;
+    renderLobbyRulesPanel();
+  }
+  function applyPresetToLobby(key) {
+    const preset = RULE_PRESETS[key];
+    if (!preset) return;
+    customLobbyRules = sanitizeClientRules(preset);
+    saveLobbyRules();
+    renderLobbyRulesPanel();
+    renderRulesButtonState();
+  }
+  function updateLobbyRuleField(key, val) {
+    customLobbyRules = sanitizeClientRules({ ...customLobbyRules, presetName: 'Custom House Rules', [key]: val });
+    saveLobbyRules();
+    renderLobbyRulesPanel();
+    renderRulesButtonState();
+  }
+  function resetLobbyRulesToDefault() {
+    customLobbyRules = { ...DEFAULT_RULES };
+    saveLobbyRules();
+    renderLobbyRulesPanel();
+    renderRulesButtonState();
+  }
+  function renderLobbyRulesPanel() {
+    const panel = document.getElementById('lobbyRulesPanel');
+    if (!panel) return;
+    const r = customLobbyRules;
+    const isCust = hasCustomRules(r);
+    const activeKey = Object.keys(RULE_PRESETS).find(k =>
+      Object.keys(DEFAULT_RULES).every(f => f === 'presetName' || RULE_PRESETS[k][f] === r[f])
+    ) || 'custom';
+    panel.innerHTML = `
+      <button type="button" class="lobby-rules-toggle" onclick="toggleLobbyRulesEditor()">
+        <span>⚙️ House Rules &amp; Scoring: <strong>${escapeHtml(r.presetName)}</strong>${isCust ? '<span class="custom-rules-badge">CUSTOM</span>' : ''}</span>
+        <span>${lobbyRulesOpen ? '▲ Hide' : '▼ Customize'}</span>
+      </button>
+      <div class="lobby-rules-body ${lobbyRulesOpen ? 'is-open' : ''}">
+        <div class="rules-preset-row">
+          <button type="button" class="rules-preset-chip ${activeKey === 'classic' ? 'active' : ''}" onclick="applyPresetToLobby('classic')">Classic</button>
+          <button type="button" class="rules-preset-chip ${activeKey === 'casual' ? 'active' : ''}" onclick="applyPresetToLobby('casual')">Casual</button>
+          <button type="button" class="rules-preset-chip ${activeKey === 'highStakes' ? 'active' : ''}" onclick="applyPresetToLobby('highStakes')">High Stakes</button>
+          <button type="button" class="rules-preset-chip" onclick="resetLobbyRulesToDefault()">Reset Default</button>
+        </div>
+        <div class="rules-custom-grid">
+          <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateLobbyRuleField('minPureSequences', this.value)"></label>
+          <label class="rules-field">First / Middle / Wrong Drop<div style="display:flex;gap:4px;"><input type="number" min="0" max="120" value="${r.firstDrop}" style="width:33%;" onchange="updateLobbyRuleField('firstDrop', this.value)"><input type="number" min="0" max="200" value="${r.middleDrop}" style="width:33%;" onchange="updateLobbyRuleField('middleDrop', this.value)"><input type="number" min="0" max="300" value="${r.forfeitPenalty}" style="width:34%;" onchange="updateLobbyRuleField('forfeitPenalty', this.value)"></div></label>
+          <label class="rules-field">Max Deadwood Cap<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateLobbyRuleField('maxDeadwood', this.value)"></label>
+          <label class="rules-field">Marriage / Pukka Pts<div style="display:flex;gap:4px;"><input type="number" min="0" max="250" value="${r.marriagePts}" style="width:50%;" onchange="updateLobbyRuleField('marriagePts', this.value)"><input type="number" min="0" max="150" value="${r.tipluPts}" style="width:50%;" onchange="updateLobbyRuleField('tipluPts', this.value)"></div></label>
+          <label class="rules-field">Poochies Per Deck<select onchange="updateLobbyRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 per deck (3 total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 per deck (6 total)</option></select></label>
+          <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateLobbyRuleField('groupingTimeSec', this.value)"></label>
+        </div>
+        <div class="rules-check-row">
+          <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateLobbyRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} onchange="updateLobbyRuleField('allowDoublesShow', this.checked)"> Allow Doubles Show (${r.dealtDoublesForShow} dealt / ${r.drawnDoublesForShow} drawn) &amp; Free Scoot (${r.freeScootDealtDoubles}/${r.freeGameDrawnDoubles})</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allowTunnelaAsPure ? 'checked' : ''} onchange="updateLobbyRuleField('allowTunnelaAsPure', this.checked)"> Tunella counts as Pure Group</label>
+        </div>
+      </div>`;
+  }
+  window.toggleLobbyRulesEditor = toggleLobbyRulesEditor;
+  window.applyPresetToLobby = applyPresetToLobby;
+  window.updateLobbyRuleField = updateLobbyRuleField;
+  window.resetLobbyRulesToDefault = resetLobbyRulesToDefault;
+
+  function initLayoutMode() {
+    let mode = 'standard';
+    try { mode = localStorage.getItem('rummy_layout_mode') || 'standard'; } catch (_) {}
+    const isCompact = mode === 'compact';
+    document.body.classList.toggle('compact-fit-mode', isCompact);
+    const iconEl = document.getElementById('layoutModeIcon');
+    const lblEl = document.getElementById('layoutModeLabel');
+    if (iconEl) iconEl.innerText = isCompact ? '⚡' : '🖥️';
+    if (lblEl) lblEl.innerText = isCompact ? 'Fit: Compact' : 'Fit: Standard';
+  }
+  function toggleLayoutMode() {
+    const isNowCompact = !document.body.classList.contains('compact-fit-mode');
+    document.body.classList.toggle('compact-fit-mode', isNowCompact);
+    try { localStorage.setItem('rummy_layout_mode', isNowCompact ? 'compact' : 'standard'); } catch (_) {}
+    const iconEl = document.getElementById('layoutModeIcon');
+    const lblEl = document.getElementById('layoutModeLabel');
+    if (iconEl) iconEl.innerText = isNowCompact ? '⚡' : '🖥️';
+    if (lblEl) lblEl.innerText = isNowCompact ? 'Fit: Compact' : 'Fit: Standard';
+    setTimeout(updateAllStandScrollButtons, 50);
+  }
+  window.toggleLayoutMode = toggleLayoutMode;
+
+  let rejoinDismissed = false;
+  function updateLobbyRejoinBanner() {
+    const banner = document.getElementById('rejoinBanner');
+    const badge = document.getElementById('rejoinBannerBadge');
+    const txt = document.getElementById('rejoinBannerText');
+    const btn = document.getElementById('btnRejoinSaved');
+    if (!banner || !txt || !btn) return;
+    if (rejoinDismissed) { banner.classList.remove('is-visible'); return; }
+    let savedName = '', savedRoom = '', isActive = false;
+    try {
+      savedName = (localStorage.getItem('rummy_player_name') || '').trim();
+      savedRoom = (localStorage.getItem('rummy_room_id') || '').trim().toUpperCase();
+      isActive = sessionStorage.getItem('rummy_active_session') === 'true';
+    } catch (_) {}
+    if (savedRoom) {
+      if (badge) badge.innerText = isActive ? '⚡ Active Hand' : 'Recent Room';
+      txt.innerHTML = `Continue in room <strong>${escapeHtml(savedRoom)}</strong>${savedName ? ` as <strong>${escapeHtml(savedName)}</strong>` : ''}?`;
+      btn.innerText = `Rejoin ${savedRoom}`;
+      banner.classList.add('is-visible');
+    } else {
+      banner.classList.remove('is-visible');
+    }
+  }
+  function rejoinSavedRoom() {
+    try {
+      const savedName = localStorage.getItem('rummy_player_name');
+      const savedRoom = localStorage.getItem('rummy_room_id');
+      if (savedName && document.getElementById('playerName')) document.getElementById('playerName').value = savedName;
+      if (savedRoom && document.getElementById('roomId')) document.getElementById('roomId').value = savedRoom;
+    } catch (_) {}
+    joinRoom();
+  }
+  function dismissRejoinBanner() {
+    rejoinDismissed = true;
+    const banner = document.getElementById('rejoinBanner');
+    if (banner) banner.classList.remove('is-visible');
+  }
+  window.rejoinSavedRoom = rejoinSavedRoom;
+  window.dismissRejoinBanner = dismissRejoinBanner;
+
+  initLayoutMode();
+  renderLobbyRulesPanel();
+  renderRulesButtonState();
+
   // Restore saved player name and room from previous session
   try {
     const savedName = localStorage.getItem('rummy_player_name');
@@ -4205,6 +4747,7 @@ body.is-dragging-card-mobile {
     if (savedRoom && document.getElementById('roomId')) {
       document.getElementById('roomId').value = savedRoom;
     }
+    updateLobbyRejoinBanner();
     // Auto-rejoin if user was in an active game session before page refresh
     if (sessionStorage.getItem('rummy_active_session') === 'true') {
       setTimeout(() => {
@@ -4363,20 +4906,21 @@ body.is-dragging-card-mobile {
   }
 
   function promptLeaveSession() {
+    const r = getActiveRules();
     const isPlaying = roomState && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING');
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myP = roomState?.players?.find(p => p.id === myId);
-    const isAfterWrongDeclareOrForfeit = Boolean(declarationMode || myP?.hasForfeited || myP?.dropType === 'FORFEIT' || myP?.dropPenalty === 100);
+    const isAfterWrongDeclareOrForfeit = Boolean(declarationMode || myP?.hasForfeited || myP?.dropType === 'FORFEIT' || myP?.dropPenalty === r.forfeitPenalty);
 
     if (isPlaying) {
       if (isAfterWrongDeclareOrForfeit) {
         showConfirmModal({
           icon: '⚠️',
           title: 'Leave After Wrong Declare?',
-          badgeText: 'Wrong Declare: 100 pts penalty',
+          badgeText: `Wrong Declare: ${r.forfeitPenalty} pts penalty`,
           badgeClass: 'danger',
-          message: '<strong>You are leaving after a wrong declaration attempt or during declare mode.</strong><br><br>Leaving now is scored as a <strong>Wrong Declare / Forfeit (100 points penalty)</strong>.<br><br>Are you sure you want to leave the table?',
-          actionText: 'Forfeit & Leave (100 pts)',
+          message: `<strong>You are leaving after a wrong declaration attempt or during declare mode.</strong><br><br>Leaving now is scored as a <strong>Wrong Declare / Forfeit (${r.forfeitPenalty} points penalty)</strong>.<br><br>Are you sure you want to leave the table?`,
+          actionText: `Forfeit & Leave (${r.forfeitPenalty} pts)`,
           actionClass: 'danger',
           onConfirm: () => {
             executeLeaveSession(true);
@@ -4386,10 +4930,10 @@ body.is-dragging-card-mobile {
         showConfirmModal({
           icon: '⚠️',
           title: 'Leave Game in Progress?',
-          badgeText: 'Mid-Scoot: 70 pts penalty',
+          badgeText: `Mid-Scoot: ${r.middleDrop} pts penalty`,
           badgeClass: 'danger',
-          message: '<strong>A hand is currently in progress.</strong><br><br>If you leave now, it will be scored as a <strong>Mid-Scoot (70 points penalty)</strong>.<br><br>Are you sure you want to fold your hand and leave the session?',
-          actionText: 'Mid-Scoot & Leave (70 pts)',
+          message: `<strong>A hand is currently in progress.</strong><br><br>If you leave now, it will be scored as a <strong>Mid-Scoot (${r.middleDrop} points penalty)</strong>.<br><br>Are you sure you want to fold your hand and leave the session?`,
+          actionText: `Mid-Scoot & Leave (${r.middleDrop} pts)`,
           actionClass: 'danger',
           onConfirm: () => {
             executeLeaveSession(false);
@@ -4413,28 +4957,34 @@ body.is-dragging-card-mobile {
   }
 
   function executeLeaveSession(isForfeit = false) {
+    const r = getActiveRules();
+    const penPts = isForfeit ? r.forfeitPenalty : r.middleDrop;
     if (isDemo) {
       if (globalSessionScores) {
         const sc = globalSessionScores.find(s => s.playerId === 'p_demo' || s.name === 'You');
         if (sc) {
-          const penalty = isForfeit ? 100 : 70;
           sc.handsPlayed++;
-          sc.points += penalty;
-          sc.totalScore -= penalty;
+          sc.points += penPts;
+          sc.totalScore -= penPts;
         }
       }
-      resetToLobbyScreen(isForfeit ? 'You left the table after a wrong declare (100 pts penalty).' : 'You left the test table as a Mid-Scoot (70 pts penalty).');
+      resetToLobbyScreen(isForfeit ? `You left the table after a wrong declare (${penPts} pts penalty).` : `You left the test table as a Mid-Scoot (${penPts} pts penalty).`);
       return;
     }
     if (ws && ws.readyState === WebSocket.OPEN) {
       isDeliberateExit = true;
       ws.send(JSON.stringify({ type: 'LEAVE_SESSION', forfeit: isForfeit }));
     }
-    resetToLobbyScreen(isForfeit ? 'You left after a wrong declare (100 pts penalty).' : 'You left the table (70 pts penalty).');
+    resetToLobbyScreen(isForfeit ? `You left after a wrong declare (${penPts} pts penalty).` : `You left the table (${penPts} pts penalty).`);
   }
 
   function resetToLobbyScreen(message) {
     isDeliberateExit = true;
+    try {
+      sessionStorage.removeItem('rummy_active_session');
+      sessionStorage.removeItem('rummy_player_id');
+      localStorage.removeItem('rummy_player_id');
+    } catch (_) {}
     if (clientPingTimer) {
       clearInterval(clientPingTimer);
       clientPingTimer = null;
@@ -4483,6 +5033,9 @@ body.is-dragging-card-mobile {
 
     document.getElementById('gameView').style.display = 'none';
     document.getElementById('lobbyView').style.display = 'block';
+    updateLobbyRejoinBanner();
+    renderLobbyRulesPanel();
+    renderRulesButtonState();
 
     if (message) {
       window.alert(message);
@@ -4534,7 +5087,8 @@ body.is-dragging-card-mobile {
         type: 'JOIN',
         playerName,
         roomId,
-        playerId: savedPlayerId
+        playerId: savedPlayerId,
+        rules: getActiveRules()
       }));
       const connectionStatus = document.getElementById('connectionStatus');
       if (connectionStatus) {
@@ -4624,6 +5178,11 @@ body.is-dragging-card-mobile {
           if (roomState?.sessionScores) {
             globalSessionScores = roomState.sessionScores;
             updateSessionHeaderBadge();
+          }
+          renderRulesButtonState();
+          if (typeof renderDynamicRulesModalValues === 'function') renderDynamicRulesModalValues();
+          if (typeof renderRulesCustomizeTab === 'function' && document.getElementById('rulesTabCustomize')?.style.display === 'block') {
+            renderRulesCustomizeTab();
           }
 
           if (roomState?.status === 'ROUND_OVER') {
@@ -5778,7 +6337,7 @@ body.is-dragging-card-mobile {
     return `https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/${r}${s}.svg`;
   }
 
-  function renderCard(card, tag = '', isHand = false, isLocked = false) {
+  function renderCard(card, tag = '', isHand = false, isLocked = false, ptsChip = null) {
     if (!card) return '<div class="card" style="opacity:0.25; background: #0f172a; border: 1px dashed var(--surface-border-light); justify-content:center; align-items:center; color: var(--text-muted); font-size:11px;">Empty</div>';
     const isRed = ['♥', '♦'].includes(card.suit);
     const poochieClass = card.isPoochie ? 'poochie' : '';
@@ -5805,17 +6364,30 @@ body.is-dragging-card-mobile {
       ontouchcancel="onTouchCardCancel(event, '${card.id}')"
     ` : (isHand ? `id="card-${card.id}"` : '');
 
-    // Floating Role Tag (positioned top-center outside card corners - NEVER obscures suit or rank)
+    // Floating Role Tag + Card Border Highlight (fixes TAPLU mismatch & upgrades badges)
     let tagHtml = '';
+    let roleRingClass = '';
     if (tag) {
       let tagClass = 'role-joker';
-      if (tag === 'TIPLU' || tag === 'EXACT CUT' || tag === 'PUKKA JOKER') { tagClass = 'role-pukka'; tag = 'PUKKA JOKER'; }
-      else if (tag === 'PAPLU') tagClass = 'role-paplu';
-      else if (tag === 'NICHLU') { tagClass = 'role-nichlu'; tag = 'TUPLU'; }
-      else if (tag === 'POOCHIE') tagClass = 'role-poochie';
-      else if (tag === 'CUT') tagClass = 'role-cut';
-      tagHtml = `<div class="card-role-tag ${tagClass}">${tag}</div>`;
+      let tagLabel = tag;
+      if (tag === 'TIPLU' || tag === 'EXACT CUT' || tag === 'PUKKA JOKER') {
+        tagClass = 'role-pukka'; tagLabel = '👑 PUKKA'; roleRingClass = 'has-role-pukka';
+      } else if (tag === 'PAPLU') {
+        tagClass = 'role-paplu'; tagLabel = '▲ PAPLU'; roleRingClass = 'has-role-paplu';
+      } else if (tag === 'NICHLU' || tag === 'TAPLU' || tag === 'TUPLU') {
+        tagClass = 'role-nichlu'; tagLabel = '▼ TAPLU'; roleRingClass = 'has-role-nichlu';
+      } else if (tag === 'POOCHIE') {
+        tagClass = 'role-poochie'; tagLabel = '★ POOCHIE'; roleRingClass = 'has-role-poochie';
+      } else if (tag === 'JOKER') {
+        tagClass = 'role-joker'; tagLabel = '🃏 WILD'; roleRingClass = 'has-role-wild';
+      } else if (tag === 'CUT') {
+        tagClass = 'role-cut'; tagLabel = '✂ CUT'; roleRingClass = 'has-role-cut';
+      }
+      tagHtml = `<div class="card-role-tag ${tagClass}">${tagLabel}</div>`;
     }
+    const ptsHtml = ptsChip
+      ? `<div class="card-pts-chip ${ptsChip.isWild ? 'is-wild-chip' : ''}">${ptsChip.text}</div>`
+      : '';
 
     // Chris Aguilar's open-source SVG deck via jsDelivr CDN
     const svgUrl = getStandardCardSvgUrl(card);
@@ -5833,8 +6405,9 @@ body.is-dragging-card-mobile {
     }
 
     return `
-      <div class="card ${redClass} ${poochieClass} ${selClass} ${guidedClass} ${suitClass} ${lockedClass}" data-card-id="${card.id}" ${dragAttrs} ${clickAttr}>
+      <div class="card ${redClass} ${poochieClass} ${selClass} ${guidedClass} ${suitClass} ${lockedClass} ${roleRingClass}" data-card-id="${card.id}" ${dragAttrs} ${clickAttr}>
         ${tagHtml}
+        ${ptsHtml}
         <div class="card-inner">
           ${vectorImgHtml}
           <div class="card-corner top-left">
@@ -5890,9 +6463,10 @@ body.is-dragging-card-mobile {
     return true;
   }
 
-  // Requirement 4: Discarded joker pickup restriction
+  // Requirement 4: Discarded joker pickup restriction (respects table rule)
   function isDiscardedJoker(card) {
     if (!card) return false;
+    if (getActiveRules().blockDiscardedJokerPickup === false) return false;
     // Initial open card is exempt and CAN be picked up!
     if (card.isInitialOpenCard) return false;
     if (card.isDiscardedJoker) return true;
@@ -6030,7 +6604,8 @@ body.is-dragging-card-mobile {
             stateText = 'Forfeited';
             stateClass = 'action-forfeited';
           } else if (dropped) {
-            const pen = p.dropPenalty || (p.dropType === 'FIRST_DROP' ? 30 : p.dropType === 'MIDDLE_DROP' ? 70 : 30);
+            const rCfg = getActiveRules();
+            const pen = p.dropPenalty !== undefined ? p.dropPenalty : (p.dropType === 'FIRST_DROP' ? rCfg.firstDrop : p.dropType === 'MIDDLE_DROP' ? rCfg.middleDrop : rCfg.firstDrop);
             stateText = `Scooted (${pen}p)`;
             stateClass = 'action-dropped';
           } else if (isCurrent) {
@@ -6082,9 +6657,10 @@ body.is-dragging-card-mobile {
         myStateText = '🏆 WINNER';
         myActionClass = 'action-winner';
       } else if (myForfeited) {
-        myStateText = 'Forfeited (100 pts)';
+        myStateText = `Forfeited (${getActiveRules().forfeitPenalty} pts)`;
       } else if (myDropped) {
-        const pen = me?.dropPenalty || (me?.dropType === 'FIRST_DROP' ? 30 : 70);
+        const rCfg = getActiveRules();
+        const pen = me?.dropPenalty !== undefined ? me.dropPenalty : (me?.dropType === 'FIRST_DROP' ? rCfg.firstDrop : rCfg.middleDrop);
         myStateText = `Scooted (${pen} pts)`;
       } else if (isMyTurn) {
         myStateText = roomState.turnStage === 'DRAW' && myCount < 22 ? '⚡ YOUR TURN (DRAW)' : '⚡ YOUR TURN (DISCARD)';
@@ -6207,17 +6783,18 @@ body.is-dragging-card-mobile {
         const wName = escapeHtml(roomState.winnerName || currentRoundWinnerName || 'Winner');
         guide.innerHTML = `<strong>Round Complete:</strong> 🏆 ${wName} won this hand. <button type="button" class="inline-meld-btn" style="margin-left:6px; vertical-align:middle;" onclick="reopenResultsModal()">👁️ View Results &amp; All Hands</button>`;
       } else if (myForfeited) {
-        guide.innerHTML = `<strong>You forfeited (100 pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
+        guide.innerHTML = `<strong>You forfeited (${getActiveRules().forfeitPenalty} pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
       } else if (myDropped) {
-        const pen = myPlayer?.dropPenalty || (myPlayer?.dropType === 'FIRST_DROP' ? 30 : myPlayer?.dropType === 'MIDDLE_DROP' ? 70 : 30);
-        const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts');
+        const rCfg = getActiveRules();
+        const pen = myPlayer?.dropPenalty !== undefined ? myPlayer.dropPenalty : (myPlayer?.dropType === 'FIRST_DROP' ? rCfg.firstDrop : rCfg.middleDrop);
+        const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === rCfg.firstDrop ? `First Drop: ${rCfg.firstDrop} pts` : `Middle Drop: ${rCfg.middleDrop} pts`);
         guide.innerHTML = `<strong>You scooted (${kind}):</strong> Hand folded. Watching ${roomState.turnPlayerName || 'other players'} finish.`;
       } else if (isGroupingNow) {
         guide.innerHTML = `<strong>Grouping Phase:</strong> ${escapeHtml(roomState.winnerName || 'Winner')} declared! Group your cards below (manually, Guide Me, or Auto-Group) and click Submit Groups.`;
       } else if (isMyTurn && canDraw) {
-        guide.innerHTML = '<strong>Your turn:</strong> Double-click or drag Stock/Discard to draw your 22nd card.';
+        guide.innerHTML = '<strong>Your turn:</strong> Double-tap or drag Stock/Discard to draw your 22nd card.';
       } else if (isMyTurn && canDiscard) {
-        guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Drag a card to Discard pile (or tap Discard Card), or Show / Declare.`;
+        guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Select a card &amp; tap Discard pile (or drag card there), or Show / Declare.`;
       } else {
         const actionInfo = roomState.lastAction ? `[${roomState.lastAction}] ` : '';
         guide.innerHTML = `<strong>Waiting:</strong> ${actionInfo}Watch the table while ${roomState.turnPlayerName || 'another player'} plays.`;
@@ -6240,11 +6817,12 @@ body.is-dragging-card-mobile {
       notice.innerHTML = `<span>🏆 ${wName} won!</span> <button type="button" class="btn-primary" style="padding:4px 12px; font-size:11.5px; margin-top:0; margin-left:6px;" onclick="reopenResultsModal()">👁️ View Hands &amp; Scores</button>`;
     } else if (myForfeited) {
       dot.classList.remove('active');
-      notice.innerText = `Forfeited (100 pts) • Turn: ${roomState.turnPlayerName}`;
+      notice.innerText = `Forfeited (${getActiveRules().forfeitPenalty} pts) • Turn: ${roomState.turnPlayerName}`;
     } else if (myDropped) {
       dot.classList.remove('active');
-      const pen = myPlayer?.dropPenalty || (myPlayer?.dropType === 'FIRST_DROP' ? 30 : myPlayer?.dropType === 'MIDDLE_DROP' ? 70 : 30);
-      const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === 30 ? 'First Drop: 30 pts' : 'Middle Drop: 70 pts');
+      const rCfg = getActiveRules();
+      const pen = myPlayer?.dropPenalty !== undefined ? myPlayer.dropPenalty : (myPlayer?.dropType === 'FIRST_DROP' ? rCfg.firstDrop : rCfg.middleDrop);
+      const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === rCfg.firstDrop ? `First Drop: ${rCfg.firstDrop} pts` : `Middle Drop: ${rCfg.middleDrop} pts`);
       notice.innerText = `Scooted (${kind}) • Turn: ${roomState.turnPlayerName}`;
     } else if (isMyTurn) {
       dot.classList.add('active');
@@ -6257,18 +6835,19 @@ body.is-dragging-card-mobile {
       notice.innerText = `${actionPrefix}Turn: ${roomState.turnPlayerName}`;
     }
 
+    const rCfg = getActiveRules();
     const myTurnsTaken = myPlayer?.turnsTaken || 0;
     const isFirstDrop = myTurnsTaken === 0;
-    const dropPenaltyPts = isFirstDrop ? 30 : 70;
+    const dropPenaltyPts = isFirstDrop ? rCfg.firstDrop : rCfg.middleDrop;
     const dropTypeLabel = isFirstDrop ? 'First Drop' : 'Middle Drop';
 
     const dInfo = countDoubles(myHand);
     const isDealtTurn = isFirstDrop && !canDiscard;
-    const isFreeScootDealt = isDealtTurn && dInfo.count >= 6;
-    const isFreeGameDrawn = (myTurnsTaken > 0 || canDiscard) && dInfo.count >= 7;
+    const isFreeScootDealt = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.freeScootDealtDoubles;
+    const isFreeGameDrawn = rCfg.allowDoublesShow && (myTurnsTaken > 0 || canDiscard) && dInfo.count >= rCfg.freeGameDrawnDoubles;
 
-    const isDealt7Doubles = isDealtTurn && dInfo.count >= 7;
-    const isDrawn8Doubles = dInfo.count >= 8;
+    const isDealtDoublesShow = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.dealtDoublesForShow;
+    const isDrawnDoublesShow = rCfg.allowDoublesShow && dInfo.count >= rCfg.drawnDoublesForShow;
 
     const btnDrop = document.getElementById('btnDrop');
     if (btnDrop) {
@@ -6295,9 +6874,9 @@ body.is-dragging-card-mobile {
           if (myDropped) {
             s.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? '0 pts & 0 honors' : 'hand folded';
           } else if (isFreeScootDealt) {
-            s.innerText = '6+ doubles dealt • 0 pts & 0 honors';
+            s.innerText = `${rCfg.freeScootDealtDoubles}+ doubles dealt • 0 pts & 0 honors`;
           } else if (isFreeGameDrawn) {
-            s.innerText = '7+ doubles • 0 pts & 0 honors';
+            s.innerText = `${rCfg.freeGameDrawnDoubles}+ doubles • 0 pts & 0 honors`;
           } else {
             s.innerText = `${dropTypeLabel} (-${dropPenaltyPts} pts)`;
           }
@@ -6330,19 +6909,19 @@ body.is-dragging-card-mobile {
     }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
-      const canDeclare = (isMyTurn && (canDiscard || isDealt7Doubles)) && !myDropped && !myForfeited;
+      const canDeclare = (isMyTurn && (canDiscard || isDealtDoublesShow)) && !myDropped && !myForfeited;
       declareBtn.classList.toggle('btn-disabled', !canDeclare && !declarationMode);
       const b = declareBtn.querySelector('b');
       const sub = declareBtn.querySelector('.action-sub');
       if (b) {
         b.innerText = declarationMode
           ? 'Submit Declaration'
-          : (isDealt7Doubles ? 'Declare (7 Doubles)' : isDrawn8Doubles ? 'Declare (8 Doubles)' : 'Show / Declare');
+          : (isDealtDoublesShow ? `Declare (${rCfg.dealtDoublesForShow} Doubles)` : isDrawnDoublesShow ? `Declare (${rCfg.drawnDoublesForShow} Doubles)` : 'Show / Declare');
       }
       if (sub) {
         sub.innerText = declarationMode
           ? 'submit your 21-card show'
-          : (myForfeited ? 'forfeited (100 pts)' : myDropped ? 'scooted' : (isDealt7Doubles ? 'win dealt without drawing!' : isDrawn8Doubles ? '8 doubles ready!' : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
+          : (myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
     const isGroupingPhase = roomState?.status === 'GROUPING';
@@ -6431,14 +7010,15 @@ body.is-dragging-card-mobile {
       dp.classList.toggle('is-open', declarationMode);
       if (!declarationMode) dp.innerHTML = '';
       if (declarationMode) {
+        const rRule = getActiveRules();
         const groupedCards = declarationGroups.flatMap(g => g.cards);
         const grouped = groupedCards.length;
         const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
         const groupedIds = new Set(groupedCards.map(c => c.id));
         const remaining = myHand.filter(c => !groupedIds.has(c.id));
         const dInfoPanel = countDoubles(myHand);
-        const isDoublesPanelReady = (dInfoPanel.count >= 7 && myHand.length === 21) || (dInfoPanel.count >= 8 && myHand.length === 22);
-        const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesPanelReady;
+        const isDoublesPanelReady = rRule.allowDoublesShow && ((dInfoPanel.count >= rRule.dealtDoublesForShow && myHand.length === 21) || (dInfoPanel.count >= rRule.drawnDoublesForShow && myHand.length === 22));
+        const isShowReady = (grouped === 21 && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesPanelReady;
 
         if (isGroupingPhase) {
           const estDeadwood = calculateCurrentDeadwood(declarationGroups, myHand);
@@ -6449,12 +7029,12 @@ body.is-dragging-card-mobile {
                   <span>⚡</span> Group Your Cards to Minimize Deadwood
                 </div>
                 <div class="declare-subtitle">
-                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Form <b>3+ Pure Groups</b> to protect all your groups. Otherwise, only Jokers, 4+ Pure Groups, and Tunellas are exempt.
+                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Form <b>${rRule.minPureSequences}+ Pure Groups</b> to protect all your groups. Otherwise, only Jokers, 4+ Pure Groups, and Tunellas are exempt.
                 </div>
               </div>
               <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                 <span class="grouping-timer-badge" style="font-size:11.5px; font-weight:800; padding:5px 10px; border-radius:8px; background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.35); display:inline-flex; align-items:center; gap:4px;">
-                  ⏱️ <span class="groupingTimerSecSpan">5m 00s</span> left
+                  ⏱️ <span class="groupingTimerSecSpan">${formatGroupingTime(rRule.groupingTimeSec)}</span> left
                 </span>
               </div>
             </div>
@@ -6462,8 +7042,8 @@ body.is-dragging-card-mobile {
               <div class="checklist-item ${estDeadwood.hasRequiredPure ? 'done' : 'pending'}">
                 <span class="checklist-icon">${estDeadwood.hasRequiredPure ? '✅' : '⏳'}</span>
                 <div>
-                  <div><strong>${estDeadwood.pureSequences} / 3</strong> Pure Groups</div>
-                  <div style="font-size:9px; opacity:0.85;">${estDeadwood.hasRequiredPure ? 'All groups protected!' : 'Need 3 to protect Sets/Joker Groups'}</div>
+                  <div><strong>${estDeadwood.pureSequences} / ${rRule.minPureSequences}</strong> Pure Groups</div>
+                  <div style="font-size:9px; opacity:0.85;">${estDeadwood.hasRequiredPure ? 'All groups protected!' : `Need ${rRule.minPureSequences} to protect Sets/Joker Groups`}</div>
                 </div>
               </div>
               <div class="checklist-item ${grouped >= 18 ? 'done' : 'pending'}">
@@ -6495,11 +7075,11 @@ body.is-dragging-card-mobile {
             </div>
 
             <div class="declare-checklist">
-              <div class="checklist-item ${pure >= 3 ? 'done' : 'pending'}">
-                <span class="checklist-icon">${pure >= 3 ? '✅' : '⏳'}</span>
+              <div class="checklist-item ${pure >= rRule.minPureSequences ? 'done' : 'pending'}">
+                <span class="checklist-icon">${pure >= rRule.minPureSequences ? '✅' : '⏳'}</span>
                 <div>
-                  <div><strong>${pure} / 3</strong> Pure Groups</div>
-                  <div style="font-size:9px; opacity:0.85;">${pure >= 3 ? 'Requirement met' : 'Min 3 natural runs'}</div>
+                  <div><strong>${pure} / ${rRule.minPureSequences}</strong> Pure Groups</div>
+                  <div style="font-size:9px; opacity:0.85;">${pure >= rRule.minPureSequences ? 'Requirement met' : `Min ${rRule.minPureSequences} natural runs`}</div>
                 </div>
               </div>
               <div class="checklist-item ${grouped === 21 ? 'done' : 'pending'}">
@@ -6535,7 +7115,24 @@ body.is-dragging-card-mobile {
     if (discardBtn) {
       discardBtn.classList.toggle('drag-ready', canDrawFromDiscard);
       discardBtn.classList.toggle('discard-drop-ready', canDiscard);
+      discardBtn.classList.toggle('discard-selected-target', canDiscard && Boolean(selectedCardId) && !declarationMode);
       discardBtn.setAttribute('draggable', canDrawFromDiscard ? 'true' : 'false');
+    }
+    const stockHintEl = document.getElementById('stockActionHint');
+    if (stockHintEl) {
+      stockHintEl.classList.toggle('is-hot', canDraw);
+      stockHintEl.innerText = canDraw ? 'Double-tap or drag to draw' : 'Wait for draw turn';
+    }
+    const discardHintEl = document.getElementById('discardActionHint');
+    if (discardHintEl) {
+      discardHintEl.classList.toggle('is-hot', Boolean(canDiscard && selectedCardId && !declarationMode));
+      if (canDraw) {
+        discardHintEl.innerText = canDrawFromDiscard ? 'Double-tap or drag to pick up' : 'Locked Joker — draw from Stock';
+      } else if (canDiscard && !declarationMode) {
+        discardHintEl.innerText = selectedCardId ? 'Tap Discard pile now to discard selected card!' : 'Select a card in hand, then tap Discard pile';
+      } else {
+        discardHintEl.innerText = 'Double-tap to pick up • Tap or drag card here to discard';
+      }
     }
     const guideBox=document.getElementById('stageGuide');
     if(guideBox) guideBox.classList.toggle('pile-mode',canDraw);
@@ -6546,6 +7143,7 @@ body.is-dragging-card-mobile {
   function calculateLocalMaal() {
     const cut = roomState?.cutCard, roles = roomState?.roles;
     if (!cut || !roles) return null;
+    const r = getActiveRules();
     const cards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
     let poochies = 0, tiplus = 0, paplus = 0, nichlus = 0;
     for (const card of cards) {
@@ -6568,20 +7166,20 @@ body.is-dragging-card-mobile {
 
     const getPoochieTier = (count) => {
       if (count <= 0) return 0;
-      if (count === 1) return 20;
-      if (count === 2) return 50;
-      return 70 + (count - 3) * 20;
+      if (count === 1) return r.poochie1;
+      if (count === 2) return r.poochie2;
+      return r.poochie3 + (count - 3) * (r.poochie1 || 20);
     };
 
     const getPoolTier = (count) => {
       if (count <= 0) return 0;
-      if (count === 1) return 10;
-      if (count === 2) return 30;
-      return 50 + (count - 3) * 10;
+      if (count === 1) return r.papluTaplu1;
+      if (count === 2) return r.papluTaplu2;
+      return r.papluTaplu3 + (count - 3) * (r.papluTaplu1 || 10);
     };
 
-    const marriagePts = marriages * 50;
-    const tipluPts = remTiplus * 20;
+    const marriagePts = marriages * r.marriagePts;
+    const tipluPts = remTiplus * r.tipluPts;
     const poochiePts = getPoochieTier(poochies);
     const papluPts = getPoolTier(remPaplus);
     const tupluPts = getPoolTier(remTuplus);
@@ -6649,12 +7247,13 @@ body.is-dragging-card-mobile {
     }
 
     // Grid breakdown
+    const rRule = getActiveRules();
     const grid = document.getElementById('maalModalCardsBreakdown');
     if (grid) {
       grid.innerHTML = `
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Marriages (50 pts each)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Marriages (${rRule.marriagePts} pts each)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.marriagePts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
@@ -6667,7 +7266,7 @@ body.is-dragging-card-mobile {
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Pukka Joker (20 pts each)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Pukka Joker (${rRule.tipluPts} pts each)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tipluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
@@ -6680,11 +7279,11 @@ body.is-dragging-card-mobile {
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Poochie (Tiered: 20/50/70)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Poochie (${rRule.poochie1}/${rRule.poochie2}/${rRule.poochie3})</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.poochiePts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Printed Jokers (★ PJ): 1st = 20 pts, 2nd = 50 pts, 3rd = 70 pts (+20 each)
+            Printed Jokers (★ PJ): 1st = ${rRule.poochie1} pts, 2nd = ${rRule.poochie2} pts, 3rd = ${rRule.poochie3} pts
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.poochies || 0} card(s) held = ${d.poochiePts || 0} pts
@@ -6693,11 +7292,11 @@ body.is-dragging-card-mobile {
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Paplu Pool (10/30/50 pts)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Paplu Pool (${rRule.papluTaplu1}/${rRule.papluTaplu2}/${rRule.papluTaplu3} pts)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.papluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Remaining ${papluName} after marriages: 1st=10 pts, 2nd=30 pts, 3rd=50 pts
+            Remaining ${papluName} after marriages: 1st=${rRule.papluTaplu1}, 2nd=${rRule.papluTaplu2}, 3rd=${rRule.papluTaplu3}
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.paplus || 0} card(s) held = ${d.papluPts || 0} pts
@@ -6706,11 +7305,11 @@ body.is-dragging-card-mobile {
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Taplu Pool (10/30/50 pts)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Taplu Pool (${rRule.papluTaplu1}/${rRule.papluTaplu2}/${rRule.papluTaplu3} pts)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tupluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Remaining ${tupluName} after marriages: 1st=10 pts, 2nd=30 pts, 3rd=50 pts
+            Remaining ${tupluName} after marriages: 1st=${rRule.papluTaplu1}, 2nd=${rRule.papluTaplu2}, 3rd=${rRule.papluTaplu3}
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.tuplus || 0} card(s) held = ${d.tupluPts || 0} pts
@@ -6811,22 +7410,40 @@ body.is-dragging-card-mobile {
 
   function showStockTapFeedback() {
     const el = document.getElementById('stockDeckBtn');
+    const hint = document.getElementById('stockActionHint');
+    if (hint) {
+      hint.innerText = 'Tap again to Draw!';
+      hint.classList.add('is-hot');
+    }
     if (!el) return;
     el.classList.add('pile-tap-hint');
     clearTimeout(stockTapFeedbackTimeout);
     stockTapFeedbackTimeout = setTimeout(() => {
       el.classList.remove('pile-tap-hint');
-    }, 600);
+      if (hint) {
+        hint.classList.remove('is-hot');
+        if (canPlayerDraw()) hint.innerText = 'Double-tap or drag to draw';
+      }
+    }, 850);
   }
 
   function showDiscardTapFeedback() {
     const el = document.querySelector('#discardContainer .card') || document.getElementById('discardContainer');
+    const hint = document.getElementById('discardActionHint');
+    if (hint) {
+      hint.innerText = 'Tap again to Pick Up!';
+      hint.classList.add('is-hot');
+    }
     if (!el) return;
     el.classList.add('pile-tap-hint');
     clearTimeout(discardTapFeedbackTimeout);
     discardTapFeedbackTimeout = setTimeout(() => {
       el.classList.remove('pile-tap-hint');
-    }, 600);
+      if (hint) {
+        hint.classList.remove('is-hot');
+        if (canPlayerDraw()) hint.innerText = canPlayerDrawFromDiscard() ? 'Double-tap or drag to pick up' : 'Locked Joker — draw from Stock';
+      }
+    }, 850);
   }
 
   function showPileTapFeedback(pileType) {
@@ -6882,7 +7499,25 @@ body.is-dragging-card-mobile {
   }
 
   function handleDiscardInteraction(e) {
-    if (!canPlayerDraw()) return;
+    if (!canPlayerDraw()) {
+      // Tap-to-discard polish: if in DISCARD stage, tapping Discard pile discards selected card immediately
+      if (isCurrentPlayerMe() && roomState?.turnStage === 'DISCARD' && getHandCount() >= 22 && !declarationMode) {
+        if (selectedCardId) {
+          discardSelected();
+        } else {
+          const hint = document.getElementById('discardActionHint');
+          if (hint) {
+            hint.innerText = 'Tap a card in your hand first!';
+            hint.classList.add('is-hot');
+            setTimeout(() => {
+              hint.classList.remove('is-hot');
+              hint.innerText = 'Select a card in hand, then tap Discard pile';
+            }, 1200);
+          }
+        }
+      }
+      return;
+    }
     if (!canPlayerDrawFromDiscard()) {
       window.alert('A discarded Joker cannot be picked up from the discard pile. You must draw from the Stock deck.');
       return;
@@ -7090,14 +7725,28 @@ body.is-dragging-card-mobile {
       const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
+        let standMeldClass = '';
+        let standMeldPill = '';
+        if (stand.length >= 2) {
+          const det = detectBestGroupType(stand);
+          if (det) {
+            const pCls = det.type === 'PURE_SEQUENCE' ? 'pure' : det.type === 'SEQUENCE' ? 'seq' : det.type === 'SET' ? 'set' : 'double';
+            standMeldClass = det.type === 'PURE_SEQUENCE' ? 'stand-valid-pure' : det.type === 'SEQUENCE' ? 'stand-valid-seq' : det.type === 'SET' ? 'stand-valid-set' : 'stand-valid-double';
+            standMeldPill = `<span class="stand-meld-pill ${pCls}">${det.icon} ${det.label}</span>`;
+          } else {
+            const loosePts = stand.reduce((s, c) => s + cardDeadwoodVal(c), 0);
+            standMeldPill = `<span class="stand-meld-pill loose">${loosePts} pts loose</span>`;
+          }
+        }
         const cardsContent = stand.length > 0
           ? stand.map(c=>renderCard(c,getCardTag(c),true)).join('')
           : `<div class="empty-stand-hint">Empty stand • Tap any card and use ▲/▼ or drag a card here</div>`;
-        return `<div class="stand-rack" id="stand-rack-${sIdx}" ondragover="onStandDragOver(event,${sIdx})" ondragleave="onStandDragLeave(event,${sIdx})" ondrop="onStandDrop(event,${sIdx})">
+        return `<div class="stand-rack ${standMeldClass}" id="stand-rack-${sIdx}" ondragover="onStandDragOver(event,${sIdx})" ondragleave="onStandDragLeave(event,${sIdx})" ondrop="onStandDrop(event,${sIdx})">
           <div class="stand-header">
             <div class="stand-title-box">
               <span>Stand ${sIdx+1}</span>
               <span class="stand-count-badge">${stand.length} cards</span>
+              ${standMeldPill}
             </div>
             ${closeBtn}
           </div>
@@ -7274,7 +7923,8 @@ body.is-dragging-card-mobile {
           protectionBadge = `<span style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">⚠️ Unprotected (Deadwood)</span>`;
         }
       }
-      return `<div class="stand-rack declaration-group locked">
+      const gCls = g.type === 'PURE_SEQUENCE' ? 'group-pure' : g.type === 'SEQUENCE' ? 'group-seq' : 'group-set';
+      return `<div class="stand-rack declaration-group locked ${gCls}">
         <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • tap card to release</span>${protectionBadge}</div>
         <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Disband Group</button></div>
         <div class="stand-scroll-container">
@@ -7300,7 +7950,12 @@ body.is-dragging-card-mobile {
         <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
           <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
         </button>
-        <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')">${selectable.map(c=>renderCard(c,getCardTag(c),false)).join('')}</div>
+        <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')">${selectable.map(c => {
+          const chip = isGroupingPhase
+            ? (declarationIsWild(c) ? { text: '0p Wild', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
+            : null;
+          return renderCard(c, getCardTag(c), false, false, chip);
+        }).join('')}</div>
         <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
           <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
         </button>
@@ -7393,8 +8048,10 @@ body.is-dragging-card-mobile {
   }
   function declarationPure(cards) {
     if(!Array.isArray(cards) || cards.length<3) return false;
-    if(declarationIsMarriage(cards) || declarationIsThreePoochies(cards)) return true;
-    if(declarationIsTunella(cards)) return true;
+    const r = getActiveRules();
+    if(r.allowMarriageAsPure !== false && declarationIsMarriage(cards)) return true;
+    if(r.allow3PoochiesAsPure !== false && declarationIsThreePoochies(cards)) return true;
+    if(r.allowTunnelaAsPure !== false && declarationIsTunella(cards)) return true;
     // A natural pure sequence cannot contain printed jokers, but CAN include a cut joker / wild card
     // as long as it is in its natural suit and number (e.g. 5♠-6♠-7♠ when 5♠ is pukka joker).
     if(cards.some(c => !c || c.isPoochie || c.rank === 'PJ' || c.suit === '★')) return false;
@@ -7410,9 +8067,10 @@ body.is-dragging-card-mobile {
 
   function calculateCurrentDeadwood(groups, hand) {
     if (!Array.isArray(hand)) return { points: 0, pureSequences: 0, hasRequiredPure: false, exemptIds: new Set(), allValidMeldedIds: new Set(), deadwoodCount: 0, deadwoodCardIds: new Set() };
+    const r = getActiveRules();
     const handCards = hand;
     const dInfo = countDoubles(handCards);
-    if (dInfo.count >= 7) {
+    if (r.allowDoublesShow && dInfo.count >= r.freeGameDrawnDoubles) {
       const allIds = new Set(handCards.map(c => c.id));
       return { points: 0, pureSequences: 0, hasRequiredPure: true, exemptIds: allIds, allValidMeldedIds: allIds, isDoubles: true, deadwoodCount: 0, deadwoodCardIds: new Set() };
     }
@@ -7420,8 +8078,7 @@ body.is-dragging-card-mobile {
     const usedIds = new Set();
     let pureSequences = 0;
     const allValidMeldedIds = new Set();
-    const exemptIds = new Set(); // 4+ card pure runs and tunellas (exempt without 3 pure sequences)
-    // Note: Individual pairs do NOT exempt cards from deadwood unless player holds 7+ doubles (handled above).
+    const exemptIds = new Set(); // 4+ card pure runs and tunellas (exempt without min pure sequences)
 
     if (Array.isArray(groups)) {
       for (const g of groups) {
@@ -7436,7 +8093,7 @@ body.is-dragging-card-mobile {
         const isPure = g.type === 'PURE_SEQUENCE' ? declarationPure(cards) : false;
         const isSeq = g.type === 'SEQUENCE' ? declarationSequence(cards) : false;
         const isSetGroup = g.type === 'SET' ? declarationSet(cards) : false;
-        const isTun = declarationIsTunella(cards);
+        const isTun = r.allowTunnelaAsPure !== false && declarationIsTunella(cards);
 
         if (isPure || isSeq || isSetGroup) {
           cards.forEach(c => {
@@ -7457,7 +8114,7 @@ body.is-dragging-card-mobile {
     }
 
     // Also check if any unassigned/ungrouped cards form a Tunella
-    if (pureSequences < 3) {
+    if (pureSequences < r.minPureSequences && r.allowTunnelaAsPure !== false) {
       const unassigned = handCards.filter(c => !usedIds.has(c.id));
       const cardMap = new Map();
       for (const c of unassigned) {
@@ -7473,11 +8130,7 @@ body.is-dragging-card-mobile {
       }
     }
 
-    // Rule: Non-declarers need a minimum of 3 pure sequences.
-    // - If pureSequences >= 3: all valid melded cards are protected.
-    // - If pureSequences < 3: ONLY jokers, pure sequences of 4 or more cards, and tunellas are protected.
-    //   All other cards are considered deadwood.
-    const protectedIds = (pureSequences >= 3) ? allValidMeldedIds : exemptIds;
+    const protectedIds = (pureSequences >= r.minPureSequences) ? allValidMeldedIds : exemptIds;
 
     let points = 0;
     const deadwoodCardIds = new Set();
@@ -7493,9 +8146,9 @@ body.is-dragging-card-mobile {
     }
 
     return {
-      points: Math.min(points, 120),
+      points: Math.min(points, r.maxDeadwood),
       pureSequences,
-      hasRequiredPure: pureSequences >= 3,
+      hasRequiredPure: pureSequences >= r.minPureSequences,
       exemptIds,
       allValidMeldedIds,
       deadwoodCount: deadwoodCardIds.size,
@@ -7552,17 +8205,19 @@ body.is-dragging-card-mobile {
       return null;
     }
     if (declarationIsMarriage(cards)) {
+      const rCfg = getActiveRules();
       return {
-        type: 'PURE_SEQUENCE',
-        label: 'Marriage Pure Group',
-        verb: 'Marriage Pure Group',
+        type: rCfg.allowMarriageAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
+        label: rCfg.allowMarriageAsPure !== false ? 'Marriage Pure Group' : 'Marriage Joker Group',
+        verb: rCfg.allowMarriageAsPure !== false ? 'Marriage Pure Group' : 'Marriage Joker Group',
         badge: 'Taplu + Pukka Joker + Paplu',
         icon: '💍'
       };
     }
     if (declarationIsThreePoochies(cards)) {
+      const rCfg = getActiveRules();
       return {
-        type: 'PURE_SEQUENCE',
+        type: rCfg.allow3PoochiesAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
         label: '3 Poochies Group',
         verb: '3 Poochies Group',
         badge: '3 Printed Jokers',
@@ -8140,20 +8795,21 @@ body.is-dragging-card-mobile {
 
   function submitGroupingMeld(skipConfirm = false) {
     if (!skipConfirm) {
+      const r = getActiveRules();
       const deadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
       const pureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
 
-      const has3Pure = pureCount >= 3;
+      const hasRequiredPure = pureCount >= r.minPureSequences;
       showConfirmModal({
-        icon: has3Pure ? '✅' : '⚠️',
-        title: has3Pure ? 'Ready to Submit Groups?' : 'Submit Groups with Deadwood?',
-        badgeText: has3Pure ? `${pureCount} Pure Groups (Protected)` : `${pureCount}/3 Pure Groups`,
-        badgeClass: has3Pure ? 'success' : 'danger',
-        message: has3Pure
+        icon: hasRequiredPure ? '✅' : '⚠️',
+        title: hasRequiredPure ? 'Ready to Submit Groups?' : 'Submit Groups with Deadwood?',
+        badgeText: hasRequiredPure ? `${pureCount} Pure Groups (Protected)` : `${pureCount}/${r.minPureSequences} Pure Groups`,
+        badgeClass: hasRequiredPure ? 'success' : 'danger',
+        message: hasRequiredPure
           ? `You have formed <strong>${declarationGroups.length} groups</strong> with <strong>${pureCount} Pure Groups</strong>. All your groups are protected (<strong>0 deadwood pts</strong>).<br><br>Ready to submit your groups and view round results?`
-          : `You currently have <strong>${pureCount} / 3 Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to form more groups first?`,
+          : `You currently have <strong>${pureCount} / ${r.minPureSequences} Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to form more groups first?`,
         actionText: 'Submit Groups',
-        actionClass: has3Pure ? 'primary' : 'danger',
+        actionClass: hasRequiredPure ? 'primary' : 'danger',
         onConfirm: () => submitGroupingMeld(true)
       });
       return;
@@ -8233,7 +8889,7 @@ body.is-dragging-card-mobile {
     if (!isDemo || !roomState) return;
     const opp = roomState.players.find(p => p.id !== 'p_demo' && !p.hasDropped) || roomState.players[1];
     roomState.status = 'GROUPING';
-    roomState.groupingDeadline = Date.now() + 300000;
+    roomState.groupingDeadline = Date.now() + (getActiveRules().groupingTimeSec * 1000);
     roomState.winnerId = opp.id;
     roomState.winnerName = opp.name;
     opp.isGrouped = true;
@@ -8386,13 +9042,14 @@ body.is-dragging-card-mobile {
   window.cancelDeclaration = cancelDeclaration;
 
   function promptForfeitDeclaration() {
+    const fPen = getActiveRules().forfeitPenalty;
     showConfirmModal({
       icon: '🚩',
       title: 'Forfeit Declaration?',
-      badgeText: 'Wrong Show / Forfeit: 100 pts',
+      badgeText: `Wrong Show / Forfeit: ${fPen} pts`,
       badgeClass: 'danger',
-      message: '<strong>Are you sure you want to forfeit this declaration?</strong><br><br>Forfeiting or making an invalid declaration incurs a <strong>100 points penalty</strong> and folds your hand for the remainder of this deal.',
-      actionText: 'Forfeit Show (100 pts)',
+      message: `<strong>Are you sure you want to forfeit this declaration?</strong><br><br>Forfeiting or making an invalid declaration incurs a <strong>${fPen} points penalty</strong> and folds your hand for the remainder of this deal.`,
+      actionText: `Forfeit Show (${fPen} pts)`,
       actionClass: 'danger',
       onConfirm: () => {
         executeForfeitDeclaration();
@@ -8401,6 +9058,7 @@ body.is-dragging-card-mobile {
   }
 
   function executeForfeitDeclaration() {
+    const fPen = getActiveRules().forfeitPenalty;
     declarationMode = false;
     declarationGroups = [];
     declarationSelectedIds.clear();
@@ -8413,7 +9071,7 @@ body.is-dragging-card-mobile {
       meP.hasDropped = true;
       meP.hasForfeited = true;
       meP.dropType = 'FORFEIT';
-      meP.dropPenalty = 100;
+      meP.dropPenalty = fPen;
     }
 
     if (isDemo) {
@@ -8421,14 +9079,14 @@ body.is-dragging-card-mobile {
         let sc = globalSessionScores.find(s => s.playerId === 'p_demo' || s.name === 'You');
         if (sc) {
           sc.handsPlayed++;
-          sc.points += 100;
-          sc.totalScore -= 100;
+          sc.points += fPen;
+          sc.totalScore -= fPen;
         }
       }
       updateSessionHeaderBadge();
-      roomState.lastAction = `${meP?.name || 'You'} forfeited declaration (100 pts penalty)`;
+      roomState.lastAction = `${meP?.name || 'You'} forfeited declaration (${fPen} pts penalty)`;
       passDemoTurn();
-      window.alert('Declaration forfeited (100 points penalty). Turn passed to ' + roomState.turnPlayerName + '. Play continues.');
+      window.alert(`Declaration forfeited (${fPen} points penalty). Turn passed to ${roomState.turnPlayerName}. Play continues.`);
       return;
     }
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -9718,6 +10376,39 @@ body.is-dragging-card-mobile {
     renderAll(null);
   }
 
+  function groupDoublesIntoStands() {
+    const allCards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : [...(myHand || [])];
+    if (allCards.length === 0) return;
+    const dInfo = countDoubles(allCards);
+    const pairedIds = new Set();
+    const pairCards = [];
+    dInfo.pairs.forEach(pair => {
+      pair.forEach(c => {
+        if (c && c.id) {
+          pairedIds.add(c.id);
+          pairCards.push(c);
+        }
+      });
+    });
+    const singles = allCards.filter(c => c && !pairedIds.has(c.id));
+    const suitOrder = { '★': 0, '♠': 1, '♥': 2, '♣': 3, '♦': 4 };
+    singles.sort((a, b) => {
+      const sA = suitOrder[a.suit] ?? 99;
+      const sB = suitOrder[b.suit] ?? 99;
+      if (sA !== sB) return sA - sB;
+      return (a.rankValue || 0) - (b.rankValue || 0);
+    });
+    const half = Math.ceil(singles.length / 2);
+    userStands = [pairCards, singles.slice(0, half), singles.slice(half)];
+    myHand = userStands.flat();
+    saveStandsToStorage();
+    renderAll(null);
+    const r = getActiveRules();
+    const freeNote = r.allowDoublesShow ? ` (Free Scoot: ${r.freeScootDealtDoubles} dealt / ${r.freeGameDrawnDoubles} drawn)` : '';
+    window.alert(`👯 Found ${dInfo.count} Double(s) (${pairCards.length} cards) placed in Stand 1!${freeNote}`);
+  }
+  window.groupDoublesIntoStands = groupDoublesIntoStands;
+
   function startGame() { 
     if (isDemo) return;
     const count = roomState ? (roomState.players?.length || 0) : 0;
@@ -9745,6 +10436,7 @@ body.is-dragging-card-mobile {
   }
   let dropConfirming = false;
   function dropHand() {
+    const r = getActiveRules();
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myP = roomState?.players?.find(p => p.id === myId);
     const dInfo = countDoubles(myHand);
@@ -9753,21 +10445,21 @@ body.is-dragging-card-mobile {
     const canDiscardNow = (roomState?.turnStage === 'DISCARD' && myHand.length >= 22);
     const isDealtTurn = isFirst && !canDiscardNow;
 
-    const isFreeScootDealt = isDealtTurn && dInfo.count >= 6;
-    const isFreeGameDrawn = (myTurnsTaken > 0 || canDiscardNow) && dInfo.count >= 7;
+    const isFreeScootDealt = r.allowDoublesShow && isDealtTurn && dInfo.count >= r.freeScootDealtDoubles;
+    const isFreeGameDrawn = r.allowDoublesShow && (myTurnsTaken > 0 || canDiscardNow) && dInfo.count >= r.freeGameDrawnDoubles;
     const isFreeScoot = isFreeScootDealt || isFreeGameDrawn;
 
     const canDropNow = canPlayerDraw() || (isFreeGameDrawn && canDiscardNow);
     if (!canDropNow || myP?.hasDropped || myP?.hasForfeited) return;
 
-    let penalty = isFirst ? 30 : 70;
+    let penalty = isFirst ? r.firstDrop : r.middleDrop;
     let label = isFirst ? 'First Drop' : 'Middle Drop';
     if (isFreeScootDealt) {
       penalty = 0;
-      label = 'Free Scoot (6+ Doubles dealt: 0 pts & 0 honors)';
+      label = `Free Scoot (${r.freeScootDealtDoubles}+ Doubles dealt: 0 pts & 0 honors)`;
     } else if (isFreeGameDrawn) {
       penalty = 0;
-      label = 'Free Game (7+ Doubles: 0 pts & 0 honors)';
+      label = `Free Game (${r.freeGameDrawnDoubles}+ Doubles: 0 pts & 0 honors)`;
     }
 
     if (!dropConfirming) {
@@ -9873,6 +10565,7 @@ body.is-dragging-card-mobile {
       submitGroupingMeld();
       return;
     }
+    const r = getActiveRules();
     const isMyTurn = isCurrentPlayerMe();
     if (!isMyTurn) {
       window.alert('You can only declare on your turn.');
@@ -9883,12 +10576,12 @@ body.is-dragging-card-mobile {
     const myP = roomState?.players?.find(p => p.id === (isDemo ? 'p_demo' : getMyPlayerId()));
     const myTurns = myP?.turnsTaken || 0;
     const canDiscardNow = (roomState?.turnStage === 'DISCARD' && getHandCount() >= 22);
-    const isDealt7Doubles = (myTurns === 0 && !canDiscardNow && dInfo.count >= 7);
-    const isDrawn8Doubles = (dInfo.count >= 8);
+    const isDealtDoublesShow = (r.allowDoublesShow && myTurns === 0 && !canDiscardNow && dInfo.count >= r.dealtDoublesForShow);
+    const isDrawnDoublesShow = (r.allowDoublesShow && dInfo.count >= r.drawnDoublesForShow);
 
     if (!declarationMode) {
-      if (!isDealt7Doubles && !canDiscardNow) {
-        window.alert('Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard), unless you are dealt 7 doubles.');
+      if (!isDealtDoublesShow && !canDiscardNow) {
+        window.alert(`Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard)${r.allowDoublesShow ? `, unless you are dealt ${r.dealtDoublesForShow} doubles` : ''}.`);
         return;
       }
       declarationMode = true;
@@ -9927,15 +10620,15 @@ body.is-dragging-card-mobile {
 
     const remaining = myHand.filter(c => !unique.has(c.id));
     const doubleGroups = declarationGroups.filter(g => g.type === 'DOUBLE').length;
-    const isDoublesShow = isDealt7Doubles || (isDrawn8Doubles && (doubleGroups >= 8 || dInfo.count >= 8));
+    const isDoublesShow = isDealtDoublesShow || (isDrawnDoublesShow && (doubleGroups >= r.drawnDoublesForShow || dInfo.count >= r.drawnDoublesForShow));
 
     let finalDiscardId = null;
     let discardedCard = null;
 
-    if (isDealt7Doubles) {
-      // Dealt 7 doubles: declaring without drawing a card (all 21 cards shown)
-      if (dInfo.count < 7) {
-        window.alert(`Declaring without drawing requires holding at least 7 doubles dealt. You have ${dInfo.count}.`);
+    if (isDealtDoublesShow) {
+      // Dealt Doubles: declaring without drawing a card (all 21 cards shown)
+      if (dInfo.count < r.dealtDoublesForShow) {
+        window.alert(`Declaring without drawing requires holding at least ${r.dealtDoublesForShow} doubles dealt. You have ${dInfo.count}.`);
         return;
       }
     } else {
@@ -9949,8 +10642,8 @@ body.is-dragging-card-mobile {
 
       if (!isDoublesShow) {
         const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-        if (pure < 3) {
-          window.alert(`You currently have ${pure} Pure Sequence(s). At least 3 Pure Sequences are required for a valid 21-card declaration.`);
+        if (pure < r.minPureSequences) {
+          window.alert(`You currently have ${pure} Pure Sequence(s). At least ${r.minPureSequences} Pure Sequence(s) are required for a valid 21-card declaration.`);
           return;
         }
       }
@@ -10213,9 +10906,10 @@ body.is-dragging-card-mobile {
     const groups = [];
     const getAvailable = () => pool.filter(c => c && !usedIds.has(c.id));
 
+    const rRule = getActiveRules();
     const effectiveRoles = roles || roomState?.roles;
 
-    // 1. Marriages: (Taplu + Tiplu + Paplu in cut suit) -> Pure Sequence (50 pts)
+    // 1. Marriages: (Taplu + Tiplu + Paplu in cut suit)
     if (effectiveRoles) {
       const r = effectiveRoles;
       let searchingMarriage = true;
@@ -10228,8 +10922,8 @@ body.is-dragging-card-mobile {
           const trio = [taplu, tiplu, paplu];
           trio.forEach(c => usedIds.add(c.id));
           groups.push({
-            type: 'PURE_SEQUENCE',
-            typeLabel: 'Marriage Pure Run (50 pts)',
+            type: rRule.allowMarriageAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
+            typeLabel: `Marriage (${rRule.marriagePts} pts)`,
             cards: trio
           });
         } else {
@@ -10247,7 +10941,7 @@ body.is-dragging-card-mobile {
         const trio = poochies.slice(0, 3);
         trio.forEach(c => usedIds.add(c.id));
         groups.push({
-          type: 'PURE_SEQUENCE',
+          type: rRule.allow3PoochiesAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
           typeLabel: '3 Poochies (Tunella)',
           cards: trio
         });
@@ -10257,30 +10951,32 @@ body.is-dragging-card-mobile {
     }
 
     // 3. Tunellas: (3 identical cards of exact same suit and rank)
-    let searchingTunellas = true;
-    while (searchingTunellas) {
-      const avail = getAvailable().filter(c => !declarationIsWild(c));
-      const suitRankMap = new Map();
-      for (const c of avail) {
-        const key = `${c.suit}_${c.rank}`;
-        if (!suitRankMap.has(key)) suitRankMap.set(key, []);
-        suitRankMap.get(key).push(c);
-      }
-      let foundTun = false;
-      for (const grp of suitRankMap.values()) {
-        if (grp.length >= 3) {
-          const trio = grp.slice(0, 3);
-          trio.forEach(c => usedIds.add(c.id));
-          groups.push({
-            type: 'PURE_SEQUENCE',
-            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
-            cards: trio
-          });
-          foundTun = true;
-          break;
+    if (rRule.allowTunnelaAsPure !== false) {
+      let searchingTunellas = true;
+      while (searchingTunellas) {
+        const avail = getAvailable().filter(c => !declarationIsWild(c));
+        const suitRankMap = new Map();
+        for (const c of avail) {
+          const key = `${c.suit}_${c.rank}`;
+          if (!suitRankMap.has(key)) suitRankMap.set(key, []);
+          suitRankMap.get(key).push(c);
         }
+        let foundTun = false;
+        for (const grp of suitRankMap.values()) {
+          if (grp.length >= 3) {
+            const trio = grp.slice(0, 3);
+            trio.forEach(c => usedIds.add(c.id));
+            groups.push({
+              type: 'PURE_SEQUENCE',
+              typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+              cards: trio
+            });
+            foundTun = true;
+            break;
+          }
+        }
+        if (!foundTun) searchingTunellas = false;
       }
-      if (!foundTun) searchingTunellas = false;
     }
 
     // 4. Natural Pure Sequences: Smart optimal solver to maximize count of pure sequences
@@ -10486,9 +11182,163 @@ body.is-dragging-card-mobile {
     if (modal) modal.style.display = 'none';
   }
 
+  let modalEditRules = null;
+
+  function renderDynamicRulesModalValues() {
+    const r = getActiveRules();
+    const totalPoochies = r.decks * r.poochiesPerDeck;
+    const totalCards = 156 + totalPoochies;
+    const overviewTab = document.getElementById('rulesTabOverview');
+    if (overviewTab) {
+      const firstBoxP = overviewTab.querySelector('.rules-card-box p');
+      if (firstBoxP) {
+        firstBoxP.innerHTML = `<strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Each player is dealt <strong>21 cards</strong>.`;
+      }
+      const lockTitle = overviewTab.querySelector('.rules-card-box:nth-child(3) p');
+      if (lockTitle) {
+        lockTitle.innerHTML = r.blockDiscardedJokerPickup
+          ? '<strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong>'
+          : '<strong>Custom Table Rule: Discarded Jokers CAN be picked up from the discard pile!</strong>';
+      }
+    }
+    const meldsTab = document.getElementById('rulesTabMelds');
+    if (meldsTab) {
+      const items = meldsTab.querySelectorAll('.rules-card-box:first-child > ul > li');
+      if (items[0]) items[0].innerHTML = `<span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least ${r.minPureSequences} Pure Sequence(s):</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.`;
+      const rows = meldsTab.querySelectorAll('.rules-table tbody tr');
+      if (rows[2]) {
+        rows[2].children[0].innerHTML = `<strong>${r.dealtDoublesForShow} Doubles (Dealt)</strong>`;
+        rows[2].children[1].innerHTML = r.allowDoublesShow ? `Holding ${r.dealtDoublesForShow} pairs of identical cards dealt (before draw)` : 'Disabled under current table rules';
+      }
+      if (rows[3]) {
+        rows[3].children[0].innerHTML = `<strong>${r.drawnDoublesForShow} Doubles (Drawn)</strong>`;
+        rows[3].children[1].innerHTML = r.allowDoublesShow ? `Holding ${r.drawnDoublesForShow} pairs of identical cards after drawing a card` : 'Disabled under current table rules';
+      }
+      if (rows[4]) rows[4].children[0].innerHTML = `<strong>${r.minPureSequences} Pure + Valid Hand</strong>`;
+    }
+    const jokersTab = document.getElementById('rulesTabJokers');
+    if (jokersTab) {
+      const rows = jokersTab.querySelectorAll('.rules-table tbody tr');
+      if (rows[0]) rows[0].children[2].innerHTML = `<strong>${r.marriagePts} pts</strong> per Marriage`;
+      if (rows[1]) rows[1].children[2].innerHTML = `<strong>${r.tipluPts} pts</strong> each`;
+      if (rows[2]) {
+        rows[2].children[1].innerHTML = `Printed Jokers (PJ★) — ${totalPoochies} total in the deck`;
+        rows[2].children[2].innerHTML = `<strong>Tiered:</strong> 1 = <strong>${r.poochie1} pts</strong> &bull; 2 = <strong>${r.poochie2} pts</strong> &bull; 3 = <strong>${r.poochie3} pts</strong>`;
+      }
+      if (rows[3]) rows[3].children[2].innerHTML = `<strong>Tiered Pool:</strong> 1 = <strong>${r.papluTaplu1} pts</strong> &bull; 2 = <strong>${r.papluTaplu2} pts</strong> &bull; 3 = <strong>${r.papluTaplu3} pts</strong>`;
+      if (rows[4]) rows[4].children[2].innerHTML = `<strong>Tiered Pool:</strong> 1 = <strong>${r.papluTaplu1} pts</strong> &bull; 2 = <strong>${r.papluTaplu2} pts</strong> &bull; 3 = <strong>${r.papluTaplu3} pts</strong>`;
+    }
+    const scoringTab = document.getElementById('rulesTabScoring');
+    if (scoringTab) {
+      const rows = scoringTab.querySelectorAll('.rules-table tbody tr');
+      if (rows[0]) rows[0].children[1].innerHTML = r.allowDoublesShow ? `Dealt <strong>${r.freeScootDealtDoubles} Doubles</strong> before drawing a card` : 'Disabled under current table rules';
+      if (rows[1]) rows[1].children[1].innerHTML = r.allowDoublesShow ? `Holding <strong>${r.freeGameDrawnDoubles} Doubles</strong> after drawing a card` : 'Disabled under current table rules';
+      if (rows[2]) rows[2].children[2].innerHTML = `<strong>${r.firstDrop} points</strong>`;
+      if (rows[3]) rows[3].children[2].innerHTML = `<strong>${r.middleDrop} points</strong>`;
+      if (rows[4]) rows[4].children[2].innerHTML = `<strong>${r.forfeitPenalty} points</strong>`;
+      if (rows[5]) rows[5].children[2].innerHTML = `<strong>${r.maxDeadwood} points</strong>`;
+    }
+  }
+
+  function renderRulesCustomizeTab() {
+    const container = document.getElementById('rulesTabCustomize');
+    if (!container) return;
+    if (!modalEditRules) modalEditRules = { ...getActiveRules() };
+    const r = modalEditRules;
+    const isLockedMidHand = Boolean(roomState && !isDemo && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING'));
+    const activeKey = Object.keys(RULE_PRESETS).find(k =>
+      Object.keys(DEFAULT_RULES).every(f => f === 'presetName' || RULE_PRESETS[k][f] === r[f])
+    ) || 'custom';
+
+    container.innerHTML = `
+      <div class="rules-card-box">
+        <h4><span>⚙️</span> Table Rules &amp; Scoring Customizer</h4>
+        <p style="margin-bottom:8px;">Active preset: <strong style="color:#f1d27a;">${escapeHtml(r.presetName)}</strong>${isLockedMidHand ? ' <span class="rules-pill rules-pill-red">Locked during active hand</span>' : ' <span class="rules-pill rules-pill-green">Editable now</span>'}</p>
+        <div class="rules-preset-row">
+          <button type="button" class="rules-preset-chip ${activeKey === 'classic' ? 'active' : ''}" onclick="applyModalPreset('classic')">Classic South Indian</button>
+          <button type="button" class="rules-preset-chip ${activeKey === 'casual' ? 'active' : ''}" onclick="applyModalPreset('casual')">Casual Family</button>
+          <button type="button" class="rules-preset-chip ${activeKey === 'highStakes' ? 'active' : ''}" onclick="applyModalPreset('highStakes')">High Stakes</button>
+        </div>
+        <div class="rules-custom-grid">
+          <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateModalRuleField('minPureSequences', this.value)"></label>
+          <label class="rules-field">First Drop Penalty<input type="number" min="0" max="120" value="${r.firstDrop}" onchange="updateModalRuleField('firstDrop', this.value)"></label>
+          <label class="rules-field">Middle Drop Penalty<input type="number" min="0" max="200" value="${r.middleDrop}" onchange="updateModalRuleField('middleDrop', this.value)"></label>
+          <label class="rules-field">Forfeit / Wrong Show<input type="number" min="0" max="300" value="${r.forfeitPenalty}" onchange="updateModalRuleField('forfeitPenalty', this.value)"></label>
+          <label class="rules-field">Max Deadwood Cap<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateModalRuleField('maxDeadwood', this.value)"></label>
+          <label class="rules-field">Marriage Honors<input type="number" min="0" max="250" value="${r.marriagePts}" onchange="updateModalRuleField('marriagePts', this.value)"></label>
+          <label class="rules-field">Pukka Joker Honors<input type="number" min="0" max="150" value="${r.tipluPts}" onchange="updateModalRuleField('tipluPts', this.value)"></label>
+          <label class="rules-field">Poochie (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.poochie1}" style="width:33%;" onchange="updateModalRuleField('poochie1', this.value)"><input type="number" min="0" max="250" value="${r.poochie2}" style="width:33%;" onchange="updateModalRuleField('poochie2', this.value)"><input type="number" min="0" max="350" value="${r.poochie3}" style="width:34%;" onchange="updateModalRuleField('poochie3', this.value)"></div></label>
+          <label class="rules-field">Paplu/Taplu (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="100" value="${r.papluTaplu1}" style="width:33%;" onchange="updateModalRuleField('papluTaplu1', this.value)"><input type="number" min="0" max="200" value="${r.papluTaplu2}" style="width:33%;" onchange="updateModalRuleField('papluTaplu2', this.value)"><input type="number" min="0" max="300" value="${r.papluTaplu3}" style="width:34%;" onchange="updateModalRuleField('papluTaplu3', this.value)"></div></label>
+          <label class="rules-field">Poochies Per Deck<select onchange="updateModalRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 / deck (3 total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 / deck (6 total)</option></select></label>
+          <label class="rules-field">Dealt / Drawn Doubles Show<div style="display:flex;gap:4px;"><input type="number" min="5" max="10" value="${r.dealtDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('dealtDoublesForShow', this.value)"><input type="number" min="6" max="10" value="${r.drawnDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('drawnDoublesForShow', this.value)"></div></label>
+          <label class="rules-field">Free Scoot (Dealt / Drawn)<div style="display:flex;gap:4px;"><input type="number" min="4" max="9" value="${r.freeScootDealtDoubles}" style="width:50%;" onchange="updateModalRuleField('freeScootDealtDoubles', this.value)"><input type="number" min="5" max="10" value="${r.freeGameDrawnDoubles}" style="width:50%;" onchange="updateModalRuleField('freeGameDrawnDoubles', this.value)"></div></label>
+          <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateModalRuleField('groupingTimeSec', this.value)"></label>
+        </div>
+        <div class="rules-check-row">
+          <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateModalRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} onchange="updateModalRuleField('allowDoublesShow', this.checked)"> Allow Doubles Show &amp; Free Scoot / Free Game</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allowTunnelaAsPure ? 'checked' : ''} onchange="updateModalRuleField('allowTunnelaAsPure', this.checked)"> Tunella (3 identical cards) counts as Pure Group</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allow3PoochiesAsPure ? 'checked' : ''} onchange="updateModalRuleField('allow3PoochiesAsPure', this.checked)"> 3 Poochies group counts as Pure Group</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allowMarriageAsPure ? 'checked' : ''} onchange="updateModalRuleField('allowMarriageAsPure', this.checked)"> Marriage trio counts as Pure Group</label>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap;">
+          <button type="button" class="tool-btn" onclick="applyModalPreset('classic')">Reset Classic</button>
+          <button type="button" class="btn-primary" style="margin-top:0; padding:7px 16px; font-size:12px; ${isLockedMidHand ? 'opacity:0.55;' : ''}" onclick="applyTableRules()">${isLockedMidHand ? 'Locked Until Round Ends' : 'Save & Apply Rules'}</button>
+        </div>
+      </div>`;
+  }
+
+  function applyModalPreset(key) {
+    if (!RULE_PRESETS[key]) return;
+    modalEditRules = sanitizeClientRules(RULE_PRESETS[key]);
+    renderRulesCustomizeTab();
+  }
+  function updateModalRuleField(key, val) {
+    modalEditRules = sanitizeClientRules({ ...(modalEditRules || getActiveRules()), presetName: 'Custom House Rules', [key]: val });
+    renderRulesCustomizeTab();
+  }
+  function applyTableRules() {
+    const clean = sanitizeClientRules(modalEditRules || getActiveRules());
+    customLobbyRules = clean;
+    saveLobbyRules();
+    renderLobbyRulesPanel();
+
+    if (!roomState) {
+      renderRulesButtonState();
+      renderDynamicRulesModalValues();
+      closeRulesModal();
+      window.alert(`House rules saved: ${clean.presetName}`);
+      return;
+    }
+    if (isDemo) {
+      roomState.rules = clean;
+      renderAll(calculateLocalMaal());
+      renderRulesButtonState();
+      renderDynamicRulesModalValues();
+      closeRulesModal();
+      window.alert(`Demo table rules updated to: ${clean.presetName}`);
+      return;
+    }
+    if (roomState.status !== 'LOBBY' && roomState.status !== 'ROUND_OVER') {
+      window.alert('Table rules can only be changed in the Lobby or between hands.');
+      return;
+    }
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'UPDATE_RULES', rules: clean }));
+      closeRulesModal();
+      window.alert(`Updating table rules to: ${clean.presetName}`);
+    }
+  }
+  window.applyModalPreset = applyModalPreset;
+  window.updateModalRuleField = updateModalRuleField;
+  window.applyTableRules = applyTableRules;
+
   function openRulesModal(defaultTab = 'overview') {
     const modal = document.getElementById('rulesHelpModal');
     if (!modal) return;
+    modalEditRules = { ...getActiveRules() };
+    renderDynamicRulesModalValues();
+    renderRulesCustomizeTab();
     switchRulesTab(defaultTab);
     modal.style.display = 'flex';
   }
@@ -10503,8 +11353,10 @@ body.is-dragging-card-mobile {
       overview: { btn: 'tabBtnOverview', content: 'rulesTabOverview' },
       melds: { btn: 'tabBtnMelds', content: 'rulesTabMelds' },
       jokers: { btn: 'tabBtnJokers', content: 'rulesTabJokers' },
-      scoring: { btn: 'tabBtnScoring', content: 'rulesTabScoring' }
+      scoring: { btn: 'tabBtnScoring', content: 'rulesTabScoring' },
+      customize: { btn: 'tabBtnCustomize', content: 'rulesTabCustomize' }
     };
+    if (tabKey === 'customize') renderRulesCustomizeTab();
     Object.keys(tabMap).forEach(key => {
       const isTarget = key === tabKey;
       const b = document.getElementById(tabMap[key].btn);
@@ -10597,7 +11449,8 @@ body.is-dragging-card-mobile {
         if (r.isFreeScoot || r.dropPenalty === 0) {
           // Free Scoot pays 0 base and 0 honors
         } else {
-          const dropPts = r.dropPenalty !== undefined ? r.dropPenalty : (r.status === 'FORFEITED' ? 100 : 70);
+          const rCfg = getActiveRules();
+          const dropPts = r.dropPenalty !== undefined ? r.dropPenalty : (r.status === 'FORFEITED' ? rCfg.forfeitPenalty : rCfg.middleDrop);
           sc.points += dropPts;
           sc.maal -= winnerMaalTotal;
           sc.honors = sc.maal;
@@ -10800,10 +11653,11 @@ body.is-dragging-card-mobile {
                 scootGroupsHtml = '<div style="font-size:12px; color:#94a3b8; padding:6px 2px;">No cards recorded for this hand.</div>';
               }
             } else {
-              const dropPts = p.dropPenalty || p.deadwood || (isForfeited ? 100 : (p.dropType === 'FIRST_DROP' ? 30 : 70));
+              const rCfg = getActiveRules();
+              const dropPts = p.dropPenalty !== undefined ? p.dropPenalty : (p.deadwood || (isForfeited ? rCfg.forfeitPenalty : (p.dropType === 'FIRST_DROP' ? rCfg.firstDrop : rCfg.middleDrop)));
               const dropKindLabel = isForfeited
                 ? `🚩 FORFEITED (${dropPts} pts)`
-                : (p.dropType === 'FIRST_DROP' || dropPts === 30)
+                : (p.dropType === 'FIRST_DROP' || dropPts === rCfg.firstDrop)
                   ? `🚫 FIRST SCOOT (${dropPts} pts)`
                   : `🚫 MID SCOOT (${dropPts} pts)`;
               statusBadge = `<span style="color:#f87171;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">${dropKindLabel}</span>`;
@@ -11198,6 +12052,7 @@ body.is-dragging-card-mobile {
 
     roomState = {
       id: 'DEMO-TABLE',
+      rules: getActiveRules(),
       handNumber: 1,
       starterIndex: 0,
       dealerId: 'p_4', // Aarav (dealer), so turn starts clockwise at 'p_demo' (You)
@@ -11294,7 +12149,8 @@ body.is-dragging-card-mobile {
           if (p.isFreeScoot || p.dropType === 'FREE_SCOOT') {
             return { name: p.name, status: 'DROPPED', isFreeScoot: true, dropPenalty: 0, points: 0, net: 'Pays 0 pts (Free Scoot: 7+ Doubles)' };
           }
-          const pen = p.hasForfeited ? 100 : (p.dropPenalty || 30);
+          const rCfg = getActiveRules();
+          const pen = p.hasForfeited ? rCfg.forfeitPenalty : (p.dropPenalty !== undefined ? p.dropPenalty : rCfg.firstDrop);
           return { name: p.name, status: p.hasForfeited ? 'FORFEITED' : 'DROPPED', dropPenalty: pen, points: pen + wMaalTotal, net: `Pays ${pen + wMaalTotal} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${wMaalTotal} winner Honors)` };
         }),
         revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
