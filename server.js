@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +23,8 @@ const rooms = new Map();
 
 function ensurePlayerHand(player, room, targetCount = 21) {
   if (!player.hand) player.hand = [];
-  if (!room.deck || !Array.isArray(room.deck)) room.deck = createDeck();
+  const rConfig = room.rules || DEFAULT_RULES;
+  if (!room.deck || !Array.isArray(room.deck)) room.deck = createDeck(rConfig);
   while (player.hand.length < targetCount) {
     if (room.deck.length === 0) {
       if (Array.isArray(room.discardPile) && room.discardPile.length > 1) {
@@ -31,7 +32,7 @@ function ensurePlayerHand(player, room, targetCount = 21) {
         room.deck = room.discardPile.reverse();
         room.discardPile = top ? [top] : [];
       } else {
-        room.deck = createDeck();
+        room.deck = createDeck(rConfig);
       }
     }
     player.hand.push(room.deck.pop());
@@ -45,15 +46,17 @@ function ensurePlayerHand(player, room, targetCount = 21) {
 function getSafeRoom(room) {
   const rawTop = room.discardPile[room.discardPile.length - 1] || null;
   const isTopJoker = rawTop && room.cutCard ? isWildCard(rawTop, room.cutCard) : false;
+  const rConfig = room.rules || DEFAULT_RULES;
   const topDiscard = rawTop ? {
     ...rawTop,
     isInitialOpenCard: Boolean(rawTop.isInitialOpenCard),
-    isDiscardedJoker: Boolean(isTopJoker && !rawTop.isInitialOpenCard)
+    isDiscardedJoker: Boolean(isTopJoker && !rawTop.isInitialOpenCard && (rConfig.blockDiscardedJokerPickup !== false))
   } : null;
 
   return {
     id: room.id,
     status: room.status,
+    rules: rConfig,
     winnerId: room.winnerId || null,
     winnerName: room.winnerName || null,
     groupingDeadline: room.groupingDeadline || null,
@@ -105,7 +108,7 @@ function broadcastRoom(room) {
         type: 'SYNC',
         room: safeState,
         yourHand: p.hand,
-        yourMaal: room.cutCard ? calculateMaal(p.hand, room.cutCard) : null
+        yourMaal: room.cutCard ? calculateMaal(p.hand, room.cutCard, room.rules || DEFAULT_RULES) : null
       }));
     }
   });
@@ -120,8 +123,9 @@ function finalizeRound(userRoom) {
   userRoom.status = 'ROUND_OVER';
   userRoom.turnStage = 'WAITING';
 
+  const rConfig = userRoom.rules || DEFAULT_RULES;
   const winner = userRoom.players.find(p => p.id === userRoom.winnerId) || userRoom.players[0];
-  const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard);
+  const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard, rConfig);
 
   userRoom.sessionScores = userRoom.sessionScores || {};
   // Paying losers: all opponents except Free Scoot / Free Game players owe winner Honors + their drop/deadwood points
@@ -187,7 +191,8 @@ function finalizeRound(userRoom) {
           net: 'Free Scoot / Free Game (0 pts & 0 Honors owed)'
         };
       }
-      const drop = p.dropPenalty || (p.hasForfeited ? 100 : (CONFIG.firstDrop || 30));
+      const defaultDropPts = p.dropType === 'MIDDLE_DROP' ? (rConfig.middleDrop ?? 70) : (rConfig.firstDrop ?? 30);
+      const drop = p.dropPenalty || (p.hasForfeited ? (rConfig.forfeitPenalty ?? 100) : defaultDropPts);
       const totalPay = drop + winnerMaal.total;
       if (!alreadySettled) {
         sc.points += drop;
@@ -208,10 +213,10 @@ function finalizeRound(userRoom) {
 
     // Only auto-arrange on timeout if the player never submitted groups during GROUPING
     if (!p.isGrouped && !p.hasDropped && (!Array.isArray(p.declaredGroups) || p.declaredGroups.length === 0)) {
-      p.declaredGroups = autoArrangeHandToGroups(p.hand, userRoom.cutCard);
+      p.declaredGroups = autoArrangeHandToGroups(p.hand, userRoom.cutCard, rConfig);
     }
 
-    const deadwood = calculateGroupedDeadwood(p.declaredGroups, p.hand, userRoom.cutCard);
+    const deadwood = calculateGroupedDeadwood(p.declaredGroups, p.hand, userRoom.cutCard, rConfig);
     const totalPay = deadwood + winnerMaal.total;
     if (!alreadySettled) {
       sc.points += deadwood;
@@ -246,9 +251,9 @@ function finalizeRound(userRoom) {
       hand: handCards,
       finalDiscard: pl.finalDiscard || null,
       groups: pl.declaredGroups || [],
-      maal: calculateMaal(handCards, userRoom.cutCard),
-      deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || 30) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, handCards, userRoom.cutCard)),
-      deadwoodCardIds: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT' || pl.hasDropped || pl.id === winner.id) ? [] : getDeadwoodCards(pl.declaredGroups, handCards, userRoom.cutCard).map(c => c.id)
+      maal: calculateMaal(handCards, userRoom.cutCard, rConfig),
+      deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || (pl.dropType === 'MIDDLE_DROP' ? rConfig.middleDrop : rConfig.firstDrop)) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, handCards, userRoom.cutCard, rConfig)),
+      deadwoodCardIds: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT' || pl.hasDropped || pl.id === winner.id) ? [] : getDeadwoodCards(pl.declaredGroups, handCards, userRoom.cutCard, rConfig).map(c => c.id)
     };
   });
 
@@ -260,6 +265,7 @@ function finalizeRound(userRoom) {
     results,
     revealedHands,
     cutCard: userRoom.cutCard,
+    rules: rConfig,
     roles: userRoom.cutCard ? resolveJokerRoles(userRoom.cutCard) : null,
     sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
       if (!sc || !sc.name) return false;
@@ -312,7 +318,7 @@ function dealNextHand(room) {
     return;
   }
 
-  const deck = createDeck();
+  const deck = createDeck(room.rules || DEFAULT_RULES);
   room.winnerId = null;
   room.winnerName = null;
   room.lastRoundResult = null;
@@ -390,6 +396,7 @@ wss.on('connection', (ws) => {
           rooms.set(roomId, {
             id: roomId,
             status: 'LOBBY',
+            rules: sanitizeRules(data.rules),
             players: [],
             deck: [],
             discardPile: [],
@@ -485,6 +492,23 @@ wss.on('connection', (ws) => {
 
       if (!userRoom) return;
 
+      if (data.type === 'UPDATE_RULES') {
+        if (userRoom.status === 'LOBBY' || userRoom.status === 'ROUND_OVER') {
+          userRoom.rules = sanitizeRules(data.rules);
+          const updater = userRoom.players.find(p => p.id === playerId);
+          userRoom.lastAction = `${updater ? updater.name : 'Host'} updated the table rules.`;
+          broadcastRoom(userRoom);
+        } else {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: 'Table rules can only be changed in the Lobby or between hands.'
+            }));
+          }
+        }
+        return;
+      }
+
       if ((data.type === 'NEXT_HAND' || data.type === 'CONTINUE_NEXT_HAND') && userRoom && userRoom.status === 'ROUND_OVER') {
         const p = userRoom.players.find(x => x.id === playerId);
         if (p) p.readyForNextHand = true;
@@ -508,7 +532,7 @@ wss.on('connection', (ws) => {
           return;
         }
 
-        const deck = createDeck();
+        const deck = createDeck(userRoom.rules || DEFAULT_RULES);
         const priorMaxHands = Object.values(userRoom.sessionScores || {}).reduce((m, sc) => Math.max(m, sc?.handsPlayed || 0), 0);
         if (priorMaxHands > 0) {
           userRoom.handNumber = Math.max(userRoom.handNumber || 1, priorMaxHands + 1);
@@ -577,9 +601,10 @@ wss.on('connection', (ws) => {
           const topCard = userRoom.discardPile[userRoom.discardPile.length - 1];
           const isJoker = isWildCard(topCard, userRoom.cutCard);
 
-          // Requirement 4: Do not allow a discarded joker to be picked up from discard pile.
+          // Requirement 4: Do not allow a discarded joker to be picked up from discard pile (unless disabled by table rules).
           // However if the first open card is a joker, that CAN be picked up!
-          if (isJoker && !topCard.isInitialOpenCard) {
+          const blockJokerPickup = userRoom.rules?.blockDiscardedJokerPickup !== false;
+          if (blockJokerPickup && isJoker && !topCard.isInitialOpenCard) {
             if (ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({
                 type: 'INVALID_MOVE',
@@ -642,22 +667,23 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DROP' && isPlaying && isTurn) {
+        const rConfig = userRoom.rules || DEFAULT_RULES;
         const dInfo = countDoubles(activePlayer.hand);
         const isDealt = activePlayer.turnsTaken === 0 && userRoom.turnStage === 'DRAW';
         const hasDrawn = activePlayer.turnsTaken > 0 || userRoom.turnStage === 'DISCARD';
 
-        // Check Free Scoot / Free Game conditions:
-        // Rule 2: If dealt 6 doubles, scoot and give 0 points and 0 honors.
-        // Rule 3: Once a card is drawn, 7 doubles for free game (0 pts & 0 honors).
-        const isFreeScootDealt = isDealt && dInfo.count >= 6;
-        const isFreeGameDrawn = hasDrawn && dInfo.count >= 7;
+        // Check Free Scoot / Free Game conditions
+        const isFreeScootDealt = isDealt && rConfig.allowDoublesShow && dInfo.count >= rConfig.freeScootDealtDoubles;
+        const isFreeGameDrawn = hasDrawn && rConfig.allowDoublesShow && dInfo.count >= rConfig.freeGameDrawnDoubles;
 
         if (isFreeScootDealt || isFreeGameDrawn) {
           activePlayer.hasDropped = true;
           activePlayer.isFreeScoot = true;
           activePlayer.dropType = 'FREE_SCOOT';
           activePlayer.dropPenalty = 0;
-          const label = isFreeScootDealt ? 'Free Scoot (6+ Doubles dealt)' : 'Free Game (7+ Doubles)';
+          const label = isFreeScootDealt
+            ? `Free Scoot (${rConfig.freeScootDealtDoubles}+ Doubles dealt)`
+            : `Free Game (${rConfig.freeGameDrawnDoubles}+ Doubles)`;
           userRoom.lastAction = `${activePlayer.name} scooted (${label}: 0 pts & 0 Honors)`;
           advanceTurn(userRoom);
           broadcastRoom(userRoom);
@@ -666,7 +692,7 @@ wss.on('connection', (ws) => {
           activePlayer.hasDropped = true;
           activePlayer.isFreeScoot = false;
           const isFirst = activePlayer.turnsTaken === 0;
-          const penalty = isFirst ? CONFIG.firstDrop : CONFIG.middleDrop;
+          const penalty = isFirst ? rConfig.firstDrop : rConfig.middleDrop;
           const dropKind = isFirst ? 'First Drop' : 'Middle Drop';
           activePlayer.dropType = isFirst ? 'FIRST_DROP' : 'MIDDLE_DROP';
           activePlayer.dropPenalty = penalty;
@@ -678,19 +704,21 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'FORFEIT_DECLARATION' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
+        const forfeitPts = userRoom.rules?.forfeitPenalty ?? 100;
         activePlayer.hasDropped = true;
         activePlayer.hasForfeited = true;
         activePlayer.dropType = 'FORFEIT';
-        activePlayer.dropPenalty = 100;
-        userRoom.lastAction = `${activePlayer.name} forfeited declaration (100 pts)`;
+        activePlayer.dropPenalty = forfeitPts;
+        userRoom.lastAction = `${activePlayer.name} forfeited declaration (${forfeitPts} pts)`;
         advanceTurn(userRoom);
         if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'DECLARATION_FORFEITED', penalty: 100 }));
+          ws.send(JSON.stringify({ type: 'DECLARATION_FORFEITED', penalty: forfeitPts }));
         }
         broadcastRoom(userRoom);
       }
 
       if (data.type === 'DECLARE' && isPlaying && isTurn) {
+        const rConfig = userRoom.rules || DEFAULT_RULES;
         const isDealtTurn = activePlayer.turnsTaken === 0 && userRoom.turnStage === 'DRAW';
         const isDrawnTurn = userRoom.turnStage === 'DISCARD';
         if (!isDealtTurn && !isDrawnTurn) return;
@@ -700,10 +728,16 @@ wss.on('connection', (ws) => {
         const dInfo = countDoubles(activePlayer.hand);
 
         if (isDealtTurn) {
-          // Rule 2: If dealt 7 doubles, can declare without drawing a card
-          if (dInfo.count < 7) {
+          // If dealt enough doubles, can declare without drawing a card
+          if (!rConfig.allowDoublesShow || dInfo.count < rConfig.dealtDoublesForShow) {
             if (ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: 'Declaring without drawing requires holding at least 7 doubles dealt.', penalty: 0 }));
+              ws.send(JSON.stringify({
+                type: 'SHOW_INVALID',
+                reason: rConfig.allowDoublesShow
+                  ? `Declaring without drawing requires holding at least ${rConfig.dealtDoublesForShow} doubles dealt.`
+                  : 'Doubles Show is disabled under current table rules.',
+                penalty: 0
+              }));
             }
             return;
           }
@@ -716,16 +750,17 @@ wss.on('connection', (ws) => {
           finalDiscard = activePlayer.hand[finalIdx];
         }
 
-        const validation = validateShow(data.groups, showHand, userRoom.cutCard, isDealtTurn);
+        const validation = validateShow(data.groups, showHand, userRoom.cutCard, isDealtTurn, rConfig);
         if (!validation.valid) {
+          const forfeitPts = rConfig.forfeitPenalty ?? 100;
           activePlayer.hasDropped = true;
           activePlayer.hasForfeited = true;
           activePlayer.dropType = 'FORFEIT';
-          activePlayer.dropPenalty = 100;
-          userRoom.lastAction = `${activePlayer.name} made invalid show (100 pts penalty)`;
+          activePlayer.dropPenalty = forfeitPts;
+          userRoom.lastAction = `${activePlayer.name} made invalid show (${forfeitPts} pts penalty)`;
           advanceTurn(userRoom);
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason, penalty: 100 }));
+            ws.send(JSON.stringify({ type: 'SHOW_INVALID', reason: validation.reason, penalty: forfeitPts }));
           }
           broadcastRoom(userRoom);
           return;
@@ -750,18 +785,23 @@ wss.on('connection', (ws) => {
         if (othersToGroup.length === 0) {
           finalizeRound(userRoom);
         } else {
+          const groupingSec = rConfig.groupingTimeSec || 300;
+          const groupingMs = groupingSec * 1000;
+          const minsLabel = groupingSec >= 60 ? `${Math.round(groupingSec / 60)}m` : `${groupingSec}s`;
           userRoom.status = 'GROUPING';
           userRoom.turnStage = 'GROUPING';
-          userRoom.groupingDeadline = Date.now() + 300000;
-          const declareTypeNotice = isDealtTurn ? '7 Doubles direct show' : (validation.isDoubles ? '8 Doubles show' : '21-card show');
-          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (5m)...`;
+          userRoom.groupingDeadline = Date.now() + groupingMs;
+          const declareTypeNotice = isDealtTurn
+            ? `${rConfig.dealtDoublesForShow} Doubles direct show`
+            : (validation.isDoubles ? `${rConfig.drawnDoublesForShow} Doubles show` : '21-card show');
+          userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (${minsLabel})...`;
 
           if (userRoom.groupingTimer) clearTimeout(userRoom.groupingTimer);
           userRoom.groupingTimer = setTimeout(() => {
             if (userRoom && userRoom.status === 'GROUPING') {
               finalizeRound(userRoom);
             }
-          }, 300000);
+          }, groupingMs);
 
           broadcastRoom(userRoom);
         }
@@ -814,11 +854,14 @@ wss.on('connection', (ws) => {
         const wasPlaying = userRoom.status === 'PLAYING' || userRoom.status === 'GROUPING';
 
         if (wasPlaying) {
-          // If leaving after a wrong declare, invalid show, or forfeit, penalize 100 pts instead of normal mid-scoot 70 pts
-          const isForfeit = Boolean(leavingPlayer.hasForfeited || leavingPlayer.dropType === 'FORFEIT' || leavingPlayer.dropPenalty === 100 || data.forfeit);
-          const penalty = isForfeit ? 100 : (CONFIG.middleDrop || 70);
+          const rConfig = userRoom.rules || DEFAULT_RULES;
+          const forfeitPts = rConfig.forfeitPenalty ?? 100;
+          const midPts = rConfig.middleDrop ?? 70;
+          // If leaving after a wrong declare, invalid show, or forfeit, penalize forfeitPts instead of normal mid-scoot
+          const isForfeit = Boolean(leavingPlayer.hasForfeited || leavingPlayer.dropType === 'FORFEIT' || leavingPlayer.dropPenalty === forfeitPts || data.forfeit);
+          const penalty = isForfeit ? forfeitPts : midPts;
           const dropType = isForfeit ? 'FORFEIT' : 'MIDDLE_DROP';
-          const penaltyLabel = isForfeit ? 'Wrong Declare / Forfeit: 100 pts' : 'Mid-scoot: 70 pts';
+          const penaltyLabel = isForfeit ? `Wrong Declare / Forfeit: ${forfeitPts} pts` : `Mid-scoot: ${midPts} pts`;
 
           leavingPlayer.hasDropped = true;
           leavingPlayer.hasForfeited = isForfeit;
@@ -847,8 +890,8 @@ wss.on('connection', (ws) => {
             ws.send(JSON.stringify({
               type: 'SESSION_LEFT',
               message: isForfeit
-                ? 'You left the game after a wrong declare / forfeit (100 pts penalty).'
-                : 'You left the game as a Mid-Scoot (70 pts penalty).'
+                ? `You left the game after a wrong declare / forfeit (${forfeitPts} pts penalty).`
+                : `You left the game as a Mid-Scoot (${midPts} pts penalty).`
             }));
           }
           leavingPlayer.ws = null;
