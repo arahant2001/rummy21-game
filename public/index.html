@@ -2023,11 +2023,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
+  flex-wrap: wrap;
   width: 100%;
   max-width: 980px;
   z-index: 10;
-  gap: 12px;
+  gap: 8px 12px;
   margin-bottom: 2px;
+}
+.opponent-seats-area.is-many-seats {
+  justify-content: center;
+  gap: 8px 8px;
+}
+.opponent-seats-area.is-many-seats .pokerist-seat {
+  min-width: 74px;
+}
+.opponent-seats-area.is-many-seats .seat-avatar-wrap {
+  width: 40px;
+  height: 40px;
+}
+.opponent-seats-area.is-many-seats .seat-avatar-inner {
+  font-size: 17px;
+}
+.opponent-seats-area.is-many-seats .seat-player-name {
+  font-size: 10.5px;
+  max-width: 76px;
 }
 
 /* Pokerist Player Seat Pod */
@@ -3254,7 +3273,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     South Indian Open Joker Table &bull; Winner Takes Honors
   </div>
   <div class="lobby-meta-bar">
-    <span>3 Decks of 53 Cards (159 total)</span>
+    <span id="lobbyMetaDecksText">3–5 Decks &bull; Max 10 Players</span>
     <span class="meta-dot">&bull;</span>
     <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
@@ -4538,6 +4557,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   window.triggerWinnerParticles = triggerWinnerParticles;
 
   // --- 1, 5, 6: Layout Preset, Rejoin Banner, & Custom House Rules ---
+  const MAX_PLAYERS = 10;
   const DEFAULT_RULES = {
     presetName: 'Classic South Indian',
     decks: 3,
@@ -4621,7 +4641,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const freeGameDrawnDoubles = clampRuleInt(src.freeGameDrawnDoubles, 5, 10, DEFAULT_RULES.freeGameDrawnDoubles);
     return {
       presetName,
-      decks: 3,
+      decks: clampRuleInt(src.decks, 3, 5, DEFAULT_RULES.decks),
       poochiesPerDeck: clampRuleInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
       marriagePts: clampRuleInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
       tipluPts: clampRuleInt(src.tipluPts, 0, 150, DEFAULT_RULES.tipluPts),
@@ -4691,7 +4711,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderRulesButtonState();
   }
   function updateLobbyRuleField(key, val) {
-    const nextPresetName = (key === 'scoreLimit' && customLobbyRules.eliminationEnabled)
+    const nextPresetName = ((key === 'scoreLimit' || key === 'decks') && customLobbyRules.eliminationEnabled)
       ? 'Tournament'
       : (key === 'eliminationEnabled' && val)
         ? 'Tournament'
@@ -4709,8 +4729,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
   function renderLobbyRulesPanel() {
     const panel = document.getElementById('lobbyRulesPanel');
-    if (!panel) return;
     const r = customLobbyRules;
+    const totalCards = (r.decks * 52) + (r.decks * r.poochiesPerDeck);
+    const metaDecksEl = document.getElementById('lobbyMetaDecksText');
+    if (metaDecksEl) {
+      metaDecksEl.innerText = `${r.decks} Decks (${totalCards} cards) • Max ${MAX_PLAYERS} Players`;
+    }
+    if (!panel) return;
     const isCust = hasCustomRules(r);
     const activeKey = Object.keys(RULE_PRESETS).find(k =>
       Object.keys(DEFAULT_RULES).every(f => f === 'presetName' || RULE_PRESETS[k][f] === r[f])
@@ -4729,11 +4754,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <button type="button" class="rules-preset-chip" onclick="resetLobbyRulesToDefault()">Reset Default</button>
         </div>
         <div class="rules-custom-grid">
+          <label class="rules-field">Packs (52-Card Decks)<select onchange="updateLobbyRuleField('decks', this.value)"><option value="3" ${r.decks === 3 ? 'selected' : ''}>3 Packs (${3 * (52 + r.poochiesPerDeck)} cards • max 7p)</option><option value="4" ${r.decks === 4 ? 'selected' : ''}>4 Packs (${4 * (52 + r.poochiesPerDeck)} cards • max 9p)</option><option value="5" ${r.decks === 5 ? 'selected' : ''}>5 Packs (${5 * (52 + r.poochiesPerDeck)} cards • max 10p)</option></select></label>
+          <label class="rules-field">Poochies Per Deck<select onchange="updateLobbyRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 per deck (${r.decks} total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 per deck (${r.decks * 2} total)</option></select></label>
           <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateLobbyRuleField('minPureSequences', this.value)"></label>
           <label class="rules-field">First / Middle / Wrong Drop<div style="display:flex;gap:4px;"><input type="number" min="0" max="120" value="${r.firstDrop}" style="width:33%;" onchange="updateLobbyRuleField('firstDrop', this.value)"><input type="number" min="0" max="200" value="${r.middleDrop}" style="width:33%;" onchange="updateLobbyRuleField('middleDrop', this.value)"><input type="number" min="0" max="300" value="${r.forfeitPenalty}" style="width:34%;" onchange="updateLobbyRuleField('forfeitPenalty', this.value)"></div></label>
           <label class="rules-field">Max Deadwood Cap<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateLobbyRuleField('maxDeadwood', this.value)"></label>
           <label class="rules-field">Marriage / Pukka Pts<div style="display:flex;gap:4px;"><input type="number" min="0" max="250" value="${r.marriagePts}" style="width:50%;" onchange="updateLobbyRuleField('marriagePts', this.value)"><input type="number" min="0" max="150" value="${r.tipluPts}" style="width:50%;" onchange="updateLobbyRuleField('tipluPts', this.value)"></div></label>
-          <label class="rules-field">Poochies Per Deck<select onchange="updateLobbyRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 per deck (3 total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 per deck (6 total)</option></select></label>
           <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateLobbyRuleField('groupingTimeSec', this.value)"></label>
           <label class="rules-field" title="Exceeding this points total (excluding Honors) eliminates the player in Tournament mode">Tournament Score Limit<input type="number" min="100" max="5000" step="50" value="${r.scoreLimit}" onchange="updateLobbyRuleField('scoreLimit', this.value)"></label>
         </div>
@@ -5217,6 +5243,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
       if (msg.type === 'PONG') {
         // Keepalive acknowledged
+        return;
+      }
+
+      if (msg.type === 'ROOM_FULL') {
+        resetToLobbyScreen(msg.message || `Room is full (maximum ${MAX_PLAYERS} players allowed).`);
         return;
       }
 
@@ -6596,9 +6627,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const myForfeited = Boolean(me && (me.hasForfeited || me.dropType === 'FORFEIT'));
     const myDropped = Boolean(me && me.hasDropped);
 
+    const maxCap = roomState.maxPlayers || MAX_PLAYERS;
     // 1. Update Fallback Legacy Summary
     if (summary) {
-      if (!playing) summary.innerText = roomState.players.length + ' seated';
+      if (!playing) summary.innerText = `${roomState.players.length}/${maxCap} seated`;
       else if (isMyTurn) summary.innerText = roomState.turnStage === 'DRAW' ? 'Your turn: Draw' : 'Your turn: Discard';
       else summary.innerText = `Turn: ${roomState.turnPlayerName || 'Opponent'}`;
     }
@@ -6617,7 +6649,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
       if (!playing) {
-        bannerMsg = `Waiting in lobby (${roomState.players.length} seated)`;
+        bannerMsg = `Waiting in lobby (${roomState.players.length}/${maxCap} seated)`;
         if (turnNotice) turnNotice.innerText = 'Lobby';
         if (turnDot) turnDot.className = 'turn-indicator-dot';
       } else if (isMyTurn) {
@@ -6654,6 +6686,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       opponents.push(...roomState.players.filter(p => p.id !== myId));
     }
     if (opponentArea) {
+      opponentArea.classList.toggle('is-many-seats', opponents.length >= 5);
       if (opponents.length === 0) {
         opponentArea.innerHTML = `
           <div class="pokerist-seat seat-top" style="opacity:0.4;">
@@ -6892,10 +6925,17 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     if (!roomState || roomState.status === 'LOBBY') {
       const count = roomState ? roomState.players.length : 1;
+      const maxCap = roomState?.maxPlayers || MAX_PLAYERS;
+      const rNow = getActiveRules();
+      const totalDeckCards = rNow.decks * (52 + rNow.poochiesPerDeck);
+      const needsMorePacks = (count * 21 + 5) > totalDeckCards;
+      const neededPacks = Math.min(5, Math.ceil((count * 21 + 5) / (52 + rNow.poochiesPerDeck)));
       if (count < 2) {
-        notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 seated)</button>`;
+        notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 min &bull; ${maxCap} max)</button>`;
+      } else if (needsMorePacks) {
+        notice.innerHTML = `<button onclick="openRulesModal(); switchRulesTab('customize');" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; background:linear-gradient(135deg,#b45309,#d97706);" title="${count} players require ${neededPacks} packs (${rNow.decks} selected)">Set ${neededPacks} Packs to Start (${count}/${maxCap} seated)</button>`;
       } else {
-        notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} seated)</button>`;
+        notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count}/${maxCap} seated)</button>`;
       }
       dot.classList.remove('active');
     } else if (isRoundOverPhase) {
@@ -7266,14 +7306,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (count <= 0) return 0;
       if (count === 1) return r.poochie1;
       if (count === 2) return r.poochie2;
-      return r.poochie3 + (count - 3) * (r.poochie1 || 20);
+      const extraStep = Math.max(0, r.poochie3 - r.poochie2);
+      return r.poochie3 + (count - 3) * (extraStep || r.poochie1 || 20);
     };
 
     const getPoolTier = (count) => {
       if (count <= 0) return 0;
       if (count === 1) return r.papluTaplu1;
       if (count === 2) return r.papluTaplu2;
-      return r.papluTaplu3 + (count - 3) * (r.papluTaplu1 || 10);
+      const extraStep = Math.max(0, r.papluTaplu3 - r.papluTaplu2);
+      return r.papluTaplu3 + (count - 3) * (extraStep || r.papluTaplu1 || 10);
     };
 
     const marriagePts = marriages * r.marriagePts;
@@ -11546,12 +11588,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function renderDynamicRulesModalValues() {
     const r = getActiveRules();
     const totalPoochies = r.decks * r.poochiesPerDeck;
-    const totalCards = 156 + totalPoochies;
+    const totalCards = (r.decks * 52) + totalPoochies;
     const overviewTab = document.getElementById('rulesTabOverview');
     if (overviewTab) {
       const firstBoxP = overviewTab.querySelector('.rules-card-box p');
       if (firstBoxP) {
-        firstBoxP.innerHTML = `<strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Each player is dealt <strong>21 cards</strong>.`;
+        firstBoxP.innerHTML = `<strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>${r.decks} standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Up to <strong>${MAX_PLAYERS} players</strong> can join a table (using up to 5 packs); each player is dealt <strong>21 cards</strong>.`;
       }
       const lockTitle = overviewTab.querySelector('.rules-card-box:nth-child(3) p');
       if (lockTitle) {
@@ -11637,6 +11679,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <button type="button" class="rules-preset-chip ${activeKey === 'tournament' || r.eliminationEnabled ? 'active' : ''}" onclick="applyModalPreset('tournament')">🏆 Tournament</button>
         </div>
         <div class="rules-custom-grid">
+          <label class="rules-field">Packs (52-Card Decks)<select onchange="updateModalRuleField('decks', this.value)"><option value="3" ${r.decks === 3 ? 'selected' : ''}>3 Packs (${3 * (52 + r.poochiesPerDeck)} cards • max 7p)</option><option value="4" ${r.decks === 4 ? 'selected' : ''}>4 Packs (${4 * (52 + r.poochiesPerDeck)} cards • max 9p)</option><option value="5" ${r.decks === 5 ? 'selected' : ''}>5 Packs (${5 * (52 + r.poochiesPerDeck)} cards • max 10p)</option></select></label>
+          <label class="rules-field">Poochies Per Deck<select onchange="updateModalRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 / deck (${r.decks} total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 / deck (${r.decks * 2} total)</option></select></label>
           <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateModalRuleField('minPureSequences', this.value)"></label>
           <label class="rules-field">First Drop Penalty<input type="number" min="0" max="120" value="${r.firstDrop}" onchange="updateModalRuleField('firstDrop', this.value)"></label>
           <label class="rules-field">Middle Drop Penalty<input type="number" min="0" max="200" value="${r.middleDrop}" onchange="updateModalRuleField('middleDrop', this.value)"></label>
@@ -11646,7 +11690,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-field">Pukka Joker Honors<input type="number" min="0" max="150" value="${r.tipluPts}" onchange="updateModalRuleField('tipluPts', this.value)"></label>
           <label class="rules-field">Poochie (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.poochie1}" style="width:33%;" onchange="updateModalRuleField('poochie1', this.value)"><input type="number" min="0" max="250" value="${r.poochie2}" style="width:33%;" onchange="updateModalRuleField('poochie2', this.value)"><input type="number" min="0" max="350" value="${r.poochie3}" style="width:34%;" onchange="updateModalRuleField('poochie3', this.value)"></div></label>
           <label class="rules-field">Paplu/Taplu (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="100" value="${r.papluTaplu1}" style="width:33%;" onchange="updateModalRuleField('papluTaplu1', this.value)"><input type="number" min="0" max="200" value="${r.papluTaplu2}" style="width:33%;" onchange="updateModalRuleField('papluTaplu2', this.value)"><input type="number" min="0" max="300" value="${r.papluTaplu3}" style="width:34%;" onchange="updateModalRuleField('papluTaplu3', this.value)"></div></label>
-          <label class="rules-field">Poochies Per Deck<select onchange="updateModalRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 / deck (3 total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 / deck (6 total)</option></select></label>
           <label class="rules-field">Dealt / Drawn Doubles Show<div style="display:flex;gap:4px;"><input type="number" min="5" max="10" value="${r.dealtDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('dealtDoublesForShow', this.value)"><input type="number" min="6" max="10" value="${r.drawnDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('drawnDoublesForShow', this.value)"></div></label>
           <label class="rules-field">Free Scoot (Dealt / Drawn)<div style="display:flex;gap:4px;"><input type="number" min="4" max="9" value="${r.freeScootDealtDoubles}" style="width:50%;" onchange="updateModalRuleField('freeScootDealtDoubles', this.value)"><input type="number" min="5" max="10" value="${r.freeGameDrawnDoubles}" style="width:50%;" onchange="updateModalRuleField('freeGameDrawnDoubles', this.value)"></div></label>
           <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateModalRuleField('groupingTimeSec', this.value)"></label>
@@ -11674,7 +11717,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
   function updateModalRuleField(key, val) {
     const base = modalEditRules || getActiveRules();
-    const nextPresetName = (key === 'scoreLimit' && base.eliminationEnabled)
+    const nextPresetName = ((key === 'scoreLimit' || key === 'decks') && base.eliminationEnabled)
       ? 'Tournament'
       : (key === 'eliminationEnabled' && val)
         ? 'Tournament'

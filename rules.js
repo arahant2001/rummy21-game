@@ -1,5 +1,6 @@
 export const SUITS = ['♠', '♥', '♦', '♣'];
 export const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+export const MAX_PLAYERS = 10;
 
 export const DEFAULT_RULES = {
   presetName: 'Classic South Indian',
@@ -89,7 +90,7 @@ export function sanitizeRules(raw) {
 
   return {
     presetName,
-    decks: 3,
+    decks: clampInt(src.decks, 3, 5, DEFAULT_RULES.decks),
     poochiesPerDeck: clampInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
     marriagePts: clampInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
     tipluPts: clampInt(src.tipluPts, 0, 150, DEFAULT_RULES.tipluPts),

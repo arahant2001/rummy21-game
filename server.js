@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,6 +56,7 @@ function getSafeRoom(room) {
   return {
     id: room.id,
     status: room.status,
+    maxPlayers: MAX_PLAYERS,
     rules: rConfig,
     winnerId: room.winnerId || null,
     winnerName: room.winnerName || null,
@@ -419,6 +420,9 @@ function dealNextHand(room) {
       p.readyForNextHand = false;
       p._settledInRound = true;
     } else {
+      if (deck.length < 21) {
+        deck.push(...createDeck(room.rules || DEFAULT_RULES));
+      }
       p.hand = deck.splice(0, 21);
       p._inCurrentHand = true;
       p._finalHandSnapshot = null;
@@ -436,6 +440,9 @@ function dealNextHand(room) {
     }
   });
 
+  if (deck.length < 2) {
+    deck.push(...createDeck(room.rules || DEFAULT_RULES));
+  }
   room.cutCard = deck.pop();
   const initialOpen = deck.pop();
   initialOpen.isInitialOpenCard = true;
@@ -533,6 +540,19 @@ wss.on('connection', (ws) => {
               readyPlayers: userRoom.players.filter(p => p.readyForNextHand).map(p => p.id)
             }));
           }
+          return;
+        }
+
+        const seatedCount = userRoom.players.filter(p => !p.hasLeft).length;
+        if (seatedCount >= MAX_PLAYERS) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'ROOM_FULL',
+              maxPlayers: MAX_PLAYERS,
+              message: `Room ${roomId} is full (maximum ${MAX_PLAYERS} players allowed).`
+            }));
+          }
+          userRoom = null;
           return;
         }
 
@@ -679,8 +699,31 @@ wss.on('connection', (ws) => {
           }
           return;
         }
+        if (userRoom.players.length > MAX_PLAYERS) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: `Maximum ${MAX_PLAYERS} players are allowed at a table.`
+            }));
+          }
+          return;
+        }
 
-        const deck = createDeck(userRoom.rules || DEFAULT_RULES);
+        const rConfig = userRoom.rules || DEFAULT_RULES;
+        const deck = createDeck(rConfig);
+        const minCardsNeeded = userRoom.players.length * 21 + 5;
+        if (deck.length < minCardsNeeded) {
+          const cardsPerPack = 52 + (rConfig.poochiesPerDeck || 1);
+          const neededPacks = Math.min(5, Math.ceil(minCardsNeeded / cardsPerPack));
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: `${userRoom.players.length} players require at least ${neededPacks} pack(s) (currently ${rConfig.decks} pack(s) = ${deck.length} cards). Increase Packs (up to 5) in Rules → Customize!`
+            }));
+          }
+          return;
+        }
+
         const priorMaxHands = Object.values(userRoom.sessionScores || {}).reduce((m, sc) => Math.max(m, sc?.handsPlayed || 0), 0);
         if (priorMaxHands > 0) {
           userRoom.handNumber = Math.max(userRoom.handNumber || 1, priorMaxHands + 1);
@@ -1113,9 +1156,9 @@ wss.on('connection', (ws) => {
       const p = userRoom.players.find(x => x.id === playerId);
       if (p && p.ws === ws) {
         p.ws = null;
-      }
-      if (userRoom.status === 'LOBBY') {
-        userRoom.players = userRoom.players.filter(p => p.id !== playerId);
+        if (userRoom.status === 'LOBBY') {
+          userRoom.players = userRoom.players.filter(pl => pl.id !== playerId);
+        }
       }
       const allDisconnected = userRoom.players.length === 0 || userRoom.players.every(p => !p.ws);
       if (allDisconnected) {
