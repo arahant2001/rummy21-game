@@ -59,6 +59,9 @@ function getSafeRoom(room) {
     rules: rConfig,
     winnerId: room.winnerId || null,
     winnerName: room.winnerName || null,
+    tournamentFinished: Boolean(room.tournamentFinished),
+    tournamentWinnerId: room.tournamentWinnerId || null,
+    tournamentWinnerName: room.tournamentWinnerName || null,
     groupingDeadline: room.groupingDeadline || null,
     turnPlayerId: room.players[room.turnIndex]?.id || null,
     turnPlayerName: room.players[room.turnIndex]?.name || '',
@@ -91,6 +94,7 @@ function getSafeRoom(room) {
       connected: Boolean(p.ws && p.ws.readyState === WebSocket.OPEN),
       hasDropped: Boolean(p.hasDropped),
       hasForfeited: Boolean(p.hasForfeited),
+      isEliminated: Boolean(p.isEliminated),
       dropType: p.dropType || (p.hasForfeited ? 'FORFEIT' : p.hasDropped ? (p.turnsTaken === 0 ? 'FIRST_DROP' : 'MIDDLE_DROP') : null),
       dropPenalty: p.dropPenalty || 0,
       turnsTaken: p.turnsTaken || 0,
@@ -128,8 +132,9 @@ function finalizeRound(userRoom) {
   const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard, rConfig);
 
   userRoom.sessionScores = userRoom.sessionScores || {};
-  // Paying losers: all opponents except Free Scoot / Free Game players owe winner Honors + their drop/deadwood points
-  const payingLosersCount = userRoom.players.filter(pl => pl.id !== winner.id && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
+  // Paying losers: only active participants in this hand (excluding already-eliminated spectators, winner, and Free Scoots)
+  const handParticipants = userRoom.players.filter(pl => !pl.isEliminated || pl._inCurrentHand);
+  const payingLosersCount = handParticipants.filter(pl => pl.id !== winner.id && !pl.isFreeScoot && pl.dropType !== 'FREE_SCOOT').length;
 
   const results = userRoom.players.map(p => {
     // Ensure player session entry exists keyed by normalized player name
@@ -143,18 +148,31 @@ function finalizeRound(userRoom) {
         points: 0,
         honors: 0,
         maal: 0,
-        totalScore: 0
+        totalScore: 0,
+        isEliminated: Boolean(p.isEliminated),
+        eliminatedInHand: null
       };
     }
     const sc = userRoom.sessionScores[scoreKey];
     sc.name = p.name;
     sc.id = p.id;
+    p.readyForNextHand = false;
+
+    // Players eliminated in earlier tournament hands were not dealt cards and do not owe or play
+    if (p.isEliminated && !p._inCurrentHand) {
+      return {
+        name: p.name,
+        status: 'ELIMINATED',
+        points: 0,
+        net: `Eliminated earlier (${sc.points} pts > ${rConfig.scoreLimit} limit — spectating)`
+      };
+    }
+
     const alreadySettled = Boolean(p._settledInRound);
     if (!alreadySettled) {
       sc.handsPlayed += 1;
       p._settledInRound = true;
     }
-    p.readyForNextHand = false;
 
     if (p.id === winner.id) {
       if (!alreadySettled) {
@@ -234,7 +252,38 @@ function finalizeRound(userRoom) {
     };
   });
 
-  const revealedHands = userRoom.players.map(pl => {
+  // Tournament Elimination Check: cumulative penalty points (excluding Honors) strictly exceeding scoreLimit
+  const newlyEliminated = [];
+  if (rConfig.eliminationEnabled) {
+    userRoom.players.forEach(p => {
+      if (p.hasLeft || p.isEliminated) return;
+      const scoreKey = (p.name || '').trim().toLowerCase();
+      const sc = userRoom.sessionScores[scoreKey];
+      if (sc && sc.points > rConfig.scoreLimit) {
+        p.isEliminated = true;
+        sc.isEliminated = true;
+        sc.eliminatedInHand = userRoom.handNumber || 1;
+        newlyEliminated.push({ id: p.id, name: p.name, points: sc.points });
+      }
+    });
+
+    const surviving = userRoom.players.filter(p => !p.hasLeft && !p.isEliminated);
+    if (userRoom.players.length >= 2 && surviving.length === 1) {
+      const champion = surviving[0];
+      userRoom.tournamentFinished = true;
+      userRoom.tournamentWinnerId = champion.id;
+      userRoom.tournamentWinnerName = champion.name;
+      userRoom.lastAction = `🏆 ${champion.name} wins the Tournament as the last player standing!`;
+    } else if (newlyEliminated.length > 0) {
+      userRoom.lastAction = `💀 Eliminated (> ${rConfig.scoreLimit} pts): ${newlyEliminated.map(e => `${e.name} (${e.points})`).join(', ')}`;
+    }
+  } else {
+    userRoom.tournamentFinished = false;
+    userRoom.tournamentWinnerId = null;
+    userRoom.tournamentWinnerName = null;
+  }
+
+  const revealedHands = handParticipants.map(pl => {
     const handCards = (Array.isArray(pl.hand) && pl.hand.length > 0)
       ? pl.hand
       : (Array.isArray(pl._finalHandSnapshot) ? pl._finalHandSnapshot : []);
@@ -243,6 +292,7 @@ function finalizeRound(userRoom) {
       id: pl.id,
       hasDropped: Boolean(pl.hasDropped),
       hasForfeited: Boolean(pl.hasForfeited),
+      isEliminated: Boolean(pl.isEliminated),
       dropType: pl.dropType || null,
       dropPenalty: pl.dropPenalty || 0,
       isFreeScoot: Boolean(pl.isFreeScoot || pl.dropType === 'FREE_SCOOT'),
@@ -267,6 +317,10 @@ function finalizeRound(userRoom) {
     cutCard: userRoom.cutCard,
     rules: rConfig,
     roles: userRoom.cutCard ? resolveJokerRoles(userRoom.cutCard) : null,
+    newlyEliminated,
+    tournamentFinished: Boolean(userRoom.tournamentFinished),
+    tournamentWinnerId: userRoom.tournamentWinnerId || null,
+    tournamentWinnerName: userRoom.tournamentWinnerName || null,
     sessionScores: Object.values(userRoom.sessionScores || {}).filter(sc => {
       if (!sc || !sc.name) return false;
       const isSeated = (userRoom.players || []).some(pl => (pl.name || '').trim().toLowerCase() === sc.name.trim().toLowerCase());
@@ -287,9 +341,9 @@ function finalizeRound(userRoom) {
 }
 
 function advanceTurn(room) {
-  const activePlayers = room.players.filter(p => !p.hasDropped);
+  const activePlayers = room.players.filter(p => !p.hasDropped && !p.isEliminated);
   if (activePlayers.length <= 1 && room.players.length > 1) {
-    const soleWinner = activePlayers[0] || room.players[0];
+    const soleWinner = activePlayers[0] || room.players.find(p => !p.isEliminated) || room.players[0];
     room.winnerId = soleWinner.id;
     room.winnerName = soleWinner.name;
     finalizeRound(room);
@@ -300,7 +354,7 @@ function advanceTurn(room) {
   do {
     room.turnIndex = (room.turnIndex + 1) % room.players.length;
     attempts++;
-  } while (room.players[room.turnIndex].hasDropped && attempts < room.players.length);
+  } while ((room.players[room.turnIndex].hasDropped || room.players[room.turnIndex].isEliminated) && attempts < room.players.length);
 
   room.turnStage = 'DRAW';
 }
@@ -310,10 +364,11 @@ function dealNextHand(room) {
 
   // Prune players who left the session or disconnected
   room.players = room.players.filter(p => !p.hasLeft && p.ws);
-  if (room.players.length < 2) {
+  const survivingPlayers = room.players.filter(p => !p.isEliminated);
+  if (survivingPlayers.length < 2) {
     room.status = 'LOBBY';
     room.turnStage = 'WAITING';
-    room.lastAction = 'Waiting for at least 2 players to start a hand.';
+    room.lastAction = 'Waiting for at least 2 active players to start a hand.';
     broadcastRoom(room);
     return;
   }
@@ -328,28 +383,57 @@ function dealNextHand(room) {
     room.groupingTimer = null;
   }
 
-  // Refinement 5: Rotate starting player clockwise around the table
-  // Array progression 0 -> 1 -> 2 -> 3 -> 0 matches clockwise visual seating rotation
-  room.starterIndex = ((room.starterIndex ?? 0) + 1) % room.players.length;
-  room.turnIndex = room.starterIndex;
-  // Dealer button sits on preceding player who dealt to starter
-  room.dealerId = room.players[(room.starterIndex - 1 + room.players.length) % room.players.length]?.id;
-  room.handNumber = (room.handNumber || 1) + 1;
+  // Rotate starting player clockwise around the table, skipping eliminated players
+  let nextStarter = ((room.starterIndex ?? 0) + 1) % room.players.length;
+  let guard = 0;
+  while (room.players[nextStarter]?.isEliminated && guard < room.players.length) {
+    nextStarter = (nextStarter + 1) % room.players.length;
+    guard++;
+  }
+  room.starterIndex = nextStarter;
+  room.turnIndex = nextStarter;
+
+  let dealerIdx = (nextStarter - 1 + room.players.length) % room.players.length;
+  let dGuard = 0;
+  while (room.players[dealerIdx]?.isEliminated && dGuard < room.players.length) {
+    dealerIdx = (dealerIdx - 1 + room.players.length) % room.players.length;
+    dGuard++;
+  }
+  room.dealerId = room.players[dealerIdx]?.id;
+  room.handNumber = (room.handNumber || 0) + 1;
 
   room.players.forEach(p => {
-    p.hand = deck.splice(0, 21);
-    p._finalHandSnapshot = null;
-    p.finalDiscard = null;
-    p.hasDropped = false;
-    p.hasForfeited = false;
-    p.isFreeScoot = false;
-    p.dropType = null;
-    p.dropPenalty = 0;
-    p.turnsTaken = 0;
-    p.isGrouped = false;
-    p.declaredGroups = [];
-    p.readyForNextHand = false;
-    p._settledInRound = false;
+    if (p.isEliminated) {
+      p.hand = [];
+      p._inCurrentHand = false;
+      p._finalHandSnapshot = null;
+      p.finalDiscard = null;
+      p.hasDropped = false;
+      p.hasForfeited = false;
+      p.isFreeScoot = false;
+      p.dropType = null;
+      p.dropPenalty = 0;
+      p.turnsTaken = 0;
+      p.isGrouped = true;
+      p.declaredGroups = [];
+      p.readyForNextHand = false;
+      p._settledInRound = true;
+    } else {
+      p.hand = deck.splice(0, 21);
+      p._inCurrentHand = true;
+      p._finalHandSnapshot = null;
+      p.finalDiscard = null;
+      p.hasDropped = false;
+      p.hasForfeited = false;
+      p.isFreeScoot = false;
+      p.dropType = null;
+      p.dropPenalty = 0;
+      p.turnsTaken = 0;
+      p.isGrouped = false;
+      p.declaredGroups = [];
+      p.readyForNextHand = false;
+      p._settledInRound = false;
+    }
   });
 
   room.cutCard = deck.pop();
@@ -433,8 +517,8 @@ wss.on('connection', (ws) => {
             clearTimeout(userRoom.cleanupTimer);
             userRoom.cleanupTimer = null;
           }
-          // Invariant: Ensure rejoining player has strictly 21 (or 22) cards if game is active
-          if (userRoom.status === 'PLAYING') {
+          // Invariant: Ensure non-eliminated rejoining player has strictly 21 (or 22) cards if game is active
+          if (userRoom.status === 'PLAYING' && !existingPlayer.isEliminated && existingPlayer._inCurrentHand !== false) {
             ensurePlayerHand(existingPlayer, userRoom, 21);
           }
           broadcastRoom(userRoom);
@@ -464,26 +548,32 @@ wss.on('connection', (ws) => {
             points: 0,
             honors: 0,
             maal: 0,
-            totalScore: 0
+            totalScore: 0,
+            isEliminated: false,
+            eliminatedInHand: null
           };
         } else {
           userRoom.sessionScores[scoreKey].id = playerId;
           userRoom.sessionScores[scoreKey].name = playerName;
         }
 
+        const wasEliminated = Boolean(userRoom.rules?.eliminationEnabled && userRoom.sessionScores[scoreKey]?.isEliminated);
         const newPlayer = {
           id: playerId,
           name: playerName,
           hand: [],
           hasDropped: false,
+          isEliminated: wasEliminated,
+          _inCurrentHand: false,
           turnsTaken: 0,
           readyForNextHand: false,
           ws
         };
 
-        // Requirement 3: When a player joins from a phone (or mid-game), deal them strictly 21 cards
-        if (userRoom.status === 'PLAYING') {
+        // Requirement 3: When a non-eliminated player joins mid-game, deal them strictly 21 cards
+        if (userRoom.status === 'PLAYING' && !wasEliminated) {
           ensurePlayerHand(newPlayer, userRoom, 21);
+          newPlayer._inCurrentHand = true;
         }
 
         userRoom.players.push(newPlayer);
@@ -495,6 +585,36 @@ wss.on('connection', (ws) => {
       if (data.type === 'UPDATE_RULES') {
         if (userRoom.status === 'LOBBY' || userRoom.status === 'ROUND_OVER') {
           userRoom.rules = sanitizeRules(data.rules);
+          if (!userRoom.rules.eliminationEnabled) {
+            userRoom.tournamentFinished = false;
+            userRoom.tournamentWinnerId = null;
+            userRoom.tournamentWinnerName = null;
+            userRoom.players.forEach(p => { p.isEliminated = false; });
+            Object.values(userRoom.sessionScores || {}).forEach(sc => {
+              if (sc) {
+                sc.isEliminated = false;
+                sc.eliminatedInHand = null;
+              }
+            });
+          } else {
+            userRoom.players.forEach(p => {
+              const sk = (p.name || '').trim().toLowerCase();
+              const sc = userRoom.sessionScores?.[sk];
+              const elim = Boolean(sc && sc.points > userRoom.rules.scoreLimit);
+              p.isEliminated = elim;
+              if (sc) sc.isEliminated = elim;
+            });
+            const surviving = userRoom.players.filter(p => !p.hasLeft && !p.isEliminated);
+            if (userRoom.status === 'ROUND_OVER' && userRoom.players.length >= 2 && surviving.length === 1) {
+              userRoom.tournamentFinished = true;
+              userRoom.tournamentWinnerId = surviving[0].id;
+              userRoom.tournamentWinnerName = surviving[0].name;
+            } else {
+              userRoom.tournamentFinished = false;
+              userRoom.tournamentWinnerId = null;
+              userRoom.tournamentWinnerName = null;
+            }
+          }
           const updater = userRoom.players.find(p => p.id === playerId);
           userRoom.lastAction = `${updater ? updater.name : 'Host'} updated the table rules.`;
           broadcastRoom(userRoom);
@@ -513,9 +633,37 @@ wss.on('connection', (ws) => {
         const p = userRoom.players.find(x => x.id === playerId);
         if (p) p.readyForNextHand = true;
 
-        const allReady = userRoom.players.length > 0 && userRoom.players.every(x => x.readyForNextHand);
-        if (allReady) {
-          dealNextHand(userRoom);
+        if (userRoom.tournamentFinished) {
+          const connectedPool = userRoom.players.filter(x => x.ws && !x.hasLeft);
+          const pool = connectedPool.length > 0 ? connectedPool : userRoom.players;
+          const allReady = pool.length > 0 && pool.every(x => x.readyForNextHand);
+          if (allReady) {
+            Object.values(userRoom.sessionScores || {}).forEach(sc => {
+              if (!sc) return;
+              sc.handsPlayed = 0;
+              sc.handsWon = 0;
+              sc.points = 0;
+              sc.honors = 0;
+              sc.maal = 0;
+              sc.totalScore = 0;
+              sc.isEliminated = false;
+              sc.eliminatedInHand = null;
+            });
+            userRoom.players.forEach(pl => { pl.isEliminated = false; });
+            userRoom.handNumber = 0;
+            userRoom.starterIndex = -1;
+            userRoom.tournamentFinished = false;
+            userRoom.tournamentWinnerId = null;
+            userRoom.tournamentWinnerName = null;
+            dealNextHand(userRoom);
+          }
+        } else {
+          const survivingReadyPool = userRoom.players.filter(x => !x.isEliminated && !x.hasLeft);
+          const pool = survivingReadyPool.length > 0 ? survivingReadyPool : userRoom.players;
+          const allReady = pool.length > 0 && pool.every(x => x.readyForNextHand);
+          if (allReady) {
+            dealNextHand(userRoom);
+          }
         }
         broadcastRoom(userRoom);
         return;
@@ -539,13 +687,18 @@ wss.on('connection', (ws) => {
         }
         userRoom.winnerId = null;
         userRoom.winnerName = null;
+        userRoom.tournamentFinished = false;
+        userRoom.tournamentWinnerId = null;
+        userRoom.tournamentWinnerName = null;
         userRoom.lastRoundResult = null;
         userRoom.players.forEach(p => {
           p.hand = deck.splice(0, 21);
+          p._inCurrentHand = true;
           p._finalHandSnapshot = null;
           p.finalDiscard = null;
           p.hasDropped = false;
           p.hasForfeited = false;
+          p.isEliminated = false;
           p.isFreeScoot = false;
           p.dropType = null;
           p.dropPenalty = 0;
@@ -779,7 +932,7 @@ wss.on('connection', (ws) => {
         userRoom.winnerId = activePlayer.id;
         userRoom.winnerName = activePlayer.name;
 
-        const activeNonDropped = userRoom.players.filter(p => !p.hasDropped);
+        const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.isEliminated);
         const othersToGroup = activeNonDropped.filter(p => p.id !== activePlayer.id);
 
         if (othersToGroup.length === 0) {
@@ -809,12 +962,12 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'SUBMIT_GROUPS' && userRoom.status === 'GROUPING') {
         const player = userRoom.players.find(p => p.id === playerId);
-        if (player && !player.hasDropped && !player.isGrouped) {
+        if (player && !player.hasDropped && !player.isEliminated && !player.isGrouped) {
           player.declaredGroups = Array.isArray(data.groups) ? data.groups : [];
           player.isGrouped = true;
           userRoom.lastAction = `${player.name} finished grouping their cards.`;
 
-          const activeNonDropped = userRoom.players.filter(p => !p.hasDropped);
+          const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.isEliminated);
           const allDone = activeNonDropped.every(p => p.isGrouped);
           if (allDone) {
             finalizeRound(userRoom);
@@ -853,7 +1006,18 @@ wss.on('connection', (ws) => {
 
         const wasPlaying = userRoom.status === 'PLAYING' || userRoom.status === 'GROUPING';
 
-        if (wasPlaying) {
+        if (wasPlaying && leavingPlayer.isEliminated && !leavingPlayer._inCurrentHand) {
+          leavingPlayer.hasLeft = true;
+          leavingPlayer.ws = null;
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'SESSION_LEFT',
+              message: 'You left the tournament table.'
+            }));
+          }
+          userRoom.lastAction = `${leavingPlayer.name} (eliminated) left the table.`;
+          broadcastRoom(userRoom);
+        } else if (wasPlaying) {
           const rConfig = userRoom.rules || DEFAULT_RULES;
           const forfeitPts = rConfig.forfeitPenalty ?? 100;
           const midPts = rConfig.middleDrop ?? 70;
@@ -880,7 +1044,9 @@ wss.on('connection', (ws) => {
               points: 0,
               honors: 0,
               maal: 0,
-              totalScore: 0
+              totalScore: 0,
+              isEliminated: false,
+              eliminatedInHand: null
             };
           }
 
@@ -901,9 +1067,9 @@ wss.on('connection', (ws) => {
           const activeIndex = userRoom.turnIndex;
           const isLeavingTurn = userRoom.players[activeIndex]?.id === playerId;
 
-          const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.hasLeft);
+          const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.isEliminated && !p.hasLeft);
           if (activeNonDropped.length <= 1 && userRoom.players.length > 1) {
-            const soleWinner = activeNonDropped[0] || userRoom.players.find(p => !p.hasLeft);
+            const soleWinner = activeNonDropped[0] || userRoom.players.find(p => !p.hasLeft && !p.isEliminated);
             if (soleWinner) {
               userRoom.winnerId = soleWinner.id;
               userRoom.winnerName = soleWinner.name;

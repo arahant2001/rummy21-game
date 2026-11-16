@@ -27,7 +27,9 @@ export const DEFAULT_RULES = {
   freeScootDealtDoubles: 6,
   freeGameDrawnDoubles: 7,
   blockDiscardedJokerPickup: true,
-  groupingTimeSec: 300
+  groupingTimeSec: 300,
+  eliminationEnabled: false,
+  scoreLimit: 500
 };
 
 export const RULE_PRESETS = {
@@ -59,6 +61,12 @@ export const RULE_PRESETS = {
     middleDrop: 80,
     forfeitPenalty: 120,
     maxDeadwood: 150
+  },
+  tournament: {
+    ...DEFAULT_RULES,
+    presetName: 'Tournament',
+    eliminationEnabled: true,
+    scoreLimit: 500
   }
 };
 
@@ -105,7 +113,9 @@ export function sanitizeRules(raw) {
     freeScootDealtDoubles,
     freeGameDrawnDoubles: Math.max(freeScootDealtDoubles, freeGameDrawnDoubles),
     blockDiscardedJokerPickup: src.blockDiscardedJokerPickup !== false,
-    groupingTimeSec: clampInt(src.groupingTimeSec, 60, 600, DEFAULT_RULES.groupingTimeSec)
+    groupingTimeSec: clampInt(src.groupingTimeSec, 60, 600, DEFAULT_RULES.groupingTimeSec),
+    eliminationEnabled: Boolean(src.eliminationEnabled),
+    scoreLimit: clampInt(src.scoreLimit, 100, 5000, DEFAULT_RULES.scoreLimit)
   };
 }
 
@@ -609,76 +619,183 @@ export function validateShow(groups, hand, cutCard, isDealt = false, rules = DEF
 
 export const calculateHonors = calculateMaal;
 
-export function extractOptimalPureRuns(availCards) {
-  const windows = [];
-  for (let i = 0; i <= RANKS.length - 3; i++) {
-    windows.push(RANKS.slice(i, i + 3));
+function cardFacePoints(card) {
+  if (!card) return 0;
+  if (['A', 'K', 'Q', 'J', '10'].includes(card.rank)) return 10;
+  return parseInt(card.rank, 10) || 0;
+}
+
+function solveOptimalSuitPurePatterns(availCards, cutCard = null, options = {}) {
+  if (!Array.isArray(availCards) || availCards.length < 3) return [];
+  const {
+    includeTunellas = false,
+    includeWrapMarriage = false,
+    extendWithNonWild = true
+  } = options;
+
+  const rankIndex = new Map(RANKS.map((r, idx) => [r, idx]));
+  const buckets = Array.from({ length: 13 }, () => []);
+  for (const c of availCards) {
+    if (!c) continue;
+    const idx = rankIndex.get(c.rank);
+    if (idx !== undefined) buckets[idx].push(c);
   }
-  windows.push(['Q', 'K', 'A']);
+  const wildAtRank = buckets.map(list => list.length > 0 && isWildCard(list[0], cutCard));
+  const counts = buckets.map(list => list.length);
 
-  function solve(remaining) {
-    let best = [];
-    for (const win of windows) {
-      const c0 = remaining.find(c => c.rank === win[0]);
-      const c1 = remaining.find(c => c.rank === win[1] && c.id !== c0?.id);
-      const c2 = remaining.find(c => c.rank === win[2] && c.id !== c0?.id && c.id !== c1?.id);
-      if (c0 && c1 && c2) {
-        const run = [c0, c1, c2];
-        const nextRemaining = remaining.filter(c => c.id !== c0.id && c.id !== c1.id && c.id !== c2.id);
-        const sub = solve(nextRemaining);
-        const candidate = [run, ...sub];
-        if (candidate.length > best.length) {
-          best = candidate;
-        }
-      }
-    }
-    return best;
-  }
-
-  const best3Runs = solve(availCards);
-  const usedIds = new Set(best3Runs.flatMap(r => r.map(c => c.id)));
-  const leftover = availCards.filter(c => !usedIds.has(c.id));
-
-  for (const run of best3Runs) {
-    let extended = true;
-    while (extended) {
-      extended = false;
-      const firstRank = run[0].rank;
-      const lastRank = run[run.length - 1].rank;
-      const firstIdx = RANKS.indexOf(firstRank);
-      if (firstIdx > 0) {
-        const prevRank = RANKS[firstIdx - 1];
-        const match = leftover.find(c => c.rank === prevRank && !usedIds.has(c.id));
-        if (match) {
-          run.unshift(match);
-          usedIds.add(match.id);
-          extended = true;
-          continue;
-        }
-      }
-      const lastIdx = RANKS.indexOf(lastRank);
-      if (lastIdx >= 0 && lastIdx < RANKS.length - 1) {
-        const nextRank = RANKS[lastIdx + 1];
-        const match = leftover.find(c => c.rank === nextRank && !usedIds.has(c.id));
-        if (match) {
-          run.push(match);
-          usedIds.add(match.id);
-          extended = true;
-          continue;
-        }
-      }
-      if (lastRank === 'K') {
-        const match = leftover.find(c => c.rank === 'A' && !usedIds.has(c.id));
-        if (match) {
-          run.push(match);
-          usedIds.add(match.id);
-          extended = true;
-          continue;
-        }
+  // Build candidate 3-card patterns ordered so joker-free / lower-joker options appear early
+  const patterns = [];
+  if (includeTunellas) {
+    for (let r = 0; r < 13; r++) {
+      if (counts[r] >= 3 && !wildAtRank[r]) {
+        const pts = 3 * cardFacePoints(buckets[r][0]);
+        patterns.push({ kind: 'TUNELLA', indices: [r, r, r], jokerCount: 0, tunBonus: 1, pts });
       }
     }
   }
-  return best3Runs;
+  for (let i = 0; i <= 10; i++) {
+    const idxs = [i, i + 1, i + 2];
+    if (counts[idxs[0]] > 0 && counts[idxs[1]] > 0 && counts[idxs[2]] > 0) {
+      const jokerCount = (wildAtRank[idxs[0]] ? 1 : 0) + (wildAtRank[idxs[1]] ? 1 : 0) + (wildAtRank[idxs[2]] ? 1 : 0);
+      const pts = (wildAtRank[idxs[0]] ? 0 : cardFacePoints(buckets[idxs[0]][0]))
+        + (wildAtRank[idxs[1]] ? 0 : cardFacePoints(buckets[idxs[1]][0]))
+        + (wildAtRank[idxs[2]] ? 0 : cardFacePoints(buckets[idxs[2]][0]));
+      patterns.push({ kind: 'RUN', indices: idxs, jokerCount, tunBonus: 0, pts });
+    }
+  }
+  // Q-K-A high consecutive run
+  if (counts[11] > 0 && counts[12] > 0 && counts[0] > 0) {
+    const idxs = [11, 12, 0];
+    const jokerCount = (wildAtRank[11] ? 1 : 0) + (wildAtRank[12] ? 1 : 0) + (wildAtRank[0] ? 1 : 0);
+    const pts = (wildAtRank[11] ? 0 : 10) + (wildAtRank[12] ? 0 : 10) + (wildAtRank[0] ? 0 : 10);
+    patterns.push({ kind: 'RUN', indices: idxs, jokerCount, tunBonus: 0, pts });
+  }
+  // K-A-2 wrap-around only valid when it is an allowed Marriage
+  if (includeWrapMarriage && counts[12] > 0 && counts[0] > 0 && counts[1] > 0) {
+    const idxs = [12, 0, 1];
+    const jokerCount = (wildAtRank[12] ? 1 : 0) + (wildAtRank[0] ? 1 : 0) + (wildAtRank[1] ? 1 : 0);
+    patterns.push({ kind: 'MARRIAGE_WRAP', indices: idxs, jokerCount, tunBonus: 0, pts: 0 });
+  }
+
+  // Sort patterns: prioritize 0 jokers first, then Tunellas, then higher natural pts (helps pruning)
+  patterns.sort((a, b) => (a.jokerCount - b.jokerCount) || (b.tunBonus - a.tunBonus) || (b.pts - a.pts));
+
+  let bestScore = { count: 0, negJokers: 0, tunBonus: 0, pts: 0 };
+  let bestPicks = [];
+
+  function isBetter(a, b) {
+    if (a.count !== b.count) return a.count > b.count;
+    if (a.negJokers !== b.negJokers) return a.negJokers > b.negJokers;
+    if (a.tunBonus !== b.tunBonus) return a.tunBonus > b.tunBonus;
+    return a.pts > b.pts;
+  }
+
+  function dfs(startIdx, remCounts, remTotal, picked, currJokers, currTun, currPts) {
+    const maxPossibleCount = picked.length + Math.floor(remTotal / 3);
+    if (maxPossibleCount < bestScore.count) return;
+    if (maxPossibleCount === bestScore.count && -currJokers < bestScore.negJokers) return;
+
+    const currScore = { count: picked.length, negJokers: -currJokers, tunBonus: currTun, pts: currPts };
+    if (isBetter(currScore, bestScore)) {
+      bestScore = currScore;
+      bestPicks = [...picked];
+    }
+
+    for (let i = startIdx; i < patterns.length; i++) {
+      const p = patterns[i];
+      if (p.kind === 'TUNELLA') {
+        const r = p.indices[0];
+        if (remCounts[r] < 3) continue;
+        remCounts[r] -= 3;
+      } else {
+        const [a, b, c] = p.indices;
+        if (remCounts[a] < 1 || remCounts[b] < 1 || remCounts[c] < 1) continue;
+        remCounts[a]--; remCounts[b]--; remCounts[c]--;
+      }
+
+      picked.push(p);
+      dfs(i, remCounts, remTotal - 3, picked, currJokers + p.jokerCount, currTun + p.tunBonus, currPts + p.pts);
+      picked.pop();
+
+      if (p.kind === 'TUNELLA') {
+        remCounts[p.indices[0]] += 3;
+      } else {
+        const [a, b, c] = p.indices;
+        remCounts[a]++; remCounts[b]++; remCounts[c]++;
+      }
+    }
+  }
+
+  dfs(0, [...counts], availCards.length, [], 0, 0, 0);
+
+  // Materialize actual card objects
+  const usedIds = new Set();
+  const popRank = (rIdx) => {
+    const match = buckets[rIdx].find(c => c && !usedIds.has(c.id));
+    if (match) usedIds.add(match.id);
+    return match;
+  };
+
+  const results = bestPicks.map(p => ({
+    kind: p.kind,
+    cards: p.indices.map(popRank).filter(Boolean)
+  })).filter(g => g.cards.length === 3);
+
+  // Optionally extend consecutive runs strictly with NON-WILD cards so we never waste a joker
+  if (extendWithNonWild) {
+    const leftover = availCards.filter(c => c && !usedIds.has(c.id));
+    for (const grp of results) {
+      if (grp.kind !== 'RUN') continue;
+      const run = grp.cards;
+      let extended = true;
+      while (extended) {
+        extended = false;
+        const firstRank = run[0].rank;
+        const lastRank = run[run.length - 1].rank;
+        const firstIdx = RANKS.indexOf(firstRank);
+        if (firstIdx > 0) {
+          const prevRank = RANKS[firstIdx - 1];
+          const match = leftover.find(c => c.rank === prevRank && !usedIds.has(c.id) && !isWildCard(c, cutCard));
+          if (match) {
+            run.unshift(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        const lastIdx = RANKS.indexOf(lastRank);
+        if (lastRank !== 'A' && lastIdx >= 0 && lastIdx < RANKS.length - 1) {
+          const nextRank = RANKS[lastIdx + 1];
+          const match = leftover.find(c => c.rank === nextRank && !usedIds.has(c.id) && !isWildCard(c, cutCard));
+          if (match) {
+            run.push(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        if (lastRank === 'K') {
+          const match = leftover.find(c => c.rank === 'A' && !usedIds.has(c.id) && !isWildCard(c, cutCard));
+          if (match) {
+            run.push(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+      }
+    }
+  }
+
+  return results;
+}
+
+export function extractOptimalPureRuns(availCards, cutCard = null) {
+  return solveOptimalSuitPurePatterns(availCards, cutCard, {
+    includeTunellas: false,
+    includeWrapMarriage: false,
+    extendWithNonWild: true
+  }).map(g => g.cards);
 }
 
 export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
@@ -691,31 +808,40 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
 
   const effectiveRoles = cutCard ? resolveJokerRoles(cutCard) : null;
 
-  // 1. Marriages: (Taplu + Tiplu + Paplu in cut suit) -> Pure Sequence
-  if (effectiveRoles && rConfig.allowMarriageAsPure) {
-    const r = effectiveRoles;
-    let searchingMarriage = true;
-    while (searchingMarriage) {
-      const avail = getAvailable();
-      const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
-      const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
-      const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
-      if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
-        const trio = [taplu, tiplu, paplu];
-        trio.forEach(c => usedIds.add(c.id));
-        groups.push({
-          type: 'PURE_SEQUENCE',
-          typeLabel: `Marriage Pure Run (${rConfig.marriagePts} pts)`,
-          cardIds: trio.map(c => c.id),
-          cards: trio
-        });
-      } else {
-        searchingMarriage = false;
+  // 1. Optimal Pure Groups per suit (Natural Pure Runs + Tunellas + Marriage)
+  // Maximizes pure sequence count and strictly avoids jokers whenever pure sequences can form without them.
+  // Do not greedily extend 4th+ cards yet so unused natural cards remain free for Sets first.
+  for (const suit of SUITS) {
+    const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+    if (suitNaturals.length < 3) continue;
+    const isMarriageWrap = Boolean(
+      effectiveRoles && rConfig.allowMarriageAsPure &&
+      suit === effectiveRoles.tipluSuit && effectiveRoles.tipluRank === 'A'
+    );
+    const optimalSuitGroups = solveOptimalSuitPurePatterns(suitNaturals, cutCard, {
+      includeTunellas: rConfig.allowTunnelaAsPure,
+      includeWrapMarriage: isMarriageWrap,
+      extendWithNonWild: false
+    });
+    for (const g of optimalSuitGroups) {
+      g.cards.forEach(c => usedIds.add(c.id));
+      let typeLabel = `Pure Run (${g.cards.length})`;
+      if (g.kind === 'TUNELLA') {
+        typeLabel = `Tunella (${g.cards[0].rank}${g.cards[0].suit} x3)`;
+      } else if (isMarriageGroup(g.cards, cutCard) && rConfig.allowMarriageAsPure) {
+        typeLabel = `Marriage Pure Run (${rConfig.marriagePts} pts)`;
       }
+      groups.push({
+        type: 'PURE_SEQUENCE',
+        typeLabel,
+        cardIds: g.cards.map(c => c.id),
+        cards: g.cards,
+        _kind: g.kind
+      });
     }
   }
 
-  // 2. 3 Poochies -> Pure Sequence (Tunella)
+  // 2. 3 Poochies -> Pure Sequence (Tunella) when allowed
   if (rConfig.allow3PoochiesAsPure) {
     let searchingPoochies = true;
     while (searchingPoochies) {
@@ -736,54 +862,7 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
     }
   }
 
-  // 3. Tunellas: (3 identical cards of exact same suit and rank)
-  if (rConfig.allowTunnelaAsPure) {
-    let searchingTunellas = true;
-    while (searchingTunellas) {
-      const avail = getAvailable().filter(c => !isWildCard(c, cutCard));
-      const suitRankMap = new Map();
-      for (const c of avail) {
-        const key = `${c.suit}_${c.rank}`;
-        if (!suitRankMap.has(key)) suitRankMap.set(key, []);
-        suitRankMap.get(key).push(c);
-      }
-      let foundTun = false;
-      for (const grp of suitRankMap.values()) {
-        if (grp.length >= 3) {
-          const trio = grp.slice(0, 3);
-          trio.forEach(c => usedIds.add(c.id));
-          groups.push({
-            type: 'PURE_SEQUENCE',
-            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
-            cardIds: trio.map(c => c.id),
-            cards: trio
-          });
-          foundTun = true;
-          break;
-        }
-      }
-      if (!foundTun) searchingTunellas = false;
-    }
-  }
-
-  // 4. Natural Pure Sequences: Smart optimizer to maximize count of pure sequences
-  for (const suit of SUITS) {
-    const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
-    if (suitNaturals.length >= 3) {
-      const optimalRuns = extractOptimalPureRuns(suitNaturals);
-      for (const run of optimalRuns) {
-        run.forEach(c => usedIds.add(c.id));
-        groups.push({
-          type: 'PURE_SEQUENCE',
-          typeLabel: `Pure Run (${run.length})`,
-          cardIds: run.map(c => c.id),
-          cards: run
-        });
-      }
-    }
-  }
-
-  // 5. Sets (3 or 4 cards of the same rank in different suits)
+  // 3. Sets (3 or 4 non-wild cards of the same rank in different suits)
   for (const rnk of RANKS) {
     let foundSet = true;
     while (foundSet) {
@@ -807,7 +886,7 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
     }
   }
 
-  // 6. Impure sequences (using wildcards) - safe loop without card reuse
+  // 4. Impure sequences (using wildcards) - safe loop without card reuse
   let searchingJokerRun = true;
   while (searchingJokerRun) {
     searchingJokerRun = false;
@@ -841,13 +920,92 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
     }
   }
 
-  // 7. Strict deduplication invariant: ensure no card ID appears in multiple groups
+  // 4b. Joker Sets (2 non-wilds of same rank & distinct suits + 1 wildcard)
+  let searchingJokerSet = true;
+  while (searchingJokerSet) {
+    searchingJokerSet = false;
+    const availWildcards = getAvailable().filter(c => isWildCard(c, cutCard));
+    if (availWildcards.length === 0) break;
+    for (const rnk of RANKS) {
+      const availSameRank = getAvailable().filter(c => c.rank === rnk && !isWildCard(c, cutCard));
+      const bySuit = new Map();
+      for (const c of availSameRank) {
+        if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+      }
+      if (bySuit.size >= 2) {
+        const pair = Array.from(bySuit.values()).slice(0, 2);
+        const trio = [...pair, availWildcards[0]];
+        trio.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'SET',
+          typeLabel: `Joker Set of ${rnk}s`,
+          cardIds: trio.map(c => c.id),
+          cards: trio
+        });
+        searchingJokerSet = true;
+        break;
+      }
+    }
+  }
+
+  // 5. Extend consecutive Pure Runs with still-unused NON-WILD cards (never swallow a joker!)
+  for (const g of groups) {
+    if (g.type !== 'PURE_SEQUENCE' || g._kind !== 'RUN') continue;
+    const run = g.cards;
+    let extended = true;
+    while (extended) {
+      extended = false;
+      const runSuit = run[0].suit;
+      const firstRank = run[0].rank;
+      const lastRank = run[run.length - 1].rank;
+      const availSuit = getAvailable().filter(c => c && c.suit === runSuit && !isWildCard(c, cutCard));
+
+      const firstIdx = RANKS.indexOf(firstRank);
+      if (firstIdx > 0) {
+        const prevRank = RANKS[firstIdx - 1];
+        const match = availSuit.find(c => c.rank === prevRank);
+        if (match) {
+          run.unshift(match);
+          usedIds.add(match.id);
+          extended = true;
+          continue;
+        }
+      }
+      const lastIdx = RANKS.indexOf(lastRank);
+      if (lastRank !== 'A' && lastIdx >= 0 && lastIdx < RANKS.length - 1) {
+        const nextRank = RANKS[lastIdx + 1];
+        const match = availSuit.find(c => c.rank === nextRank);
+        if (match) {
+          run.push(match);
+          usedIds.add(match.id);
+          extended = true;
+          continue;
+        }
+      }
+      if (lastRank === 'K') {
+        const match = availSuit.find(c => c.rank === 'A');
+        if (match) {
+          run.push(match);
+          usedIds.add(match.id);
+          extended = true;
+          continue;
+        }
+      }
+    }
+    g.cardIds = run.map(c => c.id);
+    if (!g.typeLabel.startsWith('Marriage')) {
+      g.typeLabel = `Pure Run (${run.length})`;
+    }
+  }
+
+  // 6. Strict deduplication invariant: ensure no card ID appears in multiple groups
   const verifiedGroups = [];
   const claimedIds = new Set();
   for (const g of groups) {
     if (Array.isArray(g.cards) && g.cards.every(c => c && c.id && !claimedIds.has(c.id))) {
       g.cards.forEach(c => claimedIds.add(c.id));
-      verifiedGroups.push(g);
+      const { _kind, ...cleanGroup } = g;
+      verifiedGroups.push(cleanGroup);
     }
   }
 
