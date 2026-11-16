@@ -493,10 +493,12 @@
       z-index: 2;
     }
 
-    /* Interactive cards inside formed declaration groups (tap card to release back to pool) */
-    .grouped-cards .card,
+    /* Interactive cards inside formed declaration groups */
     .locked-cards .card {
       cursor: pointer !important;
+      position: relative;
+    }
+    .grouped-cards .card {
       position: relative;
     }
     .grouped-cards .card:hover,
@@ -871,6 +873,30 @@
       color: var(--accent-rose) !important;
       background: rgba(244, 63, 94, 0.1) !important;
       border-color: rgba(244, 63, 94, 0.2) !important;
+    }
+    .stand-header-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .stand-move-group-btn {
+      width: auto !important;
+      padding: 2px 8px !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      margin: 0 !important;
+      background: rgba(50, 197, 138, 0.14) !important;
+      color: #7eedba !important;
+      border: 1px solid rgba(50, 197, 138, 0.35) !important;
+      border-radius: 5px !important;
+      cursor: pointer;
+      transition: all .14s ease;
+    }
+    .stand-move-group-btn:hover {
+      background: rgba(50, 197, 138, 0.26) !important;
+      border-color: rgba(50, 197, 138, 0.65) !important;
+      color: #ffffff !important;
     }
     .stand-cards {
       display: flex;
@@ -1846,6 +1872,24 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   transform: translateY(-1px);
   box-shadow: 0 0 14px rgba(241, 210, 122, 0.5);
 }
+@keyframes submitReadyGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(134, 239, 172, 0.55), 0 0 10px rgba(34, 197, 94, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.25), 0 0 18px rgba(34, 197, 94, 0.65);
+  }
+}
+.sticky-submit-btn.is-ready-pulse {
+  background: linear-gradient(135deg, #22c55e, #15803d) !important;
+  color: #ffffff !important;
+  border-color: #86efac !important;
+  animation: submitReadyGlow 2.4s ease-in-out infinite;
+}
+.sticky-submit-btn.is-ready-pulse:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.65), 0 0 20px rgba(34, 197, 94, 0.72);
+}
 
 /* In-Stand inline meld buttons inside .declaration-ungrouped header */
 .stand-group-inline-btns {
@@ -2023,11 +2067,30 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
+  flex-wrap: wrap;
   width: 100%;
   max-width: 980px;
   z-index: 10;
-  gap: 12px;
+  gap: 8px 12px;
   margin-bottom: 2px;
+}
+.opponent-seats-area.is-many-seats {
+  justify-content: center;
+  gap: 8px 8px;
+}
+.opponent-seats-area.is-many-seats .pokerist-seat {
+  min-width: 74px;
+}
+.opponent-seats-area.is-many-seats .seat-avatar-wrap {
+  width: 40px;
+  height: 40px;
+}
+.opponent-seats-area.is-many-seats .seat-avatar-inner {
+  font-size: 17px;
+}
+.opponent-seats-area.is-many-seats .seat-player-name {
+  font-size: 10.5px;
+  max-width: 76px;
 }
 
 /* Pokerist Player Seat Pod */
@@ -2489,6 +2552,7 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
   border-collapse: collapse;
   font-size: 11.5px;
   text-align: left;
+  font-variant-numeric: tabular-nums;
 }
 .session-table th {
   background: linear-gradient(180deg, rgba(217, 182, 92, 0.18), rgba(217, 182, 92, 0.08));
@@ -2516,6 +2580,58 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .session-table tr.is-me-row td {
   font-weight: 700;
   color: #f8fafc;
+}
+.tourney-status-cell {
+  min-width: 155px;
+}
+.tourney-status-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.tourney-status-ratio {
+  font-weight: 700;
+  color: #e2e8f0;
+}
+.tourney-status-label {
+  font-size: 10px;
+  font-weight: 700;
+}
+.tourney-status-label.is-safe { color: #7eedba; }
+.tourney-status-label.is-warn { color: #fbbf24; }
+.tourney-status-label.is-danger { color: #fb923c; }
+.tourney-status-label.is-out { color: #fca5a5; }
+.tourney-status-label.is-off { color: #94a3b8; font-weight: 600; }
+.tourney-progress-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.tourney-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+.tourney-progress-fill.is-safe {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+.tourney-progress-fill.is-warn {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+.tourney-progress-fill.is-danger {
+  background: linear-gradient(90deg, #f97316, #ef4444);
+}
+.tourney-progress-fill.is-out {
+  background: #ef4444;
+}
+.tourney-progress-fill.is-off {
+  background: rgba(148, 163, 184, 0.45);
 }
 .score-pos {
   color: #7eedba !important;
@@ -3201,7 +3317,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     South Indian Open Joker Table &bull; Winner Takes Honors
   </div>
   <div class="lobby-meta-bar">
-    <span>3 Decks of 53 Cards (159 total)</span>
+    <span id="lobbyMetaDecksText">3–5 Decks &bull; Max 10 Players</span>
     <span class="meta-dot">&bull;</span>
     <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
@@ -3432,7 +3548,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     </div>
 
     <!-- Multi-Stand Cards Racks -->
-    <div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container"></div>
+    <div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container" ondragover="onStandsContainerDragOver(event)" ondrop="onStandsContainerDrop(event)"></div>
 
     <div class="action-section">
       <div class="action-label">Your Move</div>
@@ -3488,6 +3604,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <h2 id="winnerTitle" class="modal-winner" style="margin:0;"></h2>
       <button type="button" class="maal-modal-close" onclick="closeResultsModal()" aria-label="Close Results &amp; Inspect Table" title="Close dialog (reopen anytime via View Results)">✕</button>
     </div>
+    <div id="tournamentResultBanner" style="display:none; margin-top:10px;"></div>
     <div id="maalDetails" class="maal-breakdown" style="margin-top:12px;"></div>
     <h3 style="font-size: 15px; margin-top: 16px; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Round Settlements</h3>
     <div id="settlementList"></div>
@@ -3527,7 +3644,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
 <!-- Session Scores Full Modal -->
 <div id="sessionScoresModal" class="modal" onclick="if(event.target===this) closeSessionScoresModal()">
-  <div class="modal-content session-modal-content" style="max-width: 680px;">
+  <div class="modal-content session-modal-content" style="max-width: 820px; width: 95vw;">
     <div class="maal-modal-header">
       <div class="maal-modal-title-group">
         <h2 class="modal-winner" style="margin:0; font-size:18px; display:flex; align-items:center; gap:8px;">
@@ -3860,6 +3977,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <li><strong>The winner receives:</strong> (Number of paying losers) &times; (Winner's Honors points).</li>
           </ul>
         </div>
+        <div id="rulesTournamentInfoBox" class="rules-card-box" style="margin-top:10px; display:none;"></div>
       </div>
 
       <!-- Tab 5: Customize Rules & Scoring -->
@@ -4483,6 +4601,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   window.triggerWinnerParticles = triggerWinnerParticles;
 
   // --- 1, 5, 6: Layout Preset, Rejoin Banner, & Custom House Rules ---
+  const MAX_PLAYERS = 10;
   const DEFAULT_RULES = {
     presetName: 'Classic South Indian',
     decks: 3,
@@ -4509,7 +4628,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     freeScootDealtDoubles: 6,
     freeGameDrawnDoubles: 7,
     blockDiscardedJokerPickup: true,
-    groupingTimeSec: 300
+    groupingTimeSec: 300,
+    eliminationEnabled: false,
+    scoreLimit: 500
   };
   const RULE_PRESETS = {
     classic: { ...DEFAULT_RULES, presetName: 'Classic South Indian' },
@@ -4540,6 +4661,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       middleDrop: 80,
       forfeitPenalty: 120,
       maxDeadwood: 150
+    },
+    tournament: {
+      ...DEFAULT_RULES,
+      presetName: 'Tournament',
+      eliminationEnabled: true,
+      scoreLimit: 500
     }
   };
   function clampRuleInt(val, min, max, fallback) {
@@ -4558,7 +4685,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const freeGameDrawnDoubles = clampRuleInt(src.freeGameDrawnDoubles, 5, 10, DEFAULT_RULES.freeGameDrawnDoubles);
     return {
       presetName,
-      decks: 3,
+      decks: clampRuleInt(src.decks, 3, 5, DEFAULT_RULES.decks),
       poochiesPerDeck: clampRuleInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
       marriagePts: clampRuleInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
       tipluPts: clampRuleInt(src.tipluPts, 0, 150, DEFAULT_RULES.tipluPts),
@@ -4582,7 +4709,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       freeScootDealtDoubles,
       freeGameDrawnDoubles: Math.max(freeScootDealtDoubles, freeGameDrawnDoubles),
       blockDiscardedJokerPickup: src.blockDiscardedJokerPickup !== false,
-      groupingTimeSec: clampRuleInt(src.groupingTimeSec, 60, 600, DEFAULT_RULES.groupingTimeSec)
+      groupingTimeSec: clampRuleInt(src.groupingTimeSec, 60, 600, DEFAULT_RULES.groupingTimeSec),
+      eliminationEnabled: Boolean(src.eliminationEnabled),
+      scoreLimit: clampRuleInt(src.scoreLimit, 100, 5000, DEFAULT_RULES.scoreLimit)
     };
   }
   let customLobbyRules = { ...DEFAULT_RULES };
@@ -4603,7 +4732,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const r = getActiveRules();
     const isCust = hasCustomRules(r);
     const lbl = document.getElementById('btnHelpRulesLabel');
-    if (lbl) lbl.innerHTML = isCust ? '⚙️ Custom Rules <span class="custom-rules-badge">CUSTOM</span>' : '❓ Rules';
+    if (lbl) {
+      if (r.eliminationEnabled) {
+        lbl.innerHTML = `🏆 Rules <span class="custom-rules-badge">MAX ${r.scoreLimit}</span>`;
+      } else {
+        lbl.innerHTML = isCust ? '⚙️ Custom Rules <span class="custom-rules-badge">CUSTOM</span>' : '❓ Rules';
+      }
+    }
   }
 
   let lobbyRulesOpen = false;
@@ -4620,7 +4755,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderRulesButtonState();
   }
   function updateLobbyRuleField(key, val) {
-    customLobbyRules = sanitizeClientRules({ ...customLobbyRules, presetName: 'Custom House Rules', [key]: val });
+    const nextPresetName = ((key === 'scoreLimit' || key === 'decks') && customLobbyRules.eliminationEnabled)
+      ? 'Tournament'
+      : (key === 'eliminationEnabled' && val)
+        ? 'Tournament'
+        : 'Custom House Rules';
+    customLobbyRules = sanitizeClientRules({ ...customLobbyRules, presetName: nextPresetName, [key]: val });
     saveLobbyRules();
     renderLobbyRulesPanel();
     renderRulesButtonState();
@@ -4633,15 +4773,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
   function renderLobbyRulesPanel() {
     const panel = document.getElementById('lobbyRulesPanel');
-    if (!panel) return;
     const r = customLobbyRules;
+    const totalCards = (r.decks * 52) + (r.decks * r.poochiesPerDeck);
+    const metaDecksEl = document.getElementById('lobbyMetaDecksText');
+    if (metaDecksEl) {
+      metaDecksEl.innerText = `${r.decks} Decks (${totalCards} cards) • Max ${MAX_PLAYERS} Players`;
+    }
+    if (!panel) return;
     const isCust = hasCustomRules(r);
     const activeKey = Object.keys(RULE_PRESETS).find(k =>
       Object.keys(DEFAULT_RULES).every(f => f === 'presetName' || RULE_PRESETS[k][f] === r[f])
     ) || 'custom';
     panel.innerHTML = `
       <button type="button" class="lobby-rules-toggle" onclick="toggleLobbyRulesEditor()">
-        <span>⚙️ House Rules &amp; Scoring: <strong>${escapeHtml(r.presetName)}</strong>${isCust ? '<span class="custom-rules-badge">CUSTOM</span>' : ''}</span>
+        <span>⚙️ House Rules &amp; Scoring: <strong>${escapeHtml(r.presetName)}</strong>${r.eliminationEnabled ? `<span class="custom-rules-badge">TOURNAMENT ≤${r.scoreLimit}</span>` : (isCust ? '<span class="custom-rules-badge">CUSTOM</span>' : '')}</span>
         <span>${lobbyRulesOpen ? '▲ Hide' : '▼ Customize'}</span>
       </button>
       <div class="lobby-rules-body ${lobbyRulesOpen ? 'is-open' : ''}">
@@ -4649,17 +4794,21 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <button type="button" class="rules-preset-chip ${activeKey === 'classic' ? 'active' : ''}" onclick="applyPresetToLobby('classic')">Classic</button>
           <button type="button" class="rules-preset-chip ${activeKey === 'casual' ? 'active' : ''}" onclick="applyPresetToLobby('casual')">Casual</button>
           <button type="button" class="rules-preset-chip ${activeKey === 'highStakes' ? 'active' : ''}" onclick="applyPresetToLobby('highStakes')">High Stakes</button>
+          <button type="button" class="rules-preset-chip ${activeKey === 'tournament' || r.eliminationEnabled ? 'active' : ''}" onclick="applyPresetToLobby('tournament')">🏆 Tournament</button>
           <button type="button" class="rules-preset-chip" onclick="resetLobbyRulesToDefault()">Reset Default</button>
         </div>
         <div class="rules-custom-grid">
+          <label class="rules-field">Packs (52-Card Decks)<select onchange="updateLobbyRuleField('decks', this.value)"><option value="3" ${r.decks === 3 ? 'selected' : ''}>3 Packs (${3 * (52 + r.poochiesPerDeck)} cards • max 7p)</option><option value="4" ${r.decks === 4 ? 'selected' : ''}>4 Packs (${4 * (52 + r.poochiesPerDeck)} cards • max 9p)</option><option value="5" ${r.decks === 5 ? 'selected' : ''}>5 Packs (${5 * (52 + r.poochiesPerDeck)} cards • max 10p)</option></select></label>
+          <label class="rules-field">Poochies Per Deck<select onchange="updateLobbyRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 per deck (${r.decks} total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 per deck (${r.decks * 2} total)</option></select></label>
           <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateLobbyRuleField('minPureSequences', this.value)"></label>
           <label class="rules-field">First / Middle / Wrong Drop<div style="display:flex;gap:4px;"><input type="number" min="0" max="120" value="${r.firstDrop}" style="width:33%;" onchange="updateLobbyRuleField('firstDrop', this.value)"><input type="number" min="0" max="200" value="${r.middleDrop}" style="width:33%;" onchange="updateLobbyRuleField('middleDrop', this.value)"><input type="number" min="0" max="300" value="${r.forfeitPenalty}" style="width:34%;" onchange="updateLobbyRuleField('forfeitPenalty', this.value)"></div></label>
           <label class="rules-field">Max Deadwood Cap<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateLobbyRuleField('maxDeadwood', this.value)"></label>
           <label class="rules-field">Marriage / Pukka Pts<div style="display:flex;gap:4px;"><input type="number" min="0" max="250" value="${r.marriagePts}" style="width:50%;" onchange="updateLobbyRuleField('marriagePts', this.value)"><input type="number" min="0" max="150" value="${r.tipluPts}" style="width:50%;" onchange="updateLobbyRuleField('tipluPts', this.value)"></div></label>
-          <label class="rules-field">Poochies Per Deck<select onchange="updateLobbyRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 per deck (3 total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 per deck (6 total)</option></select></label>
           <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateLobbyRuleField('groupingTimeSec', this.value)"></label>
+          <label class="rules-field" title="Exceeding this points total (excluding Honors) eliminates the player in Tournament mode">Tournament Score Limit<input type="number" min="100" max="5000" step="50" value="${r.scoreLimit}" onchange="updateLobbyRuleField('scoreLimit', this.value)"></label>
         </div>
         <div class="rules-check-row">
+          <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateLobbyRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (players exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors lose &amp; sit out; last standing wins)</label>
           <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateLobbyRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} onchange="updateLobbyRuleField('allowDoublesShow', this.checked)"> Allow Doubles Show (${r.dealtDoublesForShow} dealt / ${r.drawnDoublesForShow} drawn) &amp; Free Scoot (${r.freeScootDealtDoubles}/${r.freeGameDrawnDoubles})</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowTunnelaAsPure ? 'checked' : ''} onchange="updateLobbyRuleField('allowTunnelaAsPure', this.checked)"> Tunella counts as Pure Group</label>
@@ -5006,6 +5155,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
     hasInitializedGroupingPhase = false;
     lastRoundResultData = null;
     globalSessionScores = [];
@@ -5138,6 +5288,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
       if (msg.type === 'PONG') {
         // Keepalive acknowledged
+        return;
+      }
+
+      if (msg.type === 'ROOM_FULL') {
+        resetToLobbyScreen(msg.message || `Room is full (maximum ${MAX_PLAYERS} players allowed).`);
         return;
       }
 
@@ -6034,6 +6189,214 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderAll(null);
   }
 
+  function findFirstValidGroupInStand(stand) {
+    if (!Array.isArray(stand) || stand.length < 3) return null;
+    const cards = stand.filter(c => c && c.id);
+    if (cards.length < 3) return null;
+
+    const standIdxMap = new Map(cards.map((c, idx) => [c.id, idx]));
+    const minStandIdx = (grp) => Math.min(...grp.map(c => standIdxMap.get(c.id) ?? 999));
+    const cut = roomState?.cutCard;
+    const roles = roomState?.roles;
+    const rCfg = getActiveRules();
+    const suits = ['♠', '♥', '♣', '♦'];
+
+    // Tier 1: Natural Pure Sequences (0 wildcards first, then pure runs that include a natural-rank joker)
+    const zeroWildRuns = [];
+    const pureRunsWithNatJoker = [];
+    for (const suit of suits) {
+      const suitNaturals = cards.filter(c => c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+      if (suitNaturals.length < 3) continue;
+      const runs = extractOptimalPureRuns(suitNaturals, cut, roles);
+      for (const run of runs) {
+        if (!Array.isArray(run) || run.length < 3 || !declarationPure(run)) continue;
+        const wildCount = run.filter(c => declarationIsWildForCut(c, cut, roles)).length;
+        const entry = {
+          cards: run,
+          type: 'PURE_SEQUENCE',
+          shortLabel: `Pure (${run.length})`,
+          typeLabel: 'Pure Group',
+          firstIdx: minStandIdx(run)
+        };
+        if (wildCount === 0) zeroWildRuns.push(entry);
+        else pureRunsWithNatJoker.push(entry);
+      }
+    }
+    if (zeroWildRuns.length > 0) {
+      zeroWildRuns.sort((a, b) => a.firstIdx - b.firstIdx);
+      return zeroWildRuns[0];
+    }
+
+    // Tier 2: Other Pure Melds (pure run w/ natural joker, Marriage, Tunella, 3 Poochies)
+    const otherPure = [...pureRunsWithNatJoker];
+    if (roles && rCfg.allowMarriageAsPure !== false) {
+      const taplu = cards.find(c => c.suit === roles.tipluSuit && c.rank === roles.nichluRank);
+      const tiplu = cards.find(c => c.suit === roles.tipluSuit && c.rank === roles.tipluRank);
+      const paplu = cards.find(c => c.suit === roles.tipluSuit && c.rank === roles.papluRank);
+      if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
+        const mCards = [taplu, tiplu, paplu];
+        otherPure.push({
+          cards: mCards,
+          type: 'PURE_SEQUENCE',
+          shortLabel: 'Marriage (3)',
+          typeLabel: 'Marriage Pure Group',
+          firstIdx: minStandIdx(mCards)
+        });
+      }
+    }
+    if (rCfg.allowTunnelaAsPure !== false) {
+      const byExact = new Map();
+      for (const c of cards) {
+        if (declarationIsWildForCut(c, cut, roles)) continue;
+        const key = `${c.suit}_${c.rank}`;
+        if (!byExact.has(key)) byExact.set(key, []);
+        byExact.get(key).push(c);
+      }
+      for (const list of byExact.values()) {
+        if (list.length >= 3) {
+          const trio = list.slice(0, 3);
+          otherPure.push({
+            cards: trio,
+            type: 'PURE_SEQUENCE',
+            shortLabel: 'Tunella (3)',
+            typeLabel: 'Tunella Pure Group',
+            firstIdx: minStandIdx(trio)
+          });
+        }
+      }
+    }
+    if (rCfg.allow3PoochiesAsPure !== false) {
+      const poochies = cards.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+      if (poochies.length >= 3) {
+        const trio = poochies.slice(0, 3);
+        otherPure.push({
+          cards: trio,
+          type: 'PURE_SEQUENCE',
+          shortLabel: 'Poochies (3)',
+          typeLabel: '3 Poochies Group',
+          firstIdx: minStandIdx(trio)
+        });
+      }
+    }
+    if (otherPure.length > 0) {
+      otherPure.sort((a, b) => a.firstIdx - b.firstIdx);
+      return otherPure[0];
+    }
+
+    // Tier 3: Joker Sequences (same-suit sequence completed with wildcard(s), preferring fewest wilds)
+    const availWilds = cards.filter(c => declarationIsWildForCut(c, cut, roles));
+    if (availWilds.length > 0) {
+      const seqCandidates = [];
+      for (const suit of suits) {
+        const suitNats = cards.filter(c => c.suit === suit && !declarationIsWildForCut(c, cut, roles));
+        for (let i = 0; i < suitNats.length; i++) {
+          for (let j = i + 1; j < suitNats.length; j++) {
+            const trio = [suitNats[i], suitNats[j], availWilds[0]];
+            if (declarationSequence(trio)) {
+              seqCandidates.push({
+                cards: trio,
+                type: 'SEQUENCE',
+                shortLabel: 'Seq (3)',
+                typeLabel: 'Joker Sequence',
+                wildCount: 1,
+                firstIdx: minStandIdx(trio)
+              });
+            }
+          }
+        }
+      }
+      if (seqCandidates.length === 0 && availWilds.length >= 2) {
+        for (const c of cards) {
+          if (declarationIsWildForCut(c, cut, roles)) continue;
+          const trio = [c, availWilds[0], availWilds[1]];
+          if (declarationSequence(trio)) {
+            seqCandidates.push({
+              cards: trio,
+              type: 'SEQUENCE',
+              shortLabel: 'Seq (3)',
+              typeLabel: 'Joker Sequence',
+              wildCount: 2,
+              firstIdx: minStandIdx(trio)
+            });
+          }
+        }
+      }
+      if (seqCandidates.length > 0) {
+        seqCandidates.sort((a, b) => (a.wildCount - b.wildCount) || (a.firstIdx - b.firstIdx));
+        return seqCandidates[0];
+      }
+    }
+
+    // Tier 4: Sets (same rank, distinct suits; prefer 0-wild sets first)
+    const setCandidates = [];
+    const byRank = new Map();
+    for (const c of cards) {
+      if (declarationIsWildForCut(c, cut, roles)) continue;
+      if (!byRank.has(c.rank)) byRank.set(c.rank, new Map());
+      const suitMap = byRank.get(c.rank);
+      if (!suitMap.has(c.suit)) suitMap.set(c.suit, c);
+    }
+    for (const suitMap of byRank.values()) {
+      const distinct = Array.from(suitMap.values());
+      if (distinct.length >= 3) {
+        const setCards = distinct.slice(0, 4);
+        if (declarationSet(setCards)) {
+          setCandidates.push({
+            cards: setCards,
+            type: 'SET',
+            shortLabel: `Set (${setCards.length})`,
+            typeLabel: 'Set',
+            wildCount: 0,
+            firstIdx: minStandIdx(setCards)
+          });
+        }
+      } else if (distinct.length === 2 && availWilds.length >= 1) {
+        const setCards = [...distinct, availWilds[0]];
+        if (declarationSet(setCards)) {
+          setCandidates.push({
+            cards: setCards,
+            type: 'SET',
+            shortLabel: 'Set (3)',
+            typeLabel: 'Set',
+            wildCount: 1,
+            firstIdx: minStandIdx(setCards)
+          });
+        }
+      }
+    }
+    if (setCandidates.length > 0) {
+      setCandidates.sort((a, b) => (a.wildCount - b.wildCount) || (a.firstIdx - b.firstIdx));
+      return setCandidates[0];
+    }
+
+    return null;
+  }
+
+  function moveFirstValidGroupToNewStand(standIdx) {
+    if (declarationMode || !Array.isArray(userStands)) return false;
+    const stand = userStands[standIdx];
+    if (!Array.isArray(stand) || stand.length < 3) return false;
+    const firstGroup = findFirstValidGroupInStand(stand);
+    if (!firstGroup || !Array.isArray(firstGroup.cards) || firstGroup.cards.length < 3) return false;
+    if (standIdx === userStands.length - 1 && stand.length === firstGroup.cards.length) return false;
+
+    const moveIds = new Set(firstGroup.cards.map(c => c.id));
+    const movedCards = firstGroup.cards.map(c => stand.find(sc => sc && sc.id === c.id) || c).filter(Boolean);
+    if (movedCards.length < 3) return false;
+
+    userStands[standIdx] = stand.filter(c => c && !moveIds.has(c.id));
+    userStands.push(movedCards);
+    if (!Array.isArray(standTypes)) standTypes = [];
+    standTypes.push(firstGroup.type || 'PURE_SEQUENCE');
+
+    myHand = userStands.flat();
+    saveStandsToStorage();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+    return true;
+  }
+  window.moveFirstValidGroupToNewStand = moveFirstValidGroupToNewStand;
+
   // --- Move Only Poochies to Start ---
   function moveJokersToFront() {
     const allCards = userStands.flat();
@@ -6349,10 +6712,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const guidedClass = (!isLocked && declarationMode && guidedCardIds.has(card.id)) ? 'is-guided' : '';
     const lockedClass = isLocked ? 'locked-card-item' : '';
     const clickAttr = isLocked ? '' : `onclick="selectCard('${card.id}')"`;
-    const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    const hasFinePointer = Boolean(window.matchMedia && window.matchMedia('(any-pointer: fine)').matches);
+    const isTouchOnly = Boolean(window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches && !hasFinePointer);
     const dragAttrs = (isHand && !isLocked) ? `
       id="card-${card.id}"
-      ${isTouch ? '' : 'draggable="true"'}
+      ${isTouchOnly ? '' : 'draggable="true"'}
       ondragstart="onCardDragStart(event, '${card.id}')"
       ondragover="onCardDragOver(event, '${card.id}')"
       ondragleave="onCardDragLeave(event, '${card.id}')"
@@ -6392,7 +6756,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     // Chris Aguilar's open-source SVG deck via jsDelivr CDN
     const svgUrl = getStandardCardSvgUrl(card);
     const vectorImgHtml = svgUrl
-      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" loading="eager" onerror="this.style.display='none';" />`
+      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" draggable="false" loading="eager" onerror="this.style.display='none';" />`
       : '';
 
     let centerHtml = '';
@@ -6517,9 +6881,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const myForfeited = Boolean(me && (me.hasForfeited || me.dropType === 'FORFEIT'));
     const myDropped = Boolean(me && me.hasDropped);
 
+    const maxCap = roomState.maxPlayers || MAX_PLAYERS;
     // 1. Update Fallback Legacy Summary
     if (summary) {
-      if (!playing) summary.innerText = roomState.players.length + ' seated';
+      if (!playing) summary.innerText = `${roomState.players.length}/${maxCap} seated`;
       else if (isMyTurn) summary.innerText = roomState.turnStage === 'DRAW' ? 'Your turn: Draw' : 'Your turn: Discard';
       else summary.innerText = `Turn: ${roomState.turnPlayerName || 'Opponent'}`;
     }
@@ -6538,7 +6903,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
       if (!playing) {
-        bannerMsg = `Waiting in lobby (${roomState.players.length} seated)`;
+        bannerMsg = `Waiting in lobby (${roomState.players.length}/${maxCap} seated)`;
         if (turnNotice) turnNotice.innerText = 'Lobby';
         if (turnDot) turnDot.className = 'turn-indicator-dot';
       } else if (isMyTurn) {
@@ -6575,6 +6940,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       opponents.push(...roomState.players.filter(p => p.id !== myId));
     }
     if (opponentArea) {
+      opponentArea.classList.toggle('is-many-seats', opponents.length >= 5);
       if (opponents.length === 0) {
         opponentArea.innerHTML = `
           <div class="pokerist-seat seat-top" style="opacity:0.4;">
@@ -6591,7 +6957,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             (roundWinnerName && p.name && p.name.toLowerCase() === roundWinnerName.toLowerCase()) ||
             (roundWinnerId && p.id === roundWinnerId)
           );
-          const isCurrent = playing && p.id === currentId && !isWinner;
+          const isElim = Boolean(p.isEliminated);
+          const isCurrent = playing && p.id === currentId && !isWinner && !isElim;
           const forfeited = Boolean(p.hasForfeited || p.dropType === 'FORFEIT');
           const dropped = Boolean(p.hasDropped);
           let stateText = 'Waiting';
@@ -6600,6 +6967,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           if (isWinner) {
             stateText = '🏆 WINNER';
             stateClass = 'action-winner';
+          } else if (isElim) {
+            stateText = '💀 Eliminated';
+            stateClass = 'action-forfeited';
           } else if (forfeited) {
             stateText = 'Forfeited';
             stateClass = 'action-forfeited';
@@ -6615,12 +6985,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             stateText = p.lastAction;
           }
 
-          const count = p.cardCount ?? 21;
+          const count = isElim ? 0 : (p.cardCount ?? 21);
           const avatar = getPlayerAvatarEmoji(p.name);
           const isDealer = roomState.dealerId === p.id;
 
           return `
-            <div class="pokerist-seat ${isWinner ? 'is-winner-seat' : ''} ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${forfeited ? 'is-forfeited' : ''}">
+            <div class="pokerist-seat ${isWinner ? 'is-winner-seat' : ''} ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${(forfeited || isElim) ? 'is-forfeited' : ''}">
               <div class="seat-avatar-wrap">
                 ${isWinner ? '<div class="seat-winner-crown" title="Round Winner">👑</div>' : ''}
                 <div class="seat-avatar-ring">
@@ -6631,11 +7001,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               </div>
               <div class="seat-meta">
                 <div class="seat-player-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
-                <div class="seat-card-fan" title="${count} cards in hand">
-                  <span class="mini-card mini-card-1">🂠</span>
-                  <span class="mini-card mini-card-2">🂠</span>
-                  <span class="mini-card mini-card-3">🂠</span>
-                  <span class="mini-card mini-card-count">${count}</span>
+                <div class="seat-card-fan" title="${isElim ? 'Eliminated from Tournament' : `${count} cards in hand`}">
+                  ${isElim ? '<span class="mini-card mini-card-count" style="color:#fca5a5;">OUT</span>' : `<span class="mini-card mini-card-1">🂠</span><span class="mini-card mini-card-2">🂠</span><span class="mini-card mini-card-3">🂠</span><span class="mini-card mini-card-count">${count}</span>`}
                 </div>
               </div>
             </div>
@@ -6650,12 +7017,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         (roundWinnerName && (roundWinnerName === 'You' || (me?.name && me.name.toLowerCase() === roundWinnerName.toLowerCase()))) ||
         (roundWinnerId && me?.id === roundWinnerId)
       );
+      const myEliminated = Boolean(me && me.isEliminated);
 
       let myStateText = 'Waiting';
       let myActionClass = '';
       if (isMeWinner) {
         myStateText = '🏆 WINNER';
         myActionClass = 'action-winner';
+      } else if (myEliminated) {
+        myStateText = `💀 Eliminated (> ${getActiveRules().scoreLimit} pts)`;
+        myActionClass = 'action-forfeited';
       } else if (myForfeited) {
         myStateText = `Forfeited (${getActiveRules().forfeitPenalty} pts)`;
       } else if (myDropped) {
@@ -6681,13 +7052,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <div class="bottom-user-details">
             <div class="bottom-user-name">
               <span>${escapeHtml(me?.name || 'You')}</span>
-              <span class="bottom-you-tag" style="${isMeWinner ? 'background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:900;' : ''}">${isMeWinner ? '👑 WINNER' : 'YOU'}</span>
+              <span class="bottom-you-tag" style="${isMeWinner ? 'background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:900;' : ''}">${isMeWinner ? '👑 WINNER' : (myEliminated ? 'OUT' : 'YOU')}</span>
             </div>
             <div class="bottom-user-stats">
               <span class="stat-hand-count">🎴 <b>${myCount}</b> cards</span>
               <span>•</span>
-              <span class="stat-role-hint" style="color: ${isMeWinner ? '#fef08a' : (isMyTurn ? '#7eedba' : '#94a3b8')};">
-                ${isMeWinner ? '🏆 Round winner! Collects Honors from all opponents.' : (isMyTurn ? ((roomState.turnStage === 'DRAW' || myCount < 22) ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn')}
+              <span class="stat-role-hint" style="color: ${isMeWinner ? '#fef08a' : (myEliminated ? '#fca5a5' : (isMyTurn ? '#7eedba' : '#94a3b8'))};">
+                ${isMeWinner ? '🏆 Round winner! Collects Honors from all opponents.' : (myEliminated ? 'Eliminated from Tournament — Spectating active players' : (isMyTurn ? ((roomState.turnStage === 'DRAW' || myCount < 22) ? 'Draw card from Stock or Discard' : 'Select card to Discard or Declare') : 'Waiting for opponent turn'))}
               </span>
             </div>
           </div>
@@ -6759,9 +7130,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     // Turn indicator & button state enforcement
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myPlayer = roomState?.players?.find(p => p.id === myId);
+    const myEliminated = Boolean(myPlayer && myPlayer.isEliminated);
     const myForfeited = Boolean(myPlayer && (myPlayer.hasForfeited || myPlayer.dropType === 'FORFEIT'));
     const myDropped = Boolean(myPlayer && myPlayer.hasDropped);
-    const isMyTurn = isCurrentPlayerMe();
+    const isMyTurn = isCurrentPlayerMe() && !myEliminated;
     checkAndTriggerTurnSound();
     if (roomState?.status === 'PLAYING') {
       soundSystem.startKeepAlive();
@@ -6769,7 +7141,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       soundSystem.stopKeepAlive();
     }
     const myCount = totalCount;
-    const canDraw = canPlayerDraw();
+    const canDraw = canPlayerDraw() && !myEliminated;
     const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD' && myCount >= 22;
 
     // Contextual turn guidance
@@ -6782,6 +7154,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } else if (isRoundOverPhase) {
         const wName = escapeHtml(roomState.winnerName || currentRoundWinnerName || 'Winner');
         guide.innerHTML = `<strong>Round Complete:</strong> 🏆 ${wName} won this hand. <button type="button" class="inline-meld-btn" style="margin-left:6px; vertical-align:middle;" onclick="reopenResultsModal()">👁️ View Results &amp; All Hands</button>`;
+      } else if (myEliminated) {
+        guide.innerHTML = `<strong>💀 Tournament Eliminated (&gt; ${getActiveRules().scoreLimit} pts):</strong> You are no longer dealt cards and are spectating ${escapeHtml(roomState.turnPlayerName || 'active players')}.`;
       } else if (myForfeited) {
         guide.innerHTML = `<strong>You forfeited (${getActiveRules().forfeitPenalty} pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
       } else if (myDropped) {
@@ -6805,16 +7179,26 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     if (!roomState || roomState.status === 'LOBBY') {
       const count = roomState ? roomState.players.length : 1;
+      const maxCap = roomState?.maxPlayers || MAX_PLAYERS;
+      const rNow = getActiveRules();
+      const totalDeckCards = rNow.decks * (52 + rNow.poochiesPerDeck);
+      const needsMorePacks = (count * 21 + 5) > totalDeckCards;
+      const neededPacks = Math.min(5, Math.ceil((count * 21 + 5) / (52 + rNow.poochiesPerDeck)));
       if (count < 2) {
-        notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 seated)</button>`;
+        notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 min &bull; ${maxCap} max)</button>`;
+      } else if (needsMorePacks) {
+        notice.innerHTML = `<button onclick="openRulesModal(); switchRulesTab('customize');" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; background:linear-gradient(135deg,#b45309,#d97706);" title="${count} players require ${neededPacks} packs (${rNow.decks} selected)">Set ${neededPacks} Packs to Start (${count}/${maxCap} seated)</button>`;
       } else {
-        notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} seated)</button>`;
+        notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count}/${maxCap} seated)</button>`;
       }
       dot.classList.remove('active');
     } else if (isRoundOverPhase) {
       dot.classList.remove('active');
       const wName = escapeHtml(roomState.winnerName || currentRoundWinnerName || 'Winner');
       notice.innerHTML = `<span>🏆 ${wName} won!</span> <button type="button" class="btn-primary" style="padding:4px 12px; font-size:11.5px; margin-top:0; margin-left:6px;" onclick="reopenResultsModal()">👁️ View Hands &amp; Scores</button>`;
+    } else if (myEliminated) {
+      dot.classList.remove('active');
+      notice.innerText = `💀 Eliminated (Spectating) • Turn: ${roomState.turnPlayerName}`;
     } else if (myForfeited) {
       dot.classList.remove('active');
       notice.innerText = `Forfeited (${getActiveRules().forfeitPenalty} pts) • Turn: ${roomState.turnPlayerName}`;
@@ -6854,12 +7238,14 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       btnDrop.onclick = () => dropHand();
       btnDrop.style.background = '';
       btnDrop.style.borderColor = '';
-      const canDropNow = canDraw || (isFreeGameDrawn && canDiscard);
-      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited);
+      const canDropNow = !myEliminated && (canDraw || (isFreeGameDrawn && canDiscard));
+      btnDrop.classList.toggle('btn-disabled', declarationMode || !canDropNow || myDropped || myForfeited || myEliminated);
         const b = btnDrop.querySelector('b');
         const s = btnDrop.querySelector('.action-sub');
         if (b && !dropConfirming) {
-          if (myDropped) {
+          if (myEliminated) {
+            b.innerText = 'Eliminated';
+          } else if (myDropped) {
             const pen = myPlayer?.dropPenalty || 0;
             b.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scooted (0 pts)' : `Scooted (${pen} pts)`;
           } else if (isFreeScootDealt) {
@@ -6871,7 +7257,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           }
         }
         if (s && !dropConfirming) {
-          if (myDropped) {
+          if (myEliminated) {
+            s.innerText = 'spectating table';
+          } else if (myDropped) {
             s.innerText = myPlayer?.dropType === 'FREE_SCOOT' ? '0 pts & 0 honors' : 'hand folded';
           } else if (isFreeScootDealt) {
             s.innerText = `${rCfg.freeScootDealtDoubles}+ doubles dealt • 0 pts & 0 honors`;
@@ -6896,7 +7284,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } else if (canDiscard) {
         btnDiscard.style.display = 'inline-flex';
         btnDiscard.classList.remove('btn-draw-mode');
-        btnDiscard.classList.toggle('btn-disabled', declarationMode || !selectedCardId || myDropped || myForfeited);
+        btnDiscard.classList.toggle('btn-disabled', declarationMode || !selectedCardId || myDropped || myForfeited || myEliminated);
         const b = btnDiscard.querySelector('b');
         if (b) b.innerText = 'Discard Card';
         const s = btnDiscard.querySelector('.action-sub');
@@ -6909,7 +7297,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
-      const canDeclare = (isMyTurn && (canDiscard || isDealtDoublesShow)) && !myDropped && !myForfeited;
+      const canDeclare = (isMyTurn && (canDiscard || isDealtDoublesShow)) && !myDropped && !myForfeited && !myEliminated;
       declareBtn.classList.toggle('btn-disabled', !canDeclare && !declarationMode);
       const b = declareBtn.querySelector('b');
       const sub = declareBtn.querySelector('.action-sub');
@@ -6921,7 +7309,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (sub) {
         sub.innerText = declarationMode
           ? 'submit your 21-card show'
-          : (myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
+          : (myEliminated ? 'eliminated' : myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
     const isGroupingPhase = roomState?.status === 'GROUPING';
@@ -6930,7 +7318,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       : roomState?.players?.find(p => p.id === getMyPlayerId() || (p.name || '').trim().toLowerCase() === (document.getElementById('playerName')?.value || '').trim().toLowerCase());
 
     const meGrouped = Boolean(mePlayer?.isGrouped);
-    const meDropped = Boolean(mePlayer?.hasDropped || mePlayer?.hasForfeited);
+    const meEliminated = Boolean(mePlayer?.isEliminated);
+    const meDropped = Boolean(mePlayer?.hasDropped || mePlayer?.hasForfeited || meEliminated);
 
     if (roomState?.status === 'ROUND_OVER' || roomState?.status === 'LOBBY') {
       declarationMode = false;
@@ -6944,7 +7333,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         declarationMode = false;
         if (waitModal) {
           waitModal.style.display = 'flex';
-          const activeNonDropped = (roomState.players || []).filter(p => !p.hasDropped);
+          const activeNonDropped = (roomState.players || []).filter(p => !p.hasDropped && !p.isEliminated);
           const readyCount = activeNonDropped.filter(p => p.isGrouped).length;
           const totalActive = activeNonDropped.length;
 
@@ -6956,25 +7345,28 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           if (waitTitle) {
             waitTitle.innerText = mePlayer?.id === roomState.winnerId
               ? '🏆 Declaration Accepted!'
-              : '✅ Groups Submitted!';
+              : (meEliminated ? '💀 Spectating Grouping Phase' : '✅ Groups Submitted!');
           }
           if (waitSub) {
             waitSub.innerText = mePlayer?.id === roomState.winnerId
               ? 'Waiting for all other players to finish grouping their cards...'
-              : 'Waiting for remaining opponents to finish grouping their cards...';
+              : 'Waiting for remaining active players to finish grouping their cards...';
           }
           if (waitProg) {
             waitProg.innerText = `${readyCount} / ${totalActive} players finished grouping`;
           }
           if (playersList) {
             playersList.innerHTML = (roomState.players || []).map(p => {
+              if (p.isEliminated) {
+                return `<div class="wait-player-row dropped"><span>${escapeHtml(p.name)}</span><span>💀 Eliminated (spectating)</span></div>`;
+              }
               if (p.hasDropped) {
-                return `<div class="wait-player-row dropped"><span>${p.name}</span><span>🚫 Dropped (${p.dropPenalty || 30} pts)</span></div>`;
+                return `<div class="wait-player-row dropped"><span>${escapeHtml(p.name)}</span><span>🚫 Dropped (${p.dropPenalty || 30} pts)</span></div>`;
               }
               if (p.isGrouped) {
-                return `<div class="wait-player-row ready"><span>${p.name}</span><span>✅ Ready</span></div>`;
+                return `<div class="wait-player-row ready"><span>${escapeHtml(p.name)}</span><span>✅ Ready</span></div>`;
               }
-              return `<div class="wait-player-row waiting"><span>${p.name}</span><span>⏳ Grouping cards...</span></div>`;
+              return `<div class="wait-player-row waiting"><span>${escapeHtml(p.name)}</span><span>⏳ Grouping cards...</span></div>`;
             }).join('');
           }
         }
@@ -7168,14 +7560,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (count <= 0) return 0;
       if (count === 1) return r.poochie1;
       if (count === 2) return r.poochie2;
-      return r.poochie3 + (count - 3) * (r.poochie1 || 20);
+      const extraStep = Math.max(0, r.poochie3 - r.poochie2);
+      return r.poochie3 + (count - 3) * (extraStep || r.poochie1 || 20);
     };
 
     const getPoolTier = (count) => {
       if (count <= 0) return 0;
       if (count === 1) return r.papluTaplu1;
       if (count === 2) return r.papluTaplu2;
-      return r.papluTaplu3 + (count - 3) * (r.papluTaplu1 || 10);
+      const extraStep = Math.max(0, r.papluTaplu3 - r.papluTaplu2);
+      return r.papluTaplu3 + (count - 3) * (extraStep || r.papluTaplu1 || 10);
     };
 
     const marriagePts = marriages * r.marriagePts;
@@ -7679,6 +8073,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     } else {
       updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right');
+      if (Array.isArray(userStands)) {
+        userStands.forEach((_, sIdx) => updateElementScrollButtons(`decl-ungrouped-cards-${sIdx}`, `decl-ungrouped-left-${sIdx}`, `decl-ungrouped-right-${sIdx}`));
+      }
       if (Array.isArray(declarationGroups)) {
         declarationGroups.forEach((_, i) => updateElementScrollButtons(`decl-group-cards-${i}`, `decl-scroll-left-${i}`, `decl-scroll-right-${i}`));
       }
@@ -7697,6 +8094,34 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     updateAllStandScrollButtons();
   });
 
+  function ensureUserStandsSyncedWithHand() {
+    if (!Array.isArray(myHand) || myHand.length === 0) return;
+    const handMap = new Map(myHand.filter(c => c && c.id).map(c => [c.id, c]));
+    const seen = new Set();
+    if (!Array.isArray(userStands) || userStands.length === 0) {
+      initDefaultStands(3);
+      return;
+    }
+    userStands = userStands.map(stand => {
+      const clean = [];
+      for (const c of (stand || [])) {
+        if (c && c.id && handMap.has(c.id) && !seen.has(c.id)) {
+          seen.add(c.id);
+          clean.push(handMap.get(c.id));
+        }
+      }
+      return clean;
+    });
+    while (userStands.length < 3) {
+      userStands.push([]);
+    }
+    const missing = myHand.filter(c => c && c.id && !seen.has(c.id));
+    if (missing.length > 0) {
+      userStands[0].push(...missing);
+    }
+    myHand = userStands.flat();
+  }
+
   function renderStands() {
     const container=document.getElementById('standsContainer');
     if(!container)return;
@@ -7714,6 +8139,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
       });
     };
+    const myIdCheck = isDemo ? 'p_demo' : getMyPlayerId();
+    const meForStands = roomState?.players?.find(p => p.id === myIdCheck);
+    if (meForStands?.isEliminated && (!myHand || myHand.length === 0)) {
+      container.innerHTML = `<div style="padding:18px 14px; text-align:center; border-radius:12px; border:1px solid rgba(244,63,94,0.35); background:rgba(40,16,22,0.72); color:#fecdd3; font-size:12.5px; line-height:1.45;"><strong>💀 You were eliminated in this Tournament</strong><br><span style="color:#cbd5e1; font-size:11.5px;">Your points (excluding Honors) exceeded ${getActiveRules().scoreLimit} pts. You are no longer dealt cards and are spectating the remaining active players.</span></div>`;
+      return;
+    }
     if(!declarationMode){
       if(!userStands || userStands.length === 0 || userStands.flat().length === 0){
         if (myHand && myHand.length > 0) {
@@ -7725,6 +8156,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
+        const firstGroup = stand.length >= 3 ? findFirstValidGroupInStand(stand) : null;
+        const canMoveGroup = Boolean(firstGroup && !(sIdx === userStands.length - 1 && stand.length === firstGroup.cards.length));
+        const moveGroupTitle = firstGroup ? `Move ${firstGroup.typeLabel} (${firstGroup.cards.map(c => c.isPoochie ? 'PJ' : c.rank + c.suit).join(' ')}) to a new stand at the bottom` : '';
+        const moveGroupBtn = canMoveGroup
+          ? `<button type="button" class="stand-move-group-btn" onclick="moveFirstValidGroupToNewStand(${sIdx})" title="${escapeHtml(moveGroupTitle)}">⬇ Move ${escapeHtml(firstGroup.shortLabel)}</button>`
+          : '';
         let standMeldClass = '';
         let standMeldPill = '';
         if (stand.length >= 2) {
@@ -7748,7 +8185,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               <span class="stand-count-badge">${stand.length} cards</span>
               ${standMeldPill}
             </div>
-            ${closeBtn}
+            <div class="stand-header-actions">${moveGroupBtn}${closeBtn}</div>
           </div>
           <div class="stand-scroll-container">
             <button type="button" class="stand-scroll-btn left" id="stand-scroll-left-${sIdx}" onclick="scrollStand(${sIdx}, -1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'stand-cards-${sIdx}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx+1} left" title="Scroll left">
@@ -7769,12 +8206,19 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       setTimeout(updateAllStandScrollButtons, 30);
       return;
     }
+    ensureUserStandsSyncedWithHand();
+    const rRule = getActiveRules();
     const groupedCards = declarationGroups.flatMap(g => g.cards);
     const grouped = groupedCards.length;
     const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
     const groupedIds = new Set(groupedCards.map(c => c.id));
     const remaining = myHand.filter(c => !groupedIds.has(c.id));
-    const selectable = remaining;
+    const standBuckets = (Array.isArray(userStands) ? userStands : [])
+      .map((stand, sIdx) => ({
+        sIdx,
+        cards: (stand || []).filter(c => c && !groupedIds.has(c.id))
+      }))
+      .filter(b => b.cards.length > 0);
     const selectedCards = myHand.filter(c => declarationSelectedIds.has(c.id));
     const selCount = declarationSelectedIds.size;
     const isGroupingPhase = roomState?.status === 'GROUPING';
@@ -7785,8 +8229,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const isSetValid = declarationSet(selectedCards);
     const detected = detectBestGroupType(selectedCards);
     const dInfo = countDoubles(myHand);
-    const isDoublesReady = (dInfo.count >= 7 && myHand.length === 21) || (dInfo.count >= 8 && myHand.length === 22);
-    const isShowReady = (grouped === 21 && pure >= 3 && remaining.length === 1) || isDoublesReady;
+    const isDoublesReady = Boolean(rRule.allowDoublesShow && (
+      (dInfo.count >= rRule.dealtDoublesForShow && myHand.length === 21) ||
+      (dInfo.count >= rRule.drawnDoublesForShow && myHand.length === 22)
+    ));
+    const isShowReady = (grouped === 21 && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesReady;
+    const isGroupingReady = isGroupingPhase && grouped === myHand.length && pure >= rRule.minPureSequences;
 
     let coachBannerHtml = '';
     if (guideMeState && guideMeState.active) {
@@ -7832,12 +8280,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <button type="button" class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear</button>
           </div>
         </div>`;
+    } else if (lastDeclDragNotice) {
+      coachBannerHtml = `
+        <div class="guide-me-banner" style="padding:6px 10px; border-color:rgba(245,158,11,0.45); background:rgba(45,32,12,0.82);">
+          <div class="guide-me-copy" style="font-size:11px; color:#fde68a;">↩ ${escapeHtml(lastDeclDragNotice)}</div>
+          <div class="guide-me-actions">
+            <button type="button" class="stand-close-btn" onclick="dismissDeclDragNotice()">✕</button>
+          </div>
+        </div>`;
     } else {
       const tipMsg = selCount > 0
         ? `👆 Select <b>${3 - selCount} more card${3 - selCount > 1 ? 's' : ''}</b> (${selCount}/3 min) below, or tap <b>Guide Me</b> for a suggestion.`
         : isShowReady
           ? `✨ All 21 cards are grouped! Tap <b>Submit Declaration</b> to win.`
-          : `💡 New to grouping? Tap <b>🧭 Guide Me</b> to step through suggested groups one by one, or <b>⚡ Auto-Group</b> to group your whole hand.`;
+          : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
       coachBannerHtml = `
         <div class="guide-me-banner" style="padding:6px 10px; background:rgba(255,255,255,0.035); border-color:rgba(255,255,255,0.10);">
           <div class="guide-me-copy" style="font-size:11px; color:#cfdad4;">${tipMsg}</div>
@@ -7848,11 +8304,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <div class="sticky-grouping-bar" id="stickyGroupingBar">
         <div class="sticky-grouping-summary">
           <div class="sticky-grouping-badges">
-            <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${pure >= 3 ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);'}">
-              ${pure} / 3 Pure Groups ${pure >= 3 ? '✅' : '⏳'}
+            <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${pure >= rRule.minPureSequences ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);'}">
+              ${pure} / ${rRule.minPureSequences} Pure Groups ${pure >= rRule.minPureSequences ? '✅' : '⏳'}
             </span>
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(255,255,255,0.06); color:#cfdad4; border:1px solid rgba(255,255,255,0.1);">
-              ${grouped} / 21 Grouped
+              ${grouped} / ${isGroupingPhase ? myHand.length : 21} Grouped
             </span>
             ${isGroupingPhase && deadwoodCalc ? `
               <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${deadwoodCalc.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);'}">
@@ -7861,10 +8317,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           </div>
           <div style="display:inline-flex; align-items:center; gap:6px;">
             ${isGroupingPhase ? `
-              <button type="button" class="sticky-submit-btn" onclick="submitGroupingMeld()">
-                ✅ Submit Groups
+              <button type="button" class="sticky-submit-btn ${isGroupingReady ? 'is-ready-pulse' : ''}" onclick="submitGroupingMeld()">
+                ✅ Submit Groups ${isGroupingReady ? '✨' : ''}
               </button>` : `
-              <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" style="${isShowReady ? 'background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 14px rgba(34,197,94,0.6);' : 'background: linear-gradient(135deg, #10b981, #059669);'}" onclick="declareShow()">
+              <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" onclick="declareShow()">
                 🏆 Submit Declaration ${isShowReady ? '✨' : ''}
               </button>
               <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
@@ -7924,47 +8380,87 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
       }
       const gCls = g.type === 'PURE_SEQUENCE' ? 'group-pure' : g.type === 'SEQUENCE' ? 'group-seq' : 'group-set';
-      return `<div class="stand-rack declaration-group locked ${gCls}">
-        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • tap card to release</span>${protectionBadge}</div>
+      return `<div class="stand-rack declaration-group locked ${gCls}" id="decl-group-rack-${i}" ondragover="onDeclRackDragOver(event, ${i})" ondragleave="onDeclRackDragLeave(event, ${i})" ondrop="onDeclRackDrop(event, ${i})">
+        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • drag or tap to edit</span>${protectionBadge}</div>
         <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Disband Group</button></div>
         <div class="stand-scroll-container">
           <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
           </button>
-          <div class="stand-cards grouped-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),false,false)).join('')}</div>
+          <div class="stand-cards grouped-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),true,false)).join('')}</div>
           <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
           </button>
         </div>
       </div>`;
     }).join('');
-    container.innerHTML=`${stickyBarHtml}<div class="stand-rack declaration-ungrouped"><div class="stand-header">
-      <div class="stand-title-box">
-        <span>Cards to Group (${selectable.length} remaining)</span>
-        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards below to select'}</span>
-      </div>
-      <div class="stand-group-inline-btns">
-        ${selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
-      </div></div>
-      <div class="stand-scroll-container">
-        <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
-          <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
-        </button>
-        <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')">${selectable.map(c => {
-          const chip = isGroupingPhase
-            ? (declarationIsWild(c) ? { text: '0p Wild', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
-            : null;
-          return renderCard(c, getCardTag(c), false, false, chip);
-        }).join('')}</div>
-        <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
-          <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
-        </button>
-      </div>
-    </div>${groups}`;
+    const ungroupedRacksHtml = standBuckets.length > 0
+      ? standBuckets.map((bucket, idx) => {
+          const { sIdx, cards } = bucket;
+          let standMeldClass = '';
+          let standMeldPill = '';
+          if (cards.length >= 2) {
+            const det = detectBestGroupType(cards);
+            if (det) {
+              const pCls = det.type === 'PURE_SEQUENCE' ? 'pure' : det.type === 'SEQUENCE' ? 'seq' : det.type === 'SET' ? 'set' : 'double';
+              standMeldClass = det.type === 'PURE_SEQUENCE' ? 'stand-valid-pure' : det.type === 'SEQUENCE' ? 'stand-valid-seq' : det.type === 'SET' ? 'stand-valid-set' : 'stand-valid-double';
+              standMeldPill = `<span class="stand-meld-pill ${pCls}">${det.icon} ${det.label}</span>`;
+            } else {
+              const loosePts = cards.reduce((s, c) => s + cardDeadwoodVal(c), 0);
+              standMeldPill = `<span class="stand-meld-pill loose">${loosePts} pts loose</span>`;
+            }
+          }
+          const standSelCount = cards.filter(c => declarationSelectedIds.has(c.id)).length;
+          return `<div class="stand-rack declaration-ungrouped ${standMeldClass}" id="decl-ungrouped-rack-${sIdx}" data-stand-idx="${sIdx}" ondragover="onDeclRackDragOver(event, -1, ${sIdx})" ondragleave="onDeclRackDragLeave(event, -1, ${sIdx})" ondrop="onDeclRackDrop(event, -1, ${sIdx})">
+            <div class="stand-header">
+              <div class="stand-title-box">
+                <span>Stand ${sIdx + 1}</span>
+                <span class="stand-count-badge" style="${standSelCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${cards.length} card${cards.length === 1 ? '' : 's'}${standSelCount > 0 ? ` • ${standSelCount} Selected` : ''}</span>
+                ${standMeldPill}
+              </div>
+              <div class="stand-group-inline-btns">
+                ${idx === 0 && selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
+              </div>
+            </div>
+            <div class="stand-scroll-container">
+              <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left-${sIdx}" onclick="scrollElement('decl-ungrouped-cards-${sIdx}', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards-${sIdx}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx + 1} left" title="Scroll left">
+                <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
+              </button>
+              <div class="stand-cards" id="decl-ungrouped-cards-${sIdx}" onscroll="updateElementScrollButtons('decl-ungrouped-cards-${sIdx}', 'decl-ungrouped-left-${sIdx}', 'decl-ungrouped-right-${sIdx}')">${cards.map(c => {
+                const chip = isGroupingPhase
+                  ? (declarationIsWild(c) ? { text: '0p Wild', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
+                  : null;
+                return renderCard(c, getCardTag(c), true, false, chip);
+              }).join('')}</div>
+              <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right-${sIdx}" onclick="scrollElement('decl-ungrouped-cards-${sIdx}', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards-${sIdx}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards-${sIdx}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx + 1} right" title="Scroll right">
+                <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
+              </button>
+            </div>
+          </div>`;
+        }).join('')
+      : `<div class="stand-rack declaration-ungrouped" id="decl-ungrouped-rack" ondragover="onDeclRackDragOver(event, -1, -1)" ondragleave="onDeclRackDragLeave(event, -1, -1)" ondrop="onDeclRackDrop(event, -1, -1)"><div class="stand-header">
+          <div class="stand-title-box">
+            <span>Cards to Group (0 remaining)</span>
+            <span class="stand-count-badge">Drag any card here to ungroup</span>
+          </div>
+          <div class="stand-group-inline-btns">
+            ${selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
+          </div></div>
+          <div class="stand-scroll-container">
+            <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
+              <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
+            </button>
+            <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')"><div class="empty-stand-hint">All cards grouped • Drag a card here or tap a grouped card to release it back to its Stand</div></div>
+            <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
+              <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>`;
+    container.innerHTML=`${stickyBarHtml}${ungroupedRacksHtml}${groups}`;
     restoreContainerScrolls();
     if (lastDeclSelectedCardId) {
-      const ungroupedTray = document.getElementById('decl-ungrouped-cards');
-      const targetCard = ungroupedTray ? ungroupedTray.querySelector(`[data-card-id="${lastDeclSelectedCardId}"]`) : null;
+      const targetCard = container.querySelector(`.declaration-ungrouped [data-card-id="${lastDeclSelectedCardId}"]`);
+      const ungroupedTray = targetCard ? targetCard.closest('.stand-cards') : document.getElementById('decl-ungrouped-cards');
       if (ungroupedTray && targetCard) {
         const trayRect = ungroupedTray.getBoundingClientRect();
         const cardRect = targetCard.getBoundingClientRect();
@@ -7991,17 +8487,18 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const v = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'].indexOf(card.rank) + 1;
     return v > 0 ? [v] : [];
   }
-  function declarationIsWild(card) {
+  function declarationIsWildForCut(card, cutCard = roomState?.cutCard, roles = roomState?.roles) {
     if (!card) return false;
     if (card.isPoochie || card.rank === 'PJ' || card.suit === '★' || card.isJoker) return true;
-    const cut = roomState?.cutCard;
-    if (cut && card.rank === cut.rank) return true;
-    const r = roomState?.roles;
-    if (r) {
-      if (card.rank === r.tipluRank) return true;
-      if (card.suit === r.tipluSuit && (card.rank === r.papluRank || card.rank === r.nichluRank)) return true;
+    if (cutCard && card.rank === cutCard.rank) return true;
+    if (roles) {
+      if (card.rank === roles.tipluRank) return true;
+      if (card.suit === roles.tipluSuit && (card.rank === roles.papluRank || card.rank === roles.nichluRank)) return true;
     }
     return false;
+  }
+  function declarationIsWild(card) {
+    return declarationIsWildForCut(card, roomState?.cutCard, roomState?.roles);
   }
   function declarationIsMarriage(cards) {
     if (!Array.isArray(cards) || cards.length !== 3 || !roomState?.roles) return false;
@@ -8266,6 +8763,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const seenKeys = new Set();
     const isGroupingPhase = roomState?.status === 'GROUPING';
     const currentPure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const rRule = getActiveRules();
+    const cut = roomState?.cutCard;
+    const roles = roomState?.roles;
 
     const addCandidate = (cards, type, label, title, reason) => {
       if (!Array.isArray(cards) || cards.length < 3) return;
@@ -8275,28 +8775,63 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       candidates.push({ cardIds: cards.map(c => c.id), cards, type, label, title, reason });
     };
 
-    // 1. Marriage (50 pts Honors + counts as Pure Group)
-    if (roomState?.roles) {
-      const r = roomState.roles;
-      const taplu = availCards.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
-      const tiplu = availCards.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
-      const paplu = availCards.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
-      if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
-        addCandidate([taplu, tiplu, paplu], 'PURE_SEQUENCE', 'Marriage Pure Group (50 pts)',
-          'Marriage Pure Group',
-          'Counts as a Pure Group toward 3/3 and scores +50 Honors pts.');
+    // 1. Optimal Pure Groups per suit (maximizes pure count & prioritizes not using jokers)
+    const suits = ['♠', '♥', '♣', '♦'];
+    for (const suit of suits) {
+      const suitNaturals = availCards.filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+      if (suitNaturals.length < 3) continue;
+      const isMarriageWrap = Boolean(
+        roles && rRule.allowMarriageAsPure !== false &&
+        suit === roles.tipluSuit && roles.tipluRank === 'A'
+      );
+      const optGroups = solveOptimalSuitPurePatternsClient(suitNaturals, cut, roles, {
+        includeTunellas: rRule.allowTunnelaAsPure !== false,
+        includeWrapMarriage: isMarriageWrap,
+        extendWithNonWild: false
+      });
+      for (const g of optGroups) {
+        const cards = g.cards;
+        const pts = cards.reduce((s, c) => s + cardDeadwoodVal(c), 0);
+        const names = cards.map(c => `${c.rank}${c.suit}`).join('-');
+        if (g.kind === 'TUNELLA') {
+          addCandidate(cards, 'PURE_SEQUENCE', `Tunella (${cards[0].rank}${cards[0].suit} x3)`,
+            `Tunella: ${cards[0].rank}${cards[0].suit} ×3`,
+            'Counts as a Pure Group and stays protected even if you finish under 3 Pure Groups.');
+        } else if (declarationIsMarriage(cards) && rRule.allowMarriageAsPure !== false) {
+          addCandidate(cards, 'PURE_SEQUENCE', `Marriage Pure Group (${rRule.marriagePts} pts)`,
+            'Marriage Pure Group',
+            `Counts as a Pure Group toward 3/3 and scores +${rRule.marriagePts} Honors pts.`);
+        } else {
+          const jokersUsed = cards.filter(c => declarationIsWildForCut(c, cut, roles)).length;
+          const jokerNote = jokersUsed === 0 ? 'Uses 0 Jokers.' : `Natural-suit pure run (${jokersUsed} Joker card in natural rank).`;
+          const msg = `${names} (${pts} pts) — ${jokerNote} Advances Pure Groups (${Math.min(rRule.minPureSequences, currentPure + 1)}/${rRule.minPureSequences}).`;
+          addCandidate(cards, 'PURE_SEQUENCE', `Pure Group (${cards.length})`, `Pure Group: ${names}`, msg);
+        }
       }
     }
 
     // 2. 3 Poochies
     const poochies = availCards.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
     if (poochies.length >= 3) {
-      addCandidate(poochies.slice(0, 3), 'PURE_SEQUENCE', '3 Poochies Group',
+      addCandidate(poochies.slice(0, 3), rRule.allow3PoochiesAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE', '3 Poochies Group',
         '3 Poochies Pure Group',
         'Counts as a Pure Group & Tunella (protected even with fewer than 3 Pure Groups).');
     }
 
-    // 3. Tunellas (3 identical cards)
+    // 3. Fallback Marriage (if not already emitted by optimal solver)
+    if (roles) {
+      const taplu = availCards.find(c => c.suit === roles.tipluSuit && c.rank === roles.nichluRank);
+      const tiplu = availCards.find(c => c.suit === roles.tipluSuit && c.rank === roles.tipluRank);
+      const paplu = availCards.find(c => c.suit === roles.tipluSuit && c.rank === roles.papluRank);
+      if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
+        addCandidate([taplu, tiplu, paplu], rRule.allowMarriageAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
+          `Marriage Pure Group (${rRule.marriagePts} pts)`,
+          'Marriage Pure Group',
+          `Counts as a Pure Group toward 3/3 and scores +${rRule.marriagePts} Honors pts.`);
+      }
+    }
+
+    // 4. Fallback Tunellas (3 identical cards)
     const tunMap = new Map();
     for (const c of availCards) {
       if (declarationIsWild(c)) continue;
@@ -8307,26 +8842,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     for (const grp of tunMap.values()) {
       if (grp.length >= 3) {
         const trio = grp.slice(0, 3);
-        addCandidate(trio, 'PURE_SEQUENCE', `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+        addCandidate(trio, rRule.allowTunnelaAsPure !== false ? 'PURE_SEQUENCE' : 'SET',
+          `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
           `Tunella: ${trio[0].rank}${trio[0].suit} ×3`,
           'Counts as a Pure Group and stays protected even if you finish under 3 Pure Groups.');
-      }
-    }
-
-    // 4. Natural Pure Groups per suit
-    const suits = ['♠', '♥', '♣', '♦'];
-    for (const suit of suits) {
-      const suitNaturals = availCards.filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
-      if (suitNaturals.length >= 3) {
-        const runs = extractOptimalPureRuns(suitNaturals);
-        for (const run of runs) {
-          const pts = run.reduce((s, c) => s + cardDeadwoodVal(c), 0);
-          const names = run.map(c => `${c.rank}${c.suit}`).join('-');
-          const msg = (isGroupingPhase && currentPure < 3 && run.length >= 4)
-            ? `${run.length}-card Pure Group (${pts} pts) — Protected immediately & advances Pure Groups (${currentPure}/3).`
-            : `${names} (${pts} pts) — Natural run advancing Pure Groups (${Math.min(3, currentPure + 1)}/3).`;
-          addCandidate(run, 'PURE_SEQUENCE', `Pure Group (${run.length})`, `Pure Group: ${names}`, msg);
-        }
       }
     }
 
@@ -8465,6 +8984,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function autoGroupSelected() {
     if (!declarationMode) return;
+    lastDeclDragNotice = null;
     const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
     const cards = myHand.filter(c => declarationSelectedIds.has(c.id) && !alreadyGrouped.has(c.id));
     if (cards.length < 3) {
@@ -8490,6 +9010,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function autoGroupFromStands(showNotification = true) {
     if (!declarationMode) return;
+    lastDeclDragNotice = null;
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
@@ -8534,81 +9055,180 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
   }
 
-  function extractOptimalPureRuns(availCards) {
+  function cardDeadwoodValForOptimizer(c) {
+    if (!c) return 0;
+    if (['A', 'K', 'Q', 'J', '10'].includes(c.rank)) return 10;
+    return parseInt(c.rank, 10) || 0;
+  }
+
+  function solveOptimalSuitPurePatternsClient(availCards, cutCard = roomState?.cutCard, roles = roomState?.roles, options = {}) {
+    if (!Array.isArray(availCards) || availCards.length < 3) return [];
+    const {
+      includeTunellas = false,
+      includeWrapMarriage = false,
+      extendWithNonWild = true
+    } = options;
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    const windows = [];
-    for (let i = 0; i <= rankOrder.length - 3; i++) {
-      windows.push(rankOrder.slice(i, i + 3));
+    const rankIndex = new Map(rankOrder.map((r, idx) => [r, idx]));
+    const buckets = Array.from({ length: 13 }, () => []);
+    for (const c of availCards) {
+      if (!c) continue;
+      const idx = rankIndex.get(c.rank);
+      if (idx !== undefined) buckets[idx].push(c);
     }
-    windows.push(['Q', 'K', 'A']);
+    const wildAtRank = buckets.map(list => list.length > 0 && declarationIsWildForCut(list[0], cutCard, roles));
+    const counts = buckets.map(list => list.length);
 
-    function solve(remaining) {
-      let best = [];
-      for (const win of windows) {
-        const c0 = remaining.find(c => c.rank === win[0]);
-        const c1 = remaining.find(c => c.rank === win[1] && c.id !== c0?.id);
-        const c2 = remaining.find(c => c.rank === win[2] && c.id !== c0?.id && c.id !== c1?.id);
-        if (c0 && c1 && c2) {
-          const run = [c0, c1, c2];
-          const nextRemaining = remaining.filter(c => c.id !== c0.id && c.id !== c1.id && c.id !== c2.id);
-          const sub = solve(nextRemaining);
-          const candidate = [run, ...sub];
-          if (candidate.length > best.length) {
-            best = candidate;
-          }
-        }
-      }
-      return best;
-    }
-
-    const best3Runs = solve(availCards);
-    const usedIds = new Set(best3Runs.flatMap(r => r.map(c => c.id)));
-    const leftover = availCards.filter(c => !usedIds.has(c.id));
-
-    for (const run of best3Runs) {
-      let extended = true;
-      while (extended) {
-        extended = false;
-        const firstRank = run[0].rank;
-        const lastRank = run[run.length - 1].rank;
-        const firstIdx = rankOrder.indexOf(firstRank);
-        if (firstIdx > 0) {
-          const prevRank = rankOrder[firstIdx - 1];
-          const match = leftover.find(c => c.rank === prevRank && !usedIds.has(c.id));
-          if (match) {
-            run.unshift(match);
-            usedIds.add(match.id);
-            extended = true;
-            continue;
-          }
-        }
-        const lastIdx = rankOrder.indexOf(lastRank);
-        if (lastIdx >= 0 && lastIdx < rankOrder.length - 1) {
-          const nextRank = rankOrder[lastIdx + 1];
-          const match = leftover.find(c => c.rank === nextRank && !usedIds.has(c.id));
-          if (match) {
-            run.push(match);
-            usedIds.add(match.id);
-            extended = true;
-            continue;
-          }
-        }
-        if (lastRank === 'K') {
-          const match = leftover.find(c => c.rank === 'A' && !usedIds.has(c.id));
-          if (match) {
-            run.push(match);
-            usedIds.add(match.id);
-            extended = true;
-            continue;
-          }
+    const patterns = [];
+    if (includeTunellas) {
+      for (let r = 0; r < 13; r++) {
+        if (counts[r] >= 3 && !wildAtRank[r]) {
+          const pts = 3 * cardDeadwoodValForOptimizer(buckets[r][0]);
+          patterns.push({ kind: 'TUNELLA', indices: [r, r, r], jokerCount: 0, tunBonus: 1, pts });
         }
       }
     }
-    return best3Runs;
+    for (let i = 0; i <= 10; i++) {
+      const idxs = [i, i + 1, i + 2];
+      if (counts[idxs[0]] > 0 && counts[idxs[1]] > 0 && counts[idxs[2]] > 0) {
+        const jokerCount = (wildAtRank[idxs[0]] ? 1 : 0) + (wildAtRank[idxs[1]] ? 1 : 0) + (wildAtRank[idxs[2]] ? 1 : 0);
+        const pts = (wildAtRank[idxs[0]] ? 0 : cardDeadwoodValForOptimizer(buckets[idxs[0]][0]))
+          + (wildAtRank[idxs[1]] ? 0 : cardDeadwoodValForOptimizer(buckets[idxs[1]][0]))
+          + (wildAtRank[idxs[2]] ? 0 : cardDeadwoodValForOptimizer(buckets[idxs[2]][0]));
+        patterns.push({ kind: 'RUN', indices: idxs, jokerCount, tunBonus: 0, pts });
+      }
+    }
+    if (counts[11] > 0 && counts[12] > 0 && counts[0] > 0) {
+      const jokerCount = (wildAtRank[11] ? 1 : 0) + (wildAtRank[12] ? 1 : 0) + (wildAtRank[0] ? 1 : 0);
+      const pts = (wildAtRank[11] ? 0 : 10) + (wildAtRank[12] ? 0 : 10) + (wildAtRank[0] ? 0 : 10);
+      patterns.push({ kind: 'RUN', indices: [11, 12, 0], jokerCount, tunBonus: 0, pts });
+    }
+    if (includeWrapMarriage && counts[12] > 0 && counts[0] > 0 && counts[1] > 0) {
+      const jokerCount = (wildAtRank[12] ? 1 : 0) + (wildAtRank[0] ? 1 : 0) + (wildAtRank[1] ? 1 : 0);
+      patterns.push({ kind: 'MARRIAGE_WRAP', indices: [12, 0, 1], jokerCount, tunBonus: 0, pts: 0 });
+    }
+
+    patterns.sort((a, b) => (a.jokerCount - b.jokerCount) || (b.tunBonus - a.tunBonus) || (b.pts - a.pts));
+
+    let bestScore = { count: 0, negJokers: 0, tunBonus: 0, pts: 0 };
+    let bestPicks = [];
+
+    function isBetter(a, b) {
+      if (a.count !== b.count) return a.count > b.count;
+      if (a.negJokers !== b.negJokers) return a.negJokers > b.negJokers;
+      if (a.tunBonus !== b.tunBonus) return a.tunBonus > b.tunBonus;
+      return a.pts > b.pts;
+    }
+
+    function dfs(startIdx, remCounts, remTotal, picked, currJokers, currTun, currPts) {
+      const maxPossibleCount = picked.length + Math.floor(remTotal / 3);
+      if (maxPossibleCount < bestScore.count) return;
+      if (maxPossibleCount === bestScore.count && -currJokers < bestScore.negJokers) return;
+
+      const currScore = { count: picked.length, negJokers: -currJokers, tunBonus: currTun, pts: currPts };
+      if (isBetter(currScore, bestScore)) {
+        bestScore = currScore;
+        bestPicks = [...picked];
+      }
+
+      for (let i = startIdx; i < patterns.length; i++) {
+        const p = patterns[i];
+        if (p.kind === 'TUNELLA') {
+          const r = p.indices[0];
+          if (remCounts[r] < 3) continue;
+          remCounts[r] -= 3;
+        } else {
+          const [a, b, c] = p.indices;
+          if (remCounts[a] < 1 || remCounts[b] < 1 || remCounts[c] < 1) continue;
+          remCounts[a]--; remCounts[b]--; remCounts[c]--;
+        }
+
+        picked.push(p);
+        dfs(i, remCounts, remTotal - 3, picked, currJokers + p.jokerCount, currTun + p.tunBonus, currPts + p.pts);
+        picked.pop();
+
+        if (p.kind === 'TUNELLA') {
+          remCounts[p.indices[0]] += 3;
+        } else {
+          const [a, b, c] = p.indices;
+          remCounts[a]++; remCounts[b]++; remCounts[c]++;
+        }
+      }
+    }
+
+    dfs(0, [...counts], availCards.length, [], 0, 0, 0);
+
+    const usedIds = new Set();
+    const popRank = (rIdx) => {
+      const match = buckets[rIdx].find(c => c && !usedIds.has(c.id));
+      if (match) usedIds.add(match.id);
+      return match;
+    };
+
+    const results = bestPicks.map(p => ({
+      kind: p.kind,
+      cards: p.indices.map(popRank).filter(Boolean)
+    })).filter(g => g.cards.length === 3);
+
+    if (extendWithNonWild) {
+      const leftover = availCards.filter(c => c && !usedIds.has(c.id));
+      for (const grp of results) {
+        if (grp.kind !== 'RUN') continue;
+        const run = grp.cards;
+        let extended = true;
+        while (extended) {
+          extended = false;
+          const firstRank = run[0].rank;
+          const lastRank = run[run.length - 1].rank;
+          const firstIdx = rankOrder.indexOf(firstRank);
+          if (firstIdx > 0) {
+            const prevRank = rankOrder[firstIdx - 1];
+            const match = leftover.find(c => c.rank === prevRank && !usedIds.has(c.id) && !declarationIsWildForCut(c, cutCard, roles));
+            if (match) {
+              run.unshift(match);
+              usedIds.add(match.id);
+              extended = true;
+              continue;
+            }
+          }
+          const lastIdx = rankOrder.indexOf(lastRank);
+          if (lastRank !== 'A' && lastIdx >= 0 && lastIdx < rankOrder.length - 1) {
+            const nextRank = rankOrder[lastIdx + 1];
+            const match = leftover.find(c => c.rank === nextRank && !usedIds.has(c.id) && !declarationIsWildForCut(c, cutCard, roles));
+            if (match) {
+              run.push(match);
+              usedIds.add(match.id);
+              extended = true;
+              continue;
+            }
+          }
+          if (lastRank === 'K') {
+            const match = leftover.find(c => c.rank === 'A' && !usedIds.has(c.id) && !declarationIsWildForCut(c, cutCard, roles));
+            if (match) {
+              run.push(match);
+              usedIds.add(match.id);
+              extended = true;
+              continue;
+            }
+          }
+        }
+      }
+    }
+
+    return results;
+  }
+
+  function extractOptimalPureRuns(availCards, cutCard = roomState?.cutCard, roles = roomState?.roles) {
+    return solveOptimalSuitPurePatternsClient(availCards, cutCard, roles, {
+      includeTunellas: false,
+      includeWrapMarriage: false,
+      extendWithNonWild: true
+    }).map(g => g.cards);
   }
 
   function autoGroupFullHand(showNotification = true) {
     if (!declarationMode) declarationMode = true;
+    lastDeclDragNotice = null;
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
@@ -8619,95 +9239,63 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const newGroups = [];
     const pool = Array.isArray(myHand) ? [...myHand] : [];
     const getAvailable = () => pool.filter(c => c && !usedCardIds.has(c.id));
-
-    // 1. Marriages: (Taplu + Pukka Joker + Paplu in cut joker suit) -> Pure Group (50 pts)
-    if (roomState?.roles) {
-      const r = roomState.roles;
-      let searchingMarriage = true;
-      while (searchingMarriage) {
-        const avail = getAvailable();
-        const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
-        const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
-        const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
-        if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
-          const trio = [taplu, tiplu, paplu];
-          trio.forEach(c => usedCardIds.add(c.id));
-          newGroups.push({
-            type: 'PURE_SEQUENCE',
-            typeLabel: 'Marriage Pure Group (50 pts)',
-            cards: trio
-          });
-        } else {
-          searchingMarriage = false;
-        }
-      }
-    }
-
-    // 2. 3 Poochies: (Tunella) -> Pure Group
-    let searchingPoochies = true;
-    while (searchingPoochies) {
-      const avail = getAvailable();
-      const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
-      if (poochies.length >= 3) {
-        const trio = poochies.slice(0, 3);
-        trio.forEach(c => usedCardIds.add(c.id));
-        newGroups.push({
-          type: 'PURE_SEQUENCE',
-          typeLabel: '3 Poochies (Tunella)',
-          cards: trio
-        });
-      } else {
-        searchingPoochies = false;
-      }
-    }
-
-    // 2b. Tunellas: (3 identical cards of exact same suit and rank) -> Pure Group (Protected)
-    let searchingTunellas = true;
-    while (searchingTunellas) {
-      const avail = getAvailable().filter(c => !declarationIsWild(c));
-      const suitRankMap = new Map();
-      for (const c of avail) {
-        const key = `${c.suit}_${c.rank}`;
-        if (!suitRankMap.has(key)) suitRankMap.set(key, []);
-        suitRankMap.get(key).push(c);
-      }
-      let foundTun = false;
-      for (const group of suitRankMap.values()) {
-        if (group.length >= 3) {
-          const trio = group.slice(0, 3);
-          trio.forEach(c => usedCardIds.add(c.id));
-          newGroups.push({
-            type: 'PURE_SEQUENCE',
-            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
-            cards: trio
-          });
-          foundTun = true;
-          break;
-        }
-      }
-      if (!foundTun) searchingTunellas = false;
-    }
-
-    // 3. Natural Pure Groups: Smart optimal solver that finds the maximum number of pure sequences
+    const rRule = getActiveRules();
+    const cut = roomState?.cutCard;
+    const roles = roomState?.roles;
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
+    // 1. Optimal Pure Groups per suit (maximizes count & prioritizes avoiding jokers)
     for (const suit of suits) {
       const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
-      if (availNaturals.length >= 3) {
-        const optimalRuns = extractOptimalPureRuns(availNaturals);
-        for (const run of optimalRuns) {
-          run.forEach(c => usedCardIds.add(c.id));
+      if (availNaturals.length < 3) continue;
+      const isMarriageWrap = Boolean(
+        roles && rRule.allowMarriageAsPure !== false &&
+        suit === roles.tipluSuit && roles.tipluRank === 'A'
+      );
+      const optGroups = solveOptimalSuitPurePatternsClient(availNaturals, cut, roles, {
+        includeTunellas: rRule.allowTunnelaAsPure !== false,
+        includeWrapMarriage: isMarriageWrap,
+        extendWithNonWild: false
+      });
+      for (const g of optGroups) {
+        g.cards.forEach(c => usedCardIds.add(c.id));
+        let typeLabel = `Pure Group (${g.cards.length})`;
+        if (g.kind === 'TUNELLA') {
+          typeLabel = `Tunella (${g.cards[0].rank}${g.cards[0].suit} x3)`;
+        } else if (declarationIsMarriage(g.cards) && rRule.allowMarriageAsPure !== false) {
+          typeLabel = `Marriage Pure Group (${rRule.marriagePts} pts)`;
+        }
+        newGroups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel,
+          cards: g.cards,
+          _kind: g.kind
+        });
+      }
+    }
+
+    // 2. 3 Poochies -> Pure Group (Tunella) when allowed
+    if (rRule.allow3PoochiesAsPure !== false) {
+      let searchingPoochies = true;
+      while (searchingPoochies) {
+        const avail = getAvailable();
+        const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+        if (poochies.length >= 3) {
+          const trio = poochies.slice(0, 3);
+          trio.forEach(c => usedCardIds.add(c.id));
           newGroups.push({
             type: 'PURE_SEQUENCE',
-            typeLabel: `Pure Group (${run.length})`,
-            cards: run
+            typeLabel: '3 Poochies (Tunella)',
+            cards: trio
           });
+        } else {
+          searchingPoochies = false;
         }
       }
     }
 
-    // 4. Sets (3 or 4 cards of the same rank in different suits)
+    // 3. Sets (3 or 4 non-wild cards of the same rank in different suits)
     for (const rnk of rankOrder) {
       let foundSet = true;
       while (foundSet) {
@@ -8732,7 +9320,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 5. Joker Groups (using wildcards) - safe loop with refreshed availability (no card reuse)
+    // 4. Joker Runs (using wildcards)
     let searchingJokerRun = true;
     while (searchingJokerRun) {
       searchingJokerRun = false;
@@ -8765,13 +9353,88 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
+    // 4b. Joker Sets (2 non-wilds same rank + 1 wildcard)
+    let searchingJokerSet = true;
+    while (searchingJokerSet) {
+      searchingJokerSet = false;
+      const availWildcards = getAvailable().filter(c => declarationIsWild(c));
+      if (availWildcards.length === 0) break;
+      for (const rnk of rankOrder) {
+        const availSameRank = getAvailable().filter(c => c.rank === rnk && !declarationIsWild(c));
+        const bySuit = new Map();
+        for (const c of availSameRank) {
+          if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+        }
+        if (bySuit.size >= 2) {
+          const trio = [...Array.from(bySuit.values()).slice(0, 2), availWildcards[0]];
+          trio.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'SET',
+            typeLabel: `Joker Set of ${rnk}s`,
+            cards: trio
+          });
+          searchingJokerSet = true;
+          break;
+        }
+      }
+    }
+
+    // 5. Extend consecutive Pure Runs strictly with remaining NON-WILD cards (never swallow a joker)
+    for (const g of newGroups) {
+      if (g.type !== 'PURE_SEQUENCE' || g._kind !== 'RUN') continue;
+      const run = g.cards;
+      let extended = true;
+      while (extended) {
+        extended = false;
+        const runSuit = run[0].suit;
+        const firstRank = run[0].rank;
+        const lastRank = run[run.length - 1].rank;
+        const availSuit = getAvailable().filter(c => c && c.suit === runSuit && !declarationIsWild(c));
+        const firstIdx = rankOrder.indexOf(firstRank);
+        if (firstIdx > 0) {
+          const prevRank = rankOrder[firstIdx - 1];
+          const match = availSuit.find(c => c.rank === prevRank);
+          if (match) {
+            run.unshift(match);
+            usedCardIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        const lastIdx = rankOrder.indexOf(lastRank);
+        if (lastRank !== 'A' && lastIdx >= 0 && lastIdx < rankOrder.length - 1) {
+          const nextRank = rankOrder[lastIdx + 1];
+          const match = availSuit.find(c => c.rank === nextRank);
+          if (match) {
+            run.push(match);
+            usedCardIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        if (lastRank === 'K') {
+          const match = availSuit.find(c => c.rank === 'A');
+          if (match) {
+            run.push(match);
+            usedCardIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+      }
+      if (!g.typeLabel.startsWith('Marriage')) {
+        g.typeLabel = `Pure Group (${run.length})`;
+      }
+    }
+
     // 6. Strict deduplication invariant: ensure no card ID appears in multiple groups
     const verifiedGroups = [];
     const claimedIds = new Set();
     for (const g of newGroups) {
       if (Array.isArray(g.cards) && g.cards.every(c => c && c.id && !claimedIds.has(c.id))) {
         g.cards.forEach(c => claimedIds.add(c.id));
-        verifiedGroups.push(g);
+        const { _kind, ...cleanG } = g;
+        verifiedGroups.push(cleanG);
       }
     }
 
@@ -8782,7 +9445,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const totalGrouped = verifiedGroups.flatMap(g => g.cards).length;
     if (showNotification) {
       if (verifiedGroups.length > 0) {
-        if (totalGrouped === 21 && pureCount >= 3) {
+        if (totalGrouped === 21 && pureCount >= rRule.minPureSequences) {
           window.alert(`🎉 Perfect! Auto-grouped ${verifiedGroups.length} valid groups (${pureCount} Pure Groups). All 21 cards are grouped and ready!`);
         } else {
           window.alert(`Auto-detected ${verifiedGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Groups). Use Guide Me or tap cards below to adjust.`);
@@ -9004,6 +9667,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function groupSelectedCards(type) {
     if(!declarationMode) return;
+    lastDeclDragNotice = null;
     const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
     const cards = myHand.filter(c => declarationSelectedIds.has(c.id) && !alreadyGrouped.has(c.id));
     if(cards.length < 3){ alert('Select at least 3 ungrouped cards.'); return; }
@@ -9016,14 +9680,188 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     lastDeclSelectedCardId = null;
     renderAll(null);
   }
-  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;renderAll(null);}
-  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;renderAll(null);}
+  let lastDeclDragNotice = null;
+  function dismissDeclDragNotice() {
+    lastDeclDragNotice = null;
+    renderAll(null);
+  }
+  window.dismissDeclDragNotice = dismissDeclDragNotice;
+
+  function formatDeclarationGroupLabel(detected, cards) {
+    if (!detected) return '';
+    const r = getActiveRules();
+    if (declarationIsMarriage(cards) && r.allowMarriageAsPure !== false) {
+      return `Marriage Pure Group (${r.marriagePts} pts)`;
+    }
+    if (declarationIsThreePoochies(cards)) {
+      return '3 Poochies (Tunella)';
+    }
+    if (declarationIsTunella(cards)) {
+      return `Tunella (${cards[0].rank}${cards[0].suit} x3)`;
+    }
+    if (detected.type === 'PURE_SEQUENCE') return `Pure Group (${cards.length})`;
+    if (detected.type === 'SET') return `Set (${cards.length})`;
+    return `Joker Group (${cards.length})`;
+  }
+
+  function reconcileDeclarationGroups() {
+    let disbanded = 0;
+    for (let i = declarationGroups.length - 1; i >= 0; i--) {
+      const grp = declarationGroups[i];
+      const cards = Array.isArray(grp?.cards) ? grp.cards.filter(Boolean) : [];
+      if (cards.length < 3) {
+        declarationGroups.splice(i, 1);
+        disbanded++;
+        continue;
+      }
+      const detected = detectBestGroupType(cards);
+      if (!detected || detected.type === 'DOUBLE') {
+        declarationGroups.splice(i, 1);
+        disbanded++;
+        continue;
+      }
+      grp.cards = cards;
+      grp.type = detected.type;
+      grp.typeLabel = formatDeclarationGroupLabel(detected, cards);
+    }
+    return disbanded;
+  }
+
+  function moveCardInUserStands(cardId, destStandIdx, targetCardId = null, insertAfter = false) {
+    if (!Array.isArray(userStands) || destStandIdx < 0 || destStandIdx >= userStands.length) return false;
+    let movedCard = null;
+    for (const s of userStands) {
+      const idx = (s || []).findIndex(c => c && c.id === cardId);
+      if (idx !== -1) {
+        [movedCard] = s.splice(idx, 1);
+        break;
+      }
+    }
+    if (!movedCard) {
+      movedCard = (myHand || []).find(c => c && c.id === cardId) || null;
+    }
+    if (!movedCard) return false;
+    const destStand = userStands[destStandIdx];
+    if (targetCardId && targetCardId !== cardId) {
+      let idx = destStand.findIndex(c => c && c.id === targetCardId);
+      if (idx === -1) {
+        destStand.push(movedCard);
+      } else {
+        if (insertAfter) idx += 1;
+        destStand.splice(idx, 0, movedCard);
+      }
+    } else {
+      destStand.push(movedCard);
+    }
+    myHand = userStands.flat();
+    saveStandsToStorage();
+    return true;
+  }
+
+  function moveDeclarationCard(cardId, targetGroupIdx, insertIdx = -1, targetCardId = null, insertAfter = false, targetStandIdx = -1) {
+    if (!declarationMode || !cardId) return false;
+    lastDeclDragNotice = null;
+    ensureUserStandsSyncedWithHand();
+    const allCards = [...(myHand || []), ...declarationGroups.flatMap(g => g.cards || [])];
+    const card = allCards.find(c => c && c.id === cardId);
+    if (!card) return false;
+
+    const sourceGroupIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === cardId));
+    let resolvedStandIdx = targetStandIdx;
+    if (resolvedStandIdx < 0 && targetGroupIdx === -1 && targetCardId && Array.isArray(userStands)) {
+      resolvedStandIdx = userStands.findIndex(s => (s || []).some(c => c && c.id === targetCardId));
+    }
+
+    // Dragging between/within ungrouped stands in declarationMode preserves and updates userStands
+    if (sourceGroupIdx === -1 && targetGroupIdx === -1) {
+      if (targetCardId === cardId) return false;
+      const srcStandIdx = Array.isArray(userStands) ? userStands.findIndex(s => (s || []).some(c => c && c.id === cardId)) : -1;
+      if (resolvedStandIdx >= 0 && (!targetCardId && srcStandIdx === resolvedStandIdx)) {
+        // Dropped onto end of the same stand only move if it isn't already the last card
+        const curStand = userStands[srcStandIdx] || [];
+        const groupedIds = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c && c.id)));
+        const visibleInStand = curStand.filter(c => c && !groupedIds.has(c.id));
+        if (visibleInStand.length <= 1 || visibleInStand[visibleInStand.length - 1]?.id === cardId) return false;
+      }
+      if (resolvedStandIdx >= 0) {
+        if (!moveCardInUserStands(cardId, resolvedStandIdx, targetCardId, insertAfter)) return false;
+      } else if (targetCardId && targetCardId !== cardId) {
+        const fromHandIdx = myHand.findIndex(c => c && c.id === cardId);
+        if (fromHandIdx === -1) return false;
+        const [moved] = myHand.splice(fromHandIdx, 1);
+        let toHandIdx = myHand.findIndex(c => c && c.id === targetCardId);
+        if (toHandIdx === -1) myHand.push(moved);
+        else {
+          if (insertAfter) toHandIdx += 1;
+          myHand.splice(toHandIdx, 0, moved);
+        }
+      } else {
+        return false;
+      }
+      guidedCardIds.clear();
+      guideMeState = null;
+      lastDeclSelectedCardId = cardId;
+      try { soundSystem?.playCardSlide?.(); } catch (_) {}
+      renderAll(null);
+      return true;
+    }
+
+    // Remove card from source group if it came from a group
+    let adjustedInsertIdx = insertIdx;
+    if (sourceGroupIdx !== -1) {
+      const srcCards = declarationGroups[sourceGroupIdx].cards;
+      const fromIdx = srcCards.findIndex(c => c && c.id === cardId);
+      if (fromIdx === -1) return false;
+      srcCards.splice(fromIdx, 1);
+      if (sourceGroupIdx === targetGroupIdx && adjustedInsertIdx !== -1 && fromIdx < adjustedInsertIdx) {
+        adjustedInsertIdx = Math.max(0, adjustedInsertIdx - 1);
+      }
+    }
+
+    // Insert into target group (or update target ungrouped stand when targetGroupIdx === -1)
+    if (targetGroupIdx >= 0 && targetGroupIdx < declarationGroups.length) {
+      const tgtCards = declarationGroups[targetGroupIdx].cards;
+      if (targetCardId) {
+        let idx = tgtCards.findIndex(c => c && c.id === targetCardId);
+        if (idx === -1) tgtCards.push(card);
+        else {
+          if (insertAfter) idx += 1;
+          tgtCards.splice(idx, 0, card);
+        }
+      } else if (adjustedInsertIdx >= 0 && adjustedInsertIdx <= tgtCards.length) {
+        tgtCards.splice(adjustedInsertIdx, 0, card);
+      } else {
+        tgtCards.push(card);
+      }
+    } else if (targetGroupIdx === -1 && resolvedStandIdx >= 0) {
+      moveCardInUserStands(cardId, resolvedStandIdx, targetCardId, insertAfter);
+    }
+
+    declarationSelectedIds.delete(cardId);
+    guidedCardIds.clear();
+    guideMeState = null;
+    lastDeclSelectedCardId = cardId;
+
+    const disbandedCount = reconcileDeclarationGroups();
+    if (disbandedCount > 0) {
+      lastDeclDragNotice = disbandedCount === 1
+        ? 'Group automatically ungrouped — resulting cards did not form a valid group.'
+        : `${disbandedCount} groups automatically ungrouped — resulting cards did not form valid groups.`;
+    }
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+    return true;
+  }
+
+  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;lastDeclDragNotice=null;renderAll(null);}
+  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;lastDeclDragNotice=null;renderAll(null);}
   function ungroupAllDeclaration() {
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -9036,6 +9874,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -9125,20 +9964,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       // Check if this card is currently inside a declaration group
       const grpIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === cardId));
       if (grpIdx !== -1) {
-        // Tapping a grouped card releases it back to "Cards to Group"
+        // Tapping a grouped card releases it back to "Cards to Group" and auto-ungroups if invalid
         const grp = declarationGroups[grpIdx];
         grp.cards = grp.cards.filter(c => c && c.id !== cardId);
-        if (grp.cards.length < 3) {
-          // If fewer than 3 cards remain, disband the remainder back to ungrouped pool
-          declarationGroups.splice(grpIdx, 1);
-        } else {
-          // Re-evaluate group type for remaining cards
-          const detected = detectBestGroupType(grp.cards);
-          if (detected) {
-            grp.type = detected.type;
-            grp.typeLabel = detected.label;
-          }
-        }
+        const disbandedCount = reconcileDeclarationGroups();
+        lastDeclDragNotice = disbandedCount > 0
+          ? 'Group automatically ungrouped — remaining cards did not form a valid group.'
+          : null;
         declarationSelectedIds.delete(cardId);
         guidedCardIds.clear();
         guideMeState = null;
@@ -9146,6 +9978,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         renderAll(null);
         return;
       }
+      lastDeclDragNotice = null;
       guidedCardIds.clear();
       guideMeState = null;
       lastDeclSelectedCardId = cardId;
@@ -9518,6 +10351,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   // --- HTML5 Drag & Drop Support Across Stands with Tactile Card Lift ---
   function onCardDragStart(e, cardId) {
+    if (touchCardState && touchCardState.isDragging) {
+      e.preventDefault();
+      return;
+    }
     draggedPileType = null;
     draggedCardId = cardId;
     if (e.dataTransfer) {
@@ -9569,6 +10406,23 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (targetEl) targetEl.classList.remove('drag-over-left', 'drag-over-right');
     if (!draggedCardId || draggedCardId === targetCardId) return;
 
+    const standSnap = captureStandSnapshot();
+    const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
+    const rect = targetEl ? targetEl.getBoundingClientRect() : null;
+    const insertAfter = Boolean(rect && (e.clientX >= rect.left + rect.width / 2));
+
+    if (declarationMode) {
+      const targetGroupIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === targetCardId));
+      const targetStandIdx = (targetGroupIdx === -1 && Array.isArray(userStands))
+        ? userStands.findIndex(s => (s || []).some(c => c && c.id === targetCardId))
+        : -1;
+      const movedId = draggedCardId;
+      draggedCardId = null;
+      moveDeclarationCard(movedId, targetGroupIdx, -1, targetCardId, insertAfter, targetStandIdx);
+      onCardDragEnd(e);
+      return;
+    }
+
     let sourceStand = null, targetStand = null;
     let fromIdx = -1, toIdx = -1;
 
@@ -9585,12 +10439,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     if (!sourceStand || !targetStand) return;
 
-    const standSnap = captureStandSnapshot();
-    const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
     const [card] = sourceStand.splice(fromIdx, 1);
-    const rect = targetEl ? targetEl.getBoundingClientRect() : null;
-    const insertAfter = rect && (e.clientX >= rect.left + rect.width / 2);
-
     let insertIdx = targetStand.findIndex(c => c.id === targetCardId);
     if (insertAfter) insertIdx += 1;
     targetStand.splice(insertIdx, 0, card);
@@ -9605,7 +10454,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
 
   function onDiscardPileDragOver(e) {
-    if (!draggedCardId || draggedPileType) return;
+    if (!draggedCardId || draggedPileType || declarationMode) return;
     const isMyTurn=roomState && roomState.turnPlayerId===getMyPlayerId();
     if (!isMyTurn || roomState.turnStage!=='DISCARD') return;
     e.preventDefault();
@@ -9636,7 +10485,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   let touchDragGhost = null;
 
   function onTouchCardStart(e, cardId) {
-    if (declarationMode) return;
     if (e.touches.length !== 1) return;
     const touch = e.touches[0];
     const el = document.getElementById('card-' + cardId);
@@ -9668,7 +10516,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         let dir = 0;
         const mStand = scrollBtn.id.match(/^stand-scroll-(left|right)-(\d+)$/);
         const mDeclGroup = scrollBtn.id.match(/^decl-scroll-(left|right)-(\d+)$/);
-        const mDeclUngrouped = scrollBtn.id.match(/^decl-ungrouped-(left|right)$/);
+        const mDeclUngrouped = scrollBtn.id.match(/^decl-ungrouped-(left|right)(?:-(\d+))?$/);
         if (mStand) {
           dir = mStand[1] === 'left' ? -1 : 1;
           targetId = `stand-cards-${mStand[2]}`;
@@ -9677,7 +10525,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           targetId = `decl-group-cards-${mDeclGroup[2]}`;
         } else if (mDeclUngrouped) {
           dir = mDeclUngrouped[1] === 'left' ? -1 : 1;
-          targetId = 'decl-ungrouped-cards';
+          targetId = mDeclUngrouped[2] !== undefined ? `decl-ungrouped-cards-${mDeclUngrouped[2]}` : 'decl-ungrouped-cards';
         }
 
         if (targetId && dir !== 0) {
@@ -9692,6 +10540,94 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } else {
         document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast'));
         stopStandScroll();
+      }
+
+      if (declarationMode) {
+        let targetGroupIdx = null; // -1 = ungrouped stand/tray, 0..N = declaration group
+        let targetStandIdx = -1;
+        const rackUnderPoint = elUnderPoint?.closest?.('.stand-rack');
+        if (rackUnderPoint && rackUnderPoint.id) {
+          if (rackUnderPoint.id === 'decl-ungrouped-rack') {
+            targetGroupIdx = -1;
+            targetStandIdx = -1;
+          } else {
+            const mUngroupedStand = rackUnderPoint.id.match(/^decl-ungrouped-rack-(\d+)$/);
+            const mGroup = rackUnderPoint.id.match(/^decl-group-rack-(\d+)$/);
+            if (mUngroupedStand) {
+              targetGroupIdx = -1;
+              targetStandIdx = parseInt(mUngroupedStand[1], 10);
+            } else if (mGroup) {
+              targetGroupIdx = parseInt(mGroup[1], 10);
+            }
+          }
+        }
+        if (targetGroupIdx === null) {
+          let bestDist = Infinity;
+          const candidateRacks = [
+            { idx: -1, standIdx: -1, el: document.getElementById('decl-ungrouped-rack') },
+            ...(Array.isArray(userStands) ? userStands.map((_, sIdx) => ({ idx: -1, standIdx: sIdx, el: document.getElementById(`decl-ungrouped-rack-${sIdx}`) })) : []),
+            ...declarationGroups.map((_, idx) => ({ idx, standIdx: -1, el: document.getElementById(`decl-group-rack-${idx}`) }))
+          ];
+          for (const item of candidateRacks) {
+            if (!item.el) continue;
+            const rect = item.el.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+              targetGroupIdx = item.idx;
+              targetStandIdx = item.standIdx;
+              break;
+            }
+            const dx = Math.max(0, rect.left - x, x - rect.right);
+            const dy = Math.max(0, rect.top - y, y - rect.bottom);
+            const dist = Math.hypot(dx, dy);
+            if (dist < bestDist) {
+              bestDist = dist;
+              targetGroupIdx = item.idx;
+              targetStandIdx = item.standIdx;
+            }
+          }
+        }
+        if (targetGroupIdx !== null) {
+          const rackEl = getDeclRackEl(targetGroupIdx, targetStandIdx);
+          if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
+
+          const gIds = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c && c.id)));
+          const targetCards = targetGroupIdx === -1
+            ? (targetStandIdx >= 0 && Array.isArray(userStands) && userStands[targetStandIdx]
+                ? userStands[targetStandIdx].filter(c => c && !gIds.has(c.id))
+                : myHand.filter(c => c && !gIds.has(c.id)))
+            : (declarationGroups[targetGroupIdx]?.cards || []);
+          let insertIdx = targetCards.length;
+          let targetCardId = null;
+          let insertAfter = false;
+          for (let i = 0; i < targetCards.length; i++) {
+            const c = targetCards[i];
+            if (!c) continue;
+            const cEl = document.getElementById('card-' + c.id);
+            if (!cEl) continue;
+            const cRect = cEl.getBoundingClientRect();
+            const cCenter = cRect.left + cRect.width / 2;
+            if (x < cCenter) {
+              insertIdx = i;
+              targetCardId = c.id;
+              insertAfter = false;
+              if (c.id !== cardId) cEl.classList.add('drag-over-left');
+              break;
+            } else if (i === targetCards.length - 1) {
+              targetCardId = c.id;
+              insertAfter = true;
+              if (c.id !== cardId) cEl.classList.add('drag-over-right');
+            }
+          }
+          touchCardState.dropTarget = {
+            type: 'decl-group',
+            targetGroupIdx,
+            targetStandIdx,
+            insertIdx,
+            targetCardId,
+            insertAfter
+          };
+        }
+        return;
       }
 
       // 1. Check Discard Pile
@@ -9876,8 +10812,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const dy = releaseTouch ? releaseTouch.clientY - touchCardState.startY : 0;
     const dist = Math.hypot(dx, dy);
 
-    // Tap detection: either not dragging, or touch was short (< 550ms) with small movement (< 30px)
-    const isTap = !touchCardState.isDragging || (touchDuration < 550 && dist < 30);
+    // Tap detection: only when drag threshold was not crossed
+    const isTap = !touchCardState.isDragging;
 
     if (isTap) {
       if (e.cancelable) e.preventDefault();
@@ -9904,6 +10840,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     if (dropTarget) {
+      if (dropTarget.type === 'decl-group' && declarationMode) {
+        lastTouchSelectTime = now;
+        lastTouchActionTime = now;
+        moveDeclarationCard(cardId, dropTarget.targetGroupIdx, dropTarget.insertIdx, dropTarget.targetCardId, dropTarget.insertAfter, dropTarget.targetStandIdx ?? -1);
+        touchCardState = null;
+        draggedCardId = null;
+        return;
+      }
+
       // 1. Dropped on Discard Pile
       if (dropTarget.type === 'discard') {
         const isMyTurn = isCurrentPlayerMe();
@@ -10279,6 +11224,65 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function onHistoryDragEnd(e,el){
     el.classList.remove('peeked');
   }
+
+  function getDeclRackEl(targetGroupIdx, targetStandIdx = -1) {
+    if (targetGroupIdx === -1) {
+      if (targetStandIdx >= 0) {
+        return document.getElementById(`decl-ungrouped-rack-${targetStandIdx}`) || document.getElementById('decl-ungrouped-rack');
+      }
+      return document.getElementById('decl-ungrouped-rack');
+    }
+    return document.getElementById(`decl-group-rack-${targetGroupIdx}`);
+  }
+
+  function onDeclRackDragOver(e, targetGroupIdx, targetStandIdx = -1) {
+    if (!draggedCardId || !declarationMode) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    const rack = getDeclRackEl(targetGroupIdx, targetStandIdx);
+    if (rack) rack.classList.add('drag-over-stand');
+  }
+
+  function onDeclRackDragLeave(e, targetGroupIdx, targetStandIdx = -1) {
+    const rack = getDeclRackEl(targetGroupIdx, targetStandIdx);
+    if (rack && e && e.relatedTarget && rack.contains(e.relatedTarget)) return;
+    if (rack) rack.classList.remove('drag-over-stand');
+  }
+
+  function onDeclRackDrop(e, targetGroupIdx, targetStandIdx = -1) {
+    e.preventDefault();
+    e.stopPropagation();
+    const rack = getDeclRackEl(targetGroupIdx, targetStandIdx);
+    if (rack) rack.classList.remove('drag-over-stand');
+    if (!draggedCardId || !declarationMode) return;
+    const movedId = draggedCardId;
+    draggedCardId = null;
+    moveDeclarationCard(movedId, targetGroupIdx, -1, null, false, targetStandIdx);
+    onCardDragEnd(e);
+  }
+  function onStandsContainerDragOver(e) {
+    if (!draggedCardId || !declarationMode) return;
+    const isInGroup = declarationGroups.some(g => (g.cards || []).some(c => c && c.id === draggedCardId));
+    if (!isInGroup) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  }
+
+  function onStandsContainerDrop(e) {
+    if (!draggedCardId || !declarationMode) return;
+    const isInGroup = declarationGroups.some(g => (g.cards || []).some(c => c && c.id === draggedCardId));
+    if (!isInGroup) return;
+    e.preventDefault();
+    const movedId = draggedCardId;
+    draggedCardId = null;
+    moveDeclarationCard(movedId, -1);
+    onCardDragEnd(e);
+  }
+  window.onDeclRackDragOver = onDeclRackDragOver;
+  window.onDeclRackDragLeave = onDeclRackDragLeave;
+  window.onDeclRackDrop = onDeclRackDrop;
+  window.onStandsContainerDragOver = onStandsContainerDragOver;
+  window.onStandsContainerDrop = onStandsContainerDrop;
 
   function onStandDragOver(e, standIdx) {
     e.preventDefault();
@@ -10898,7 +11902,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }, 3300);
   }
 
-  // Auto arrange hand into valid Rummy melds (Marriages, 3 Poochies, Tunellas, Pure Sequences, Sets, Wildcard Runs)
+  // Auto arrange hand into valid Rummy melds (maximizes pure sequences and prioritizes avoiding jokers)
   function autoArrangeHandToGroups(cards, cutCard, roles) {
     if (!Array.isArray(cards) || cards.length === 0) return [];
     const pool = cards.filter(Boolean);
@@ -10907,103 +11911,68 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const getAvailable = () => pool.filter(c => c && !usedIds.has(c.id));
 
     const rRule = getActiveRules();
-    const effectiveRoles = roles || roomState?.roles;
-
-    // 1. Marriages: (Taplu + Tiplu + Paplu in cut suit)
-    if (effectiveRoles) {
-      const r = effectiveRoles;
-      let searchingMarriage = true;
-      while (searchingMarriage) {
-        const avail = getAvailable();
-        const taplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.nichluRank);
-        const tiplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.tipluRank);
-        const paplu = avail.find(c => c.suit === r.tipluSuit && c.rank === r.papluRank);
-        if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
-          const trio = [taplu, tiplu, paplu];
-          trio.forEach(c => usedIds.add(c.id));
-          groups.push({
-            type: rRule.allowMarriageAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
-            typeLabel: `Marriage (${rRule.marriagePts} pts)`,
-            cards: trio
-          });
-        } else {
-          searchingMarriage = false;
-        }
-      }
-    }
-
-    // 2. 3 Poochies -> Pure Sequence (Tunella)
-    let searchingPoochies = true;
-    while (searchingPoochies) {
-      const avail = getAvailable();
-      const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
-      if (poochies.length >= 3) {
-        const trio = poochies.slice(0, 3);
-        trio.forEach(c => usedIds.add(c.id));
-        groups.push({
-          type: rRule.allow3PoochiesAsPure !== false ? 'PURE_SEQUENCE' : 'SEQUENCE',
-          typeLabel: '3 Poochies (Tunella)',
-          cards: trio
-        });
-      } else {
-        searchingPoochies = false;
-      }
-    }
-
-    // 3. Tunellas: (3 identical cards of exact same suit and rank)
-    if (rRule.allowTunnelaAsPure !== false) {
-      let searchingTunellas = true;
-      while (searchingTunellas) {
-        const avail = getAvailable().filter(c => !declarationIsWild(c));
-        const suitRankMap = new Map();
-        for (const c of avail) {
-          const key = `${c.suit}_${c.rank}`;
-          if (!suitRankMap.has(key)) suitRankMap.set(key, []);
-          suitRankMap.get(key).push(c);
-        }
-        let foundTun = false;
-        for (const grp of suitRankMap.values()) {
-          if (grp.length >= 3) {
-            const trio = grp.slice(0, 3);
-            trio.forEach(c => usedIds.add(c.id));
-            groups.push({
-              type: 'PURE_SEQUENCE',
-              typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
-              cards: trio
-            });
-            foundTun = true;
-            break;
-          }
-        }
-        if (!foundTun) searchingTunellas = false;
-      }
-    }
-
-    // 4. Natural Pure Sequences: Smart optimal solver to maximize count of pure sequences
+    const effCut = cutCard || roomState?.cutCard;
+    const effRoles = roles || roomState?.roles;
+    const isWildFn = (c) => declarationIsWildForCut(c, effCut, effRoles);
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
+    // 1. Optimal Pure Groups per suit (Natural Pure Runs + Tunellas + Marriage)
     for (const suit of suits) {
       const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
-      if (suitNaturals.length >= 3) {
-        const optimalRuns = extractOptimalPureRuns(suitNaturals);
-        for (const run of optimalRuns) {
-          run.forEach(c => usedIds.add(c.id));
+      if (suitNaturals.length < 3) continue;
+      const isMarriageWrap = Boolean(
+        effRoles && rRule.allowMarriageAsPure !== false &&
+        suit === effRoles.tipluSuit && effRoles.tipluRank === 'A'
+      );
+      const optimalSuitGroups = solveOptimalSuitPurePatternsClient(suitNaturals, effCut, effRoles, {
+        includeTunellas: rRule.allowTunnelaAsPure !== false,
+        includeWrapMarriage: isMarriageWrap,
+        extendWithNonWild: false
+      });
+      for (const g of optimalSuitGroups) {
+        g.cards.forEach(c => usedIds.add(c.id));
+        let typeLabel = `Pure Run (${g.cards.length})`;
+        if (g.kind === 'TUNELLA') {
+          typeLabel = `Tunella (${g.cards[0].rank}${g.cards[0].suit} x3)`;
+        } else if (effRoles && g.cards.some(c => c.suit === effRoles.tipluSuit && c.rank === effRoles.nichluRank) && g.cards.some(c => c.suit === effRoles.tipluSuit && c.rank === effRoles.tipluRank) && g.cards.some(c => c.suit === effRoles.tipluSuit && c.rank === effRoles.papluRank) && rRule.allowMarriageAsPure !== false) {
+          typeLabel = `Marriage (${rRule.marriagePts} pts)`;
+        }
+        groups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel,
+          cards: g.cards,
+          _kind: g.kind
+        });
+      }
+    }
+
+    // 2. 3 Poochies -> Pure Sequence (Tunella) when allowed
+    if (rRule.allow3PoochiesAsPure !== false) {
+      let searchingPoochies = true;
+      while (searchingPoochies) {
+        const avail = getAvailable();
+        const poochies = avail.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
+        if (poochies.length >= 3) {
+          const trio = poochies.slice(0, 3);
+          trio.forEach(c => usedIds.add(c.id));
           groups.push({
             type: 'PURE_SEQUENCE',
-            typeLabel: `Pure Run (${run.length})`,
-            cards: run
+            typeLabel: '3 Poochies (Tunella)',
+            cards: trio
           });
+        } else {
+          searchingPoochies = false;
         }
       }
     }
 
-    // 5. Sets (3 or 4 cards of the same rank in different suits)
+    // 3. Sets (3 or 4 non-wild cards of the same rank in different suits)
     for (const rnk of rankOrder) {
       let foundSet = true;
       while (foundSet) {
         foundSet = false;
-        const availSameRank = getAvailable().filter(c => c.rank === rnk && !declarationIsWild(c));
+        const availSameRank = getAvailable().filter(c => c.rank === rnk && !isWildFn(c));
         const bySuit = new Map();
         for (const c of availSameRank) {
           if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
@@ -11023,15 +11992,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 6. Impure sequences (using wildcards) - safe loop without card reuse
+    // 4. Impure sequences (using wildcards)
     let searchingJokerRun = true;
     while (searchingJokerRun) {
       searchingJokerRun = false;
-      const availWildcards = getAvailable().filter(c => declarationIsWild(c));
+      const availWildcards = getAvailable().filter(c => isWildFn(c));
       if (availWildcards.length === 0) break;
 
       for (const suit of suits) {
-        const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !declarationIsWild(c));
+        const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !isWildFn(c));
         if (suitNaturals.length < 2) continue;
 
         let formedRun = false;
@@ -11056,13 +12025,88 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 7. Strict deduplication invariant: ensure no card ID appears in multiple groups
+    // 4b. Joker Sets (2 non-wilds same rank + 1 wildcard)
+    let searchingJokerSet = true;
+    while (searchingJokerSet) {
+      searchingJokerSet = false;
+      const availWildcards = getAvailable().filter(c => isWildFn(c));
+      if (availWildcards.length === 0) break;
+      for (const rnk of rankOrder) {
+        const availSameRank = getAvailable().filter(c => c.rank === rnk && !isWildFn(c));
+        const bySuit = new Map();
+        for (const c of availSameRank) {
+          if (!bySuit.has(c.suit)) bySuit.set(c.suit, c);
+        }
+        if (bySuit.size >= 2) {
+          const trio = [...Array.from(bySuit.values()).slice(0, 2), availWildcards[0]];
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'SET',
+            typeLabel: `Joker Set of ${rnk}s`,
+            cards: trio
+          });
+          searchingJokerSet = true;
+          break;
+        }
+      }
+    }
+
+    // 5. Extend consecutive Pure Runs strictly with remaining NON-WILD cards
+    for (const g of groups) {
+      if (g.type !== 'PURE_SEQUENCE' || g._kind !== 'RUN') continue;
+      const run = g.cards;
+      let extended = true;
+      while (extended) {
+        extended = false;
+        const runSuit = run[0].suit;
+        const firstRank = run[0].rank;
+        const lastRank = run[run.length - 1].rank;
+        const availSuit = getAvailable().filter(c => c && c.suit === runSuit && !isWildFn(c));
+        const firstIdx = rankOrder.indexOf(firstRank);
+        if (firstIdx > 0) {
+          const prevRank = rankOrder[firstIdx - 1];
+          const match = availSuit.find(c => c.rank === prevRank);
+          if (match) {
+            run.unshift(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        const lastIdx = rankOrder.indexOf(lastRank);
+        if (lastRank !== 'A' && lastIdx >= 0 && lastIdx < rankOrder.length - 1) {
+          const nextRank = rankOrder[lastIdx + 1];
+          const match = availSuit.find(c => c.rank === nextRank);
+          if (match) {
+            run.push(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+        if (lastRank === 'K') {
+          const match = availSuit.find(c => c.rank === 'A');
+          if (match) {
+            run.push(match);
+            usedIds.add(match.id);
+            extended = true;
+            continue;
+          }
+        }
+      }
+      if (!g.typeLabel.startsWith('Marriage')) {
+        g.typeLabel = `Pure Run (${run.length})`;
+      }
+    }
+
+    // 6. Strict deduplication invariant
     const verifiedGroups = [];
     const claimedIds = new Set();
     for (const g of groups) {
       if (Array.isArray(g.cards) && g.cards.every(c => c && c.id && !claimedIds.has(c.id))) {
         g.cards.forEach(c => claimedIds.add(c.id));
-        verifiedGroups.push(g);
+        const { _kind, ...cleanGroup } = g;
+        verifiedGroups.push(cleanGroup);
       }
     }
 
@@ -11075,6 +12119,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return '<div style="padding:14px; text-align:center; color:#9db0a7; font-size:12px;">No session scores recorded yet. Scores will be tallied here at the end of each round.</div>';
     }
 
+    const r = getActiveRules();
     // Consolidate entries by normalized player name to eliminate spurious or ghost entries
     const consolidatedMap = new Map();
     const currentRoomPlayerNames = new Set((roomState?.players || []).map(p => (p.name || '').trim().toLowerCase()));
@@ -11096,6 +12141,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         existing.maal = (existing.maal || 0) + (s.maal || 0);
         existing.honors = (existing.honors || 0) + (s.honors || 0);
         existing.totalScore = (existing.totalScore || 0) + (s.totalScore || 0);
+        existing.isEliminated = Boolean(existing.isEliminated || s.isEliminated);
+        if (s.eliminatedInHand && !existing.eliminatedInHand) existing.eliminatedInHand = s.eliminatedInHand;
         const resolvedId = s.id || s.playerId;
         if (resolvedId && !existing.playerId) existing.playerId = resolvedId;
         if (resolvedId && !existing.id) existing.id = resolvedId;
@@ -11109,7 +12156,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myName = (document.getElementById('playerName')?.value || (isDemo ? 'You' : '')).trim().toLowerCase();
-    const sorted = [...cleanedScores].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+    const sorted = [...cleanedScores].sort((a, b) => {
+      if (r.eliminationEnabled) {
+        const aOut = Boolean(a.isEliminated || (a.points || 0) > r.scoreLimit);
+        const bOut = Boolean(b.isEliminated || (b.points || 0) > r.scoreLimit);
+        if (aOut !== bOut) return aOut ? 1 : -1;
+      }
+      return (b.totalScore || 0) - (a.totalScore || 0);
+    });
+
+    const scoreLimit = Math.max(100, r.scoreLimit || 500);
 
     const rowsHtml = sorted.map((s, idx) => {
       const sId = s.id || s.playerId;
@@ -11122,26 +12178,64 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       const pts = s.points || 0;
       const maal = s.maal || 0;
       const total = s.totalScore || 0;
+      const isElim = Boolean(r.eliminationEnabled && (s.isEliminated || pts > scoreLimit));
       const totalClass = total > 0 ? 'score-pos' : total < 0 ? 'score-neg' : 'score-zero';
       const totalPrefix = total > 0 ? '+' : '';
       const maalPrefix = maal > 0 ? '+' : '';
 
+      const rawPct = Math.round((pts / scoreLimit) * 100);
+      const fillPct = isElim ? 100 : Math.min(100, Math.max(0, rawPct));
+      let barStateClass = 'is-safe';
+      let statusLabel = `${rawPct}% · Safe`;
+      if (!r.eliminationEnabled) {
+        barStateClass = 'is-off';
+        statusLabel = 'No Limit';
+      } else if (isElim) {
+        barStateClass = 'is-out';
+        statusLabel = 'Eliminated';
+      } else if (rawPct >= 90) {
+        barStateClass = 'is-danger';
+        statusLabel = `${rawPct}% · Near Limit`;
+      } else if (rawPct >= 70) {
+        barStateClass = 'is-warn';
+        statusLabel = `${rawPct}% · Approaching`;
+      }
+
+      const statusCellHtml = `
+        <div class="tourney-status-cell">
+          <div class="tourney-status-top">
+            <span class="tourney-status-ratio" style="${isElim ? 'color:#fca5a5;' : ''}">${pts} / ${scoreLimit}</span>
+            <span class="tourney-status-label ${barStateClass}">${statusLabel}</span>
+          </div>
+          <div class="tourney-progress-track" role="progressbar" aria-valuenow="${pts}" aria-valuemin="0" aria-valuemax="${scoreLimit}" title="${pts} of ${scoreLimit} penalty points">
+            <div class="tourney-progress-fill ${barStateClass}" style="width: ${fillPct}%;"></div>
+          </div>
+        </div>
+      `;
+
       return `
-        <tr class="${isMe ? 'is-me-row' : ''}">
-          <td style="text-align:center; width:36px;">${rankMedal}</td>
+        <tr class="${isMe ? 'is-me-row' : ''}" style="${isElim ? 'opacity:0.72; background:rgba(244,63,94,0.06);' : ''}">
+          <td style="text-align:center; width:36px;">${isElim ? '💀' : rankMedal}</td>
           <td>
-            <span style="font-weight:700;">${escapeHtml(s.name)}</span>
+            <span style="font-weight:700; ${isElim ? 'text-decoration:line-through; color:#cbd5e1;' : ''}">${escapeHtml(s.name)}</span>
             ${isMe ? '<span style="margin-left:6px; font-size:9px; background:rgba(50,197,138,0.22); color:#7eedba; padding:1px 5px; border-radius:4px; font-weight:800;">YOU</span>' : ''}
+            ${isElim ? '<span style="margin-left:6px; font-size:9px; background:rgba(244,63,94,0.22); color:#fca5a5; border:1px solid rgba(244,63,94,0.35); padding:1px 5px; border-radius:4px; font-weight:800;">OUT</span>' : ''}
           </td>
           <td style="text-align:center;"><b>${s.handsWon || 0}</b> / ${s.handsPlayed || 0}</td>
           <td style="text-align:right; color:#fca5a5;">${pts > 0 ? `-${pts}` : '0'}</td>
+          <td>${statusCellHtml}</td>
           <td style="text-align:right; color:${maal >= 0 ? '#fde047' : '#f87171'};">${maal !== 0 ? `${maalPrefix}${maal}` : '0'}</td>
           <td style="text-align:right;" class="${totalClass}">${totalPrefix}${total}</td>
         </tr>
       `;
     }).join('');
 
+    const tourneyNote = r.eliminationEnabled
+      ? `<div style="margin-bottom:8px; padding:6px 10px; border-radius:8px; background:rgba(217,182,92,0.12); border:1px solid rgba(217,182,92,0.3); color:#f1d27a; font-size:11px; font-weight:700;">🏆 Tournament Mode: Players exceeding <strong>${scoreLimit}</strong> penalty pts (excl. Honors) are eliminated. Last player standing wins!</div>`
+      : '';
+
     return `
+      ${tourneyNote}
       <div class="session-table-wrap">
         <table class="session-table">
           <thead>
@@ -11149,7 +12243,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               <th style="text-align:center; width:36px;">#</th>
               <th>Player</th>
               <th style="text-align:center;">Won / Played</th>
-              <th style="text-align:right;" title="Deadwood / Scoot penalty points paid">Points</th>
+              <th style="text-align:right;" title="Cumulative penalty points (excluding Honors)">Points</th>
+              <th title="Current penalty points against elimination score limit">Tournament Status</th>
               <th style="text-align:right;" title="Net Honors points won or paid">Honors</th>
               <th style="text-align:right;" title="Net overall session score">Total Score</th>
             </tr>
@@ -11187,12 +12282,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function renderDynamicRulesModalValues() {
     const r = getActiveRules();
     const totalPoochies = r.decks * r.poochiesPerDeck;
-    const totalCards = 156 + totalPoochies;
+    const totalCards = (r.decks * 52) + totalPoochies;
     const overviewTab = document.getElementById('rulesTabOverview');
     if (overviewTab) {
       const firstBoxP = overviewTab.querySelector('.rules-card-box p');
       if (firstBoxP) {
-        firstBoxP.innerHTML = `<strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Each player is dealt <strong>21 cards</strong>.`;
+        firstBoxP.innerHTML = `<strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>${r.decks} standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Up to <strong>${MAX_PLAYERS} players</strong> can join a table (using up to 5 packs); each player is dealt <strong>21 cards</strong>.`;
       }
       const lockTitle = overviewTab.querySelector('.rules-card-box:nth-child(3) p');
       if (lockTitle) {
@@ -11237,6 +12332,23 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (rows[3]) rows[3].children[2].innerHTML = `<strong>${r.middleDrop} points</strong>`;
       if (rows[4]) rows[4].children[2].innerHTML = `<strong>${r.forfeitPenalty} points</strong>`;
       if (rows[5]) rows[5].children[2].innerHTML = `<strong>${r.maxDeadwood} points</strong>`;
+      const tourneyBox = document.getElementById('rulesTournamentInfoBox');
+      if (tourneyBox) {
+        if (r.eliminationEnabled) {
+          tourneyBox.style.display = 'block';
+          tourneyBox.innerHTML = `
+            <h4><span>🏆</span> Tournament Elimination Rule (Active)</h4>
+            <p>Cumulative <strong>penalty points (excluding Honors/Maal)</strong> are tracked against the <strong>${r.scoreLimit}-point limit</strong>:</p>
+            <ul style="margin: 4px 0 0 18px; padding: 0;">
+              <li>If a player's cumulative penalty points <strong>exceed ${r.scoreLimit}</strong> (&gt; ${r.scoreLimit}), that player loses and is eliminated.</li>
+              <li>Eliminated players are no longer dealt cards and sit out as spectators.</li>
+              <li>The <strong>last player standing</strong> wins the Tournament!</li>
+            </ul>
+          `;
+        } else {
+          tourneyBox.style.display = 'none';
+        }
+      }
     }
   }
 
@@ -11258,8 +12370,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <button type="button" class="rules-preset-chip ${activeKey === 'classic' ? 'active' : ''}" onclick="applyModalPreset('classic')">Classic South Indian</button>
           <button type="button" class="rules-preset-chip ${activeKey === 'casual' ? 'active' : ''}" onclick="applyModalPreset('casual')">Casual Family</button>
           <button type="button" class="rules-preset-chip ${activeKey === 'highStakes' ? 'active' : ''}" onclick="applyModalPreset('highStakes')">High Stakes</button>
+          <button type="button" class="rules-preset-chip ${activeKey === 'tournament' || r.eliminationEnabled ? 'active' : ''}" onclick="applyModalPreset('tournament')">🏆 Tournament</button>
         </div>
         <div class="rules-custom-grid">
+          <label class="rules-field">Packs (52-Card Decks)<select onchange="updateModalRuleField('decks', this.value)"><option value="3" ${r.decks === 3 ? 'selected' : ''}>3 Packs (${3 * (52 + r.poochiesPerDeck)} cards • max 7p)</option><option value="4" ${r.decks === 4 ? 'selected' : ''}>4 Packs (${4 * (52 + r.poochiesPerDeck)} cards • max 9p)</option><option value="5" ${r.decks === 5 ? 'selected' : ''}>5 Packs (${5 * (52 + r.poochiesPerDeck)} cards • max 10p)</option></select></label>
+          <label class="rules-field">Poochies Per Deck<select onchange="updateModalRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 / deck (${r.decks} total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 / deck (${r.decks * 2} total)</option></select></label>
           <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateModalRuleField('minPureSequences', this.value)"></label>
           <label class="rules-field">First Drop Penalty<input type="number" min="0" max="120" value="${r.firstDrop}" onchange="updateModalRuleField('firstDrop', this.value)"></label>
           <label class="rules-field">Middle Drop Penalty<input type="number" min="0" max="200" value="${r.middleDrop}" onchange="updateModalRuleField('middleDrop', this.value)"></label>
@@ -11269,12 +12384,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-field">Pukka Joker Honors<input type="number" min="0" max="150" value="${r.tipluPts}" onchange="updateModalRuleField('tipluPts', this.value)"></label>
           <label class="rules-field">Poochie (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.poochie1}" style="width:33%;" onchange="updateModalRuleField('poochie1', this.value)"><input type="number" min="0" max="250" value="${r.poochie2}" style="width:33%;" onchange="updateModalRuleField('poochie2', this.value)"><input type="number" min="0" max="350" value="${r.poochie3}" style="width:34%;" onchange="updateModalRuleField('poochie3', this.value)"></div></label>
           <label class="rules-field">Paplu/Taplu (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="100" value="${r.papluTaplu1}" style="width:33%;" onchange="updateModalRuleField('papluTaplu1', this.value)"><input type="number" min="0" max="200" value="${r.papluTaplu2}" style="width:33%;" onchange="updateModalRuleField('papluTaplu2', this.value)"><input type="number" min="0" max="300" value="${r.papluTaplu3}" style="width:34%;" onchange="updateModalRuleField('papluTaplu3', this.value)"></div></label>
-          <label class="rules-field">Poochies Per Deck<select onchange="updateModalRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 / deck (3 total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 / deck (6 total)</option></select></label>
           <label class="rules-field">Dealt / Drawn Doubles Show<div style="display:flex;gap:4px;"><input type="number" min="5" max="10" value="${r.dealtDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('dealtDoublesForShow', this.value)"><input type="number" min="6" max="10" value="${r.drawnDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('drawnDoublesForShow', this.value)"></div></label>
           <label class="rules-field">Free Scoot (Dealt / Drawn)<div style="display:flex;gap:4px;"><input type="number" min="4" max="9" value="${r.freeScootDealtDoubles}" style="width:50%;" onchange="updateModalRuleField('freeScootDealtDoubles', this.value)"><input type="number" min="5" max="10" value="${r.freeGameDrawnDoubles}" style="width:50%;" onchange="updateModalRuleField('freeGameDrawnDoubles', this.value)"></div></label>
           <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateModalRuleField('groupingTimeSec', this.value)"></label>
+          <label class="rules-field" title="Exceeding this points total (excluding Honors) eliminates the player in Tournament mode">Tournament Score Limit<input type="number" min="100" max="5000" step="50" value="${r.scoreLimit}" onchange="updateModalRuleField('scoreLimit', this.value)"></label>
         </div>
         <div class="rules-check-row">
+          <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateModalRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors loses; last standing wins)</label>
           <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateModalRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} onchange="updateModalRuleField('allowDoublesShow', this.checked)"> Allow Doubles Show &amp; Free Scoot / Free Game</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowTunnelaAsPure ? 'checked' : ''} onchange="updateModalRuleField('allowTunnelaAsPure', this.checked)"> Tunella (3 identical cards) counts as Pure Group</label>
@@ -11294,7 +12410,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderRulesCustomizeTab();
   }
   function updateModalRuleField(key, val) {
-    modalEditRules = sanitizeClientRules({ ...(modalEditRules || getActiveRules()), presetName: 'Custom House Rules', [key]: val });
+    const base = modalEditRules || getActiveRules();
+    const nextPresetName = ((key === 'scoreLimit' || key === 'decks') && base.eliminationEnabled)
+      ? 'Tournament'
+      : (key === 'eliminationEnabled' && val)
+        ? 'Tournament'
+        : 'Custom House Rules';
+    modalEditRules = sanitizeClientRules({ ...base, presetName: nextPresetName, [key]: val });
     renderRulesCustomizeTab();
   }
   function applyTableRules() {
@@ -11312,6 +12434,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     if (isDemo) {
       roomState.rules = clean;
+      if (!clean.eliminationEnabled) {
+        roomState.tournamentFinished = false;
+        roomState.tournamentWinnerId = null;
+        roomState.tournamentWinnerName = null;
+        (roomState.players || []).forEach(p => { p.isEliminated = false; });
+        (globalSessionScores || []).forEach(sc => { if (sc) { sc.isEliminated = false; sc.eliminatedInHand = null; } });
+      }
       renderAll(calculateLocalMaal());
       renderRulesButtonState();
       renderDynamicRulesModalValues();
@@ -11380,15 +12509,23 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       (myName && (s.name || '').trim().toLowerCase() === myName) ||
       (isDemo && (s.id === 'p_demo' || s.playerId === 'p_demo' || s.name === 'You'))
     );
+    const r = getActiveRules();
     const el = document.getElementById('sessionScoresText');
     if (el) {
       if (myStat) {
         const tot = myStat.totalScore || 0;
+        const pts = myStat.points || 0;
         const prefix = tot > 0 ? '+' : '';
-        el.innerText = `Session: ${prefix}${tot} pts`;
-        el.style.color = tot > 0 ? '#7eedba' : tot < 0 ? '#fca5a5' : '#f1d27a';
+        if (r.eliminationEnabled) {
+          const isElim = Boolean(myStat.isEliminated || pts > r.scoreLimit);
+          el.innerText = isElim ? `OUT (${pts}/${r.scoreLimit})` : `Pts ${pts}/${r.scoreLimit} • ${prefix}${tot}`;
+          el.style.color = isElim ? '#fca5a5' : tot > 0 ? '#7eedba' : tot < 0 ? '#fca5a5' : '#f1d27a';
+        } else {
+          el.innerText = `Session: ${prefix}${tot} pts`;
+          el.style.color = tot > 0 ? '#7eedba' : tot < 0 ? '#fca5a5' : '#f1d27a';
+        }
       } else {
-        el.innerText = 'Session: 0 pts';
+        el.innerText = r.eliminationEnabled ? `Pts 0/${r.scoreLimit}` : 'Session: 0 pts';
         el.style.color = '#f1d27a';
       }
     }
@@ -11398,10 +12535,17 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const container = document.getElementById('playersReadyList');
     if (!container) return;
     const players = roomState?.players || [];
-    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const isTourneyOver = Boolean(roomState?.tournamentFinished || lastRoundResultData?.tournamentFinished);
 
     container.innerHTML = players.map(p => {
-      const isMe = p.id === myId;
+      if (p.isEliminated && !isTourneyOver) {
+        return `
+          <div class="ready-pill" style="opacity:0.65; border-color:rgba(244,63,94,0.35); color:#fca5a5;">
+            <span>💀</span>
+            <span><b>${escapeHtml(p.name)}</b>: OUT (Spectating)</span>
+          </div>
+        `;
+      }
       const isReady = readyMap ? Boolean(readyMap[p.id]) : (isDemo ? demoReadyPlayers.has(p.id) : Boolean(p.readyForNextHand));
       return `
         <div class="ready-pill ${isReady ? 'is-ready' : 'is-waiting'}" id="readyPill_${p.id}">
@@ -11415,26 +12559,31 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function updateDemoSessionScores(data) {
     if (!globalSessionScores || globalSessionScores.length === 0) {
       globalSessionScores = (roomState?.players || []).map(p => ({
+        id: p.id,
         playerId: p.id,
         name: p.name,
         handsPlayed: 0,
         handsWon: 0,
         points: 0,
         maal: 0,
-        totalScore: 0
+        honors: 0,
+        totalScore: 0,
+        isEliminated: Boolean(p.isEliminated),
+        eliminatedInHand: null
       }));
     }
 
+    const rCfg = getActiveRules();
     const winner = data.winnerName;
     const winnerMaalTotal = data.winnerMaal?.total || 0;
-    // Paying losers: every non-winner except Free Scoot (7+ Doubles)
-    const payingLosers = (data.results || []).filter(r => r.name !== winner && r.status !== 'WINNER' && !r.isFreeScoot && r.dropPenalty !== 0);
+    const payingLosers = (data.results || []).filter(r => r.name !== winner && r.status !== 'WINNER' && r.status !== 'ELIMINATED' && !r.isFreeScoot && r.dropPenalty !== 0);
     const payingLosersCount = payingLosers.length;
 
     (data.results || []).forEach(r => {
+      if (r.status === 'ELIMINATED') return;
       let sc = globalSessionScores.find(s => s.name === r.name || (r.name === 'You' && s.playerId === 'p_demo'));
       if (!sc) {
-        sc = { playerId: 'p_' + r.name, name: r.name, handsPlayed: 0, handsWon: 0, points: 0, maal: 0, honors: 0, totalScore: 0 };
+        sc = { id: 'p_' + r.name, playerId: 'p_' + r.name, name: r.name, handsPlayed: 0, handsWon: 0, points: 0, maal: 0, honors: 0, totalScore: 0, isEliminated: false, eliminatedInHand: null };
         globalSessionScores.push(sc);
       }
       sc.handsPlayed++;
@@ -11446,10 +12595,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         sc.honors = sc.maal;
         sc.totalScore += maalWon;
       } else if (r.status === 'DROPPED' || r.status === 'FORFEITED') {
-        if (r.isFreeScoot || r.dropPenalty === 0) {
-          // Free Scoot pays 0 base and 0 honors
-        } else {
-          const rCfg = getActiveRules();
+        if (!(r.isFreeScoot || r.dropPenalty === 0)) {
           const dropPts = r.dropPenalty !== undefined ? r.dropPenalty : (r.status === 'FORFEITED' ? rCfg.forfeitPenalty : rCfg.middleDrop);
           sc.points += dropPts;
           sc.maal -= winnerMaalTotal;
@@ -11465,10 +12611,58 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     });
 
+    // Tournament Elimination check in demo mode (points excluding Honors strictly > scoreLimit)
+    const newlyEliminated = [];
+    if (rCfg.eliminationEnabled) {
+      (roomState?.players || []).forEach(p => {
+        if (p.isEliminated) return;
+        const sc = globalSessionScores.find(s => s.name === p.name || s.playerId === p.id);
+        if (sc && sc.points > rCfg.scoreLimit) {
+          p.isEliminated = true;
+          sc.isEliminated = true;
+          sc.eliminatedInHand = demoHandNumber;
+          newlyEliminated.push({ id: p.id, name: p.name, points: sc.points });
+        }
+      });
+      const surviving = (roomState?.players || []).filter(p => !p.isEliminated);
+      if ((roomState?.players || []).length >= 2 && surviving.length === 1) {
+        const champ = surviving[0];
+        roomState.tournamentFinished = true;
+        roomState.tournamentWinnerId = champ.id;
+        roomState.tournamentWinnerName = champ.name;
+        data.tournamentFinished = true;
+        data.tournamentWinnerId = champ.id;
+        data.tournamentWinnerName = champ.name;
+      }
+    }
+    data.newlyEliminated = newlyEliminated;
     updateSessionHeaderBadge();
   }
 
-  // Requirement 2: wait for all players to hit continue before moving to next hand
+  function resetDemoTournamentState() {
+    demoHandNumber = 0;
+    demoStarterIndex = -1;
+    if (roomState) {
+      roomState.tournamentFinished = false;
+      roomState.tournamentWinnerId = null;
+      roomState.tournamentWinnerName = null;
+      (roomState.players || []).forEach(p => { p.isEliminated = false; });
+    }
+    (globalSessionScores || []).forEach(sc => {
+      if (!sc) return;
+      sc.handsPlayed = 0;
+      sc.handsWon = 0;
+      sc.points = 0;
+      sc.maal = 0;
+      sc.honors = 0;
+      sc.totalScore = 0;
+      sc.isEliminated = false;
+      sc.eliminatedInHand = null;
+    });
+    updateSessionHeaderBadge();
+  }
+
+  // Requirement 2: wait for all surviving (or all, for New Tournament) players to hit continue before moving to next hand
   function continueFromResults() {
     const continueBtn = document.getElementById('btnContinueResults');
     const btnText = document.getElementById('btnContinueResultsText');
@@ -11492,14 +12686,36 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return;
     }
 
-    // In demo mode: wait for all opponents to hit continue with realistic timing
+    const wasTourneyFinished = Boolean(roomState?.tournamentFinished || lastRoundResultData?.tournamentFinished);
     demoReadyPlayers.clear();
     demoReadyPlayers.add('p_demo');
 
-    const opponents = (roomState?.players || []).filter(p => p.id !== 'p_demo');
+    const opponents = (roomState?.players || []).filter(p => p.id !== 'p_demo' && (wasTourneyFinished || !p.isEliminated));
     if (demoReadyTimer) clearTimeout(demoReadyTimer);
 
-    const delays = [600, 1200, 1800];
+    const proceedDemo = () => {
+      setTimeout(() => {
+        const modal = document.getElementById('resultModal');
+        if (modal) modal.style.display = 'none';
+
+        declarationMode = false;
+        declarationGroups = [];
+        declarationSelectedIds.clear();
+        selectedCardId = null;
+
+        if (wasTourneyFinished) {
+          resetDemoTournamentState();
+        }
+        startNextHandDemo();
+      }, 450);
+    };
+
+    if (opponents.length === 0) {
+      proceedDemo();
+      return;
+    }
+
+    const delays = [600, 1100, 1600];
     opponents.forEach((opp, idx) => {
       setTimeout(() => {
         demoReadyPlayers.add(opp.id);
@@ -11508,20 +12724,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           pill.className = 'ready-pill is-ready';
           pill.innerHTML = `<span>✓</span><span><b>${escapeHtml(opp.name)}</b>: Ready</span>`;
         }
-        if (demoReadyPlayers.size >= (roomState?.players?.length || 4)) {
-          setTimeout(() => {
-            const modal = document.getElementById('resultModal');
-            if (modal) modal.style.display = 'none';
-
-            declarationMode = false;
-            declarationGroups = [];
-            declarationSelectedIds.clear();
-            selectedCardId = null;
-
-            startNextHandDemo();
-          }, 450);
+        if (demoReadyPlayers.size >= opponents.length + 1) {
+          proceedDemo();
         }
-      }, delays[idx] || 1500);
+      }, delays[idx] || 1400);
     });
   }
 
@@ -11573,7 +12779,39 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       dp.innerHTML = '';
     }
 
-    document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
+    if (isDemo && !data._demoScored) {
+      updateDemoSessionScores(data);
+      data._demoScored = true;
+    } else if (!isDemo && data.sessionScores) {
+      globalSessionScores = data.sessionScores;
+      updateSessionHeaderBadge();
+    }
+
+    const rCfgRes = sanitizeClientRules(data.rules || getActiveRules());
+    const tourneyBannerEl = document.getElementById('tournamentResultBanner');
+    if (data.tournamentFinished && data.tournamentWinnerName) {
+      document.getElementById('winnerTitle').innerText = `🏆 Tournament Champion: ${data.tournamentWinnerName}`;
+    } else {
+      document.getElementById('winnerTitle').innerText = `Winner: ${data.winnerName}`;
+    }
+    if (tourneyBannerEl) {
+      const parts = [];
+      if (data.tournamentFinished && data.tournamentWinnerName) {
+        parts.push(`<div style="padding:10px 14px; border-radius:10px; background:linear-gradient(135deg, rgba(217,182,92,0.22), rgba(50,197,138,0.16)); border:1px solid rgba(217,182,92,0.55); color:#fef08a; font-size:13px; font-weight:800; text-align:center;">🏆 LAST PLAYER STANDING — ${escapeHtml(data.tournamentWinnerName)} wins the Tournament! (All opponents exceeded ${rCfgRes.scoreLimit} penalty pts)</div>`);
+      }
+      if (Array.isArray(data.newlyEliminated) && data.newlyEliminated.length > 0) {
+        const elimText = data.newlyEliminated.map(e => `${escapeHtml(e.name)} (${e.points} pts)`).join(', ');
+        parts.push(`<div style="margin-top:${parts.length ? '8px' : '0'}; padding:8px 12px; border-radius:8px; background:rgba(244,63,94,0.14); border:1px solid rgba(244,63,94,0.4); color:#fca5a5; font-size:12px; font-weight:700;">💀 Eliminated this hand (&gt; ${rCfgRes.scoreLimit} penalty pts excl. Honors): ${elimText} — no longer dealt cards.</div>`);
+      }
+      if (parts.length > 0) {
+        tourneyBannerEl.style.display = 'block';
+        tourneyBannerEl.innerHTML = parts.join('');
+      } else {
+        tourneyBannerEl.style.display = 'none';
+        tourneyBannerEl.innerHTML = '';
+      }
+    }
+
     const m = data.winnerMaal?.details || {};
     document.getElementById('maalDetails').innerHTML = `
       <strong style="color: var(--accent-gold-soft); font-size: 15px;">Winner Honors: ${data.winnerMaal?.total || 0} pts</strong><br>
@@ -11586,7 +12824,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     document.getElementById('settlementList').innerHTML = (data.results || []).map(r => `
       <div class="settlement-row">
-        <strong>${escapeHtml(r.name)}</strong>: ${escapeHtml(r.net)}
+        <strong>${escapeHtml(r.name)}</strong>${r.status === 'ELIMINATED' ? ' <span style="font-size:10px;color:#fca5a5;font-weight:800;">[OUT]</span>' : ''}: ${escapeHtml(r.net)}
       </div>
     `).join('');
 
@@ -11870,14 +13108,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }).join('');
     }
 
-    // Requirement 6: show a table with a running score of points, maal and total scored for each player
-    if (isDemo) {
-      updateDemoSessionScores(data);
-    } else {
-      if (data.sessionScores) globalSessionScores = data.sessionScores;
-      updateSessionHeaderBadge();
-    }
-
     const leadTable = document.getElementById('sessionLeaderboardTable');
     const currentHandNum = data.handNumber || (isDemo ? demoHandNumber : (roomState?.handNumber || 1));
     if (leadTable) {
@@ -11899,8 +13129,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       continueBtn.style.display = 'inline-flex';
       continueBtn.disabled = false;
     }
-    if (btnText) btnText.innerHTML = '<b>Continue</b><small class="action-sub">next hand</small>';
-    if (nextStatus) nextStatus.innerText = 'Next hand will begin once all seated players hit Continue.';
+    if (data.tournamentFinished) {
+      if (btnText) btnText.innerHTML = '<b>🏆 New Tournament</b><small class="action-sub">reset scores &amp; play</small>';
+      if (nextStatus) nextStatus.innerText = 'Tournament complete! Click New Tournament to reset scores and deal Hand #1.';
+    } else {
+      if (btnText) btnText.innerHTML = '<b>Continue</b><small class="action-sub">next hand</small>';
+      if (nextStatus) nextStatus.innerText = 'Next hand will begin once all surviving players hit Continue.';
+    }
 
     document.getElementById('resultModal').style.display = 'flex';
   }
@@ -11915,12 +13150,22 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (bannerNext) bannerNext.classList.remove('is-winner-banner');
 
     demoHandNumber++;
-    // Requirement 5: Players should take turns (clockwise) in starting to draw when new hand is played
-    // Player seat positions: 0: You (bottom), 1: Kavita (left), 2: Sonia (top), 3: Aarav (right)
-    // Advancing index goes clockwise around the table (Bottom -> Left -> Top -> Right -> Bottom)
-    demoStarterIndex = (demoStarterIndex + 1) % (roomState.players.length || 4);
+    // Clockwise starting turn, skipping eliminated players
+    const totalSeats = roomState.players.length || 4;
+    let nextStarter = (demoStarterIndex + 1) % totalSeats;
+    let guard = 0;
+    while (roomState.players[nextStarter]?.isEliminated && guard < totalSeats) {
+      nextStarter = (nextStarter + 1) % totalSeats;
+      guard++;
+    }
+    demoStarterIndex = nextStarter;
     const starter = roomState.players[demoStarterIndex];
-    const dealerIndex = (demoStarterIndex - 1 + roomState.players.length) % roomState.players.length;
+    let dealerIndex = (demoStarterIndex - 1 + totalSeats) % totalSeats;
+    let dGuard = 0;
+    while (roomState.players[dealerIndex]?.isEliminated && dGuard < totalSeats) {
+      dealerIndex = (dealerIndex - 1 + totalSeats) % totalSeats;
+      dGuard++;
+    }
     const dealer = roomState.players[dealerIndex];
 
     roomState.handNumber = demoHandNumber;
@@ -11933,14 +13178,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     roomState.deckCount = 134;
     roomState.lastAction = `Hand #${demoHandNumber} dealt! ${starter.name} opens the hand (clockwise turn order).`;
 
+    let demoEliminated = false;
     roomState.players.forEach(p => {
-      p.cardCount = 21;
       p.hasDropped = false;
       p.hasForfeited = false;
       p.dropType = null;
       p.dropPenalty = 0;
       p.turnsTaken = 0;
       p.readyForNextHand = false;
+      if (p.isEliminated) {
+        p.cardCount = 0;
+        if (p.id === 'p_demo') demoEliminated = true;
+      } else {
+        p.cardCount = 21;
+      }
     });
 
     const suits = ['♠', '♥', '♣', '♦'];
@@ -11961,34 +13212,37 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       nichluRank: nichluRank
     };
 
-    // Deal 21 cards
-    const newHand = [
-      { id: `c_n_${demoHandNumber}_1`, suit: cutSuit, rank: cutRank, rankValue: cutVal, isPoochie: false },
-      { id: `c_n_${demoHandNumber}_2`, suit: cutSuit, rank: papluRank, rankValue: ranks.indexOf(papluRank) + 1, isPoochie: false },
-      { id: `c_n_${demoHandNumber}_3`, suit: cutSuit, rank: nichluRank, rankValue: ranks.indexOf(nichluRank) + 1, isPoochie: false },
-      { id: `c_n_${demoHandNumber}_4`, suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true }
-    ];
+    if (demoEliminated) {
+      myHand = [];
+      userStands = [[], [], []];
+    } else {
+      // Deal 21 cards
+      const newHand = [
+        { id: `c_n_${demoHandNumber}_1`, suit: cutSuit, rank: cutRank, rankValue: cutVal, isPoochie: false },
+        { id: `c_n_${demoHandNumber}_2`, suit: cutSuit, rank: papluRank, rankValue: ranks.indexOf(papluRank) + 1, isPoochie: false },
+        { id: `c_n_${demoHandNumber}_3`, suit: cutSuit, rank: nichluRank, rankValue: ranks.indexOf(nichluRank) + 1, isPoochie: false },
+        { id: `c_n_${demoHandNumber}_4`, suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true }
+      ];
 
-    const s1 = suits[(suits.indexOf(cutSuit) + 1) % 4];
-    newHand.push({ id: `c_n_${demoHandNumber}_5`, suit: s1, rank: '4', rankValue: 4, isPoochie: false });
-    newHand.push({ id: `c_n_${demoHandNumber}_6`, suit: s1, rank: '5', rankValue: 5, isPoochie: false });
-    newHand.push({ id: `c_n_${demoHandNumber}_7`, suit: s1, rank: '6', rankValue: 6, isPoochie: false });
+      const s1 = suits[(suits.indexOf(cutSuit) + 1) % 4];
+      newHand.push({ id: `c_n_${demoHandNumber}_5`, suit: s1, rank: '4', rankValue: 4, isPoochie: false });
+      newHand.push({ id: `c_n_${demoHandNumber}_6`, suit: s1, rank: '5', rankValue: 5, isPoochie: false });
+      newHand.push({ id: `c_n_${demoHandNumber}_7`, suit: s1, rank: '6', rankValue: 6, isPoochie: false });
 
-    const s2 = suits[(suits.indexOf(cutSuit) + 2) % 4];
-    newHand.push({ id: `c_n_${demoHandNumber}_8`, suit: s2, rank: '9', rankValue: 9, isPoochie: false });
-    newHand.push({ id: `c_n_${demoHandNumber}_9`, suit: s2, rank: '10', rankValue: 10, isPoochie: false });
-    newHand.push({ id: `c_n_${demoHandNumber}_10`, suit: s2, rank: 'J', rankValue: 11, isPoochie: false });
+      const s2 = suits[(suits.indexOf(cutSuit) + 2) % 4];
+      newHand.push({ id: `c_n_${demoHandNumber}_8`, suit: s2, rank: '9', rankValue: 9, isPoochie: false });
+      newHand.push({ id: `c_n_${demoHandNumber}_9`, suit: s2, rank: '10', rankValue: 10, isPoochie: false });
+      newHand.push({ id: `c_n_${demoHandNumber}_10`, suit: s2, rank: 'J', rankValue: 11, isPoochie: false });
 
-    while (newHand.length < 21) {
-      const s = suits[Math.floor(Math.random() * suits.length)];
-      const r = ranks[Math.floor(Math.random() * ranks.length)];
-      newHand.push({ id: `c_n_${demoHandNumber}_${newHand.length + 1}`, suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false });
+      while (newHand.length < 21) {
+        const s = suits[Math.floor(Math.random() * suits.length)];
+        const r = ranks[Math.floor(Math.random() * ranks.length)];
+        newHand.push({ id: `c_n_${demoHandNumber}_${newHand.length + 1}`, suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false });
+      }
+
+      myHand = newHand;
+      initDefaultStands(3);
     }
-
-    myHand = newHand;
-
-    // Requirement 3: when next hand is dealt, auto arrange into 3 groups
-    initDefaultStands(3);
 
     const discSuit = suits[(suits.indexOf(cutSuit) + 3) % 4];
     roomState.topDiscard = { id: `disc_${demoHandNumber}`, suit: discSuit, rank: 'Q', rankValue: 12, isPoochie: false, discardedBy: dealer.name };
@@ -11996,9 +13250,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     renderAll(calculateLocalMaal());
 
-    window.alert(`🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Clockwise turn order)\nCards arranged into 3 stands.`);
+    window.alert(demoEliminated
+      ? `🎴 Hand #${demoHandNumber} Dealt!\nYou exceeded the Tournament score limit and are spectating this hand.`
+      : `🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Clockwise turn order)\nCards arranged into 3 stands.`);
 
-    // If starter is an opponent, simulate their opening move
     if (starter.id !== 'p_demo') {
       setTimeout(() => {
         passDemoTurn();
@@ -12133,16 +13388,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     do {
       nextIndex = (nextIndex + 1) % roomState.players.length;
       attempts++;
-    } while (roomState.players[nextIndex].hasDropped && attempts < roomState.players.length);
+    } while ((roomState.players[nextIndex].hasDropped || roomState.players[nextIndex].isEliminated) && attempts < roomState.players.length);
 
-    const activeRemaining = roomState.players.filter(p => !p.hasDropped);
+    const activeRemaining = roomState.players.filter(p => !p.hasDropped && !p.isEliminated);
     if (activeRemaining.length <= 1) {
-      const winner = activeRemaining[0] || roomState.players[0];
+      const winner = activeRemaining[0] || roomState.players.find(p => !p.isEliminated) || roomState.players[0];
       const wMaalTotal = 50;
+      const handParticipants = roomState.players.filter(p => !p.isEliminated);
       const demoData = {
         winnerName: winner.name,
         winnerMaal: { total: wMaalTotal, details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 } },
         results: roomState.players.map(p => {
+          if (p.isEliminated) {
+            return { name: p.name, status: 'ELIMINATED', points: 0, net: 'Eliminated (sitting out)' };
+          }
           if (p.id === winner.id) {
             return { name: p.name, status: 'WINNER', points: 0, net: `Won (opponents folded) + collects ${wMaalTotal} Honors from each paying loser` };
           }
@@ -12153,7 +13412,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           const pen = p.hasForfeited ? rCfg.forfeitPenalty : (p.dropPenalty !== undefined ? p.dropPenalty : rCfg.firstDrop);
           return { name: p.name, status: p.hasForfeited ? 'FORFEITED' : 'DROPPED', dropPenalty: pen, points: pen + wMaalTotal, net: `Pays ${pen + wMaalTotal} pts (${pen} ${p.hasForfeited ? 'forfeit' : 'drop'} + ${wMaalTotal} winner Honors)` };
         }),
-        revealedHands: roomState.players.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
+        revealedHands: handParticipants.map(p => ({ name: p.name, hand: p.id === 'p_demo' ? myHand : [] }))
       };
       renderAll(calculateLocalMaal());
       showWinnerFanfare(demoData);
