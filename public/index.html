@@ -493,10 +493,12 @@
       z-index: 2;
     }
 
-    /* Interactive cards inside formed declaration groups (tap card to release back to pool) */
-    .grouped-cards .card,
+    /* Interactive cards inside formed declaration groups */
     .locked-cards .card {
       cursor: pointer !important;
+      position: relative;
+    }
+    .grouped-cards .card {
       position: relative;
     }
     .grouped-cards .card:hover,
@@ -3504,7 +3506,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     </div>
 
     <!-- Multi-Stand Cards Racks -->
-    <div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container"></div>
+    <div id="declarationPanel" class="declare-panel"></div><div id="standsContainer" class="stands-container" ondragover="onStandsContainerDragOver(event)" ondrop="onStandsContainerDrop(event)"></div>
 
     <div class="action-section">
       <div class="action-label">Your Move</div>
@@ -5111,6 +5113,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
     hasInitializedGroupingPhase = false;
     lastRoundResultData = null;
     globalSessionScores = [];
@@ -6459,10 +6462,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const guidedClass = (!isLocked && declarationMode && guidedCardIds.has(card.id)) ? 'is-guided' : '';
     const lockedClass = isLocked ? 'locked-card-item' : '';
     const clickAttr = isLocked ? '' : `onclick="selectCard('${card.id}')"`;
-    const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    const hasFinePointer = Boolean(window.matchMedia && window.matchMedia('(any-pointer: fine)').matches);
+    const isTouchOnly = Boolean(window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches && !hasFinePointer);
     const dragAttrs = (isHand && !isLocked) ? `
       id="card-${card.id}"
-      ${isTouch ? '' : 'draggable="true"'}
+      ${isTouchOnly ? '' : 'draggable="true"'}
       ondragstart="onCardDragStart(event, '${card.id}')"
       ondragover="onCardDragOver(event, '${card.id}')"
       ondragleave="onCardDragLeave(event, '${card.id}')"
@@ -6502,7 +6506,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     // Chris Aguilar's open-source SVG deck via jsDelivr CDN
     const svgUrl = getStandardCardSvgUrl(card);
     const vectorImgHtml = svgUrl
-      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" loading="eager" onerror="this.style.display='none';" />`
+      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" draggable="false" loading="eager" onerror="this.style.display='none';" />`
       : '';
 
     let centerHtml = '';
@@ -7978,12 +7982,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <button type="button" class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear</button>
           </div>
         </div>`;
+    } else if (lastDeclDragNotice) {
+      coachBannerHtml = `
+        <div class="guide-me-banner" style="padding:6px 10px; border-color:rgba(245,158,11,0.45); background:rgba(45,32,12,0.82);">
+          <div class="guide-me-copy" style="font-size:11px; color:#fde68a;">↩ ${escapeHtml(lastDeclDragNotice)}</div>
+          <div class="guide-me-actions">
+            <button type="button" class="stand-close-btn" onclick="dismissDeclDragNotice()">✕</button>
+          </div>
+        </div>`;
     } else {
       const tipMsg = selCount > 0
         ? `👆 Select <b>${3 - selCount} more card${3 - selCount > 1 ? 's' : ''}</b> (${selCount}/3 min) below, or tap <b>Guide Me</b> for a suggestion.`
         : isShowReady
           ? `✨ All 21 cards are grouped! Tap <b>Submit Declaration</b> to win.`
-          : `💡 New to grouping? Tap <b>🧭 Guide Me</b> to step through suggested groups one by one, or <b>⚡ Auto-Group</b> to group your whole hand.`;
+          : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
       coachBannerHtml = `
         <div class="guide-me-banner" style="padding:6px 10px; background:rgba(255,255,255,0.035); border-color:rgba(255,255,255,0.10);">
           <div class="guide-me-copy" style="font-size:11px; color:#cfdad4;">${tipMsg}</div>
@@ -8070,24 +8082,24 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
       }
       const gCls = g.type === 'PURE_SEQUENCE' ? 'group-pure' : g.type === 'SEQUENCE' ? 'group-seq' : 'group-set';
-      return `<div class="stand-rack declaration-group locked ${gCls}">
-        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • tap card to release</span>${protectionBadge}</div>
+      return `<div class="stand-rack declaration-group locked ${gCls}" id="decl-group-rack-${i}" ondragover="onDeclRackDragOver(event, ${i})" ondragleave="onDeclRackDragLeave(event, ${i})" ondrop="onDeclRackDrop(event, ${i})">
+        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • drag or tap to edit</span>${protectionBadge}</div>
         <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Disband Group</button></div>
         <div class="stand-scroll-container">
           <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
           </button>
-          <div class="stand-cards grouped-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),false,false)).join('')}</div>
+          <div class="stand-cards grouped-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),true,false)).join('')}</div>
           <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
           </button>
         </div>
       </div>`;
     }).join('');
-    container.innerHTML=`${stickyBarHtml}<div class="stand-rack declaration-ungrouped"><div class="stand-header">
+    container.innerHTML=`${stickyBarHtml}<div class="stand-rack declaration-ungrouped" id="decl-ungrouped-rack" ondragover="onDeclRackDragOver(event, -1)" ondragleave="onDeclRackDragLeave(event, -1)" ondrop="onDeclRackDrop(event, -1)"><div class="stand-header">
       <div class="stand-title-box">
         <span>Cards to Group (${selectable.length} remaining)</span>
-        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap cards below to select'}</span>
+        <span class="stand-count-badge" style="${selCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${selCount > 0 ? `${selCount} Selected` : 'Tap to select or drag into a group'}</span>
       </div>
       <div class="stand-group-inline-btns">
         ${selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
@@ -8100,7 +8112,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           const chip = isGroupingPhase
             ? (declarationIsWild(c) ? { text: '0p Wild', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
             : null;
-          return renderCard(c, getCardTag(c), false, false, chip);
+          return renderCard(c, getCardTag(c), true, false, chip);
         }).join('')}</div>
         <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
           <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
@@ -8634,6 +8646,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function autoGroupSelected() {
     if (!declarationMode) return;
+    lastDeclDragNotice = null;
     const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
     const cards = myHand.filter(c => declarationSelectedIds.has(c.id) && !alreadyGrouped.has(c.id));
     if (cards.length < 3) {
@@ -8659,6 +8672,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function autoGroupFromStands(showNotification = true) {
     if (!declarationMode) return;
+    lastDeclDragNotice = null;
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
@@ -8876,6 +8890,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function autoGroupFullHand(showNotification = true) {
     if (!declarationMode) declarationMode = true;
+    lastDeclDragNotice = null;
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
@@ -9314,6 +9329,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function groupSelectedCards(type) {
     if(!declarationMode) return;
+    lastDeclDragNotice = null;
     const alreadyGrouped = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
     const cards = myHand.filter(c => declarationSelectedIds.has(c.id) && !alreadyGrouped.has(c.id));
     if(cards.length < 3){ alert('Select at least 3 ungrouped cards.'); return; }
@@ -9326,14 +9342,137 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     lastDeclSelectedCardId = null;
     renderAll(null);
   }
-  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;renderAll(null);}
-  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;renderAll(null);}
+  let lastDeclDragNotice = null;
+  function dismissDeclDragNotice() {
+    lastDeclDragNotice = null;
+    renderAll(null);
+  }
+  window.dismissDeclDragNotice = dismissDeclDragNotice;
+
+  function formatDeclarationGroupLabel(detected, cards) {
+    if (!detected) return '';
+    const r = getActiveRules();
+    if (declarationIsMarriage(cards) && r.allowMarriageAsPure !== false) {
+      return `Marriage Pure Group (${r.marriagePts} pts)`;
+    }
+    if (declarationIsThreePoochies(cards)) {
+      return '3 Poochies (Tunella)';
+    }
+    if (declarationIsTunella(cards)) {
+      return `Tunella (${cards[0].rank}${cards[0].suit} x3)`;
+    }
+    if (detected.type === 'PURE_SEQUENCE') return `Pure Group (${cards.length})`;
+    if (detected.type === 'SET') return `Set (${cards.length})`;
+    return `Joker Group (${cards.length})`;
+  }
+
+  function reconcileDeclarationGroups() {
+    let disbanded = 0;
+    for (let i = declarationGroups.length - 1; i >= 0; i--) {
+      const grp = declarationGroups[i];
+      const cards = Array.isArray(grp?.cards) ? grp.cards.filter(Boolean) : [];
+      if (cards.length < 3) {
+        declarationGroups.splice(i, 1);
+        disbanded++;
+        continue;
+      }
+      const detected = detectBestGroupType(cards);
+      if (!detected || detected.type === 'DOUBLE') {
+        declarationGroups.splice(i, 1);
+        disbanded++;
+        continue;
+      }
+      grp.cards = cards;
+      grp.type = detected.type;
+      grp.typeLabel = formatDeclarationGroupLabel(detected, cards);
+    }
+    return disbanded;
+  }
+
+  function moveDeclarationCard(cardId, targetGroupIdx, insertIdx = -1, targetCardId = null, insertAfter = false) {
+    if (!declarationMode || !cardId) return false;
+    lastDeclDragNotice = null;
+    const allCards = [...(myHand || []), ...declarationGroups.flatMap(g => g.cards || [])];
+    const card = allCards.find(c => c && c.id === cardId);
+    if (!card) return false;
+
+    const sourceGroupIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === cardId));
+
+    // If dragging within the ungrouped pool onto another ungrouped card, reorder cleanly in myHand
+    if (sourceGroupIdx === -1 && targetGroupIdx === -1) {
+      if (!targetCardId || targetCardId === cardId) return false;
+      const fromHandIdx = myHand.findIndex(c => c && c.id === cardId);
+      if (fromHandIdx === -1) return false;
+      const [moved] = myHand.splice(fromHandIdx, 1);
+      let toHandIdx = myHand.findIndex(c => c && c.id === targetCardId);
+      if (toHandIdx === -1) {
+        myHand.push(moved);
+      } else {
+        if (insertAfter) toHandIdx += 1;
+        myHand.splice(toHandIdx, 0, moved);
+      }
+      guidedCardIds.clear();
+      guideMeState = null;
+      lastDeclSelectedCardId = cardId;
+      try { soundSystem?.playCardSlide?.(); } catch (_) {}
+      renderAll(null);
+      return true;
+    }
+
+    // Remove card from source group if it came from a group
+    let adjustedInsertIdx = insertIdx;
+    if (sourceGroupIdx !== -1) {
+      const srcCards = declarationGroups[sourceGroupIdx].cards;
+      const fromIdx = srcCards.findIndex(c => c && c.id === cardId);
+      if (fromIdx === -1) return false;
+      srcCards.splice(fromIdx, 1);
+      if (sourceGroupIdx === targetGroupIdx && adjustedInsertIdx !== -1 && fromIdx < adjustedInsertIdx) {
+        adjustedInsertIdx = Math.max(0, adjustedInsertIdx - 1);
+      }
+    }
+
+    // Insert into target group (or leave in ungrouped pool when targetGroupIdx === -1)
+    if (targetGroupIdx >= 0 && targetGroupIdx < declarationGroups.length) {
+      const tgtCards = declarationGroups[targetGroupIdx].cards;
+      if (targetCardId) {
+        let idx = tgtCards.findIndex(c => c && c.id === targetCardId);
+        if (idx === -1) tgtCards.push(card);
+        else {
+          if (insertAfter) idx += 1;
+          tgtCards.splice(idx, 0, card);
+        }
+      } else if (adjustedInsertIdx >= 0 && adjustedInsertIdx <= tgtCards.length) {
+        tgtCards.splice(adjustedInsertIdx, 0, card);
+      } else {
+        tgtCards.push(card);
+      }
+    }
+
+    declarationSelectedIds.delete(cardId);
+    guidedCardIds.clear();
+    guideMeState = null;
+    lastDeclSelectedCardId = cardId;
+
+    const disbandedCount = reconcileDeclarationGroups();
+    if (disbandedCount > 0) {
+      lastDeclDragNotice = disbandedCount === 1
+        ? 'Group automatically ungrouped — resulting cards did not form a valid group.'
+        : `${disbandedCount} groups automatically ungrouped — resulting cards did not form valid groups.`;
+    }
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+    return true;
+  }
+
+  function clearDeclarationSelection(){declarationSelectedIds.clear();guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;lastDeclDragNotice=null;renderAll(null);}
+  function ungroupDeclaration(idx){if(idx<0||idx>=declarationGroups.length)return;declarationGroups.splice(idx,1);guidedCardIds.clear();guideMeState=null;lastDeclSelectedCardId=null;lastDeclDragNotice=null;renderAll(null);}
   function ungroupAllDeclaration() {
     declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -9346,6 +9485,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -9435,20 +9575,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       // Check if this card is currently inside a declaration group
       const grpIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === cardId));
       if (grpIdx !== -1) {
-        // Tapping a grouped card releases it back to "Cards to Group"
+        // Tapping a grouped card releases it back to "Cards to Group" and auto-ungroups if invalid
         const grp = declarationGroups[grpIdx];
         grp.cards = grp.cards.filter(c => c && c.id !== cardId);
-        if (grp.cards.length < 3) {
-          // If fewer than 3 cards remain, disband the remainder back to ungrouped pool
-          declarationGroups.splice(grpIdx, 1);
-        } else {
-          // Re-evaluate group type for remaining cards
-          const detected = detectBestGroupType(grp.cards);
-          if (detected) {
-            grp.type = detected.type;
-            grp.typeLabel = detected.label;
-          }
-        }
+        const disbandedCount = reconcileDeclarationGroups();
+        lastDeclDragNotice = disbandedCount > 0
+          ? 'Group automatically ungrouped — remaining cards did not form a valid group.'
+          : null;
         declarationSelectedIds.delete(cardId);
         guidedCardIds.clear();
         guideMeState = null;
@@ -9456,6 +9589,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         renderAll(null);
         return;
       }
+      lastDeclDragNotice = null;
       guidedCardIds.clear();
       guideMeState = null;
       lastDeclSelectedCardId = cardId;
@@ -9828,6 +9962,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   // --- HTML5 Drag & Drop Support Across Stands with Tactile Card Lift ---
   function onCardDragStart(e, cardId) {
+    if (touchCardState && touchCardState.isDragging) {
+      e.preventDefault();
+      return;
+    }
     draggedPileType = null;
     draggedCardId = cardId;
     if (e.dataTransfer) {
@@ -9879,6 +10017,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (targetEl) targetEl.classList.remove('drag-over-left', 'drag-over-right');
     if (!draggedCardId || draggedCardId === targetCardId) return;
 
+    const standSnap = captureStandSnapshot();
+    const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
+    const rect = targetEl ? targetEl.getBoundingClientRect() : null;
+    const insertAfter = Boolean(rect && (e.clientX >= rect.left + rect.width / 2));
+
+    if (declarationMode) {
+      const targetGroupIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === targetCardId));
+      const movedId = draggedCardId;
+      draggedCardId = null;
+      moveDeclarationCard(movedId, targetGroupIdx, -1, targetCardId, insertAfter);
+      onCardDragEnd(e);
+      return;
+    }
+
     let sourceStand = null, targetStand = null;
     let fromIdx = -1, toIdx = -1;
 
@@ -9895,12 +10047,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     if (!sourceStand || !targetStand) return;
 
-    const standSnap = captureStandSnapshot();
-    const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
     const [card] = sourceStand.splice(fromIdx, 1);
-    const rect = targetEl ? targetEl.getBoundingClientRect() : null;
-    const insertAfter = rect && (e.clientX >= rect.left + rect.width / 2);
-
     let insertIdx = targetStand.findIndex(c => c.id === targetCardId);
     if (insertAfter) insertIdx += 1;
     targetStand.splice(insertIdx, 0, card);
@@ -9915,7 +10062,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
 
   function onDiscardPileDragOver(e) {
-    if (!draggedCardId || draggedPileType) return;
+    if (!draggedCardId || draggedPileType || declarationMode) return;
     const isMyTurn=roomState && roomState.turnPlayerId===getMyPlayerId();
     if (!isMyTurn || roomState.turnStage!=='DISCARD') return;
     e.preventDefault();
@@ -9946,7 +10093,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   let touchDragGhost = null;
 
   function onTouchCardStart(e, cardId) {
-    if (declarationMode) return;
     if (e.touches.length !== 1) return;
     const touch = e.touches[0];
     const el = document.getElementById('card-' + cardId);
@@ -10002,6 +10148,84 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } else {
         document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast'));
         stopStandScroll();
+      }
+
+      if (declarationMode) {
+        let targetGroupIdx = null; // -1 = ungrouped tray, 0..N = declaration group
+        const rackUnderPoint = elUnderPoint?.closest?.('.stand-rack');
+        if (rackUnderPoint && rackUnderPoint.id) {
+          if (rackUnderPoint.id === 'decl-ungrouped-rack') {
+            targetGroupIdx = -1;
+          } else {
+            const m = rackUnderPoint.id.match(/^decl-group-rack-(\d+)$/);
+            if (m) targetGroupIdx = parseInt(m[1], 10);
+          }
+        }
+        if (targetGroupIdx === null) {
+          let bestDist = Infinity;
+          const candidateRacks = [
+            { idx: -1, el: document.getElementById('decl-ungrouped-rack') },
+            ...declarationGroups.map((_, idx) => ({ idx, el: document.getElementById(`decl-group-rack-${idx}`) }))
+          ];
+          for (const item of candidateRacks) {
+            if (!item.el) continue;
+            const rect = item.el.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+              targetGroupIdx = item.idx;
+              break;
+            }
+            const dx = Math.max(0, rect.left - x, x - rect.right);
+            const dy = Math.max(0, rect.top - y, y - rect.bottom);
+            const dist = Math.hypot(dx, dy);
+            if (dist < bestDist) {
+              bestDist = dist;
+              targetGroupIdx = item.idx;
+            }
+          }
+        }
+        if (targetGroupIdx !== null) {
+          const rackEl = targetGroupIdx === -1
+            ? document.getElementById('decl-ungrouped-rack')
+            : document.getElementById(`decl-group-rack-${targetGroupIdx}`);
+          if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
+
+          const targetCards = targetGroupIdx === -1
+            ? (() => {
+                const gIds = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c.id)));
+                return myHand.filter(c => c && !gIds.has(c.id));
+              })()
+            : (declarationGroups[targetGroupIdx]?.cards || []);
+          let insertIdx = targetCards.length;
+          let targetCardId = null;
+          let insertAfter = false;
+          for (let i = 0; i < targetCards.length; i++) {
+            const c = targetCards[i];
+            if (!c) continue;
+            const cEl = document.getElementById('card-' + c.id);
+            if (!cEl) continue;
+            const cRect = cEl.getBoundingClientRect();
+            const cCenter = cRect.left + cRect.width / 2;
+            if (x < cCenter) {
+              insertIdx = i;
+              targetCardId = c.id;
+              insertAfter = false;
+              if (c.id !== cardId) cEl.classList.add('drag-over-left');
+              break;
+            } else if (i === targetCards.length - 1) {
+              targetCardId = c.id;
+              insertAfter = true;
+              if (c.id !== cardId) cEl.classList.add('drag-over-right');
+            }
+          }
+          touchCardState.dropTarget = {
+            type: 'decl-group',
+            targetGroupIdx,
+            insertIdx,
+            targetCardId,
+            insertAfter
+          };
+        }
+        return;
       }
 
       // 1. Check Discard Pile
@@ -10186,8 +10410,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const dy = releaseTouch ? releaseTouch.clientY - touchCardState.startY : 0;
     const dist = Math.hypot(dx, dy);
 
-    // Tap detection: either not dragging, or touch was short (< 550ms) with small movement (< 30px)
-    const isTap = !touchCardState.isDragging || (touchDuration < 550 && dist < 30);
+    // Tap detection: only when drag threshold was not crossed
+    const isTap = !touchCardState.isDragging;
 
     if (isTap) {
       if (e.cancelable) e.preventDefault();
@@ -10214,6 +10438,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     if (dropTarget) {
+      if (dropTarget.type === 'decl-group' && declarationMode) {
+        lastTouchSelectTime = now;
+        lastTouchActionTime = now;
+        moveDeclarationCard(cardId, dropTarget.targetGroupIdx, dropTarget.insertIdx, dropTarget.targetCardId, dropTarget.insertAfter);
+        touchCardState = null;
+        draggedCardId = null;
+        return;
+      }
+
       // 1. Dropped on Discard Pile
       if (dropTarget.type === 'discard') {
         const isMyTurn = isCurrentPlayerMe();
@@ -10589,6 +10822,61 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function onHistoryDragEnd(e,el){
     el.classList.remove('peeked');
   }
+
+  function onDeclRackDragOver(e, targetGroupIdx) {
+    if (!draggedCardId || !declarationMode) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    const rack = targetGroupIdx === -1
+      ? document.getElementById('decl-ungrouped-rack')
+      : document.getElementById(`decl-group-rack-${targetGroupIdx}`);
+    if (rack) rack.classList.add('drag-over-stand');
+  }
+
+  function onDeclRackDragLeave(e, targetGroupIdx) {
+    const rack = targetGroupIdx === -1
+      ? document.getElementById('decl-ungrouped-rack')
+      : document.getElementById(`decl-group-rack-${targetGroupIdx}`);
+    if (rack && e && e.relatedTarget && rack.contains(e.relatedTarget)) return;
+    if (rack) rack.classList.remove('drag-over-stand');
+  }
+
+  function onDeclRackDrop(e, targetGroupIdx) {
+    e.preventDefault();
+    e.stopPropagation();
+    const rack = targetGroupIdx === -1
+      ? document.getElementById('decl-ungrouped-rack')
+      : document.getElementById(`decl-group-rack-${targetGroupIdx}`);
+    if (rack) rack.classList.remove('drag-over-stand');
+    if (!draggedCardId || !declarationMode) return;
+    const movedId = draggedCardId;
+    draggedCardId = null;
+    moveDeclarationCard(movedId, targetGroupIdx);
+    onCardDragEnd(e);
+  }
+  function onStandsContainerDragOver(e) {
+    if (!draggedCardId || !declarationMode) return;
+    const isInGroup = declarationGroups.some(g => (g.cards || []).some(c => c && c.id === draggedCardId));
+    if (!isInGroup) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  }
+
+  function onStandsContainerDrop(e) {
+    if (!draggedCardId || !declarationMode) return;
+    const isInGroup = declarationGroups.some(g => (g.cards || []).some(c => c && c.id === draggedCardId));
+    if (!isInGroup) return;
+    e.preventDefault();
+    const movedId = draggedCardId;
+    draggedCardId = null;
+    moveDeclarationCard(movedId, -1);
+    onCardDragEnd(e);
+  }
+  window.onDeclRackDragOver = onDeclRackDragOver;
+  window.onDeclRackDragLeave = onDeclRackDragLeave;
+  window.onDeclRackDrop = onDeclRackDrop;
+  window.onStandsContainerDragOver = onStandsContainerDragOver;
+  window.onStandsContainerDrop = onStandsContainerDrop;
 
   function onStandDragOver(e, standIdx) {
     e.preventDefault();
