@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, countTunellas, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -914,7 +914,7 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DECLARE' && isPlaying && isTurn) {
-        const rConfig = userRoom.rules || DEFAULT_RULES;
+        const rConfig = sanitizeRules(userRoom.rules || DEFAULT_RULES);
         const isDealtTurn = activePlayer.turnsTaken === 0 && userRoom.turnStage === 'DRAW';
         const isDrawnTurn = userRoom.turnStage === 'DISCARD';
         if (!isDealtTurn && !isDrawnTurn) return;
@@ -922,16 +922,19 @@ wss.on('connection', (ws) => {
         let showHand = [];
         let finalDiscard = null;
         const dInfo = countDoubles(activePlayer.hand);
+        const tInfo = countTunellas(activePlayer.hand);
 
         if (isDealtTurn) {
-          // If dealt enough doubles, can declare without drawing a card
-          if (!rConfig.allowDoublesShow || dInfo.count < rConfig.dealtDoublesForShow) {
+          // If dealt enough doubles or 3 Tunellas (when enabled), can declare without drawing a card
+          const canDealtDoubles = rConfig.allowDoublesShow && dInfo.count >= rConfig.dealtDoublesForShow;
+          const canDealt3Tunellas = rConfig.allow3TunellasShow && tInfo.count >= 3;
+          if (!canDealtDoubles && !canDealt3Tunellas) {
             if (ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({
                 type: 'SHOW_INVALID',
                 reason: rConfig.allowDoublesShow
-                  ? `Declaring without drawing requires holding at least ${rConfig.dealtDoublesForShow} doubles dealt.`
-                  : 'Doubles Show is disabled under current table rules.',
+                  ? `Declaring without drawing requires holding at least ${rConfig.dealtDoublesForShow} doubles dealt${rConfig.allow3TunellasShow ? ' or 3 Tunellas' : ''}.`
+                  : (rConfig.allow3TunellasShow ? 'Declaring without drawing requires holding 3 Tunellas.' : 'Dealt instant show is disabled under current table rules.'),
                 penalty: 0
               }));
             }
@@ -987,9 +990,11 @@ wss.on('connection', (ws) => {
           userRoom.status = 'GROUPING';
           userRoom.turnStage = 'GROUPING';
           userRoom.groupingDeadline = Date.now() + groupingMs;
-          const declareTypeNotice = isDealtTurn
-            ? `${rConfig.dealtDoublesForShow} Doubles direct show`
-            : (validation.isDoubles ? `${rConfig.drawnDoublesForShow} Doubles show` : '21-card show');
+          const declareTypeNotice = validation.isThreeTunellas
+            ? '3 Tunellas direct show'
+            : (isDealtTurn
+              ? `${rConfig.dealtDoublesForShow} Doubles direct show`
+              : (validation.isDoubles ? `${rConfig.drawnDoublesForShow} Doubles show` : '21-card show'));
           userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (${minsLabel})...`;
 
           if (userRoom.groupingTimer) clearTimeout(userRoom.groupingTimer);

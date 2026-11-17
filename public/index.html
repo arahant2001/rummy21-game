@@ -605,6 +605,28 @@
       .card.card-just-moved,
       .card.card-discard-landed { animation: none !important; }
     }
+    .card-group-move-clone {
+      position: fixed !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      pointer-events: none !important;
+      transform-origin: center center !important;
+      will-change: transform, box-shadow;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.38) !important;
+      transition: transform 230ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 230ms ease !important;
+    }
+    .card-group-move-clone.is-gathered {
+      box-shadow: 0 22px 44px rgba(0, 0, 0, 0.62), 0 0 20px rgba(50, 197, 138, 0.45) !important;
+    }
+    .card-group-move-clone.is-dropping {
+      transition: transform 310ms cubic-bezier(0.2, 0.9, 0.25, 1), box-shadow 310ms ease !important;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.34) !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card-group-move-clone,
+      .card-group-move-clone.is-gathered,
+      .card-group-move-clone.is-dropping { transition: none !important; }
+    }
 
     /* Deck Card (Stock / Store Deck) with Standard Vector Back */
     .deck-card {
@@ -798,11 +820,49 @@
       border-color: var(--accent-blue) !important;
     }
 
+    .tool-btn.is-active-toggle {
+      background: linear-gradient(135deg, rgba(217, 182, 92, 0.24), rgba(217, 182, 92, 0.12)) !important;
+      border-color: rgba(241, 210, 122, 0.65) !important;
+      color: #f8dfa0 !important;
+    }
+
     .stands-container {
       display: flex;
       flex-direction: column;
       gap: 8px;
       margin-bottom: 10px;
+    }
+    body.stands-two-col .stands-container {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+    body.stands-two-col.compact-fit-mode .stands-container {
+      gap: 5px;
+    }
+    body.stands-two-col .stands-container .stand-rack {
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    body.stands-two-col .stands-container .stand-header {
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    body.stands-two-col .stands-container .sticky-meld-bar {
+      grid-column: 1 / -1;
+    }
+    body.stands-two-col .stand-cards {
+      gap: 5px;
+      padding: 12px 3px 5px 3px;
+    }
+    body.stands-two-col .stand-scroll-container {
+      gap: 4px;
+    }
+    body.stands-two-col .stand-scroll-btn {
+      width: 24px;
     }
     .stand-rack {
       background: var(--surface-stand);
@@ -972,18 +1032,17 @@
       transform: scale(0.93);
       background: rgba(217, 182, 92, 0.3);
     }
+    .stand-scroll-container.no-scroll .stand-scroll-btn,
     .stand-scroll-btn.is-disabled {
-      opacity: 0.18;
-      cursor: default;
+      display: none !important;
+      opacity: 0;
       pointer-events: none;
-      border-color: rgba(255, 255, 255, 0.08);
-      color: rgba(255, 255, 255, 0.2);
-      box-shadow: none;
     }
     .scroll-arrow-svg {
       width: 16px;
       height: 16px;
       display: block;
+      pointer-events: none;
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
     }
     @media (max-width: 600px) {
@@ -3522,6 +3581,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
       <div class="toolbar-right">
         <!-- Stand management buttons (Consistent Stand terminology) -->
+        <button type="button" id="btnStandColumns" class="tool-btn" onclick="toggleStandColumns()" title="Toggle 2-column stands layout" aria-pressed="false">
+          <span id="standColsIcon" class="stand-cols-icon" aria-hidden="true" style="display:inline-flex;align-items:center;"><svg viewBox="0 0 18 14" width="15" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;pointer-events:none;"><rect x="1" y="1" width="16" height="12" rx="2"/><line x1="9" y1="1" x2="9" y2="13"/></svg></span><span class="tb-full" id="standColsLabel"> 2 Cols</span><span class="tb-short" id="standColsShort">2C</span>
+        </button>
         <button class="tool-btn" onclick="splitIntoStands(3)" title="Split into 3 stands"><span class="tb-full">3 Stands</span><span class="tb-short">3S</span></button>
         <button class="tool-btn" onclick="splitIntoStands(2)" title="Split into 2 stands"><span class="tb-full">2 Stands</span><span class="tb-short">2S</span></button>
         <button class="tool-btn" onclick="splitIntoStands(1)" title="Combine into 1 stand"><span class="tb-full">1 Stand</span><span class="tb-short">1S</span></button>
@@ -3830,7 +3892,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <tbody>
               <tr>
                 <td><strong>3 Tunnelas</strong></td>
-                <td>3 separate Tunnelas in 3 different suits (e.g. 3× 9♠ + 3× Q♥ + 3× 4♣)</td>
+                <td>3 separate Tunnelas in your hand (e.g. 3× 9♠ + 3× Q♥ + 3× 4♣)</td>
                 <td><span class="rules-pill rules-pill-gold">Instant Win</span></td>
               </tr>
               <tr>
@@ -3876,7 +3938,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               <tr>
                 <td><span class="rules-pill rules-pill-gold">PUKKA JOKER</span></td>
                 <td>Exact rank &amp; suit of Cut Card (remaining after marriages)</td>
-                <td><strong>20 pts</strong> each</td>
+                <td><strong>Tiered:</strong> 1 = <strong>20 pts</strong> &bull; 2 = <strong>40 pts</strong> (+20 each after)</td>
               </tr>
               <tr>
                 <td><span class="rules-pill rules-pill-gold">POOCHIE</span></td>
@@ -3944,8 +4006,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                 <td><strong>70 points</strong></td>
               </tr>
               <tr>
-                <td><span class="rules-pill rules-pill-red">Forfeit / Invalid Show</span></td>
-                <td>Forfeiting declaration or making an invalid show</td>
+                <td><span class="rules-pill rules-pill-red">Forfeit / Abandon</span></td>
+                <td>Leaving table mid-hand after a forfeit</td>
                 <td><strong>100 points</strong></td>
               </tr>
               <tr>
@@ -4191,6 +4253,59 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     playCardSlide() {
       if (!this.enabled) return;
       this.playCardDraw();
+    }
+
+    // Subtle multi-card gather & swoosh sound when moving a group to the bottom stand
+    playGroupSwoosh() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const now = this.ctx.currentTime;
+        const duration = 0.34;
+        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(520, now);
+        filter.frequency.exponentialRampToValueAtTime(1650, now + 0.13);
+        filter.frequency.exponentialRampToValueAtTime(420, now + duration);
+        filter.Q.setValueAtTime(2.2, now);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.005, now);
+        gain.gain.linearRampToValueAtTime(0.10, now + 0.11);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        noise.start(now);
+        noise.stop(now + duration);
+
+        // Soft felt settle thud as the gathered stack lands on the bottom stand
+        const settleTime = now + 0.44;
+        const osc = this.ctx.createOscillator();
+        const settleGain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, settleTime);
+        osc.frequency.exponentialRampToValueAtTime(70, settleTime + 0.06);
+        settleGain.gain.setValueAtTime(0.001, settleTime);
+        settleGain.gain.linearRampToValueAtTime(0.06, settleTime + 0.01);
+        settleGain.gain.exponentialRampToValueAtTime(0.001, settleTime + 0.07);
+        osc.connect(settleGain);
+        settleGain.connect(this.ctx.destination);
+        osc.start(settleTime);
+        osc.stop(settleTime + 0.07);
+      } catch (e) {}
     }
 
     // Crisp tactile felt snap alias for card discards
@@ -4607,6 +4722,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     decks: 3,
     poochiesPerDeck: 1,
     marriagePts: 50,
+    tiplu1: 20,
+    tiplu2: 40,
     tipluPts: 20,
     poochie1: 20,
     poochie2: 50,
@@ -4620,6 +4737,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     maxDeadwood: 120,
     minPureSequences: 3,
     allowTunnelaAsPure: true,
+    allow3TunellasShow: true,
     allow3PoochiesAsPure: true,
     allowMarriageAsPure: true,
     allowDoublesShow: true,
@@ -4639,7 +4757,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       presetName: 'Casual Family',
       firstDrop: 20,
       middleDrop: 50,
-      forfeitPenalty: 80,
       maxDeadwood: 100,
       minPureSequences: 2,
       blockDiscardedJokerPickup: false,
@@ -4650,6 +4767,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       presetName: 'High-Stakes Marriage',
       poochiesPerDeck: 2,
       marriagePts: 75,
+      tiplu1: 30,
+      tiplu2: 60,
       tipluPts: 30,
       poochie1: 30,
       poochie2: 75,
@@ -4659,12 +4778,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       papluTaplu3: 70,
       firstDrop: 40,
       middleDrop: 80,
-      forfeitPenalty: 120,
       maxDeadwood: 150
     },
     tournament: {
       ...DEFAULT_RULES,
       presetName: 'Tournament',
+      maxDeadwood: 210,
       eliminationEnabled: true,
       scoreLimit: 500
     }
@@ -4683,12 +4802,21 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const drawnDoublesForShow = clampRuleInt(src.drawnDoublesForShow, 6, 10, DEFAULT_RULES.drawnDoublesForShow);
     const freeScootDealtDoubles = clampRuleInt(src.freeScootDealtDoubles, 4, 9, DEFAULT_RULES.freeScootDealtDoubles);
     const freeGameDrawnDoubles = clampRuleInt(src.freeGameDrawnDoubles, 5, 10, DEFAULT_RULES.freeGameDrawnDoubles);
+    const tiplu1 = clampRuleInt(src.tiplu1 ?? src.tipluPts, 0, 150, DEFAULT_RULES.tiplu1);
+    const tiplu2 = clampRuleInt(
+      src.tiplu2,
+      0,
+      300,
+      (src.tipluPts !== undefined && src.tiplu2 === undefined) ? tiplu1 * 2 : DEFAULT_RULES.tiplu2
+    );
     return {
       presetName,
       decks: clampRuleInt(src.decks, 3, 5, DEFAULT_RULES.decks),
       poochiesPerDeck: clampRuleInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
       marriagePts: clampRuleInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
-      tipluPts: clampRuleInt(src.tipluPts, 0, 150, DEFAULT_RULES.tipluPts),
+      tiplu1,
+      tiplu2,
+      tipluPts: tiplu1,
       poochie1: clampRuleInt(src.poochie1, 0, 150, DEFAULT_RULES.poochie1),
       poochie2: clampRuleInt(src.poochie2, 0, 250, DEFAULT_RULES.poochie2),
       poochie3: clampRuleInt(src.poochie3, 0, 350, DEFAULT_RULES.poochie3),
@@ -4697,10 +4825,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       papluTaplu3: clampRuleInt(src.papluTaplu3, 0, 300, DEFAULT_RULES.papluTaplu3),
       firstDrop: clampRuleInt(src.firstDrop, 0, 120, DEFAULT_RULES.firstDrop),
       middleDrop: clampRuleInt(src.middleDrop, 0, 200, DEFAULT_RULES.middleDrop),
-      forfeitPenalty: clampRuleInt(src.forfeitPenalty, 0, 300, DEFAULT_RULES.forfeitPenalty),
+      forfeitPenalty: DEFAULT_RULES.forfeitPenalty,
       maxDeadwood: clampRuleInt(src.maxDeadwood, 40, 300, DEFAULT_RULES.maxDeadwood),
       minPureSequences: clampRuleInt(src.minPureSequences, 1, 4, DEFAULT_RULES.minPureSequences),
-      allowTunnelaAsPure: src.allowTunnelaAsPure !== false,
+      allowTunnelaAsPure: true,
+      allow3TunellasShow: src.allow3TunellasShow !== false,
       allow3PoochiesAsPure: src.allow3PoochiesAsPure !== false,
       allowMarriageAsPure: src.allowMarriageAsPure !== false,
       allowDoublesShow: src.allowDoublesShow !== false,
@@ -4755,12 +4884,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderRulesButtonState();
   }
   function updateLobbyRuleField(key, val) {
-    const nextPresetName = ((key === 'scoreLimit' || key === 'decks') && customLobbyRules.eliminationEnabled)
+    const nextPresetName = ((key === 'scoreLimit' || key === 'decks' || key === 'maxDeadwood') && customLobbyRules.eliminationEnabled)
       ? 'Tournament'
       : (key === 'eliminationEnabled' && val)
         ? 'Tournament'
         : 'Custom House Rules';
-    customLobbyRules = sanitizeClientRules({ ...customLobbyRules, presetName: nextPresetName, [key]: val });
+    const extraPatch = (key === 'eliminationEnabled' && val && customLobbyRules.maxDeadwood === DEFAULT_RULES.maxDeadwood)
+      ? { maxDeadwood: 210 }
+      : {};
+    customLobbyRules = sanitizeClientRules({ ...customLobbyRules, ...extraPatch, presetName: nextPresetName, [key]: val });
     saveLobbyRules();
     renderLobbyRulesPanel();
     renderRulesButtonState();
@@ -4801,9 +4933,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-field">Packs (52-Card Decks)<select onchange="updateLobbyRuleField('decks', this.value)"><option value="3" ${r.decks === 3 ? 'selected' : ''}>3 Packs (${3 * (52 + r.poochiesPerDeck)} cards • max 7p)</option><option value="4" ${r.decks === 4 ? 'selected' : ''}>4 Packs (${4 * (52 + r.poochiesPerDeck)} cards • max 9p)</option><option value="5" ${r.decks === 5 ? 'selected' : ''}>5 Packs (${5 * (52 + r.poochiesPerDeck)} cards • max 10p)</option></select></label>
           <label class="rules-field">Poochies Per Deck<select onchange="updateLobbyRuleField('poochiesPerDeck', this.value)"><option value="1" ${r.poochiesPerDeck === 1 ? 'selected' : ''}>1 per deck (${r.decks} total)</option><option value="2" ${r.poochiesPerDeck === 2 ? 'selected' : ''}>2 per deck (${r.decks * 2} total)</option></select></label>
           <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateLobbyRuleField('minPureSequences', this.value)"></label>
-          <label class="rules-field">First / Middle / Wrong Drop<div style="display:flex;gap:4px;"><input type="number" min="0" max="120" value="${r.firstDrop}" style="width:33%;" onchange="updateLobbyRuleField('firstDrop', this.value)"><input type="number" min="0" max="200" value="${r.middleDrop}" style="width:33%;" onchange="updateLobbyRuleField('middleDrop', this.value)"><input type="number" min="0" max="300" value="${r.forfeitPenalty}" style="width:34%;" onchange="updateLobbyRuleField('forfeitPenalty', this.value)"></div></label>
-          <label class="rules-field">Max Deadwood Cap<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateLobbyRuleField('maxDeadwood', this.value)"></label>
-          <label class="rules-field">Marriage / Pukka Pts<div style="display:flex;gap:4px;"><input type="number" min="0" max="250" value="${r.marriagePts}" style="width:50%;" onchange="updateLobbyRuleField('marriagePts', this.value)"><input type="number" min="0" max="150" value="${r.tipluPts}" style="width:50%;" onchange="updateLobbyRuleField('tipluPts', this.value)"></div></label>
+          <label class="rules-field">First / Middle Drop<div style="display:flex;gap:4px;"><input type="number" min="0" max="120" value="${r.firstDrop}" style="width:50%;" onchange="updateLobbyRuleField('firstDrop', this.value)"><input type="number" min="0" max="200" value="${r.middleDrop}" style="width:50%;" onchange="updateLobbyRuleField('middleDrop', this.value)"></div></label>
+          <label class="rules-field" title="210 = No Deadwood Cap">Max Deadwood (210 = No Cap)<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateLobbyRuleField('maxDeadwood', this.value)"></label>
+          <label class="rules-field">Marriage Honors<input type="number" min="0" max="250" value="${r.marriagePts}" onchange="updateLobbyRuleField('marriagePts', this.value)"></label>
+          <label class="rules-field">Pukka Joker (1 / 2)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.tiplu1}" style="width:50%;" onchange="updateLobbyRuleField('tiplu1', this.value)"><input type="number" min="0" max="300" value="${r.tiplu2}" style="width:50%;" onchange="updateLobbyRuleField('tiplu2', this.value)"></div></label>
+          <label class="rules-field">Poochie (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.poochie1}" style="width:33%;" onchange="updateLobbyRuleField('poochie1', this.value)"><input type="number" min="0" max="250" value="${r.poochie2}" style="width:33%;" onchange="updateLobbyRuleField('poochie2', this.value)"><input type="number" min="0" max="350" value="${r.poochie3}" style="width:34%;" onchange="updateLobbyRuleField('poochie3', this.value)"></div></label>
+          <label class="rules-field">Paplu/Taplu (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="100" value="${r.papluTaplu1}" style="width:33%;" onchange="updateLobbyRuleField('papluTaplu1', this.value)"><input type="number" min="0" max="200" value="${r.papluTaplu2}" style="width:33%;" onchange="updateLobbyRuleField('papluTaplu2', this.value)"><input type="number" min="0" max="300" value="${r.papluTaplu3}" style="width:34%;" onchange="updateLobbyRuleField('papluTaplu3', this.value)"></div></label>
           <label class="rules-field">Grouping Timer (sec)<input type="number" min="60" max="600" step="30" value="${r.groupingTimeSec}" onchange="updateLobbyRuleField('groupingTimeSec', this.value)"></label>
           <label class="rules-field" title="Exceeding this points total (excluding Honors) eliminates the player in Tournament mode">Tournament Score Limit<input type="number" min="100" max="5000" step="50" value="${r.scoreLimit}" onchange="updateLobbyRuleField('scoreLimit', this.value)"></label>
         </div>
@@ -4811,7 +4946,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateLobbyRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (players exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors lose &amp; sit out; last standing wins)</label>
           <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateLobbyRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} onchange="updateLobbyRuleField('allowDoublesShow', this.checked)"> Allow Doubles Show (${r.dealtDoublesForShow} dealt / ${r.drawnDoublesForShow} drawn) &amp; Free Scoot (${r.freeScootDealtDoubles}/${r.freeGameDrawnDoubles})</label>
-          <label class="rules-check-item"><input type="checkbox" ${r.allowTunnelaAsPure ? 'checked' : ''} onchange="updateLobbyRuleField('allowTunnelaAsPure', this.checked)"> Tunella counts as Pure Group</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allow3TunellasShow ? 'checked' : ''} onchange="updateLobbyRuleField('allow3TunellasShow', this.checked)"> Allow 3 Tunellas Instant Show</label>
         </div>
       </div>`;
   }
@@ -4882,7 +5017,34 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   window.rejoinSavedRoom = rejoinSavedRoom;
   window.dismissRejoinBanner = dismissRejoinBanner;
 
+  function applyStandColumnsState(isTwoCol) {
+    document.body.classList.toggle('stands-two-col', isTwoCol);
+    const btn = document.getElementById('btnStandColumns');
+    const lblEl = document.getElementById('standColsLabel');
+    const shortEl = document.getElementById('standColsShort');
+    if (btn) {
+      btn.classList.toggle('is-active-toggle', isTwoCol);
+      btn.setAttribute('aria-pressed', isTwoCol ? 'true' : 'false');
+      btn.title = isTwoCol ? '2-Column Stands: ON (Click for 1 column)' : '2-Column Stands: OFF (Click for 2 columns)';
+    }
+    if (lblEl) lblEl.innerText = ' 2 Cols';
+    if (shortEl) shortEl.innerText = '2C';
+  }
+  function initStandColumns() {
+    let cols = '1';
+    try { cols = localStorage.getItem('rummy_stand_columns') || '1'; } catch (_) {}
+    applyStandColumnsState(cols === '2');
+  }
+  function toggleStandColumns() {
+    const isNowTwoCol = !document.body.classList.contains('stands-two-col');
+    applyStandColumnsState(isNowTwoCol);
+    try { localStorage.setItem('rummy_stand_columns', isNowTwoCol ? '2' : '1'); } catch (_) {}
+    setTimeout(updateAllStandScrollButtons, 40);
+  }
+  window.toggleStandColumns = toggleStandColumns;
+
   initLayoutMode();
+  initStandColumns();
   renderLobbyRulesPanel();
   renderRulesButtonState();
 
@@ -5059,16 +5221,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const isPlaying = roomState && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING');
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const myP = roomState?.players?.find(p => p.id === myId);
-    const isAfterWrongDeclareOrForfeit = Boolean(declarationMode || myP?.hasForfeited || myP?.dropType === 'FORFEIT' || myP?.dropPenalty === r.forfeitPenalty);
+    const isAfterWrongDeclareOrForfeit = Boolean(myP?.hasForfeited || myP?.dropType === 'FORFEIT');
 
     if (isPlaying) {
       if (isAfterWrongDeclareOrForfeit) {
         showConfirmModal({
           icon: '⚠️',
-          title: 'Leave After Wrong Declare?',
-          badgeText: `Wrong Declare: ${r.forfeitPenalty} pts penalty`,
+          title: 'Leave After Forfeit?',
+          badgeText: `Forfeit: ${r.forfeitPenalty} pts penalty`,
           badgeClass: 'danger',
-          message: `<strong>You are leaving after a wrong declaration attempt or during declare mode.</strong><br><br>Leaving now is scored as a <strong>Wrong Declare / Forfeit (${r.forfeitPenalty} points penalty)</strong>.<br><br>Are you sure you want to leave the table?`,
+          message: `<strong>Your hand is forfeited in this round.</strong><br><br>Leaving now is scored as a <strong>Forfeit (${r.forfeitPenalty} points penalty)</strong>.<br><br>Are you sure you want to leave the table?`,
           actionText: `Forfeit & Leave (${r.forfeitPenalty} pts)`,
           actionClass: 'danger',
           onConfirm: () => {
@@ -6189,11 +6351,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderAll(null);
   }
 
-  function findFirstValidGroupInStand(stand) {
+  function findFirstValidGroupInStand(stand, preferredCardId = null) {
     if (!Array.isArray(stand) || stand.length < 3) return null;
     const cards = stand.filter(c => c && c.id);
     if (cards.length < 3) return null;
 
+    const hasPrefInStand = Boolean(preferredCardId && cards.some(c => c.id === preferredCardId));
+    const prefId = hasPrefInStand ? preferredCardId : null;
     const standIdxMap = new Map(cards.map((c, idx) => [c.id, idx]));
     const minStandIdx = (grp) => Math.min(...grp.map(c => standIdxMap.get(c.id) ?? 999));
     const cut = roomState?.cutCard;
@@ -6201,50 +6365,94 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const rCfg = getActiveRules();
     const suits = ['♠', '♥', '♣', '♦'];
 
-    // Tier 1: Natural Pure Sequences (0 wildcards first, then pure runs that include a natural-rank joker)
-    const zeroWildRuns = [];
-    const pureRunsWithNatJoker = [];
+    const allCandidates = [];
+    const zeroWildCardIds = new Set();
+
+    const prefCard = prefId ? cards.find(c => c.id === prefId) : null;
+
+    // Tier 0 & 1a: Pure Sequences per suit (0 wildcards prioritized over pure runs w/ natural-rank joker)
     for (const suit of suits) {
       const suitNaturals = cards.filter(c => c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
       if (suitNaturals.length < 3) continue;
       const runs = extractOptimalPureRuns(suitNaturals, cut, roles);
-      for (const run of runs) {
+      for (const rawRun of runs) {
+        let run = rawRun;
+        if (prefCard && prefCard.suit === suit && !run.some(c => c.id === prefId)) {
+          const dupIdx = run.findIndex(c => c.rank === prefCard.rank && c.suit === prefCard.suit);
+          if (dupIdx !== -1) {
+            run = run.map((c, idx) => idx === dupIdx ? prefCard : c);
+          }
+        }
         if (!Array.isArray(run) || run.length < 3 || !declarationPure(run)) continue;
         const wildCount = run.filter(c => declarationIsWildForCut(c, cut, roles)).length;
-        const entry = {
+        if (wildCount === 0) run.forEach(c => zeroWildCardIds.add(c.id));
+        allCandidates.push({
           cards: run,
           type: 'PURE_SEQUENCE',
           shortLabel: `Pure (${run.length})`,
           typeLabel: 'Pure Group',
+          prio: wildCount === 0 ? 0 : 1,
+          wildCount,
           firstIdx: minStandIdx(run)
-        };
-        if (wildCount === 0) zeroWildRuns.push(entry);
-        else pureRunsWithNatJoker.push(entry);
+        });
+      }
+      // If selected card belongs to this suit, ensure any direct pure run containing it (even if overlapping another run) is considered
+      if (prefCard && prefCard.suit === suit && !prefCard.isPoochie && prefCard.rank !== 'PJ' && !allCandidates.some(cand => cand.type === 'PURE_SEQUENCE' && cand.cards.some(c => c.id === prefId))) {
+        const orderLow = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const orderHigh = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        for (const rankOrder of [orderLow, orderHigh]) {
+          const pRankIdx = rankOrder.indexOf(prefCard.rank);
+          if (pRankIdx === -1) continue;
+          const byRankIdx = new Map();
+          for (const c of suitNaturals) {
+            const ri = rankOrder.indexOf(c.rank);
+            if (ri === -1) continue;
+            if (!byRankIdx.has(ri) || c.id === prefId) byRankIdx.set(ri, c);
+          }
+          let lo = pRankIdx;
+          while (byRankIdx.has(lo - 1)) lo--;
+          let hi = pRankIdx;
+          while (byRankIdx.has(hi + 1)) hi++;
+          if (hi - lo + 1 >= 3) {
+            const directRun = [];
+            for (let r = lo; r <= hi; r++) directRun.push(byRankIdx.get(r));
+            if (declarationPure(directRun)) {
+              const wildCount = directRun.filter(c => declarationIsWildForCut(c, cut, roles)).length;
+              allCandidates.push({
+                cards: directRun,
+                type: 'PURE_SEQUENCE',
+                shortLabel: `Pure (${directRun.length})`,
+                typeLabel: 'Pure Group',
+                prio: wildCount === 0 ? 0 : 1,
+                wildCount,
+                firstIdx: minStandIdx(directRun)
+              });
+            }
+          }
+        }
       }
     }
-    if (zeroWildRuns.length > 0) {
-      zeroWildRuns.sort((a, b) => a.firstIdx - b.firstIdx);
-      return zeroWildRuns[0];
-    }
 
-    // Tier 2: Other Pure Melds (pure run w/ natural joker, Marriage, Tunella, 3 Poochies)
-    const otherPure = [...pureRunsWithNatJoker];
+    // Tier 1b: Marriage, Tunella, 3 Poochies
     if (roles && rCfg.allowMarriageAsPure !== false) {
-      const taplu = cards.find(c => c.suit === roles.tipluSuit && c.rank === roles.nichluRank);
-      const tiplu = cards.find(c => c.suit === roles.tipluSuit && c.rank === roles.tipluRank);
-      const paplu = cards.find(c => c.suit === roles.tipluSuit && c.rank === roles.papluRank);
+      const findSuitRank = (suit, rank) => (prefId ? cards.find(c => c.id === prefId && c.suit === suit && c.rank === rank) : null) || cards.find(c => c.suit === suit && c.rank === rank);
+      const taplu = findSuitRank(roles.tipluSuit, roles.nichluRank);
+      const tiplu = findSuitRank(roles.tipluSuit, roles.tipluRank);
+      const paplu = findSuitRank(roles.tipluSuit, roles.papluRank);
       if (taplu && tiplu && paplu && taplu.id !== tiplu.id && tiplu.id !== paplu.id && taplu.id !== paplu.id) {
         const mCards = [taplu, tiplu, paplu];
-        otherPure.push({
+        allCandidates.push({
           cards: mCards,
           type: 'PURE_SEQUENCE',
           shortLabel: 'Marriage (3)',
           typeLabel: 'Marriage Pure Group',
+          prio: 1,
+          wildCount: 0,
           firstIdx: minStandIdx(mCards)
         });
       }
     }
-    if (rCfg.allowTunnelaAsPure !== false) {
+    {
       const byExact = new Map();
       for (const c of cards) {
         if (declarationIsWildForCut(c, cut, roles)) continue;
@@ -6254,12 +6462,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
       for (const list of byExact.values()) {
         if (list.length >= 3) {
-          const trio = list.slice(0, 3);
-          otherPure.push({
+          const orderedList = prefId ? [...list.filter(c => c.id === prefId), ...list.filter(c => c.id !== prefId)] : list;
+          const trio = orderedList.slice(0, 3);
+          allCandidates.push({
             cards: trio,
             type: 'PURE_SEQUENCE',
             shortLabel: 'Tunella (3)',
             typeLabel: 'Tunella Pure Group',
+            prio: 1,
+            wildCount: 0,
             firstIdx: minStandIdx(trio)
           });
         }
@@ -6268,115 +6479,152 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (rCfg.allow3PoochiesAsPure !== false) {
       const poochies = cards.filter(c => c.isPoochie || c.suit === '★' || c.rank === 'PJ');
       if (poochies.length >= 3) {
-        const trio = poochies.slice(0, 3);
-        otherPure.push({
+        const orderedPoochies = prefId ? [...poochies.filter(c => c.id === prefId), ...poochies.filter(c => c.id !== prefId)] : poochies;
+        const trio = orderedPoochies.slice(0, 3);
+        allCandidates.push({
           cards: trio,
           type: 'PURE_SEQUENCE',
           shortLabel: 'Poochies (3)',
           typeLabel: '3 Poochies Group',
+          prio: 1,
+          wildCount: 0,
           firstIdx: minStandIdx(trio)
         });
       }
     }
-    if (otherPure.length > 0) {
-      otherPure.sort((a, b) => a.firstIdx - b.firstIdx);
-      return otherPure[0];
-    }
 
-    // Tier 3: Joker Sequences (same-suit sequence completed with wildcard(s), preferring fewest wilds)
-    const availWilds = cards.filter(c => declarationIsWildForCut(c, cut, roles));
+    // Tier 2: Joker Sequences (put preferred wildcard first if selected)
+    const rawWilds = cards.filter(c => declarationIsWildForCut(c, cut, roles));
+    const availWilds = prefId
+      ? [...rawWilds.filter(c => c.id === prefId), ...rawWilds.filter(c => c.id !== prefId)]
+      : rawWilds;
     if (availWilds.length > 0) {
-      const seqCandidates = [];
       for (const suit of suits) {
         const suitNats = cards.filter(c => c.suit === suit && !declarationIsWildForCut(c, cut, roles));
         for (let i = 0; i < suitNats.length; i++) {
           for (let j = i + 1; j < suitNats.length; j++) {
             const trio = [suitNats[i], suitNats[j], availWilds[0]];
             if (declarationSequence(trio)) {
-              seqCandidates.push({
+              allCandidates.push({
                 cards: trio,
                 type: 'SEQUENCE',
                 shortLabel: 'Seq (3)',
                 typeLabel: 'Joker Sequence',
+                prio: 2,
                 wildCount: 1,
+                overlapNatural: (zeroWildCardIds.has(suitNats[i].id) ? 1 : 0) + (zeroWildCardIds.has(suitNats[j].id) ? 1 : 0),
                 firstIdx: minStandIdx(trio)
               });
             }
           }
         }
       }
-      if (seqCandidates.length === 0 && availWilds.length >= 2) {
+      if (availWilds.length >= 2) {
         for (const c of cards) {
           if (declarationIsWildForCut(c, cut, roles)) continue;
           const trio = [c, availWilds[0], availWilds[1]];
           if (declarationSequence(trio)) {
-            seqCandidates.push({
+            allCandidates.push({
               cards: trio,
               type: 'SEQUENCE',
               shortLabel: 'Seq (3)',
               typeLabel: 'Joker Sequence',
+              prio: 2,
               wildCount: 2,
+              overlapNatural: zeroWildCardIds.has(c.id) ? 1 : 0,
               firstIdx: minStandIdx(trio)
             });
           }
         }
       }
-      if (seqCandidates.length > 0) {
-        seqCandidates.sort((a, b) => (a.wildCount - b.wildCount) || (a.firstIdx - b.firstIdx));
-        return seqCandidates[0];
-      }
     }
 
-    // Tier 4: Sets (same rank, distinct suits; prefer 0-wild sets first)
-    const setCandidates = [];
+    // Tier 3: Sets (same rank, distinct suits; 0-wild sets preferred over 1-wild sets)
     const byRank = new Map();
     for (const c of cards) {
       if (declarationIsWildForCut(c, cut, roles)) continue;
       if (!byRank.has(c.rank)) byRank.set(c.rank, new Map());
       const suitMap = byRank.get(c.rank);
-      if (!suitMap.has(c.suit)) suitMap.set(c.suit, c);
+      if (!suitMap.has(c.suit) || (prefId && c.id === prefId)) {
+        suitMap.set(c.suit, c);
+      }
     }
+    const prefIsWild = Boolean(prefId && rawWilds.some(c => c.id === prefId));
     for (const suitMap of byRank.values()) {
       const distinct = Array.from(suitMap.values());
       if (distinct.length >= 3) {
-        const setCards = distinct.slice(0, 4);
+        const orderedDistinct = prefId
+          ? [...distinct.filter(c => c.id === prefId), ...distinct.filter(c => c.id !== prefId)]
+          : distinct;
+        const setCards = orderedDistinct.slice(0, 4);
         if (declarationSet(setCards)) {
-          setCandidates.push({
+          allCandidates.push({
             cards: setCards,
             type: 'SET',
             shortLabel: `Set (${setCards.length})`,
             typeLabel: 'Set',
+            prio: 3,
             wildCount: 0,
+            overlapNatural: setCards.filter(c => zeroWildCardIds.has(c.id)).length,
             firstIdx: minStandIdx(setCards)
           });
+        }
+        if (prefIsWild && distinct.length === 3 && availWilds.length >= 1) {
+          const wildSetCards = [...distinct, availWilds[0]];
+          if (declarationSet(wildSetCards)) {
+            allCandidates.push({
+              cards: wildSetCards,
+              type: 'SET',
+              shortLabel: 'Set (4)',
+              typeLabel: 'Set',
+              prio: 3,
+              wildCount: 1,
+              overlapNatural: wildSetCards.filter(c => zeroWildCardIds.has(c.id)).length,
+              firstIdx: minStandIdx(wildSetCards)
+            });
+          }
         }
       } else if (distinct.length === 2 && availWilds.length >= 1) {
         const setCards = [...distinct, availWilds[0]];
         if (declarationSet(setCards)) {
-          setCandidates.push({
+          allCandidates.push({
             cards: setCards,
             type: 'SET',
             shortLabel: 'Set (3)',
             typeLabel: 'Set',
+            prio: 3,
             wildCount: 1,
+            overlapNatural: setCards.filter(c => zeroWildCardIds.has(c.id)).length,
             firstIdx: minStandIdx(setCards)
           });
         }
       }
     }
-    if (setCandidates.length > 0) {
-      setCandidates.sort((a, b) => (a.wildCount - b.wildCount) || (a.firstIdx - b.firstIdx));
-      return setCandidates[0];
-    }
 
-    return null;
+    if (allCandidates.length === 0) return null;
+
+    allCandidates.sort((a, b) => {
+      if (prefId) {
+        const aHas = a.cards.some(c => c.id === prefId) ? 1 : 0;
+        const bHas = b.cards.some(c => c.id === prefId) ? 1 : 0;
+        if (aHas !== bHas) return bHas - aHas;
+      }
+      if (a.prio !== b.prio) return a.prio - b.prio;
+      if ((a.wildCount || 0) !== (b.wildCount || 0)) return (a.wildCount || 0) - (b.wildCount || 0);
+      if ((a.overlapNatural || 0) !== (b.overlapNatural || 0)) return (a.overlapNatural || 0) - (b.overlapNatural || 0);
+      return a.firstIdx - b.firstIdx;
+    });
+
+    return allCandidates[0];
   }
 
-  function moveFirstValidGroupToNewStand(standIdx) {
-    if (declarationMode || !Array.isArray(userStands)) return false;
+  let isGroupMoveAnimating = false;
+  function moveFirstValidGroupToNewStand(standIdx, immediate = false) {
+    if (declarationMode || !Array.isArray(userStands) || isGroupMoveAnimating) return false;
     const stand = userStands[standIdx];
     if (!Array.isArray(stand) || stand.length < 3) return false;
-    const firstGroup = findFirstValidGroupInStand(stand);
+    const standSelectedId = (selectedCardId && stand.some(c => c && c.id === selectedCardId)) ? selectedCardId : null;
+    const firstGroup = findFirstValidGroupInStand(stand, standSelectedId);
     if (!firstGroup || !Array.isArray(firstGroup.cards) || firstGroup.cards.length < 3) return false;
     if (standIdx === userStands.length - 1 && stand.length === firstGroup.cards.length) return false;
 
@@ -6384,15 +6632,139 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const movedCards = firstGroup.cards.map(c => stand.find(sc => sc && sc.id === c.id) || c).filter(Boolean);
     if (movedCards.length < 3) return false;
 
-    userStands[standIdx] = stand.filter(c => c && !moveIds.has(c.id));
-    userStands.push(movedCards);
-    if (!Array.isArray(standTypes)) standTypes = [];
-    standTypes.push(firstGroup.type || 'PURE_SEQUENCE');
+    const commitMove = () => {
+      const curStand = userStands[standIdx];
+      if (!Array.isArray(curStand)) return;
+      userStands[standIdx] = curStand.filter(c => c && !moveIds.has(c.id));
+      userStands.push(movedCards);
+      if (!Array.isArray(standTypes)) standTypes = [];
+      standTypes.push(firstGroup.type || 'PURE_SEQUENCE');
+      myHand = userStands.flat();
+      saveStandsToStorage();
+      renderAll(null);
+    };
 
-    myHand = userStands.flat();
-    saveStandsToStorage();
-    try { soundSystem?.playCardSlide?.(); } catch (_) {}
-    renderAll(null);
+    const sourceItems = movedCards.map(c => {
+      const el = document.getElementById('card-' + c.id);
+      const inRack = el && el.closest && el.closest(`#stand-rack-${standIdx}`);
+      const rect = el ? el.getBoundingClientRect() : null;
+      return (el && inRack && rect && rect.width > 0 && rect.height > 0) ? { card: c, el, rect } : null;
+    }).filter(Boolean);
+
+    if (immediate || prefersReducedCardMotion() || sourceItems.length !== movedCards.length) {
+      try { soundSystem?.playGroupSwoosh?.(); } catch (_) {}
+      commitMove();
+      return true;
+    }
+
+    isGroupMoveAnimating = true;
+    const k = sourceItems.length;
+    const avgCenterX = sourceItems.reduce((s, it) => s + it.rect.left + it.rect.width / 2, 0) / k;
+    const avgCenterY = sourceItems.reduce((s, it) => s + it.rect.top + it.rect.height / 2, 0) / k;
+    const clusterCenterX = Math.max(90, Math.min((window.innerWidth || 1280) - 90, avgCenterX));
+    const clusterCenterY = Math.max(70, avgCenterY - 22);
+    const tightStep = Math.max(16, Math.round((sourceItems[0].rect.width || 72) * 0.34));
+
+    const clones = sourceItems.map((it, idx) => {
+      const clone = it.el.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.removeAttribute('onclick');
+      clone.removeAttribute('ondragstart');
+      clone.removeAttribute('ondragover');
+      clone.removeAttribute('ondragleave');
+      clone.removeAttribute('ondrop');
+      clone.removeAttribute('ondragend');
+      clone.removeAttribute('ontouchstart');
+      clone.removeAttribute('ontouchmove');
+      clone.removeAttribute('ontouchend');
+      clone.removeAttribute('ontouchcancel');
+      clone.removeAttribute('draggable');
+      clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+      clone.classList.remove('is-dragging', 'drag-over-left', 'drag-over-right', 'is-selected', 'card-just-moved', 'card-discard-landed', 'card-glide-hidden', 'card-touch-lifted', 'card-drag-preview', 'card-flip-prep', 'card-flip-active');
+      clone.classList.add('card-group-move-clone');
+      clone.style.position = 'fixed';
+      clone.style.left = it.rect.left + 'px';
+      clone.style.top = it.rect.top + 'px';
+      clone.style.width = it.rect.width + 'px';
+      clone.style.height = it.rect.height + 'px';
+      clone.style.opacity = '1';
+      clone.style.transform = 'translate3d(0px, 0px, 0) scale(1) rotate(0deg)';
+      it.el.classList.add('card-glide-hidden');
+      document.body.appendChild(clone);
+
+      const srcCenterX = it.rect.left + it.rect.width / 2;
+      const srcCenterY = it.rect.top + it.rect.height / 2;
+      const gatherCenterX = clusterCenterX + (idx - (k - 1) / 2) * tightStep;
+      const gatherDx = gatherCenterX - srcCenterX;
+      const gatherDy = clusterCenterY - srcCenterY;
+      const tiltDeg = ((idx - (k - 1) / 2) * 2.6).toFixed(1);
+      return { card: it.card, clone, srcCenterX, srcCenterY, gatherDx, gatherDy, tiltDeg };
+    });
+
+    // Phase 1: Lift the group cards & bring them closer together with subtle swoosh
+    void document.body.offsetWidth;
+    try { soundSystem?.playGroupSwoosh?.(); } catch (_) {}
+    clones.forEach(item => {
+      item.clone.classList.add('is-gathered');
+      item.clone.style.transform = `translate3d(${item.gatherDx.toFixed(1)}px, ${item.gatherDy.toFixed(1)}px, 0) scale(1.08) rotate(${item.tiltDeg}deg)`;
+    });
+
+    // Phase 2 & 3: Commit move to bottom stand, then drop clones into exact destination slots
+    setTimeout(() => {
+      try {
+        commitMove();
+        const destStandIdx = userStands.length - 1;
+        const destRack = document.getElementById(`stand-rack-${destStandIdx}`);
+        const destEls = clones.map(item => {
+          const dEl = document.getElementById('card-' + item.card.id);
+          if (dEl) dEl.classList.add('card-glide-hidden');
+          return dEl;
+        });
+
+        if (destRack) {
+          const rackRect = destRack.getBoundingClientRect();
+          if (rackRect.bottom > (window.innerHeight || 800) - 8) {
+            destRack.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+          }
+        }
+
+        requestAnimationFrame(() => {
+          clones.forEach((item, idx) => {
+            const dEl = destEls[idx] || document.getElementById('card-' + item.card.id);
+            item.clone.classList.remove('is-gathered');
+            item.clone.classList.add('is-dropping');
+            if (dEl) {
+              const dRect = dEl.getBoundingClientRect();
+              if (dRect.width > 0 && dRect.height > 0) {
+                const dropDx = (dRect.left + dRect.width / 2) - item.srcCenterX;
+                const dropDy = (dRect.top + dRect.height / 2) - item.srcCenterY;
+                item.clone.style.transitionDelay = `${idx * 22}ms`;
+                item.clone.style.transform = `translate3d(${dropDx.toFixed(1)}px, ${dropDy.toFixed(1)}px, 0) scale(1) rotate(0deg)`;
+              }
+            }
+          });
+
+          const totalDropMs = 330 + (clones.length * 22);
+          setTimeout(() => {
+            clones.forEach((item, idx) => {
+              if (item.clone.parentNode) item.clone.remove();
+              const freshEl = document.getElementById('card-' + item.card.id);
+              if (freshEl) {
+                freshEl.classList.remove('card-glide-hidden');
+                freshEl.classList.add('card-just-moved');
+                setTimeout(() => freshEl.classList.remove('card-just-moved'), 340);
+              }
+            });
+            isGroupMoveAnimating = false;
+          }, totalDropMs);
+        });
+      } catch (err) {
+        clones.forEach(item => { if (item.clone.parentNode) item.clone.remove(); });
+        document.querySelectorAll('.card.card-glide-hidden').forEach(el => el.classList.remove('card-glide-hidden'));
+        isGroupMoveAnimating = false;
+      }
+    }, 235);
+
     return true;
   }
   window.moveFirstValidGroupToNewStand = moveFirstValidGroupToNewStand;
@@ -7226,12 +7598,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const dropTypeLabel = isFirstDrop ? 'First Drop' : 'Middle Drop';
 
     const dInfo = countDoubles(myHand);
+    const tInfo = countTunellas(myHand);
     const isDealtTurn = isFirstDrop && !canDiscard;
     const isFreeScootDealt = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.freeScootDealtDoubles;
     const isFreeGameDrawn = rCfg.allowDoublesShow && (myTurnsTaken > 0 || canDiscard) && dInfo.count >= rCfg.freeGameDrawnDoubles;
 
     const isDealtDoublesShow = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.dealtDoublesForShow;
     const isDrawnDoublesShow = rCfg.allowDoublesShow && dInfo.count >= rCfg.drawnDoublesForShow;
+    const isDealt3TunellasShow = rCfg.allow3TunellasShow && isDealtTurn && tInfo.count >= 3;
+    const isDrawn3TunellasShow = rCfg.allow3TunellasShow && canDiscard && tInfo.count >= 3;
 
     const btnDrop = document.getElementById('btnDrop');
     if (btnDrop) {
@@ -7297,19 +7672,21 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
-      const canDeclare = (isMyTurn && (canDiscard || isDealtDoublesShow)) && !myDropped && !myForfeited && !myEliminated;
+      const canDeclare = (isMyTurn && (canDiscard || isDealtDoublesShow || isDealt3TunellasShow)) && !myDropped && !myForfeited && !myEliminated;
       declareBtn.classList.toggle('btn-disabled', !canDeclare && !declarationMode);
       const b = declareBtn.querySelector('b');
       const sub = declareBtn.querySelector('.action-sub');
       if (b) {
         b.innerText = declarationMode
           ? 'Submit Declaration'
-          : (isDealtDoublesShow ? `Declare (${rCfg.dealtDoublesForShow} Doubles)` : isDrawnDoublesShow ? `Declare (${rCfg.drawnDoublesForShow} Doubles)` : 'Show / Declare');
+          : (isDealt3TunellasShow || isDrawn3TunellasShow
+            ? 'Declare (3 Tunellas)'
+            : (isDealtDoublesShow ? `Declare (${rCfg.dealtDoublesForShow} Doubles)` : isDrawnDoublesShow ? `Declare (${rCfg.drawnDoublesForShow} Doubles)` : 'Show / Declare'));
       }
       if (sub) {
         sub.innerText = declarationMode
           ? 'submit your 21-card show'
-          : (myEliminated ? 'eliminated' : myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
+          : (myEliminated ? 'eliminated' : myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealt3TunellasShow ? '3 Tunellas instant win!' : isDrawn3TunellasShow ? '3 Tunellas ready!' : isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
     const isGroupingPhase = roomState?.status === 'GROUPING';
@@ -7409,8 +7786,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         const groupedIds = new Set(groupedCards.map(c => c.id));
         const remaining = myHand.filter(c => !groupedIds.has(c.id));
         const dInfoPanel = countDoubles(myHand);
+        const tInfoPanel = countTunellas(myHand);
         const isDoublesPanelReady = rRule.allowDoublesShow && ((dInfoPanel.count >= rRule.dealtDoublesForShow && myHand.length === 21) || (dInfoPanel.count >= rRule.drawnDoublesForShow && myHand.length === 22));
-        const isShowReady = (grouped === 21 && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesPanelReady;
+        const is3TunellasPanelReady = rRule.allow3TunellasShow && tInfoPanel.count >= 3 && (myHand.length === 21 || myHand.length === 22);
+        const isShowReady = (grouped === 21 && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesPanelReady || is3TunellasPanelReady;
 
         if (isGroupingPhase) {
           const estDeadwood = calculateCurrentDeadwood(declarationGroups, myHand);
@@ -7556,6 +7935,14 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const remPaplus = paplus - marriages;
     const remTuplus = nichlus - marriages;
 
+    const getTipluTier = (count) => {
+      if (count <= 0) return 0;
+      if (count === 1) return r.tiplu1;
+      if (count === 2) return r.tiplu2;
+      const extraStep = Math.max(0, r.tiplu2 - r.tiplu1);
+      return r.tiplu2 + (count - 2) * (extraStep || r.tiplu1 || 20);
+    };
+
     const getPoochieTier = (count) => {
       if (count <= 0) return 0;
       if (count === 1) return r.poochie1;
@@ -7573,7 +7960,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     };
 
     const marriagePts = marriages * r.marriagePts;
-    const tipluPts = remTiplus * r.tipluPts;
+    const tipluPts = getTipluTier(remTiplus);
     const poochiePts = getPoochieTier(poochies);
     const papluPts = getPoolTier(remPaplus);
     const tupluPts = getPoolTier(remTuplus);
@@ -7660,11 +8047,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
         <div class="maal-item-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Pukka Joker (${rRule.tipluPts} pts each)</span>
+            <span style="font-size:11px; font-weight:800; color:#f1d27a; text-transform:uppercase;">Pukka Joker (${rRule.tiplu1}/${rRule.tiplu2} pts)</span>
             <span style="font-size:12px; font-weight:800; color:#e2e8f0;">${d.tipluPts || 0} pts</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            Matches exact cut card (same suit &amp; rank): <strong>${tipluName}</strong> (remaining after marriages)
+            Matches exact cut card (same suit &amp; rank): <strong>${tipluName}</strong> (after marriages: 1st=${rRule.tiplu1}, 2nd=${rRule.tiplu2})
           </div>
           <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-top:4px;">
             ${d.tiplus || 0} card(s) held = ${d.tipluPts || 0} pts
@@ -7721,7 +8108,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') {
           contributing.push({ card, role: 'Poochie' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.tipluRank) {
-          contributing.push({ card, role: 'Pukka Joker (20 pts)' });
+          contributing.push({ card, role: `Pukka Joker (${rRule.tiplu1}/${rRule.tiplu2} pts)` });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.papluRank) {
           contributing.push({ card, role: 'Paplu' });
         } else if (card.suit === roles.tipluSuit && card.rank === roles.nichluRank) {
@@ -7947,84 +8334,201 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   window.handleDiscardInteraction = handleDiscardInteraction;
   window.triggerDiscardDraw = triggerDiscardDraw;
 
-  let standScrollInterval = null;
+  let standScrollRaf = null;
+  let activeAutoScrollTarget = null;
+  let activeAutoScrollEl = null;
+  let activeAutoScrollDir = 0;
+  let activeAutoScrollIsDrag = false;
+  let activeAutoScrollBtn = null;
+  let standScrollStartTime = 0;
+  let lastStandScrollFrameTime = 0;
+  let standScrollRemainder = 0;
+  let standScrollMovedPx = 0;
+  let suppressScrollClickTarget = null;
+  let suppressScrollClickUntil = 0;
+
+  function findScrollBtnForTarget(elementId, direction) {
+    const dirName = direction < 0 ? 'left' : 'right';
+    if (elementId.startsWith('stand-cards-')) {
+      return document.getElementById(`stand-scroll-${dirName}-${elementId.slice('stand-cards-'.length)}`);
+    }
+    if (elementId.startsWith('decl-group-cards-')) {
+      return document.getElementById(`decl-scroll-${dirName}-${elementId.slice('decl-group-cards-'.length)}`);
+    }
+    if (elementId === 'decl-ungrouped-cards') {
+      return document.getElementById(`decl-ungrouped-${dirName}`);
+    }
+    if (elementId.startsWith('decl-ungrouped-cards-')) {
+      return document.getElementById(`decl-ungrouped-${dirName}-${elementId.slice('decl-ungrouped-cards-'.length)}`);
+    }
+    return null;
+  }
+
+  function computeStandScrollSpeedPxPerSec(elapsedSec, isDrag) {
+    // Starts slow for precise control and smoothly accelerates to ~2400 px/s after 1.0s of continuous press
+    const baseSpeed = isDrag ? 110 : 90;
+    const target1sSpeed = 2400;
+    const rampDuration = 1.0;
+    const tNorm = Math.min(1, Math.max(0, elapsedSec / rampDuration));
+    const rampBoost = (target1sSpeed - baseSpeed) * Math.pow(tNorm, 2.0);
+    const overTime = Math.max(0, elapsedSec - rampDuration);
+    const extraCruise = Math.min(600, overTime * 450);
+    return baseSpeed + rampBoost + extraCruise;
+  }
+
+  function stepStandScroll(nowTs) {
+    if (!activeAutoScrollTarget || !activeAutoScrollEl) {
+      standScrollRaf = null;
+      return;
+    }
+    const now = typeof nowTs === 'number' ? nowTs : (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const elapsedSec = Math.max(0, (now - standScrollStartTime) / 1000);
+    const holdDelaySec = activeAutoScrollIsDrag ? 0 : 0.18;
+
+    if (elapsedSec >= holdDelaySec) {
+      const activeElapsed = elapsedSec - holdDelaySec;
+      const dt = Math.min(0.05, Math.max(0.004, (now - lastStandScrollFrameTime) / 1000));
+      const speedPxPerSec = computeStandScrollSpeedPxPerSec(activeElapsed, activeAutoScrollIsDrag);
+
+      const el = activeAutoScrollEl;
+      const maxScroll = Math.max(0, (el.scrollWidth || 0) - (el.clientWidth || 0));
+      const atEdge = (activeAutoScrollDir < 0 && el.scrollLeft <= 0.5) ||
+                     (activeAutoScrollDir > 0 && el.scrollLeft >= maxScroll - 0.5);
+
+      if (!atEdge) {
+        standScrollRemainder += activeAutoScrollDir * speedPxPerSec * dt;
+        const delta = Math.trunc(standScrollRemainder);
+        if (delta !== 0) {
+          standScrollRemainder -= delta;
+          el.scrollLeft += delta;
+          standScrollMovedPx += Math.abs(delta);
+          if (!activeAutoScrollIsDrag && standScrollMovedPx >= 6) {
+            suppressScrollClickTarget = el.id;
+            suppressScrollClickUntil = Date.now() + 350;
+          }
+          updateAllStandScrollButtons();
+        }
+      } else {
+        standScrollRemainder = 0;
+        updateAllStandScrollButtons();
+      }
+
+      if (activeAutoScrollBtn && speedPxPerSec >= 950) {
+        activeAutoScrollBtn.classList.add('scroll-btn-fast');
+      }
+    }
+
+    lastStandScrollFrameTime = now;
+    if (typeof requestAnimationFrame === 'function') {
+      standScrollRaf = requestAnimationFrame(stepStandScroll);
+    } else {
+      standScrollRaf = setTimeout(() => stepStandScroll(Date.now()), 16);
+    }
+  }
 
   function scrollElement(elementId, direction) {
+    if (suppressScrollClickTarget === elementId && Date.now() < suppressScrollClickUntil) {
+      suppressScrollClickTarget = null;
+      return;
+    }
     const el = document.getElementById(elementId);
     if (!el) return;
-    const distance = Math.max(280, Math.floor(el.clientWidth * 0.92));
+    const distance = Math.min(180, Math.max(72, Math.floor(el.clientWidth * 0.45)));
     el.scrollBy({ left: direction * distance, behavior: 'smooth' });
-    setTimeout(updateAllStandScrollButtons, 120);
+    setTimeout(updateAllStandScrollButtons, 140);
   }
 
   function scrollStand(sIdx, direction) {
     scrollElement(`stand-cards-${sIdx}`, direction);
   }
 
-  let activeAutoScrollTarget = null;
-  let standScrollStartTime = 0;
-
-  function startStandScroll(elementId, direction, isDrag = false) {
+  function startStandScroll(elementId, direction, isDrag = false, btnEl = null) {
     const targetKey = elementId + '_' + direction;
-    if (isDrag && activeAutoScrollTarget === targetKey && standScrollInterval) {
+    if (activeAutoScrollTarget === targetKey && standScrollRaf !== null) {
       return;
     }
+    stopStandScroll();
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
     activeAutoScrollTarget = targetKey;
-    clearInterval(standScrollInterval);
-    standScrollStartTime = Date.now();
+    activeAutoScrollEl = el;
+    activeAutoScrollDir = direction;
+    activeAutoScrollIsDrag = Boolean(isDrag);
+    activeAutoScrollBtn = btnEl || findScrollBtnForTarget(elementId, direction);
 
-    if (!isDrag) {
-      scrollElement(elementId, direction);
+    // Override CSS scroll-behavior: smooth so per-frame rAF scrolling accelerates cleanly without stutter
+    if (el.style) el.style.scrollBehavior = 'auto';
+    if (activeAutoScrollBtn) activeAutoScrollBtn.classList.add('scroll-btn-drag-active');
+
+    standScrollStartTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    lastStandScrollFrameTime = standScrollStartTime;
+    standScrollRemainder = 0;
+    standScrollMovedPx = 0;
+
+    if (typeof requestAnimationFrame === 'function') {
+      standScrollRaf = requestAnimationFrame(stepStandScroll);
+    } else {
+      standScrollRaf = setTimeout(() => stepStandScroll(Date.now()), 16);
     }
-
-    // High frequency 60fps interval (16ms) with aggressive progressive acceleration
-    const intervalMs = 16;
-    standScrollInterval = setInterval(() => {
-      const el = document.getElementById(elementId);
-      if (!el) return;
-
-      const elapsedSec = (Date.now() - standScrollStartTime) / 1000;
-
-      let step;
-      if (isDrag) {
-        // Aggressive acceleration during card drag:
-        // Starts with immediate snappy response (18px/tick ~1125px/s), surging rapidly
-        // through an exponential power curve to blistering maximum speed (110px/tick ~6875px/s)
-        // within ~0.85 seconds of continuous hold.
-        const baseStep = 18;
-        const maxStep = 110;
-        const accelDuration = 0.85;
-        const progress = Math.min(1, elapsedSec / accelDuration);
-        const speedMultiplier = 1 + 5.2 * Math.pow(progress, 1.5);
-        step = Math.min(maxStep, Math.round(baseStep * speedMultiplier));
-
-        if (progress > 0.3) {
-          document.querySelectorAll('.scroll-btn-drag-active').forEach(b => b.classList.add('scroll-btn-fast'));
-        }
-      } else {
-        const baseStep = 20;
-        const maxStep = 70;
-        const accelDuration = 1.0;
-        const progress = Math.min(1, elapsedSec / accelDuration);
-        const speedMultiplier = 1 + 2.5 * Math.pow(progress, 1.2);
-        step = Math.min(maxStep, Math.round(baseStep * speedMultiplier));
-      }
-
-      el.scrollBy({ left: direction * step, behavior: 'auto' });
-      updateAllStandScrollButtons();
-    }, intervalMs);
   }
 
   function stopStandScroll() {
+    const prevEl = activeAutoScrollEl;
+    if (!activeAutoScrollIsDrag && standScrollMovedPx >= 8 && prevEl && prevEl.id) {
+      suppressScrollClickTarget = prevEl.id;
+      suppressScrollClickUntil = Date.now() + 350;
+    }
     activeAutoScrollTarget = null;
+    activeAutoScrollEl = null;
+    activeAutoScrollDir = 0;
+    activeAutoScrollIsDrag = false;
+    activeAutoScrollBtn = null;
     standScrollStartTime = 0;
-    if (standScrollInterval) {
-      clearInterval(standScrollInterval);
-      standScrollInterval = null;
+    lastStandScrollFrameTime = 0;
+    standScrollRemainder = 0;
+    if (standScrollRaf !== null) {
+      if (typeof cancelAnimationFrame === 'function') {
+        cancelAnimationFrame(standScrollRaf);
+      } else {
+        clearTimeout(standScrollRaf);
+      }
+      standScrollRaf = null;
+    }
+    if (prevEl && prevEl.style) {
+      prevEl.style.scrollBehavior = '';
     }
     document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => {
       b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
     });
+  }
+
+  function handleStandEdgeDragScroll(cardsEl, clientX) {
+    if (!cardsEl || !cardsEl.id || typeof clientX !== 'number') return false;
+    const hasOverflow = (cardsEl.scrollWidth || 0) > (cardsEl.clientWidth || 0) + 4;
+    if (!hasOverflow) {
+      if (activeAutoScrollTarget && activeAutoScrollTarget.startsWith(cardsEl.id + '_')) {
+        stopStandScroll();
+      }
+      return false;
+    }
+    const rect = cardsEl.getBoundingClientRect();
+    const edgePx = Math.min(46, Math.max(24, rect.width * 0.14));
+    const maxScroll = Math.max(0, cardsEl.scrollWidth - cardsEl.clientWidth);
+    if (clientX <= rect.left + edgePx && cardsEl.scrollLeft > 1) {
+      const btn = findScrollBtnForTarget(cardsEl.id, -1);
+      startStandScroll(cardsEl.id, -1, true, btn);
+      return true;
+    }
+    if (clientX >= rect.right - edgePx && cardsEl.scrollLeft < maxScroll - 1) {
+      const btn = findScrollBtnForTarget(cardsEl.id, 1);
+      startStandScroll(cardsEl.id, 1, true, btn);
+      return true;
+    }
+    if (activeAutoScrollTarget && activeAutoScrollTarget.startsWith(cardsEl.id + '_')) {
+      stopStandScroll();
+    }
+    return false;
   }
 
   function onScrollBtnDragOver(e, elementId, dir) {
@@ -8033,14 +8537,19 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
     const btn = e.currentTarget || (e.target && e.target.closest ? e.target.closest('.stand-scroll-btn') : null);
     if (btn) btn.classList.add('scroll-btn-drag-active');
-    startStandScroll(elementId, dir, true);
+    startStandScroll(elementId, dir, true, btn);
   }
 
   function onScrollBtnDragLeave(e) {
     const btn = e.currentTarget || (e.target && e.target.closest ? e.target.closest('.stand-scroll-btn') : null);
+    if (e && e.relatedTarget && btn && btn.contains(e.relatedTarget)) return;
     if (btn) btn.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
     stopStandScroll();
   }
+
+  window.addEventListener('pointerup', stopStandScroll);
+  window.addEventListener('pointercancel', stopStandScroll);
+  window.addEventListener('blur', stopStandScroll);
 
   function updateElementScrollButtons(elementId, leftBtnId, rightBtnId) {
     const el = document.getElementById(elementId);
@@ -8049,14 +8558,30 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const rightBtn = document.getElementById(rightBtnId);
     if (!leftBtn || !rightBtn) return;
 
-    const hasOverflow = el.scrollWidth > el.clientWidth + 4;
-    if (!hasOverflow) {
+    const container = el.parentElement;
+    const containerW = (container && container.clientWidth) ? container.clientWidth : el.clientWidth;
+
+    // If all cards fit within the full stand container width without scroll buttons stealing space,
+    // hide both scroll buttons completely so cards (e.g. 3-card stands in 2-col mode) are never occluded.
+    if (el.scrollWidth <= containerW + 4) {
+      if (container && container.classList) container.classList.add('no-scroll');
+      if (el.scrollLeft > 0) el.scrollLeft = 0;
       leftBtn.classList.add('is-disabled');
       rightBtn.classList.add('is-disabled');
       return;
     }
-    const canScrollLeft = el.scrollLeft > 6;
-    const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 6;
+
+    if (container && container.classList) container.classList.remove('no-scroll');
+    const hasOverflow = el.scrollWidth > el.clientWidth + 4;
+    if (!hasOverflow) {
+      if (container && container.classList) container.classList.add('no-scroll');
+      leftBtn.classList.add('is-disabled');
+      rightBtn.classList.add('is-disabled');
+      return;
+    }
+
+    const canScrollLeft = el.scrollLeft > 2;
+    const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 2;
 
     leftBtn.classList.toggle('is-disabled', !canScrollLeft);
     rightBtn.classList.toggle('is-disabled', !canScrollRight);
@@ -8156,7 +8681,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       const currentSelectedStandIdx = selectedCardId ? userStands.findIndex(s => s.some(c => c.id === selectedCardId)) : -1;
       container.innerHTML=userStands.map((stand,sIdx)=>{
         const closeBtn=userStands.length>1?`<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx+1} with Stand 1">✕ Close Stand</button>`:'';
-        const firstGroup = stand.length >= 3 ? findFirstValidGroupInStand(stand) : null;
+        const standSelectedId = (currentSelectedStandIdx === sIdx && selectedCardId) ? selectedCardId : null;
+        const firstGroup = stand.length >= 3 ? findFirstValidGroupInStand(stand, standSelectedId) : null;
         const canMoveGroup = Boolean(firstGroup && !(sIdx === userStands.length - 1 && stand.length === firstGroup.cards.length));
         const moveGroupTitle = firstGroup ? `Move ${firstGroup.typeLabel} (${firstGroup.cards.map(c => c.isPoochie ? 'PJ' : c.rank + c.suit).join(' ')}) to a new stand at the bottom` : '';
         const moveGroupBtn = canMoveGroup
@@ -8229,11 +8755,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const isSetValid = declarationSet(selectedCards);
     const detected = detectBestGroupType(selectedCards);
     const dInfo = countDoubles(myHand);
+    const tInfo = countTunellas(myHand);
     const isDoublesReady = Boolean(rRule.allowDoublesShow && (
       (dInfo.count >= rRule.dealtDoublesForShow && myHand.length === 21) ||
       (dInfo.count >= rRule.drawnDoublesForShow && myHand.length === 22)
     ));
-    const isShowReady = (grouped === 21 && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesReady;
+    const is3TunellasReady = Boolean(rRule.allow3TunellasShow && tInfo.count >= 3 && (myHand.length === 21 || myHand.length === 22));
+    const isShowReady = (grouped === 21 && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesReady || is3TunellasReady;
     const isGroupingReady = isGroupingPhase && grouped === myHand.length && pure >= rRule.minPureSequences;
 
     let coachBannerHtml = '';
@@ -8291,9 +8819,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       const tipMsg = selCount > 0
         ? `👆 Select <b>${3 - selCount} more card${3 - selCount > 1 ? 's' : ''}</b> (${selCount}/3 min) below, or tap <b>Guide Me</b> for a suggestion.`
-        : isShowReady
-          ? `✨ All 21 cards are grouped! Tap <b>Submit Declaration</b> to win.`
-          : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
+        : is3TunellasReady
+          ? `✨ 3 Tunellas detected! Tap <b>Submit Declaration</b> to claim an instant win.`
+          : isShowReady
+            ? `✨ All 21 cards are grouped! Tap <b>Submit Declaration</b> to win.`
+            : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
       coachBannerHtml = `
         <div class="guide-me-banner" style="padding:6px 10px; background:rgba(255,255,255,0.035); border-color:rgba(255,255,255,0.10);">
           <div class="guide-me-copy" style="font-size:11px; color:#cfdad4;">${tipMsg}</div>
@@ -8543,12 +9073,31 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (!first || first.isPoochie || first.rank === 'PJ' || first.suit === '★') return false;
     return cards.every(c => c && c.rank === first.rank && c.suit === first.suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
   }
+  function countTunellas(cards) {
+    if (!Array.isArray(cards)) return { count: 0, tunellas: [] };
+    const byExact = new Map();
+    for (const c of cards) {
+      if (!c || c.isPoochie || c.rank === 'PJ' || c.suit === '★') continue;
+      const key = `${c.suit}_${c.rank}`;
+      if (!byExact.has(key)) byExact.set(key, []);
+      byExact.get(key).push(c);
+    }
+    const tunellas = [];
+    for (const list of byExact.values()) {
+      const numT = Math.floor(list.length / 3);
+      for (let i = 0; i < numT; i++) {
+        tunellas.push(list.slice(i * 3, i * 3 + 3));
+      }
+    }
+    return { count: tunellas.length, tunellas };
+  }
+  window.countTunellas = countTunellas;
   function declarationPure(cards) {
     if(!Array.isArray(cards) || cards.length<3) return false;
     const r = getActiveRules();
     if(r.allowMarriageAsPure !== false && declarationIsMarriage(cards)) return true;
     if(r.allow3PoochiesAsPure !== false && declarationIsThreePoochies(cards)) return true;
-    if(r.allowTunnelaAsPure !== false && declarationIsTunella(cards)) return true;
+    if(declarationIsTunella(cards)) return true;
     // A natural pure sequence cannot contain printed jokers, but CAN include a cut joker / wild card
     // as long as it is in its natural suit and number (e.g. 5♠-6♠-7♠ when 5♠ is pukka joker).
     if(cards.some(c => !c || c.isPoochie || c.rank === 'PJ' || c.suit === '★')) return false;
@@ -8590,7 +9139,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         const isPure = g.type === 'PURE_SEQUENCE' ? declarationPure(cards) : false;
         const isSeq = g.type === 'SEQUENCE' ? declarationSequence(cards) : false;
         const isSetGroup = g.type === 'SET' ? declarationSet(cards) : false;
-        const isTun = r.allowTunnelaAsPure !== false && declarationIsTunella(cards);
+        const isTun = declarationIsTunella(cards);
 
         if (isPure || isSeq || isSetGroup) {
           cards.forEach(c => {
@@ -8611,7 +9160,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     // Also check if any unassigned/ungrouped cards form a Tunella
-    if (pureSequences < r.minPureSequences && r.allowTunnelaAsPure !== false) {
+    if (pureSequences < r.minPureSequences) {
       const unassigned = handCards.filter(c => !usedIds.has(c.id));
       const cardMap = new Map();
       for (const c of unassigned) {
@@ -8785,7 +9334,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         suit === roles.tipluSuit && roles.tipluRank === 'A'
       );
       const optGroups = solveOptimalSuitPurePatternsClient(suitNaturals, cut, roles, {
-        includeTunellas: rRule.allowTunnelaAsPure !== false,
+        includeTunellas: true,
         includeWrapMarriage: isMarriageWrap,
         extendWithNonWild: false
       });
@@ -8842,7 +9391,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     for (const grp of tunMap.values()) {
       if (grp.length >= 3) {
         const trio = grp.slice(0, 3);
-        addCandidate(trio, rRule.allowTunnelaAsPure !== false ? 'PURE_SEQUENCE' : 'SET',
+        addCandidate(trio, 'PURE_SEQUENCE',
           `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
           `Tunella: ${trio[0].rank}${trio[0].suit} ×3`,
           'Counts as a Pure Group and stays protected even if you finish under 3 Pure Groups.');
@@ -9254,7 +9803,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         suit === roles.tipluSuit && roles.tipluRank === 'A'
       );
       const optGroups = solveOptimalSuitPurePatternsClient(availNaturals, cut, roles, {
-        includeTunellas: rRule.allowTunnelaAsPure !== false,
+        includeTunellas: true,
         includeWrapMarriage: isMarriageWrap,
         extendWithNonWild: false
       });
@@ -10380,9 +10929,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function onCardDragOver(e, cardId) {
     e.preventDefault();
     e.stopPropagation();
+    const el = document.getElementById('card-' + cardId);
+    if (draggedCardId && el && el.closest) {
+      handleStandEdgeDragScroll(el.closest('.stand-cards'), e.clientX);
+    }
     if (!draggedCardId || draggedCardId === cardId) return;
     e.dataTransfer.dropEffect = 'move';
-    const el = document.getElementById('card-' + cardId);
     if (!el) return;
     const rect = el.getBoundingClientRect();
     if (e.clientX < rect.left + rect.width / 2) {
@@ -10533,13 +11085,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             if (b !== scrollBtn) b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast');
           });
           scrollBtn.classList.add('scroll-btn-drag-active');
-          startStandScroll(targetId, dir, true);
+          startStandScroll(targetId, dir, true, scrollBtn);
           touchCardState.dropTarget = null;
           return;
         }
       } else {
-        document.querySelectorAll('.scroll-btn-drag-active, .scroll-btn-fast').forEach(b => b.classList.remove('scroll-btn-drag-active', 'scroll-btn-fast'));
-        stopStandScroll();
+        const rackForEdge = elUnderPoint?.closest?.('.stand-rack');
+        const edgeCardsEl = rackForEdge ? rackForEdge.querySelector('.stand-cards') : null;
+        if (!handleStandEdgeDragScroll(edgeCardsEl, x)) {
+          stopStandScroll();
+        }
       }
 
       if (declarationMode) {
@@ -11240,13 +11795,22 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     e.preventDefault();
     if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
     const rack = getDeclRackEl(targetGroupIdx, targetStandIdx);
-    if (rack) rack.classList.add('drag-over-stand');
+    if (rack) {
+      rack.classList.add('drag-over-stand');
+      handleStandEdgeDragScroll(rack.querySelector('.stand-cards'), e.clientX);
+    }
   }
 
   function onDeclRackDragLeave(e, targetGroupIdx, targetStandIdx = -1) {
     const rack = getDeclRackEl(targetGroupIdx, targetStandIdx);
     if (rack && e && e.relatedTarget && rack.contains(e.relatedTarget)) return;
-    if (rack) rack.classList.remove('drag-over-stand');
+    if (rack) {
+      rack.classList.remove('drag-over-stand');
+      const cardsEl = rack.querySelector('.stand-cards');
+      if (cardsEl && activeAutoScrollTarget && activeAutoScrollTarget.startsWith(cardsEl.id + '_')) {
+        stopStandScroll();
+      }
+    }
   }
 
   function onDeclRackDrop(e, targetGroupIdx, targetStandIdx = -1) {
@@ -11287,12 +11851,24 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function onStandDragOver(e, standIdx) {
     e.preventDefault();
     const rack = document.getElementById('stand-rack-' + standIdx);
-    if (rack) rack.classList.add('drag-over-stand');
+    if (rack) {
+      rack.classList.add('drag-over-stand');
+      if (draggedCardId) {
+        handleStandEdgeDragScroll(rack.querySelector('.stand-cards'), e.clientX);
+      }
+    }
   }
 
   function onStandDragLeave(e, standIdx) {
     const rack = document.getElementById('stand-rack-' + standIdx);
-    if (rack) rack.classList.remove('drag-over-stand');
+    if (rack && e && e.relatedTarget && rack.contains(e.relatedTarget)) return;
+    if (rack) {
+      rack.classList.remove('drag-over-stand');
+      const cardsEl = rack.querySelector('.stand-cards');
+      if (cardsEl && activeAutoScrollTarget && activeAutoScrollTarget.startsWith(cardsEl.id + '_')) {
+        stopStandScroll();
+      }
+    }
   }
 
   function onStandDrop(e, targetStandIdx) {
@@ -11577,15 +12153,18 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     const dInfo = countDoubles(myHand);
+    const tInfo = countTunellas(myHand);
     const myP = roomState?.players?.find(p => p.id === (isDemo ? 'p_demo' : getMyPlayerId()));
     const myTurns = myP?.turnsTaken || 0;
     const canDiscardNow = (roomState?.turnStage === 'DISCARD' && getHandCount() >= 22);
     const isDealtDoublesShow = (r.allowDoublesShow && myTurns === 0 && !canDiscardNow && dInfo.count >= r.dealtDoublesForShow);
     const isDrawnDoublesShow = (r.allowDoublesShow && dInfo.count >= r.drawnDoublesForShow);
+    const isDealt3TunellasShow = (r.allow3TunellasShow && myTurns === 0 && !canDiscardNow && tInfo.count >= 3);
+    const isDrawn3TunellasShow = (r.allow3TunellasShow && canDiscardNow && tInfo.count >= 3);
 
     if (!declarationMode) {
-      if (!isDealtDoublesShow && !canDiscardNow) {
-        window.alert(`Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard)${r.allowDoublesShow ? `, unless you are dealt ${r.dealtDoublesForShow} doubles` : ''}.`);
+      if (!isDealtDoublesShow && !isDealt3TunellasShow && !canDiscardNow) {
+        window.alert(`Please draw a card first. In 21 Card Rummy, declaration is made after drawing your 22nd card (21 cards grouped + 1 final discard)${r.allowDoublesShow ? `, unless you are dealt ${r.dealtDoublesForShow} doubles` : ''}${r.allow3TunellasShow ? ' or 3 Tunellas' : ''}.`);
         return;
       }
       declarationMode = true;
@@ -11625,31 +12204,50 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const remaining = myHand.filter(c => !unique.has(c.id));
     const doubleGroups = declarationGroups.filter(g => g.type === 'DOUBLE').length;
     const isDoublesShow = isDealtDoublesShow || (isDrawnDoublesShow && (doubleGroups >= r.drawnDoublesForShow || dInfo.count >= r.drawnDoublesForShow));
+    const is3TunellasShow = isDealt3TunellasShow || isDrawn3TunellasShow;
 
     let finalDiscardId = null;
     let discardedCard = null;
 
-    if (isDealtDoublesShow) {
-      // Dealt Doubles: declaring without drawing a card (all 21 cards shown)
-      if (dInfo.count < r.dealtDoublesForShow) {
+    if (isDealtDoublesShow || isDealt3TunellasShow) {
+      // Dealt Doubles or Dealt 3 Tunellas: declaring without drawing a card (all 21 cards shown)
+      if (!isDealt3TunellasShow && dInfo.count < r.dealtDoublesForShow) {
         window.alert(`Declaring without drawing requires holding at least ${r.dealtDoublesForShow} doubles dealt. You have ${dInfo.count}.`);
         return;
       }
+    } else if (isDrawn3TunellasShow || isDoublesShow) {
+      // Drawn 3 Tunellas / Drawn Doubles instant show (22 cards: pick 1 safe final discard preserving the show)
+      if (remaining.length === 1) {
+        finalDiscardId = remaining[0].id;
+        discardedCard = remaining[0];
+      } else {
+        const tunellaIds = new Set(tInfo.tunellas.slice(0, 3).flat().map(c => c.id));
+        const doubleIds = new Set(dInfo.pairs.slice(0, r.drawnDoublesForShow).flat().map(c => c.id));
+        const candidatePool = remaining.length > 0 ? remaining : myHand;
+        const safeDiscard = candidatePool.find(c =>
+          (!isDrawn3TunellasShow || !tunellaIds.has(c.id)) &&
+          (!isDoublesShow || !doubleIds.has(c.id))
+        ) || candidatePool[0];
+        if (!safeDiscard) {
+          window.alert('Unable to determine a final discard card for this declaration.');
+          return;
+        }
+        finalDiscardId = safeDiscard.id;
+        discardedCard = safeDiscard;
+      }
     } else {
       // Normal declaration after drawing (22 cards: 21 grouped + 1 final discard)
-      if (remaining.length !== 1 || (unique.size !== 21 && !isDoublesShow)) {
+      if (remaining.length !== 1 || unique.size !== 21) {
         window.alert(`You have grouped ${unique.size}/21 cards (${remaining.length} remaining). In 21 Card Rummy, please group 21 cards; the 1 remaining card will automatically be your final discard.`);
         return;
       }
       finalDiscardId = remaining[0].id;
       discardedCard = remaining[0];
 
-      if (!isDoublesShow) {
-        const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-        if (pure < r.minPureSequences) {
-          window.alert(`You currently have ${pure} Pure Sequence(s). At least ${r.minPureSequences} Pure Sequence(s) are required for a valid 21-card declaration.`);
-          return;
-        }
+      const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      if (pure < r.minPureSequences) {
+        window.alert(`You currently have ${pure} Pure Sequence(s). At least ${r.minPureSequences} Pure Sequence(s) are required for a valid 21-card declaration.`);
+        return;
       }
     }
 
@@ -11926,7 +12524,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         suit === effRoles.tipluSuit && effRoles.tipluRank === 'A'
       );
       const optimalSuitGroups = solveOptimalSuitPurePatternsClient(suitNaturals, effCut, effRoles, {
-        includeTunellas: rRule.allowTunnelaAsPure !== false,
+        includeTunellas: true,
         includeWrapMarriage: isMarriageWrap,
         extendWithNonWild: false
       });
@@ -12301,6 +12899,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       const items = meldsTab.querySelectorAll('.rules-card-box:first-child > ul > li');
       if (items[0]) items[0].innerHTML = `<span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least ${r.minPureSequences} Pure Sequence(s):</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.`;
       const rows = meldsTab.querySelectorAll('.rules-table tbody tr');
+      if (rows[0]) {
+        rows[0].children[2].innerHTML = r.allow3TunellasShow
+          ? '<span class="rules-pill rules-pill-gold">Instant Win</span>'
+          : '<span class="rules-pill rules-pill-red">Disabled</span>';
+      }
       if (rows[2]) {
         rows[2].children[0].innerHTML = `<strong>${r.dealtDoublesForShow} Doubles (Dealt)</strong>`;
         rows[2].children[1].innerHTML = r.allowDoublesShow ? `Holding ${r.dealtDoublesForShow} pairs of identical cards dealt (before draw)` : 'Disabled under current table rules';
@@ -12315,7 +12918,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (jokersTab) {
       const rows = jokersTab.querySelectorAll('.rules-table tbody tr');
       if (rows[0]) rows[0].children[2].innerHTML = `<strong>${r.marriagePts} pts</strong> per Marriage`;
-      if (rows[1]) rows[1].children[2].innerHTML = `<strong>${r.tipluPts} pts</strong> each`;
+      if (rows[1]) {
+        const tipluExtra = Math.max(0, r.tiplu2 - r.tiplu1) || r.tiplu1;
+        rows[1].children[2].innerHTML = `<strong>Tiered:</strong> 1 = <strong>${r.tiplu1} pts</strong> &bull; 2 = <strong>${r.tiplu2} pts</strong> (+${tipluExtra} each after)`;
+      }
       if (rows[2]) {
         rows[2].children[1].innerHTML = `Printed Jokers (PJ★) — ${totalPoochies} total in the deck`;
         rows[2].children[2].innerHTML = `<strong>Tiered:</strong> 1 = <strong>${r.poochie1} pts</strong> &bull; 2 = <strong>${r.poochie2} pts</strong> &bull; 3 = <strong>${r.poochie3} pts</strong>`;
@@ -12331,7 +12937,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (rows[2]) rows[2].children[2].innerHTML = `<strong>${r.firstDrop} points</strong>`;
       if (rows[3]) rows[3].children[2].innerHTML = `<strong>${r.middleDrop} points</strong>`;
       if (rows[4]) rows[4].children[2].innerHTML = `<strong>${r.forfeitPenalty} points</strong>`;
-      if (rows[5]) rows[5].children[2].innerHTML = `<strong>${r.maxDeadwood} points</strong>`;
+      if (rows[5]) rows[5].children[2].innerHTML = r.maxDeadwood >= 210 ? `<strong>${r.maxDeadwood} points (No Cap)</strong>` : `<strong>${r.maxDeadwood} points</strong>`;
       const tourneyBox = document.getElementById('rulesTournamentInfoBox');
       if (tourneyBox) {
         if (r.eliminationEnabled) {
@@ -12378,10 +12984,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-field">Min Pure Groups<input type="number" min="1" max="4" value="${r.minPureSequences}" onchange="updateModalRuleField('minPureSequences', this.value)"></label>
           <label class="rules-field">First Drop Penalty<input type="number" min="0" max="120" value="${r.firstDrop}" onchange="updateModalRuleField('firstDrop', this.value)"></label>
           <label class="rules-field">Middle Drop Penalty<input type="number" min="0" max="200" value="${r.middleDrop}" onchange="updateModalRuleField('middleDrop', this.value)"></label>
-          <label class="rules-field">Forfeit / Wrong Show<input type="number" min="0" max="300" value="${r.forfeitPenalty}" onchange="updateModalRuleField('forfeitPenalty', this.value)"></label>
-          <label class="rules-field">Max Deadwood Cap<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateModalRuleField('maxDeadwood', this.value)"></label>
+          <label class="rules-field" title="210 = No Deadwood Cap">Max Deadwood Cap (210 = No Cap)<input type="number" min="40" max="300" value="${r.maxDeadwood}" onchange="updateModalRuleField('maxDeadwood', this.value)"></label>
           <label class="rules-field">Marriage Honors<input type="number" min="0" max="250" value="${r.marriagePts}" onchange="updateModalRuleField('marriagePts', this.value)"></label>
-          <label class="rules-field">Pukka Joker Honors<input type="number" min="0" max="150" value="${r.tipluPts}" onchange="updateModalRuleField('tipluPts', this.value)"></label>
+          <label class="rules-field">Pukka Joker (1 / 2)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.tiplu1}" style="width:50%;" onchange="updateModalRuleField('tiplu1', this.value)"><input type="number" min="0" max="300" value="${r.tiplu2}" style="width:50%;" onchange="updateModalRuleField('tiplu2', this.value)"></div></label>
           <label class="rules-field">Poochie (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="150" value="${r.poochie1}" style="width:33%;" onchange="updateModalRuleField('poochie1', this.value)"><input type="number" min="0" max="250" value="${r.poochie2}" style="width:33%;" onchange="updateModalRuleField('poochie2', this.value)"><input type="number" min="0" max="350" value="${r.poochie3}" style="width:34%;" onchange="updateModalRuleField('poochie3', this.value)"></div></label>
           <label class="rules-field">Paplu/Taplu (1 / 2 / 3)<div style="display:flex;gap:4px;"><input type="number" min="0" max="100" value="${r.papluTaplu1}" style="width:33%;" onchange="updateModalRuleField('papluTaplu1', this.value)"><input type="number" min="0" max="200" value="${r.papluTaplu2}" style="width:33%;" onchange="updateModalRuleField('papluTaplu2', this.value)"><input type="number" min="0" max="300" value="${r.papluTaplu3}" style="width:34%;" onchange="updateModalRuleField('papluTaplu3', this.value)"></div></label>
           <label class="rules-field">Dealt / Drawn Doubles Show<div style="display:flex;gap:4px;"><input type="number" min="5" max="10" value="${r.dealtDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('dealtDoublesForShow', this.value)"><input type="number" min="6" max="10" value="${r.drawnDoublesForShow}" style="width:50%;" onchange="updateModalRuleField('drawnDoublesForShow', this.value)"></div></label>
@@ -12393,7 +12998,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateModalRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors loses; last standing wins)</label>
           <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateModalRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} onchange="updateModalRuleField('allowDoublesShow', this.checked)"> Allow Doubles Show &amp; Free Scoot / Free Game</label>
-          <label class="rules-check-item"><input type="checkbox" ${r.allowTunnelaAsPure ? 'checked' : ''} onchange="updateModalRuleField('allowTunnelaAsPure', this.checked)"> Tunella (3 identical cards) counts as Pure Group</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.allow3TunellasShow ? 'checked' : ''} onchange="updateModalRuleField('allow3TunellasShow', this.checked)"> Allow 3 Tunellas Instant Show</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allow3PoochiesAsPure ? 'checked' : ''} onchange="updateModalRuleField('allow3PoochiesAsPure', this.checked)"> 3 Poochies group counts as Pure Group</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allowMarriageAsPure ? 'checked' : ''} onchange="updateModalRuleField('allowMarriageAsPure', this.checked)"> Marriage trio counts as Pure Group</label>
         </div>
@@ -12411,12 +13016,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
   function updateModalRuleField(key, val) {
     const base = modalEditRules || getActiveRules();
-    const nextPresetName = ((key === 'scoreLimit' || key === 'decks') && base.eliminationEnabled)
+    const nextPresetName = ((key === 'scoreLimit' || key === 'decks' || key === 'maxDeadwood') && base.eliminationEnabled)
       ? 'Tournament'
       : (key === 'eliminationEnabled' && val)
         ? 'Tournament'
         : 'Custom House Rules';
-    modalEditRules = sanitizeClientRules({ ...base, presetName: nextPresetName, [key]: val });
+    const extraPatch = (key === 'eliminationEnabled' && val && base.maxDeadwood === DEFAULT_RULES.maxDeadwood)
+      ? { maxDeadwood: 210 }
+      : {};
+    modalEditRules = sanitizeClientRules({ ...base, ...extraPatch, presetName: nextPresetName, [key]: val });
     renderRulesCustomizeTab();
   }
   function applyTableRules() {
