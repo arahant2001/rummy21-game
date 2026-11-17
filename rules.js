@@ -7,6 +7,8 @@ export const DEFAULT_RULES = {
   decks: 3,
   poochiesPerDeck: 1,
   marriagePts: 50,
+  tiplu1: 20,
+  tiplu2: 40,
   tipluPts: 20,
   poochie1: 20,
   poochie2: 50,
@@ -20,6 +22,7 @@ export const DEFAULT_RULES = {
   maxDeadwood: 120,
   minPureSequences: 3,
   allowTunnelaAsPure: true,
+  allow3TunellasShow: true,
   allow3PoochiesAsPure: true,
   allowMarriageAsPure: true,
   allowDoublesShow: true,
@@ -40,7 +43,6 @@ export const RULE_PRESETS = {
     presetName: 'Casual Family',
     firstDrop: 20,
     middleDrop: 50,
-    forfeitPenalty: 80,
     maxDeadwood: 100,
     minPureSequences: 2,
     blockDiscardedJokerPickup: false,
@@ -51,6 +53,8 @@ export const RULE_PRESETS = {
     presetName: 'High-Stakes Marriage',
     poochiesPerDeck: 2,
     marriagePts: 75,
+    tiplu1: 30,
+    tiplu2: 60,
     tipluPts: 30,
     poochie1: 30,
     poochie2: 75,
@@ -60,12 +64,12 @@ export const RULE_PRESETS = {
     papluTaplu3: 70,
     firstDrop: 40,
     middleDrop: 80,
-    forfeitPenalty: 120,
     maxDeadwood: 150
   },
   tournament: {
     ...DEFAULT_RULES,
     presetName: 'Tournament',
+    maxDeadwood: 210,
     eliminationEnabled: true,
     scoreLimit: 500
   }
@@ -87,13 +91,22 @@ export function sanitizeRules(raw) {
   const drawnDoublesForShow = clampInt(src.drawnDoublesForShow, 6, 10, DEFAULT_RULES.drawnDoublesForShow);
   const freeScootDealtDoubles = clampInt(src.freeScootDealtDoubles, 4, 9, DEFAULT_RULES.freeScootDealtDoubles);
   const freeGameDrawnDoubles = clampInt(src.freeGameDrawnDoubles, 5, 10, DEFAULT_RULES.freeGameDrawnDoubles);
+  const tiplu1 = clampInt(src.tiplu1 ?? src.tipluPts, 0, 150, DEFAULT_RULES.tiplu1);
+  const tiplu2 = clampInt(
+    src.tiplu2,
+    0,
+    300,
+    (src.tipluPts !== undefined && src.tiplu2 === undefined) ? tiplu1 * 2 : DEFAULT_RULES.tiplu2
+  );
 
   return {
     presetName,
     decks: clampInt(src.decks, 3, 5, DEFAULT_RULES.decks),
     poochiesPerDeck: clampInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
     marriagePts: clampInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
-    tipluPts: clampInt(src.tipluPts, 0, 150, DEFAULT_RULES.tipluPts),
+    tiplu1,
+    tiplu2,
+    tipluPts: tiplu1,
     poochie1: clampInt(src.poochie1, 0, 150, DEFAULT_RULES.poochie1),
     poochie2: clampInt(src.poochie2, 0, 250, DEFAULT_RULES.poochie2),
     poochie3: clampInt(src.poochie3, 0, 350, DEFAULT_RULES.poochie3),
@@ -102,10 +115,11 @@ export function sanitizeRules(raw) {
     papluTaplu3: clampInt(src.papluTaplu3, 0, 300, DEFAULT_RULES.papluTaplu3),
     firstDrop: clampInt(src.firstDrop, 0, 120, DEFAULT_RULES.firstDrop),
     middleDrop: clampInt(src.middleDrop, 0, 200, DEFAULT_RULES.middleDrop),
-    forfeitPenalty: clampInt(src.forfeitPenalty, 0, 300, DEFAULT_RULES.forfeitPenalty),
+    forfeitPenalty: DEFAULT_RULES.forfeitPenalty,
     maxDeadwood: clampInt(src.maxDeadwood, 40, 300, DEFAULT_RULES.maxDeadwood),
     minPureSequences: clampInt(src.minPureSequences, 1, 4, DEFAULT_RULES.minPureSequences),
-    allowTunnelaAsPure: src.allowTunnelaAsPure !== false,
+    allowTunnelaAsPure: true,
+    allow3TunellasShow: src.allow3TunellasShow !== false,
     allow3PoochiesAsPure: src.allow3PoochiesAsPure !== false,
     allowMarriageAsPure: src.allowMarriageAsPure !== false,
     allowDoublesShow: src.allowDoublesShow !== false,
@@ -219,6 +233,14 @@ export function calculateMaal(hand, cutCard, rules = DEFAULT_RULES) {
   const remPaplus = paplus - marriages;
   const remTuplus = nichlus - marriages;
 
+  const getTipluTier = (count) => {
+    if (count <= 0) return 0;
+    if (count === 1) return rConfig.tiplu1;
+    if (count === 2) return rConfig.tiplu2;
+    const extraStep = Math.max(0, rConfig.tiplu2 - rConfig.tiplu1);
+    return rConfig.tiplu2 + (count - 2) * (extraStep || rConfig.tiplu1);
+  };
+
   const getPoochieTier = (count) => {
     if (count <= 0) return 0;
     if (count === 1) return rConfig.poochie1;
@@ -236,7 +258,7 @@ export function calculateMaal(hand, cutCard, rules = DEFAULT_RULES) {
   };
 
   const marriagePts = marriages * rConfig.marriagePts;
-  const tipluPts = remTiplus * rConfig.tipluPts;
+  const tipluPts = getTipluTier(remTiplus);
   const poochiePts = getPoochieTier(poochies);
   const papluPts = getPoolTier(remPaplus);
   const tupluPts = getPoolTier(remTuplus);
@@ -265,6 +287,25 @@ export function isTunella(cards) {
   const first = cards[0];
   if (!first || first.isPoochie || first.rank === 'PJ' || first.suit === '★') return false;
   return cards.every(c => c && c.rank === first.rank && c.suit === first.suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
+}
+
+export function countTunellas(cards) {
+  if (!Array.isArray(cards)) return { count: 0, tunellas: [] };
+  const byExact = new Map();
+  for (const c of cards) {
+    if (!c || c.isPoochie || c.rank === 'PJ' || c.suit === '★') continue;
+    const key = `${c.suit}_${c.rank}`;
+    if (!byExact.has(key)) byExact.set(key, []);
+    byExact.get(key).push(c);
+  }
+  const tunellas = [];
+  for (const list of byExact.values()) {
+    const numT = Math.floor(list.length / 3);
+    for (let i = 0; i < numT; i++) {
+      tunellas.push(list.slice(i * 3, i * 3 + 3));
+    }
+  }
+  return { count: tunellas.length, tunellas };
 }
 
 export function calculateDeadwood(hand, cutCard, rules = DEFAULT_RULES) {
@@ -509,7 +550,7 @@ export function isPureSequence(cards, cutCard, rules = DEFAULT_RULES) {
   if (!Array.isArray(cards) || cards.length < 3) return false;
   if (rConfig.allowMarriageAsPure && isMarriageGroup(cards, cutCard)) return true;
   if (rConfig.allow3PoochiesAsPure && isThreePoochies(cards)) return true;
-  if (rConfig.allowTunnelaAsPure && isTunella(cards)) return true;
+  if (isTunella(cards)) return true;
   // A natural pure sequence cannot contain printed jokers, but CAN include a cut joker / wild card
   // as long as it is in its natural suit and number (e.g. 5♠-6♠-7♠ when 5♠ is pukka joker).
   if (cards.some(c => !c || c.isPoochie || c.rank === 'PJ' || c.suit === '★')) return false;
@@ -573,6 +614,14 @@ export function validateShow(groups, hand, cutCard, isDealt = false, rules = DEF
     const minDoublesNeeded = isDealt ? rConfig.dealtDoublesForShow : rConfig.drawnDoublesForShow;
     if (doublesInfo.count >= minDoublesNeeded) {
       return { valid: true, pureSequences: 0, isDoubles: true, doubleCount: doublesInfo.count };
+    }
+  }
+
+  // 3 Tunellas instant show check:
+  if (rConfig.allow3TunellasShow) {
+    const tunInfo = countTunellas(hand);
+    if (tunInfo.count >= 3) {
+      return { valid: true, pureSequences: tunInfo.count, isThreeTunellas: true, tunellaCount: tunInfo.count };
     }
   }
 
@@ -820,7 +869,7 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
       suit === effectiveRoles.tipluSuit && effectiveRoles.tipluRank === 'A'
     );
     const optimalSuitGroups = solveOptimalSuitPurePatterns(suitNaturals, cutCard, {
-      includeTunellas: rConfig.allowTunnelaAsPure,
+      includeTunellas: true,
       includeWrapMarriage: isMarriageWrap,
       extendWithNonWild: false
     });
