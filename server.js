@@ -21,11 +21,12 @@ app.get('/health', (req, res) => {
 
 const rooms = new Map();
 
-function ensurePlayerHand(player, room, targetCount = 21) {
+function ensurePlayerHand(player, room, targetCount = null) {
   if (!player.hand) player.hand = [];
   const rConfig = room.rules || DEFAULT_RULES;
+  const handTarget = targetCount ?? (rConfig.cardsPerPlayer || 21);
   if (!room.deck || !Array.isArray(room.deck)) room.deck = createDeck(rConfig);
-  while (player.hand.length < targetCount) {
+  while (player.hand.length < handTarget) {
     if (room.deck.length === 0) {
       if (Array.isArray(room.discardPile) && room.discardPile.length > 1) {
         const top = room.discardPile.pop();
@@ -37,9 +38,9 @@ function ensurePlayerHand(player, room, targetCount = 21) {
     }
     player.hand.push(room.deck.pop());
   }
-  // Clamp invariant: player hand never exceeds 22 cards
-  if (player.hand.length > 22) {
-    player.hand = player.hand.slice(0, 22);
+  // Clamp invariant: player hand never exceeds handTarget + 1 cards
+  if (player.hand.length > handTarget + 1) {
+    player.hand = player.hand.slice(0, handTarget + 1);
   }
 }
 
@@ -420,10 +421,11 @@ function dealNextHand(room) {
       p.readyForNextHand = false;
       p._settledInRound = true;
     } else {
-      if (deck.length < 21) {
+      const handTarget = (room.rules?.cardsPerPlayer) || 21;
+      if (deck.length < handTarget) {
         deck.push(...createDeck(room.rules || DEFAULT_RULES));
       }
-      p.hand = deck.splice(0, 21);
+      p.hand = deck.splice(0, handTarget);
       p._inCurrentHand = true;
       p._finalHandSnapshot = null;
       p.finalDiscard = null;
@@ -524,9 +526,9 @@ wss.on('connection', (ws) => {
             clearTimeout(userRoom.cleanupTimer);
             userRoom.cleanupTimer = null;
           }
-          // Invariant: Ensure non-eliminated rejoining player has strictly 21 (or 22) cards if game is active
+          // Invariant: Ensure non-eliminated rejoining player has configured hand count if game is active
           if (userRoom.status === 'PLAYING' && !existingPlayer.isEliminated && existingPlayer._inCurrentHand !== false) {
-            ensurePlayerHand(existingPlayer, userRoom, 21);
+            ensurePlayerHand(existingPlayer, userRoom, userRoom.rules?.cardsPerPlayer || 21);
           }
           broadcastRoom(userRoom);
           if (userRoom.status === 'ROUND_OVER' && userRoom.lastRoundResult && ws.readyState === WebSocket.OPEN) {
@@ -590,9 +592,9 @@ wss.on('connection', (ws) => {
           ws
         };
 
-        // Requirement 3: When a non-eliminated player joins mid-game, deal them strictly 21 cards
+        // Requirement 3: When a non-eliminated player joins mid-game, deal them the room's configured hand count
         if (userRoom.status === 'PLAYING' && !wasEliminated) {
-          ensurePlayerHand(newPlayer, userRoom, 21);
+          ensurePlayerHand(newPlayer, userRoom, userRoom.rules?.cardsPerPlayer || 21);
           newPlayer._inCurrentHand = true;
         }
 
@@ -604,7 +606,13 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'UPDATE_RULES') {
         if (userRoom.status === 'LOBBY' || userRoom.status === 'ROUND_OVER') {
-          userRoom.rules = sanitizeRules(data.rules);
+          const nextRules = sanitizeRules(data.rules);
+          if (userRoom.status !== 'LOBBY' && userRoom.rules) {
+            nextRules.cardsPerPlayer = userRoom.rules.cardsPerPlayer ?? DEFAULT_RULES.cardsPerPlayer;
+            nextRules.decks = userRoom.rules.decks ?? DEFAULT_RULES.decks;
+            nextRules.poochiesPerDeck = userRoom.rules.poochiesPerDeck ?? DEFAULT_RULES.poochiesPerDeck;
+          }
+          userRoom.rules = nextRules;
           if (!userRoom.rules.eliminationEnabled) {
             userRoom.tournamentFinished = false;
             userRoom.tournamentWinnerId = null;
@@ -710,15 +718,16 @@ wss.on('connection', (ws) => {
         }
 
         const rConfig = userRoom.rules || DEFAULT_RULES;
+        const handTarget = rConfig.cardsPerPlayer || 21;
         const deck = createDeck(rConfig);
-        const minCardsNeeded = userRoom.players.length * 21 + 5;
+        const minCardsNeeded = userRoom.players.length * handTarget + 5;
         if (deck.length < minCardsNeeded) {
-          const cardsPerPack = 52 + (rConfig.poochiesPerDeck || 1);
-          const neededPacks = Math.min(5, Math.ceil(minCardsNeeded / cardsPerPack));
+          const cardsPerPack = 52 + (rConfig.poochiesPerDeck ?? 1);
+          const neededPacks = Math.min(6, Math.ceil(minCardsNeeded / cardsPerPack));
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'INVALID_MOVE',
-              message: `${userRoom.players.length} players require at least ${neededPacks} pack(s) (currently ${rConfig.decks} pack(s) = ${deck.length} cards). Increase Packs (up to 5) in Rules → Customize!`
+              message: `${userRoom.players.length} players at ${handTarget} cards require at least ${neededPacks} pack(s) (currently ${rConfig.decks} pack(s) = ${deck.length} cards). Increase Packs (up to 6) in Rules → Customize!`
             }));
           }
           return;
@@ -735,7 +744,7 @@ wss.on('connection', (ws) => {
         userRoom.tournamentWinnerName = null;
         userRoom.lastRoundResult = null;
         userRoom.players.forEach(p => {
-          p.hand = deck.splice(0, 21);
+          p.hand = deck.splice(0, handTarget);
           p._inCurrentHand = true;
           p._finalHandSnapshot = null;
           p.finalDiscard = null;
@@ -767,12 +776,14 @@ wss.on('connection', (ws) => {
       const activePlayer = userRoom.players[userRoom.turnIndex];
       const isTurn = activePlayer && activePlayer.id === playerId;
       const isPlaying = userRoom.status === 'PLAYING';
+      const handTarget = userRoom.rules?.cardsPerPlayer || 21;
+      const drawnTarget = handTarget + 1;
 
       if (data.type === 'DRAW_STOCK' && isPlaying && isTurn && userRoom.turnStage === 'DRAW') {
-        // Enforce strict hand size invariant: exactly 21 before draw, 22 after draw
-        if (activePlayer.hand.length >= 22) return;
-        if (activePlayer.hand.length < 21) {
-          ensurePlayerHand(activePlayer, userRoom, 21);
+        // Enforce strict hand size invariant: handTarget before draw, drawnTarget after draw
+        if (activePlayer.hand.length >= drawnTarget) return;
+        if (activePlayer.hand.length < handTarget) {
+          ensurePlayerHand(activePlayer, userRoom, handTarget);
         }
         if (userRoom.deck.length === 0) {
           // Recycle discard pile if stock runs dry
@@ -781,9 +792,9 @@ wss.on('connection', (ws) => {
           userRoom.discardPile = [top];
         }
         activePlayer.hand.push(userRoom.deck.pop());
-        // Clamp invariant: exactly 22 cards
-        if (activePlayer.hand.length > 22) {
-          activePlayer.hand = activePlayer.hand.slice(0, 22);
+        // Clamp invariant: exactly drawnTarget cards
+        if (activePlayer.hand.length > drawnTarget) {
+          activePlayer.hand = activePlayer.hand.slice(0, drawnTarget);
         }
         userRoom.turnStage = 'DISCARD';
         userRoom.lastAction = 'DRAW_STOCK';
@@ -791,8 +802,8 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DRAW_DISCARD' && isPlaying && isTurn && userRoom.turnStage === 'DRAW') {
-        // Enforce strict hand size invariant: exactly 21 before draw, 22 after draw
-        if (activePlayer.hand.length >= 22) return;
+        // Enforce strict hand size invariant: handTarget before draw, drawnTarget after draw
+        if (activePlayer.hand.length >= drawnTarget) return;
         if (userRoom.discardPile.length > 0) {
           const topCard = userRoom.discardPile[userRoom.discardPile.length - 1];
           const isJoker = isWildCard(topCard, userRoom.cutCard);
@@ -810,13 +821,13 @@ wss.on('connection', (ws) => {
             return;
           }
 
-          if (activePlayer.hand.length < 21) {
-            ensurePlayerHand(activePlayer, userRoom, 21);
+          if (activePlayer.hand.length < handTarget) {
+            ensurePlayerHand(activePlayer, userRoom, handTarget);
           }
           activePlayer.hand.push(userRoom.discardPile.pop());
-          // Clamp invariant: exactly 22 cards
-          if (activePlayer.hand.length > 22) {
-            activePlayer.hand = activePlayer.hand.slice(0, 22);
+          // Clamp invariant: exactly drawnTarget cards
+          if (activePlayer.hand.length > drawnTarget) {
+            activePlayer.hand = activePlayer.hand.slice(0, drawnTarget);
           }
           userRoom.turnStage = 'DISCARD';
           userRoom.lastAction = 'DRAW_DISCARD';
@@ -825,11 +836,11 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'DISCARD' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
-        if (activePlayer.hand.length < 22) {
+        if (activePlayer.hand.length < drawnTarget) {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'INVALID_MOVE',
-              message: 'You have already discarded or have not drawn your 22nd card yet.'
+              message: `You have already discarded or have not drawn your ${drawnTarget}th card yet.`
             }));
           }
           return;
@@ -844,9 +855,9 @@ wss.on('connection', (ws) => {
           activePlayer.turnsTaken++;
           userRoom.lastAction = `${activePlayer.name} discarded ${discarded.rank}${discarded.suit}`;
 
-          // Invariant: after discard, hand must have strictly 21 cards
-          if (activePlayer.hand.length > 21) {
-            activePlayer.hand = activePlayer.hand.slice(0, 21);
+          // Invariant: after discard, hand must have strictly handTarget cards
+          if (activePlayer.hand.length > handTarget) {
+            activePlayer.hand = activePlayer.hand.slice(0, handTarget);
           }
 
           advanceTurn(userRoom);
@@ -994,7 +1005,7 @@ wss.on('connection', (ws) => {
             ? '3 Tunellas direct show'
             : (isDealtTurn
               ? `${rConfig.dealtDoublesForShow} Doubles direct show`
-              : (validation.isDoubles ? `${rConfig.drawnDoublesForShow} Doubles show` : '21-card show'));
+              : (validation.isDoubles ? `${rConfig.drawnDoublesForShow} Doubles show` : `${handTarget}-card show`));
           userRoom.lastAction = `${activePlayer.name} declared (${declareTypeNotice})! Players grouping their cards (${minsLabel})...`;
 
           if (userRoom.groupingTimer) clearTimeout(userRoom.groupingTimer);
