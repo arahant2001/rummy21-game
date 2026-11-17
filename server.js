@@ -837,10 +837,11 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'DISCARD' && isPlaying && isTurn && userRoom.turnStage === 'DISCARD') {
         if (activePlayer.hand.length < drawnTarget) {
+          const ordSuffix = (drawnTarget >= 11 && drawnTarget <= 13) ? 'th' : (drawnTarget % 10 === 1 ? 'st' : drawnTarget % 10 === 2 ? 'nd' : drawnTarget % 10 === 3 ? 'rd' : 'th');
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'INVALID_MOVE',
-              message: `You have already discarded or have not drawn your ${drawnTarget}th card yet.`
+              message: `You have already discarded or have not drawn your ${drawnTarget}${ordSuffix} card yet.`
             }));
           }
           return;

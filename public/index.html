@@ -4162,7 +4162,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
         <div class="rules-card-box" style="margin-top:10px;">
           <h4><span>5️⃣</span> Penalty-Free Show &amp; Grouping Mode</h4>
-          <p style="margin:0;">After drawing your 22nd card (or when dealt 3 Tunellas / qualifying Doubles), tap <strong>Show / Declare</strong> to enter Grouping Mode. Your stands are preserved, and there is <strong>no Wrong-Show penalty</strong>—you can tap <strong>✕ Cancel</strong> anytime to return to your turn. Use <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, then tap <strong>🏆 Submit Declaration</strong> at <strong>21 / 21 Grouped</strong>.</p>
+          <p id="rulesGuideStep5Text" style="margin:0;">After drawing your 22nd card (or when dealt 3 Tunellas / qualifying Doubles), tap <strong>Show / Declare</strong> to enter Grouping Mode. Your stands are preserved, and there is <strong>no Wrong-Show penalty</strong>—you can tap <strong>✕ Cancel</strong> anytime to return to your turn. Use <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, then tap <strong>🏆 Submit Declaration</strong> at <strong>21 / 21 Grouped</strong>.</p>
         </div>
       </div>
 
@@ -7904,7 +7904,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } else if (isGroupingNow) {
         guide.innerHTML = `<strong>Grouping Phase:</strong> ${escapeHtml(roomState.winnerName || 'Winner')} declared! Group your cards below (manually, Guide Me, or Auto-Group) and click Submit Groups.`;
       } else if (isMyTurn && canDraw) {
-        guide.innerHTML = `<strong>Your turn:</strong> Double-tap or drag Stock/Discard to draw your ${drawnSize}th card.`;
+        guide.innerHTML = `<strong>Your turn:</strong> Double-tap or drag Stock/Discard to draw your ${formatOrdinal(drawnSize)} card.`;
       } else if (isMyTurn && canDiscard) {
         guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Select a card &amp; tap Discard pile (or drag card there), or Show / Declare.`;
       } else {
@@ -9189,9 +9189,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         ? `👆 Select <b>${3 - selCount} more card${3 - selCount > 1 ? 's' : ''}</b> (${selCount}/3 min) below, or tap <b>Guide Me</b> for a suggestion.`
         : is3TunellasReady
           ? `✨ 3 Tunellas detected! Tap <b>Submit Declaration</b> to claim an instant win.`
-          : isShowReady
-            ? `✨ All 21 cards are grouped! Tap <b>Submit Declaration</b> to win.`
-            : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
+          : isDoublesReady
+            ? `✨ ${dInfo.count} Doubles detected! Tap <b>Submit Declaration</b> to win.`
+            : isShowReady
+              ? `✨ All ${declHandSize} cards are grouped! Tap <b>Submit Declaration</b> to win.`
+              : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
       coachBannerHtml = `
         <div class="guide-me-banner" style="padding:6px 10px; background:rgba(255,255,255,0.035); border-color:rgba(255,255,255,0.10);">
           <div class="guide-me-copy" style="font-size:11px; color:#cfdad4;">${tipMsg}</div>
@@ -9206,7 +9208,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               ${pure} / ${rRule.minPureSequences} Pure Groups ${pure >= rRule.minPureSequences ? '✅' : '⏳'}
             </span>
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(255,255,255,0.06); color:#cfdad4; border:1px solid rgba(255,255,255,0.1);">
-              ${grouped} / ${isGroupingPhase ? myHand.length : 21} Grouped
+              ${grouped} / ${isGroupingPhase ? myHand.length : declHandSize} Grouped
             </span>
             ${isGroupingPhase && deadwoodCalc ? `
               <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${deadwoodCalc.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);'}">
@@ -12539,7 +12541,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     if (!declarationMode) {
       if (!isDealtDoublesShow && !isDealt3TunellasShow && !canDiscardNow) {
-        window.alert(`Please draw a card first. Declaration is made after drawing your ${drawnSize}th card (${handSize} cards grouped + 1 final discard)${r.allowDoublesShow ? `, unless you are dealt ${r.dealtDoublesForShow} doubles` : ''}${r.allow3TunellasShow ? ' or 3 Tunellas' : ''}.`);
+        window.alert(`Please draw a card first. Declaration is made after drawing your ${formatOrdinal(drawnSize)} card (${handSize} cards grouped + 1 final discard)${r.allowDoublesShow ? `, unless you are dealt ${r.dealtDoublesForShow} doubles` : ''}${r.allow3TunellasShow ? ' or 3 Tunellas' : ''}.`);
         return;
       }
       declarationMode = true;
@@ -13270,6 +13272,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           ? '<strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong>'
           : '<strong>Custom Table Rule: Discarded Jokers CAN be picked up from the discard pile!</strong>';
       }
+    }
+    const guideStep5 = document.getElementById('rulesGuideStep5Text');
+    if (guideStep5) {
+      const dealtAlt = handSize < 21 ? 'or when dealt 3 Tunellas' : 'or when dealt 3 Tunellas / qualifying Doubles';
+      guideStep5.innerHTML = `After drawing your ${formatOrdinal(handSize + 1)} card (${dealtAlt}), tap <strong>Show / Declare</strong> to enter Grouping Mode. Your stands are preserved, and there is <strong>no Wrong-Show penalty</strong>—you can tap <strong>✕ Cancel</strong> anytime to return to your turn. Use <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, then tap <strong>🏆 Submit Declaration</strong> at <strong>${handSize} / ${handSize} Grouped</strong>.`;
     }
     const meldsTab = document.getElementById('rulesTabMelds');
     if (meldsTab) {
