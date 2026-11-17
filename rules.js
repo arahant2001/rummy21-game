@@ -5,6 +5,7 @@ export const MAX_PLAYERS = 10;
 export const DEFAULT_RULES = {
   presetName: 'Classic South Indian',
   decks: 3,
+  cardsPerPlayer: 21,
   poochiesPerDeck: 1,
   marriagePts: 50,
   tiplu1: 20,
@@ -87,6 +88,7 @@ export function sanitizeRules(raw) {
     ? src.presetName.trim().slice(0, 40)
     : DEFAULT_RULES.presetName;
 
+  const cardsPerPlayer = clampInt(src.cardsPerPlayer, 13, 28, DEFAULT_RULES.cardsPerPlayer);
   const dealtDoublesForShow = clampInt(src.dealtDoublesForShow, 5, 10, DEFAULT_RULES.dealtDoublesForShow);
   const drawnDoublesForShow = clampInt(src.drawnDoublesForShow, 6, 10, DEFAULT_RULES.drawnDoublesForShow);
   const freeScootDealtDoubles = clampInt(src.freeScootDealtDoubles, 4, 9, DEFAULT_RULES.freeScootDealtDoubles);
@@ -98,11 +100,14 @@ export function sanitizeRules(raw) {
     300,
     (src.tipluPts !== undefined && src.tiplu2 === undefined) ? tiplu1 * 2 : DEFAULT_RULES.tiplu2
   );
+  const poochiesPerDeck = clampInt(src.poochiesPerDeck, 0, 2, DEFAULT_RULES.poochiesPerDeck);
+  const allowDoublesShow = cardsPerPlayer >= 21 && (src.allowDoublesShow !== false);
 
   return {
     presetName,
-    decks: clampInt(src.decks, 3, 5, DEFAULT_RULES.decks),
-    poochiesPerDeck: clampInt(src.poochiesPerDeck, 1, 2, DEFAULT_RULES.poochiesPerDeck),
+    decks: clampInt(src.decks, 3, 6, DEFAULT_RULES.decks),
+    cardsPerPlayer,
+    poochiesPerDeck,
     marriagePts: clampInt(src.marriagePts, 0, 250, DEFAULT_RULES.marriagePts),
     tiplu1,
     tiplu2,
@@ -122,7 +127,7 @@ export function sanitizeRules(raw) {
     allow3TunellasShow: src.allow3TunellasShow !== false,
     allow3PoochiesAsPure: src.allow3PoochiesAsPure !== false,
     allowMarriageAsPure: src.allowMarriageAsPure !== false,
-    allowDoublesShow: src.allowDoublesShow !== false,
+    allowDoublesShow,
     dealtDoublesForShow,
     drawnDoublesForShow: Math.max(dealtDoublesForShow, drawnDoublesForShow),
     freeScootDealtDoubles,
@@ -150,7 +155,7 @@ export function createDeck(rules = DEFAULT_RULES) {
   const deck = [];
   let id = 1;
   const numDecks = rConfig.decks || 3;
-  const poochiesPerDeck = rConfig.poochiesPerDeck || 1;
+  const poochiesPerDeck = rConfig.poochiesPerDeck ?? 1;
 
   for (let d = 0; d < numDecks; d++) {
     for (const suit of SUITS) {
@@ -662,7 +667,7 @@ export function validateShow(groups, hand, cutCard, isDealt = false, rules = DEF
 
   if (used.size !== hand.length) return { valid: false, reason: `All ${hand.length} cards must be grouped; ${hand.length - used.size} card(s) are ungrouped.` };
   if (pureSequences < rConfig.minPureSequences) {
-    return { valid: false, reason: `A 21-card declaration requires at least ${rConfig.minPureSequences} Pure Sequence(s). You have ${pureSequences}.` };
+    return { valid: false, reason: `A ${hand.length}-card declaration requires at least ${rConfig.minPureSequences} Pure Sequence(s). You have ${pureSequences}.` };
   }
   return { valid: true, pureSequences };
 }
