@@ -4707,6 +4707,59 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } catch (e) {}
     }
 
+    // 3b. Subtle, warm celebratory chime when a declaration is accepted (entering grouping wait)
+    async playDeclarationAccepted() {
+      if (!this.enabled) return;
+      const isReady = await this.ensureActive();
+      if (!isReady || !this.ctx) return;
+
+      try {
+        const now = this.ctx.currentTime;
+        // Soft ascending C-major shimmer (C5 -> E5 -> G5) with a delicate C6 sparkle on top
+        const notes = [
+          { freq: 523.25, startOffset: 0, duration: 0.28, peakGain: 0.055, overtone: false },
+          { freq: 659.25, startOffset: 0.075, duration: 0.30, peakGain: 0.062, overtone: false },
+          { freq: 783.99, startOffset: 0.15, duration: 0.42, peakGain: 0.072, overtone: true }
+        ];
+
+        notes.forEach(({ freq, startOffset, duration, peakGain, overtone }) => {
+          const t = now + startOffset;
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(2600, t);
+
+          const noteGain = this.ctx.createGain();
+          noteGain.gain.setValueAtTime(0.0001, t);
+          noteGain.gain.linearRampToValueAtTime(peakGain, t + 0.012);
+          noteGain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+
+          const osc = this.ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+          osc.connect(noteGain);
+
+          if (overtone) {
+            const sparkle = this.ctx.createOscillator();
+            const sparkleGain = this.ctx.createGain();
+            sparkle.type = 'sine';
+            sparkle.frequency.setValueAtTime(1046.50, t + 0.03);
+            sparkleGain.gain.setValueAtTime(0.0001, t + 0.03);
+            sparkleGain.gain.linearRampToValueAtTime(peakGain * 0.32, t + 0.05);
+            sparkleGain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+            sparkle.connect(sparkleGain);
+            sparkleGain.connect(filter);
+            sparkle.start(t + 0.03);
+            sparkle.stop(t + duration);
+          }
+
+          noteGain.connect(filter);
+          filter.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + duration);
+        });
+      } catch (e) {}
+    }
+
     // 4. Subtle, non-intrusive harmonic chime when it becomes the user's turn
     async playTurn() {
       if (!this.enabled) return;
@@ -5838,6 +5891,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
       if (msg.type === 'SYNC') {
         try {
+          const prevStatus = roomState?.status;
           const prevHandNum = roomState?.handNumber;
           const prevTopDiscardId = roomState?.topDiscard?.id;
           roomState = msg.room;
@@ -5937,12 +5991,17 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             ? captureCardFlight(previousElements.get(discardedIds[0]))
             : null;
 
-          // Sound triggers for draws & discards
+          const isDeclarationAcceptedNow = prevStatus === 'PLAYING' && roomState?.status === 'GROUPING';
+
+          // Sound triggers for draws, discards, and accepted declarations
           if (drawnIds.length) {
             soundSystem.playCardDraw();
           }
-          if (discardedIds.length) {
+          if (discardedIds.length && !isDeclarationAcceptedNow) {
             soundSystem.playCardDiscard();
+          }
+          if (isDeclarationAcceptedNow) {
+            soundSystem.playDeclarationAccepted();
           }
 
           renderAll(msg.yourMaal);
@@ -10491,6 +10550,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
+      soundSystem.playDeclarationAccepted();
       renderAll(calculateLocalMaal());
       startGroupingCountdownTracker();
       setTimeout(() => {
@@ -10585,6 +10645,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       ]
     };
 
+    soundSystem.playDeclaration();
     showWinnerFanfare(demoData);
     setTimeout(() => showResultsModal(demoData), 900);
   }
@@ -12645,6 +12706,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       declarationMode = false;
       selectedCardId = null;
       isDemoGroupingWait = true;
+      soundSystem.playDeclarationAccepted();
 
       const winnerMaal = calculateLocalMaal() || {
         total: 70,
@@ -12783,6 +12845,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         declarationGroups = [];
         declarationSelectedIds.clear();
         renderAll(null);
+        soundSystem.playDeclaration();
         showWinnerFanfare(demoData);
         setTimeout(() => showResultsModal(demoData), 900);
       }, 2300);
