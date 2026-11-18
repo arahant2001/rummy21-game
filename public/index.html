@@ -3542,6 +3542,296 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   filter: brightness(1.08);
 }
 
+/* --- Clearer 3-Path Lobby & Secondary Rules --- */
+.lobby-paths {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+.lobby-path-card {
+  background: rgba(7, 22, 16, 0.72);
+  border: 1px solid rgba(217, 182, 92, 0.24);
+  border-radius: 14px;
+  padding: 11px 13px;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.lobby-path-card.is-primary {
+  border-color: rgba(217, 182, 92, 0.5);
+  background: linear-gradient(155deg, rgba(16, 46, 34, 0.9), rgba(8, 25, 18, 0.92));
+}
+.lobby-path-card.is-tutorial {
+  border-color: rgba(50, 197, 138, 0.42);
+  background: linear-gradient(155deg, rgba(12, 42, 34, 0.85), rgba(7, 22, 18, 0.92));
+}
+.lobby-path-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+.lobby-path-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lobby-path-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(217, 182, 92, 0.16);
+  color: #f1d27a;
+  border: 1px solid rgba(217, 182, 92, 0.35);
+}
+.lobby-path-card.is-tutorial .lobby-path-tag {
+  background: rgba(50, 197, 138, 0.16);
+  color: #7eedba;
+  border-color: rgba(50, 197, 138, 0.4);
+}
+.lobby-path-desc {
+  font-size: 11.5px;
+  color: #9db8ac;
+  line-height: 1.38;
+  margin-bottom: 8px;
+}
+.lobby-path-inline {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.lobby-path-inline input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.lobby-path-inline .btn-primary {
+  margin-top: 0;
+  width: auto;
+  min-width: 124px;
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+.lobby-path-action {
+  width: 100%;
+  padding: 9px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 182, 92, 0.36);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: all .15s ease;
+}
+.lobby-path-action:hover {
+  background: rgba(217, 182, 92, 0.16);
+  border-color: rgba(241, 210, 122, 0.72);
+  transform: translateY(-1px);
+}
+.lobby-path-action.is-tutorial-btn {
+  background: linear-gradient(135deg, rgba(23, 126, 90, 0.48), rgba(12, 96, 68, 0.58));
+  border-color: rgba(50, 197, 138, 0.58);
+  color: #ecfdf5;
+}
+.lobby-path-action.is-tutorial-btn:hover {
+  background: linear-gradient(135deg, rgba(23, 126, 90, 0.68), rgba(12, 96, 68, 0.78));
+  border-color: rgba(110, 231, 183, 0.85);
+}
+.lobby-secondary-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #829b90;
+}
+.lobby-secondary-divider::before,
+.lobby-secondary-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+@media (max-width: 480px) {
+  .lobby-path-inline { flex-direction: column; }
+  .lobby-path-inline .btn-primary { width: 100%; }
+}
+
+/* --- Floating Live Coach Window & Control Highlighting --- */
+@keyframes coachPulseRing {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(241, 210, 122, 0.92), 0 0 14px rgba(241, 210, 122, 0.52);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(50, 197, 138, 0.92), 0 0 22px rgba(50, 197, 138, 0.68);
+  }
+}
+.coach-pulse {
+  animation: coachPulseRing 1.45s ease-in-out infinite !important;
+  outline: 2px solid rgba(241, 210, 122, 0.9) !important;
+  outline-offset: 2px;
+}
+.live-coach-panel {
+  position: fixed;
+  top: 62px;
+  right: 16px;
+  z-index: 160;
+  width: min(338px, calc(100vw - 24px));
+  background: linear-gradient(165deg, rgba(14, 42, 31, 0.97), rgba(7, 20, 14, 0.97));
+  border: 1.5px solid rgba(241, 210, 122, 0.58);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.72), 0 0 18px rgba(217, 182, 92, 0.16);
+  color: #e2e8f0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+  display: none;
+}
+.live-coach-panel.is-visible {
+  display: block;
+  animation: slideDown .2s ease-out;
+}
+.live-coach-panel.is-tutorial {
+  border-color: rgba(50, 197, 138, 0.72);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.78), 0 0 22px rgba(50, 197, 138, 0.22);
+}
+.live-coach-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 11px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+.live-coach-panel.is-minimized .live-coach-head { border-bottom: none; }
+.live-coach-panel.is-minimized .live-coach-body { display: none; }
+.live-coach-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #f1d27a;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.live-coach-panel.is-tutorial .live-coach-badge { color: #7eedba; }
+.live-coach-head-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.live-coach-icon-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  border-radius: 6px;
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.live-coach-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+.live-coach-body { padding: 9px 12px 11px; }
+.live-coach-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.live-coach-msg {
+  font-size: 12px;
+  line-height: 1.48;
+  color: #d1fae5;
+  margin: 0;
+}
+.live-coach-msg strong { color: #fde68a; }
+.live-coach-progress {
+  display: flex;
+  gap: 4px;
+  margin: 8px 0 6px;
+}
+.live-coach-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background .2s ease;
+}
+.live-coach-dot.done { background: #32c58a; }
+.live-coach-dot.active { background: #f1d27a; }
+.live-coach-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+.live-coach-btn {
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07);
+  color: #e2e8f0;
+}
+.live-coach-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.16); }
+.live-coach-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.live-coach-btn.primary {
+  background: linear-gradient(135deg, #d9b65c, #b58d33);
+  color: #091711;
+  border-color: #f1d27a;
+  font-weight: 800;
+}
+.coach-toggle-btn.is-active {
+  background: rgba(50, 197, 138, 0.16) !important;
+  border-color: rgba(50, 197, 138, 0.48) !important;
+  color: #7eedba !important;
+}
+@media (max-width: 820px) {
+  .live-coach-panel {
+    top: 48px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100vw - 16px);
+    max-width: 440px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3554,9 +3844,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <span id="lobbySoundIcon">🔊</span> <span id="lobbySoundLabel">Audio: ON</span>
     </button>
     <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-      <button type="button" class="lobby-tour-btn" onclick="startUITourFromLobby()" title="Take a quick guided tour of the table interface">
-        <span>🎓 UI Tour</span>
-      </button>
       <button type="button" class="lobby-rules-btn" onclick="openRulesModal()" title="Read complete 21-Card Rummy rules and guide">
         <span>📖 Rules &amp; Guide</span>
       </button>
@@ -3622,16 +3909,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     <span class="meta-dot">&bull;</span>
     <span>Pure Sequences</span>
   </div>
-  <div id="lobbyTourBanner" class="lobby-tour-banner">
-    <div class="lobby-tour-banner-copy">
-      <strong>New to this table UI?</strong>
-      <span>Take an 8-step interactive bubble walkthrough on a practice hand.</span>
-    </div>
-    <div class="lobby-tour-banner-actions">
-      <button type="button" class="btn-tour-start" onclick="startUITourFromLobby()">Start UI Tour</button>
-      <button type="button" class="btn-tour-dismiss" onclick="dismissLobbyTourBanner()">Dismiss</button>
-    </div>
-  </div>
+  <div id="lobbyTourBanner" class="lobby-tour-banner" style="display:none;" aria-hidden="true"></div>
   <div id="rejoinBanner" class="rejoin-banner">
     <div class="rejoin-banner-info">
       <div id="rejoinBannerBadge" class="rejoin-banner-badge">Recent Room</div>
@@ -3643,18 +3921,49 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     </div>
   </div>
 
-  <label class="field-label">Your Name</label>
+  <label class="field-label" style="margin-top:8px;">Your Name</label>
   <input id="playerName" placeholder="Enter your name" value="" autocomplete="name" />
-  <label class="field-label">Room Code</label>
-  <input id="roomId" placeholder="e.g. FAMILY" value="FAMILY" />
 
+  <div class="lobby-paths">
+    <div class="lobby-path-card is-primary">
+      <div class="lobby-path-head">
+        <span class="lobby-path-title">🏠 Join a Family Table</span>
+        <span class="lobby-path-tag">Multiplayer</span>
+      </div>
+      <div class="lobby-path-desc">Enter the shared room code from your family or host to play together on any device.</div>
+      <div class="lobby-path-inline">
+        <input id="roomId" placeholder="Room code (e.g. FAMILY)" value="FAMILY" aria-label="Room Code" />
+        <button type="button" class="btn-primary" onclick="joinRoom()">Enter Table</button>
+      </div>
+    </div>
+
+    <div class="lobby-path-card">
+      <div class="lobby-path-head">
+        <span class="lobby-path-title">🃏 Practice Alone</span>
+        <span class="lobby-path-tag">Offline Solo</span>
+      </div>
+      <div class="lobby-path-desc">Play a full practice hand at your own pace with simulated table players — no server or room code needed.</div>
+      <button type="button" class="lobby-path-action" onclick="startDemoMode()">
+        <span>Launch Practice Game</span>
+        <span>▶</span>
+      </button>
+    </div>
+
+    <div class="lobby-path-card is-tutorial">
+      <div class="lobby-path-head">
+        <span class="lobby-path-title">🎓 Learn to Play</span>
+        <span class="lobby-path-tag">Guided Lesson</span>
+      </div>
+      <div class="lobby-path-desc">Short hands-on tutorial: draw a card, use the Move Pad, discard, form sequences, and try declaring with no penalties.</div>
+      <button type="button" class="lobby-path-action is-tutorial-btn" onclick="startGuidedPractice()">
+        <span>Start Guided Practice Hand</span>
+        <span>▶</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="lobby-secondary-divider">Optional Table Settings</div>
   <div id="lobbyRulesPanel" class="lobby-rules-panel"></div>
-
-  <button class="btn-primary" onclick="joinRoom()">Enter Table</button>
-  <button type="button" class="btn-demo" onclick="startDemoMode()">
-    🧪 Open Test Table (No Server Required)
-  </button>
-  <div style="margin-top:8px;text-align:center;font-size:10px;color:var(--text-muted);">Test the full UI without needing other players or devices.</div>
 </div>
 
 <!-- Main Game View -->
@@ -3668,6 +3977,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <button id="btnSoundToggle" class="sound-toggle-btn" role="button" onclick="toggleSoundSetting()" title="Toggle Sound Effects">
         <span id="soundIcon">🔊</span>
         <span id="soundLabel" class="sound-label">Audio: ON</span>
+      </button>
+      <button id="btnCoachToggle" type="button" class="status-action-btn coach-toggle-btn" onclick="toggleLiveCoach()" title="Show or hide the contextual floating Guide window">
+        <span id="coachToggleIcon">💡</span>
+        <span id="coachToggleLabel">Guide: OFF</span>
       </button>
       <button id="btnLayoutToggle" type="button" class="status-action-btn" onclick="toggleLayoutMode()" title="Switch between Standard and Compact single-screen layout">
         <span id="layoutModeIcon">🖥️</span>
@@ -3692,6 +4005,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       </button>
     </div>
   </div>
+  <aside id="liveCoachPanel" class="live-coach-panel" role="region" aria-label="Live contextual guide"></aside>
 
   <div class="game-hero">
     <div class="game-hero-copy">
@@ -3941,6 +4255,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <button id="btnContinueResults" class="btn-action btn-declare" onclick="continueFromResults()">
         <span id="btnContinueResultsText"><b>Continue</b><small class="action-sub">next hand</small></span>
       </button>
+      <button id="btnReturnLobbyResults" type="button" class="btn-action" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(217,182,92,0.45); color:#f1d27a;" onclick="returnToLobbyFromPractice()">
+        <span><b>🏠 Return to Lobby</b><small class="action-sub">back to start screen</small></span>
+      </button>
     </div>
     <div id="nextHandStatus" style="margin-top:10px; color:var(--text-secondary); font-size:12px; text-align:center;">
       Next hand will begin once all seated players hit Continue.
@@ -4112,10 +4429,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <div id="rulesTabGuide" class="rules-tab-content" style="display:none;">
         <div class="rules-card-box" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-color:rgba(217,182,92,0.42);">
           <div>
-            <h4 style="margin:0 0 3px;"><span>🎓</span> Interactive Bubble Walkthrough</h4>
-            <div style="font-size:12px; color:#cbd5e1;">Already know 21-Card Rummy? Step through every control on a live practice hand.</div>
+            <h4 style="margin:0 0 3px;"><span>🎓</span> Hands-On Guided Practice</h4>
+            <div style="font-size:12px; color:#cbd5e1;">Learn by actually drawing, moving cards, discarding, forming sequences, and testing a penalty-free Show.</div>
           </div>
-          <button type="button" class="btn-tour-start" style="padding:8px 14px; font-size:12.5px;" onclick="startUITourFromRules()">Launch UI Tour ▶</button>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn-tour-start" style="padding:8px 14px; font-size:12.5px;" onclick="startUITourFromRules()">Learn to Play ▶</button>
+          </div>
         </div>
 
         <div class="visual-guide-grid" style="margin-top:10px;">
@@ -4352,7 +4671,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
       <span style="font-size:11px; color:#8ba096;">Tap ❓ Rules anytime to consult table rules.</span>
       <div style="display:flex; align-items:center; gap:8px;">
-        <button type="button" class="lobby-tour-btn" onclick="startUITourFromRules()" title="Launch interactive spotlight walkthrough">🎓 UI Tour</button>
+        <button type="button" class="lobby-tour-btn" onclick="startUITourFromRules()" title="Launch hands-on guided practice lesson">🎓 Learn to Play</button>
         <button type="button" class="btn-primary" style="margin-top:0; padding:6px 18px; font-size:12px;" onclick="closeRulesModal()">Got It</button>
       </div>
     </div>
@@ -5453,6 +5772,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const isNowTwoCol = !document.body.classList.contains('stands-two-col');
     applyStandColumnsState(isNowTwoCol);
     try { localStorage.setItem('rummy_stand_columns', isNowTwoCol ? '2' : '1'); } catch (_) {}
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('TOGGLE_COLS');
     setTimeout(updateAllStandScrollButtons, 40);
   }
   window.toggleStandColumns = toggleStandColumns;
@@ -5637,6 +5957,22 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const myP = roomState?.players?.find(p => p.id === myId);
     const isAfterWrongDeclareOrForfeit = Boolean(myP?.hasForfeited || myP?.dropType === 'FORFEIT');
 
+    if (isDemo && typeof guidedPractice !== 'undefined' && (guidedPractice?.active || guidedPractice?.completed)) {
+      showConfirmModal({
+        icon: '🎓',
+        title: 'Return to Lobby?',
+        badgeText: 'No Penalty',
+        badgeClass: 'info',
+        message: 'Leave this guided practice session and return to the start screen?',
+        actionText: 'Return to Lobby',
+        actionClass: 'default',
+        onConfirm: () => {
+          resetToLobbyScreen('');
+        }
+      });
+      return;
+    }
+
     if (isPlaying) {
       if (isAfterWrongDeclareOrForfeit) {
         showConfirmModal({
@@ -5758,6 +6094,17 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (demoControls) demoControls.style.display = 'none';
 
     if (typeof endUITour === 'function' && uiTourActive) endUITour();
+    if (typeof guidedPractice !== 'undefined') {
+      guidedPractice.active = false;
+      guidedPractice.completed = false;
+      guidedPractice.arrangeGroupDone = false;
+      guidedPractice.arrangeSortDone = false;
+      guidedPractice.arrangeAddStandDone = false;
+      guidedPractice.arrangeTwoColDone = false;
+    }
+    const coachElReset = document.getElementById('liveCoachPanel');
+    if (coachElReset) coachElReset.classList.remove('is-visible', 'is-tutorial');
+    document.querySelectorAll('.coach-pulse').forEach(el => el.classList.remove('coach-pulse'));
     document.getElementById('gameView').style.display = 'none';
     document.getElementById('lobbyView').style.display = 'block';
     updateLobbyRejoinBanner();
@@ -6749,10 +7096,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     myHand = userStands.flat();
     saveStandsToStorage();
     soundSystem.playCardDraw();
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('SEQUENCE');
     renderAll(null);
   }
   function addNewStand() {
     userStands.push([]);
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('ADD_STAND');
     if (selectedCardId) {
       moveCardToStand(selectedCardId, userStands.length - 1);
     } else {
@@ -7064,6 +7413,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       standTypes.push(firstGroup.type || 'PURE_SEQUENCE');
       myHand = userStands.flat();
       saveStandsToStorage();
+      if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('MOVE_GROUP');
       renderAll(null);
     };
 
@@ -8334,6 +8684,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if(guideBox) guideBox.classList.toggle('pile-mode',canDraw);
 
     updateReorderControls();
+    if (typeof renderLiveCoach === 'function') renderLiveCoach();
   }
 
   function calculateLocalMaal() {
@@ -8674,6 +9025,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function handleStockInteraction(e) {
     if (!canPlayerDraw()) return;
+    if (typeof guidedPractice !== 'undefined' && guidedPractice.active && getCurrentGuidedStep?.()?.id === 'DRAW') {
+      triggerStockDraw(e);
+      return;
+    }
     const now = Date.now();
     // If double tap/click within 850ms (and not duplicate event within 30ms) -> draw!
     if (now - lastStockInteractionTime > 30 && now - lastStockInteractionTime < 850) {
@@ -10973,6 +11328,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return;
     }
     selectedCardId = selectedCardId === cardId ? null : cardId;
+    if (selectedCardId && typeof onGuidedPracticeAction === 'function') {
+      onGuidedPracticeAction('SELECT');
+    }
     renderAll(null);
     if (selectedCardId) {
       scrollCardIntoView(selectedCardId);
@@ -11101,6 +11459,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     saveStandsToStorage();
     selectedCardId = card.id; // Keep card selected so user can move up/down/left/right seamlessly
     try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('MOVE_PAD');
     renderAll(null);
     animateStandCardMove(standSnap, card.id, dragOrigin);
   }
@@ -11137,6 +11496,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     saveStandsToStorage();
     selectedCardId = card.id; // Keep card selected
     try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('MOVE_PAD');
     renderAll(null);
     animateStandCardMove(standSnap, card.id, dragOrigin);
   }
@@ -11163,6 +11523,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     targetStand.splice(newIdx, 0, card);
     myHand = userStands.flat();
     saveStandsToStorage();
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('MOVE_PAD');
     renderAll(null);
     animateStandCardMove(standSnap, card.id, null);
   }
@@ -11184,6 +11545,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     targetStand.unshift(card);
     myHand = userStands.flat();
     saveStandsToStorage();
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('MOVE_PAD');
     renderAll(null);
     animateStandCardMove(standSnap, card.id, null);
   }
@@ -11205,6 +11567,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     targetStand.push(card);
     myHand = userStands.flat();
     saveStandsToStorage();
+    if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('MOVE_PAD');
     renderAll(null);
     animateStandCardMove(standSnap, card.id, null);
   }
@@ -12389,6 +12752,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     userStands = newStands;
     myHand = userStands.flat();
     saveStandsToStorage();
+    if (typeof onGuidedPracticeAction === 'function') {
+      onGuidedPracticeAction('SORT');
+      onGuidedPracticeAction('SEQUENCE');
+    }
     renderAll(null);
   }
 
@@ -12609,6 +12976,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       declarationGroups = [];
       declarationSelectedIds.clear();
       selectedCardId = null;
+      if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('DECLARE_OPEN');
       // Auto-detect groups from existing user stands first if already formed cleanly
       autoGroupFromStands(false);
       // Preserve player's manual stands without silent reshuffling (player can click ⚡ Auto-Group if desired)
@@ -13855,6 +14223,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     lastRoundResultData = data;
     declarationMode = false;
     hasInitializedGroupingPhase = false;
+    if (typeof guidedPractice !== 'undefined' && guidedPractice.active) {
+      guidedPractice.active = false;
+      guidedPractice.completed = true;
+    }
     const waitModal = document.getElementById('groupingWaitModal');
     if (waitModal) waitModal.style.display = 'none';
     const dp = document.getElementById('declarationPanel');
@@ -14207,21 +14579,29 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderReadinessList();
 
     const continueBtn = document.getElementById('btnContinueResults');
+    const returnLobbyBtn = document.getElementById('btnReturnLobbyResults');
     const btnText = document.getElementById('btnContinueResultsText');
     const nextStatus = document.getElementById('nextHandStatus');
     if (continueBtn) {
       continueBtn.style.display = 'inline-flex';
       continueBtn.disabled = false;
     }
+    if (returnLobbyBtn) {
+      returnLobbyBtn.style.display = isDemo ? 'inline-flex' : 'none';
+    }
     if (data.tournamentFinished) {
       if (btnText) btnText.innerHTML = '<b>🏆 New Tournament</b><small class="action-sub">reset scores &amp; play</small>';
       if (nextStatus) nextStatus.innerText = 'Tournament complete! Click New Tournament to reset scores and deal Hand #1.';
+    } else if (isDemo && guidedPractice?.completed) {
+      if (btnText) btnText.innerHTML = '<b>Continue</b><small class="action-sub">play free practice</small>';
+      if (nextStatus) nextStatus.innerText = '🎉 Guided Practice complete! Click Return to Lobby to join a family table, or Continue to play freely.';
     } else {
       if (btnText) btnText.innerHTML = '<b>Continue</b><small class="action-sub">next hand</small>';
       if (nextStatus) nextStatus.innerText = 'Next hand will begin once all surviving players hit Continue.';
     }
 
     document.getElementById('resultModal').style.display = 'flex';
+    if (typeof renderLiveCoach === 'function') renderLiveCoach();
   }
 
   // --- Start Next Hand in Demo Mode with Clockwise Starting Turns & 3 Groups ---
@@ -14373,7 +14753,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   });
 
   // --- Offline Demo Simulation Mode ---
-  function startDemoMode() {
+  function startDemoMode(options = {}) {
+    const keepGuided = Boolean(options && options.keepGuided);
+    if (!keepGuided && typeof guidedPractice !== 'undefined') {
+      guidedPractice.active = false;
+      guidedPractice.completed = false;
+    }
+    if (typeof loadLiveCoachPreference === 'function') {
+      loadLiveCoachPreference(true);
+    }
     isDemo = true;
     currentRoundWinnerName = null;
     currentRoundWinnerId = null;
@@ -14486,6 +14874,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function passDemoTurn() {
     if (!isDemo || !roomState || !roomState.players.length) return;
+    if (typeof guidedPractice !== 'undefined' && guidedPractice.active) return;
     const currentIndex = roomState.players.findIndex(p => p.id === roomState.turnPlayerId);
     let nextIndex = currentIndex === -1 ? 0 : currentIndex;
     let attempts = 0;
@@ -14642,9 +15031,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     roomState.deckCount--;
     roomState.turnStage = 'DISCARD';
     selectedCardId = newCard.id;
+    if (typeof onGuidedPracticeAction === 'function') {
+      onGuidedPracticeAction('DRAW');
+    }
     renderAll(calculateLocalMaal());
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + newCard.id)));
-    scrollCardIntoView(newCard.id);
+    if (selectedCardId) scrollCardIntoView(newCard.id);
   }
 
   function simulateDrawDiscard() {
@@ -14677,9 +15069,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     roomState.topDiscard = prevDiscard;
     roomState.turnStage = 'DISCARD';
     selectedCardId = drawn.id;
+    if (typeof onGuidedPracticeAction === 'function') {
+      onGuidedPracticeAction('DRAW');
+    }
     renderAll(calculateLocalMaal());
     requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + drawn.id)));
-    scrollCardIntoView(drawn.id);
+    if (selectedCardId) scrollCardIntoView(drawn.id);
   }
 
   function simulateDiscard() {
@@ -14714,6 +15109,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     selectedCardId = null;
     roomState.lastAction = `${meP?.name || 'You'} discarded ${card.rank}${card.suit}`;
     roomState.turnStage = 'DRAW';
+
+    if (typeof guidedPractice !== 'undefined' && guidedPractice.active && getCurrentGuidedStep?.()?.id === 'DISCARD') {
+      onGuidedPracticeAction('DISCARD');
+      renderAll(calculateLocalMaal());
+      animateDiscardGlide(card, sourceOrigin, standSnap);
+      return;
+    }
 
     // Immediately re-render with updated local Maal points
     renderAll(calculateLocalMaal());
@@ -14824,12 +15226,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function updateLobbyTourBanner() {
     const banner = document.getElementById('lobbyTourBanner');
-    if (!banner) return;
-    let seen = false;
-    try {
-      seen = localStorage.getItem(UI_TOUR_STORAGE_KEY) === '1';
-    } catch (_) {}
-    banner.style.display = seen ? 'none' : 'flex';
+    if (banner) banner.style.display = 'none';
   }
 
   function dismissLobbyTourBanner() {
@@ -14957,7 +15354,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
 
   function startUITourFromLobby() {
-    startUITour();
+    startGuidedPractice();
   }
 
   function startUITourFromRules() {
@@ -14965,10 +15362,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const gameViewVisible = document.getElementById('gameView')?.style?.display !== 'none';
     if (inLiveRoom && gameViewVisible) {
       switchRulesTab('guide');
-      window.alert("You are currently seated at a live multiplayer table.\n\nBrowse the Visual Guide tab right here without interrupting your game, or return to the Lobby to run the interactive UI Tour on a practice hand.");
+      window.alert("You are currently seated at a live multiplayer table.\n\nBrowse the Visual Guide tab right here without interrupting your game, or return to the Lobby to run the interactive Guided Practice lesson.");
       return;
     }
-    startUITour();
+    startGuidedPractice();
   }
 
   function nextUITourStep() {
@@ -15019,6 +15416,604 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   window.dismissLobbyTourBanner = dismissLobbyTourBanner;
   window.updateLobbyTourBanner = updateLobbyTourBanner;
 
+  // --- Floating Live Coach & Guided Practice Lesson Engine ---
+  const LIVE_COACH_STORAGE_KEY = 'rummy_live_coach';
+  let liveCoachEnabled = false;
+  let liveCoachMinimized = false;
+
+  const guidedPractice = {
+    active: false,
+    stepIdx: 0,
+    completed: false,
+    arrangeGroupDone: false,
+    arrangeSortDone: false,
+    arrangeAddStandDone: false,
+    arrangeTwoColDone: false
+  };
+
+  const GUIDED_PRACTICE_STEPS = [
+    {
+      id: 'ARRANGE_HAND',
+      title: 'Step 1: Arrange Your Hand',
+      badge: 'Action 1 of 7 • Before You Draw',
+      instruction: () => {
+        const sIcon = guidedPractice.arrangeSortDone ? '✅' : '⏳';
+        const gIcon = guidedPractice.arrangeGroupDone ? '✅' : '⏳';
+        const aIcon = guidedPractice.arrangeAddStandDone ? '✅' : '⏳';
+        const cIcon = guidedPractice.arrangeTwoColDone ? '✅' : '⏳';
+        return `Before drawing, organize your dealt cards using the toolbar &amp; stand controls:<br>
+          <span>${sIcon} <strong>↕ Sort Suit/Rank</strong> — sort cards by suit &amp; rank.</span><br>
+          <span>${gIcon} <strong>⬇ Move Group</strong> — move a valid run/set to its own stand.</span><br>
+          <span>${aIcon} <strong>+ Add Stand</strong> — add a new blank stand for building groups.</span><br>
+          <span>${cIcon} <strong>2 Cols</strong> — toggle 2-column stand display (or tap <strong>Next ▶</strong> to draw).</span>`;
+      },
+      targets: () => {
+        const list = [];
+        if (!guidedPractice.arrangeSortDone) list.push('.stands-toolbar button[onclick*="sortHand"]');
+        if (!guidedPractice.arrangeGroupDone) list.push('.stand-move-group-btn');
+        if (!guidedPractice.arrangeAddStandDone) list.push('.stands-toolbar button[onclick*="addNewStand"]');
+        if (!guidedPractice.arrangeTwoColDone) list.push('#btnStandColumns');
+        return list.length > 0 ? list : ['.stands-toolbar', '.stand-move-group-btn'];
+      }
+    },
+    {
+      id: 'DRAW',
+      title: 'Step 2: Draw a Card',
+      badge: 'Action 2 of 7 • Your Turn',
+      instruction: () => `Your turn! Tap the <strong>Stock Deck</strong> (or <strong>Draw Card</strong>) to draw your ${formatOrdinal(getConfiguredHandSize() + 1)} card.`,
+      targets: () => ['#stockDeckBtn', '#btnDiscard']
+    },
+    {
+      id: 'SELECT',
+      title: 'Step 3: Highlight a Card',
+      badge: 'Action 3 of 7 • Move Pad Ready',
+      instruction: () => `You now hold ${getHandCount()} cards. Tap <strong>any card</strong> in your stands below to highlight it and reveal arranging controls.`,
+      targets: () => ['#stand-cards-0 .card', '#standsContainer']
+    },
+    {
+      id: 'MOVE_PAD',
+      title: 'Step 4: Move Card, Group, or Sort',
+      badge: 'Action 4 of 7 • Arrange Highlighted',
+      instruction: () => 'Use the <strong>◀ / ▶</strong> arrows or Stand <strong>▲ / ▼ / ＋</strong> buttons in the Move Pad to move your highlighted card — or tap <strong>⬇ Move Group</strong> / <strong>↕ Sort Suit/Rank</strong> to arrange faster.',
+      targets: () => ['#reorderBar .reorder-nav-group', '#standMoveOptions', '.stand-move-group-btn', '.stands-toolbar button[onclick*="sortHand"]']
+    },
+    {
+      id: 'DISCARD',
+      title: 'Step 5: Discard a Card',
+      badge: 'Action 5 of 7 • End Turn',
+      instruction: () => selectedCardId
+        ? 'Tap <strong>Discard Card</strong> (or tap/drag onto the <strong>Discard</strong> pile) to discard your highlighted card and finish your turn.'
+        : 'Tap any card you do not need, then tap <strong>Discard Card</strong> (or tap the <strong>Discard</strong> pile) to finish your turn.',
+      targets: () => selectedCardId
+        ? ['#btnDiscard', '#standMoveOptions .stand-discard-quick-btn', '#discardContainer']
+        : ['#standsContainer', '#btnDiscard']
+    },
+    {
+      id: 'SEQUENCE',
+      title: 'Step 6: Explore Sequences',
+      badge: 'Action 6 of 7 • Forming Groups',
+      instruction: () => 'Notice the green <strong>💎 Pure Run</strong> badges on stands with 3+ consecutive same-suit cards (no Jokers, e.g. <strong>A♠ 2♠ 3♠</strong>). Try <strong>2 Stands / 3 Stands</strong> or tap <strong>Show / Declare</strong> next!',
+      targets: () => ['#stand-rack-0', '#btnDeclare']
+    },
+    {
+      id: 'DECLARE',
+      title: 'Step 7: Try Show / Declare',
+      badge: 'Action 7 of 7 • Zero Penalty',
+      instruction: () => {
+        const hs = getConfiguredHandSize();
+        const reqPure = getActiveRules().minPureSequences || 3;
+        if (declarationMode) {
+          return `You need at least <strong>${reqPure} qualifying pure groups</strong> and <strong>${hs}/${hs}</strong> grouped. Try <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, then tap <strong>🏆 Submit Declaration</strong> (or <strong>✕ Cancel</strong>). When done, tap <strong>🚪 Leave</strong> in the top bar to return to the lobby.`;
+        }
+        return `Tap <strong>Show / Declare</strong> below to open penalty-free Grouping Mode and test submitting a Show. (Tap <strong>🚪 Leave</strong> in the top bar anytime when done to return to the lobby.)`;
+      },
+      targets: () => declarationMode
+        ? ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]', '.sticky-submit-btn']
+        : ['#btnDeclare']
+    }
+  ];
+
+  function getCurrentGuidedStep() {
+    if (!guidedPractice.active) return null;
+    return GUIDED_PRACTICE_STEPS[guidedPractice.stepIdx] || null;
+  }
+
+  function loadLiveCoachPreference(forDemoMode = false) {
+    try {
+      const saved = localStorage.getItem(LIVE_COACH_STORAGE_KEY);
+      if (saved === '1' || saved === 'true') {
+        liveCoachEnabled = true;
+      } else if (saved === '0' || saved === 'false') {
+        liveCoachEnabled = Boolean(guidedPractice.active);
+      } else {
+        liveCoachEnabled = Boolean(forDemoMode || guidedPractice.active);
+      }
+    } catch (_) {
+      liveCoachEnabled = Boolean(forDemoMode || guidedPractice.active);
+    }
+    updateCoachToggleButton();
+  }
+
+  function updateCoachToggleButton() {
+    const btn = document.getElementById('btnCoachToggle');
+    const lbl = document.getElementById('coachToggleLabel');
+    const active = Boolean(liveCoachEnabled || guidedPractice.active);
+    if (btn) btn.classList.toggle('is-active', active);
+    if (lbl) lbl.textContent = active ? 'Guide: ON' : 'Guide: OFF';
+  }
+
+  function toggleLiveCoach() {
+    if (guidedPractice.active) {
+      liveCoachMinimized = !liveCoachMinimized;
+      renderLiveCoach();
+      return;
+    }
+    liveCoachEnabled = !liveCoachEnabled;
+    liveCoachMinimized = false;
+    try {
+      localStorage.setItem(LIVE_COACH_STORAGE_KEY, liveCoachEnabled ? '1' : '0');
+    } catch (_) {}
+    updateCoachToggleButton();
+    renderLiveCoach();
+  }
+
+  function minimizeLiveCoach(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    liveCoachMinimized = !liveCoachMinimized;
+    renderLiveCoach();
+  }
+
+  function dismissLiveCoach(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (guidedPractice.active) {
+      skipGuidedPractice();
+      return;
+    }
+    liveCoachEnabled = false;
+    guidedPractice.completed = false;
+    try {
+      localStorage.setItem(LIVE_COACH_STORAGE_KEY, '0');
+    } catch (_) {}
+    updateCoachToggleButton();
+    renderLiveCoach();
+  }
+
+  function applyCoachPulseTargets(selectors) {
+    document.querySelectorAll('.coach-pulse').forEach(el => el.classList.remove('coach-pulse'));
+    if (!Array.isArray(selectors) || liveCoachMinimized) return;
+    if (!liveCoachEnabled && !guidedPractice.active) return;
+    const gameViewVisible = document.getElementById('gameView')?.style?.display !== 'none';
+    if (!gameViewVisible) return;
+
+    selectors.forEach(sel => {
+      if (!sel) return;
+      try {
+        const el = document.querySelector(sel);
+        if (el && !el.disabled && !el.classList.contains('btn-disabled') && el.style.display !== 'none') {
+          el.classList.add('coach-pulse');
+        }
+      } catch (_) {}
+    });
+  }
+
+  function buildShowablePracticeHand(handSize, roles, allowPoochie) {
+    const suitOrder = ['♠', '♥', '♣', '♦'];
+    const seqCatalog = [
+      [{ suit: '♠', rank: 'A', rv: 1 }, { suit: '♠', rank: '2', rv: 2 }, { suit: '♠', rank: '3', rv: 3 }],
+      [{ suit: '♥', rank: '9', rv: 9 }, { suit: '♥', rank: '10', rv: 10 }, { suit: '♥', rank: 'J', rv: 11 }],
+      [{ suit: '♣', rank: '4', rv: 4 }, { suit: '♣', rank: '5', rv: 5 }, { suit: '♣', rank: '6', rv: 6 }],
+      [{ suit: '♦', rank: '2', rv: 2 }, { suit: '♦', rank: '3', rv: 3 }, { suit: '♦', rank: '4', rv: 4 }],
+      [{ suit: '♦', rank: '10', rv: 10 }, { suit: '♦', rank: 'J', rv: 11 }, { suit: '♦', rank: 'Q', rv: 12 }],
+      [{ suit: '♠', rank: '9', rv: 9 }, { suit: '♠', rank: '10', rv: 10 }, { suit: '♠', rank: 'J', rv: 11 }],
+      [{ suit: '♣', rank: '8', rv: 8 }, { suit: '♣', rank: '9', rv: 9 }, { suit: '♣', rank: '10', rv: 10 }],
+      [{ suit: '♥', rank: '3', rv: 3 }, { suit: '♥', rank: '4', rv: 4 }, { suit: '♥', rank: '5', rv: 5 }],
+      [{ suit: '♠', rank: '6', rv: 6 }, { suit: '♠', rank: '7', rv: 7 }, { suit: '♠', rank: '8', rv: 8 }],
+      [{ suit: '♦', rank: '6', rv: 6 }, { suit: '♦', rank: '7', rv: 7 }, { suit: '♦', rank: '8', rv: 8 }]
+    ];
+    const groupsNeeded = [];
+    let count = 0;
+    let idx = 0;
+    while (count < handSize && idx < seqCatalog.length) {
+      const rem = handSize - count;
+      if (rem >= 3) {
+        const g = seqCatalog[idx].map((c, j) => ({ id: `gp_${idx}_${j}_${Date.now()}`, suit: c.suit, rank: c.rank, rankValue: c.rv, isPoochie: false }));
+        groupsNeeded.push(g);
+        count += 3;
+        idx++;
+      } else {
+        break;
+      }
+    }
+    const left = handSize - count;
+    if (left === 1 && groupsNeeded.length > 0) {
+      if (allowPoochie) {
+        groupsNeeded[0].push({ id: `gp_pj_${Date.now()}`, suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true });
+      } else {
+        groupsNeeded[0].push({ id: `gp_ext1_${Date.now()}`, suit: '♠', rank: '4', rankValue: 4, isPoochie: false });
+      }
+    } else if (left === 2 && groupsNeeded.length > 0) {
+      groupsNeeded[0].push({ id: `gp_ext1_${Date.now()}`, suit: '♠', rank: '4', rankValue: 4, isPoochie: false });
+      groupsNeeded[1].push({ id: `gp_ext2_${Date.now()}`, suit: '♥', rank: 'Q', rv: 12, rankValue: 12, isPoochie: false });
+    }
+    const base = groupsNeeded.flat().slice(0, handSize);
+    const finishDiscard = { id: `gp_fin_${Date.now()}`, suit: '♥', rank: 'K', rankValue: 13, isPoochie: false };
+    return { cards: [...base, finishDiscard], stands: groupsNeeded.length >= 3 ? [groupsNeeded.slice(0, 2).flat(), groupsNeeded.slice(2, 4).flat(), [...groupsNeeded.slice(4).flat(), finishDiscard]] : [base, [finishDiscard], []] };
+  }
+
+  function ensureGuidedPracticeHandHasShow() {
+    const handSize = getConfiguredHandSize();
+    const drawnSize = handSize + 1;
+    const reqPure = getActiveRules().minPureSequences || 3;
+    const currentFlat = (myHand || []).filter(Boolean);
+    const arranged = autoArrangeHandToGroups(currentFlat);
+    const groupedCount = arranged.reduce((s, g) => s + (g.cards?.length || 0), 0);
+    const pureCount = arranged.filter(g => g.type === 'PURE_SEQUENCE').length;
+
+    if (currentFlat.length >= drawnSize && groupedCount >= handSize && pureCount >= reqPure) {
+      return;
+    }
+
+    const rNow = getActiveRules();
+    const built = buildShowablePracticeHand(handSize, roomState?.roles, rNow.poochiesPerDeck > 0);
+    myHand = built.cards;
+    userStands = built.stands;
+    while (userStands.length < 3) userStands.push([]);
+    const meP = roomState?.players?.find(p => p.id === 'p_demo');
+    if (meP) meP.cardCount = myHand.length;
+  }
+
+  function startGuidedPractice() {
+    closeRulesModal();
+    if (uiTourActive) endUITour();
+    guidedPractice.active = true;
+    guidedPractice.stepIdx = 0;
+    guidedPractice.completed = false;
+    guidedPractice.arrangeGroupDone = false;
+    guidedPractice.arrangeSortDone = false;
+    guidedPractice.arrangeAddStandDone = false;
+    guidedPractice.arrangeTwoColDone = false;
+    lastDrawActionTime = 0;
+    liveCoachEnabled = true;
+    liveCoachMinimized = false;
+
+    startDemoMode({ keepGuided: true });
+
+    // Start Practice Step 1 (Arrange Your Hand) cleanly with handSize cards, DRAW turn stage, zero selection
+    selectedCardId = null;
+    declarationMode = false;
+    declarationGroups = [];
+    declarationSelectedIds.clear();
+    if (roomState) {
+      roomState.turnPlayerId = 'p_demo';
+      roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
+      roomState.turnStage = 'DRAW';
+      roomState.lastAction = 'Guided Practice started • Arrange your dealt hand, then draw a card';
+    }
+    const connEl = document.getElementById('connectionStatus');
+    if (connEl) {
+      connEl.innerText = 'Guided Practice';
+      connEl.style.color = '#7eedba';
+      connEl.style.borderColor = 'rgba(50,197,138,0.45)';
+    }
+    updateCoachToggleButton();
+    renderAll(calculateLocalMaal());
+  }
+
+  function returnToLobbyFromPractice() {
+    resetToLobbyScreen('');
+  }
+
+  function prevGuidedStep() {
+    if (!guidedPractice.active || guidedPractice.stepIdx <= 0) return;
+    guidedPractice.stepIdx--;
+    renderLiveCoach();
+  }
+
+  function nextGuidedStep() {
+    if (!guidedPractice.active) return;
+    if (guidedPractice.stepIdx >= GUIDED_PRACTICE_STEPS.length - 1) {
+      guidedPractice.active = false;
+      guidedPractice.completed = true;
+      renderAll(calculateLocalMaal());
+      return;
+    }
+    guidedPractice.stepIdx++;
+    const nextStep = getCurrentGuidedStep();
+    const hs = getConfiguredHandSize();
+    if (nextStep && ['SELECT', 'MOVE_PAD', 'DISCARD', 'SEQUENCE', 'DECLARE'].includes(nextStep.id)) {
+      if (myHand.length < hs + 1 && roomState) {
+        ensureGuidedPracticeHandHasShow();
+        roomState.turnPlayerId = 'p_demo';
+        roomState.turnStage = 'DISCARD';
+      }
+      if (nextStep.id === 'MOVE_PAD' && !selectedCardId && userStands?.[0]?.[0]) {
+        selectedCardId = userStands[0][0].id;
+      }
+      if (nextStep.id === 'DECLARE' && roomState?.turnStage === 'DRAW') {
+        ensureGuidedPracticeHandHasShow();
+        roomState.turnPlayerId = 'p_demo';
+        roomState.turnStage = 'DISCARD';
+      }
+    }
+    renderAll(calculateLocalMaal());
+  }
+
+  function skipGuidedPractice() {
+    guidedPractice.active = false;
+    guidedPractice.completed = false;
+    guidedPractice.arrangeGroupDone = false;
+    guidedPractice.arrangeSortDone = false;
+    guidedPractice.arrangeAddStandDone = false;
+    guidedPractice.arrangeTwoColDone = false;
+    const connEl = document.getElementById('connectionStatus');
+    if (connEl && isDemo) {
+      connEl.innerText = 'Demo Preview';
+      connEl.style.color = '#f1d27a';
+      connEl.style.borderColor = 'rgba(217,182,92,.30)';
+    }
+    updateCoachToggleButton();
+    renderAll(calculateLocalMaal());
+  }
+
+  function onGuidedPracticeAction(actionType) {
+    if (!guidedPractice.active) return;
+    const step = getCurrentGuidedStep();
+    if (!step) return;
+
+    if (actionType === 'DRAW' && (step.id === 'DRAW' || step.id === 'ARRANGE_HAND')) {
+      selectedCardId = null; // Prompt learner to tap a card manually in Step 3
+      guidedPractice.stepIdx = 2;
+      return;
+    }
+    if (step.id === 'ARRANGE_HAND') {
+      if (actionType === 'SORT') guidedPractice.arrangeSortDone = true;
+      if (actionType === 'MOVE_GROUP') guidedPractice.arrangeGroupDone = true;
+      if (actionType === 'ADD_STAND') guidedPractice.arrangeAddStandDone = true;
+      if (actionType === 'TOGGLE_COLS') guidedPractice.arrangeTwoColDone = true;
+      if (guidedPractice.arrangeSortDone && guidedPractice.arrangeGroupDone && guidedPractice.arrangeAddStandDone && guidedPractice.arrangeTwoColDone) {
+        guidedPractice.stepIdx = 1; // Advance to DRAW once all four arranging tools are explored
+      }
+      if (actionType === 'TOGGLE_COLS') renderLiveCoach();
+      return;
+    }
+    if (actionType === 'SELECT' && step.id === 'SELECT') {
+      guidedPractice.stepIdx = 3;
+      return;
+    }
+    if ((actionType === 'MOVE_PAD' || actionType === 'MOVE_GROUP' || actionType === 'SORT') && step.id === 'MOVE_PAD') {
+      guidedPractice.stepIdx = 4; // Advance to DISCARD
+      return;
+    }
+    if (actionType === 'DISCARD' && step.id === 'DISCARD') {
+      guidedPractice.stepIdx = 5; // Advance to SEQUENCE
+      if (roomState) {
+        ensureGuidedPracticeHandHasShow();
+        roomState.turnPlayerId = 'p_demo';
+        roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
+        roomState.turnStage = 'DISCARD';
+        roomState.lastAction = 'Practice partners played — it is your turn again!';
+      }
+      return;
+    }
+    if (actionType === 'SEQUENCE' && step.id === 'SEQUENCE') {
+      guidedPractice.stepIdx = 6; // Advance to DECLARE
+      return;
+    }
+    if (actionType === 'DECLARE_OPEN' && (step.id === 'SEQUENCE' || step.id === 'DECLARE')) {
+      guidedPractice.stepIdx = 6;
+      renderLiveCoach();
+    }
+  }
+
+  function getContextualCoachData() {
+    const handSize = getConfiguredHandSize();
+    const drawnSize = handSize + 1;
+    const r = getActiveRules();
+    const reqPure = r.minPureSequences || 3;
+    const myId = isDemo ? 'p_demo' : getMyPlayerId();
+    const myPlayer = roomState?.players?.find(p => p.id === myId);
+    const isMyTurn = isCurrentPlayerMe() && !myPlayer?.isEliminated;
+    const canDraw = canPlayerDraw() && !myPlayer?.isEliminated;
+    const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= drawnSize;
+    const allCards = [...(userStands ? userStands.flat() : []), ...(myHand || [])];
+    const selCard = selectedCardId ? allCards.find(c => c && c.id === selectedCardId) : null;
+    const selLabel = selCard ? (selCard.isPoochie ? 'PJ★' : `${selCard.rank}${selCard.suit}`) : '';
+
+    if (guidedPractice.completed && !guidedPractice.active) {
+      return {
+        badge: '🎓 Lesson Complete',
+        title: 'Nice work — You Finished!',
+        msg: 'You practiced arranging your hand (<strong>Sort</strong>, <strong>Move Group</strong>, <strong>+ Add Stand</strong>, <strong>2 Cols</strong>), drawing, highlighting cards, Move Pad, discarding, and declaring with zero penalties.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
+        targets: ['#btnLeaveSession']
+      };
+    }
+
+    if (!roomState || roomState.status === 'LOBBY') {
+      return {
+        badge: '💡 Table Guide',
+        title: 'Waiting in Lobby',
+        msg: `Share Room Code <strong>${escapeHtml(roomState?.id || 'FAMILY')}</strong>. Tap <strong>Start Game</strong> once at least 2 players are seated.`,
+        targets: ['#turnNotice button']
+      };
+    }
+
+    if (roomState.status === 'GROUPING' || declarationMode) {
+      const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      const grouped = declarationGroups.flatMap(g => g.cards || []).length;
+      const targetCount = roomState.status === 'GROUPING' ? myHand.length : handSize;
+      if (pure < reqPure) {
+        return {
+          badge: '💡 Declaration Guide',
+          title: `Pure Groups: ${pure} / ${reqPure}`,
+          msg: `You need at least <strong>${reqPure} qualifying pure groups</strong>. Tap <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, or select 3+ consecutive same-suit cards.`,
+          targets: ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]']
+        };
+      }
+      if (grouped < targetCount) {
+        return {
+          badge: '💡 Declaration Guide',
+          title: `Grouping Cards: ${grouped} / ${targetCount}`,
+          msg: `Pure groups met (<strong>${pure}/${reqPure}</strong>)! Keep grouping cards until <strong>${targetCount}/${targetCount}</strong> are grouped.`,
+          targets: ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]']
+        };
+      }
+      return {
+        badge: '💡 Ready to Submit',
+        title: `${targetCount} / ${targetCount} Grouped!`,
+        msg: roomState.status === 'GROUPING'
+          ? 'Tap <strong>✅ Submit Groups</strong> now to lock in your protected hand.'
+          : 'All cards ready! Tap <strong>🏆 Submit Declaration</strong> to declare, or <strong>✕ Cancel</strong> with zero penalty.',
+        targets: ['.sticky-submit-btn']
+      };
+    }
+
+    if (myPlayer?.isEliminated || myPlayer?.hasDropped || myPlayer?.hasForfeited) {
+      return {
+        badge: '💡 Spectator Guide',
+        title: 'Hand Folded',
+        msg: `Watching <strong>${escapeHtml(roomState.turnPlayerName || 'active players')}</strong> finish this hand.`,
+        targets: []
+      };
+    }
+
+    if (isMyTurn && canDraw) {
+      const locked = isDiscardedJoker(roomState.topDiscard);
+      return {
+        badge: '💡 Your Turn • Draw',
+        title: 'Draw 1 Card',
+        msg: locked
+          ? 'Your turn! Tap <strong>Stock Deck</strong> (the top discard is a 🔒 locked Joker and cannot be picked up).'
+          : 'Your turn! Tap <strong>Stock Deck</strong> or the top <strong>Discard</strong> card.',
+        targets: locked ? ['#stockDeckBtn', '#btnDiscard'] : ['#stockDeckBtn', '#discardContainer', '#btnDiscard']
+      };
+    }
+
+    if (selCard && !declarationMode) {
+      return {
+        badge: '💡 Card Selected',
+        title: `Moving ${escapeHtml(selLabel)}`,
+        msg: canDiscard
+          ? `Use the <strong>◀ / ▶</strong> arrows or Stand <strong>▲ / ▼</strong> buttons to move ${escapeHtml(selLabel)}, or tap <strong>Discard Card</strong> to end your turn.`
+          : 'Use the arrows to move it, or choose another stand.',
+        targets: canDiscard ? ['#reorderBar .reorder-nav-group', '#standMoveOptions', '#btnDiscard'] : ['#reorderBar .reorder-nav-group', '#standMoveOptions']
+      };
+    }
+
+    if (isMyTurn && canDiscard) {
+      return {
+        badge: '💡 Your Turn • Organize & Discard',
+        title: `${getHandCount()} Cards Held`,
+        msg: `You have <strong>${getHandCount()} cards</strong>. Organize your hand, then select a card to discard — or tap <strong>Show / Declare</strong> if ready.`,
+        targets: ['#standsContainer', '#btnDeclare']
+      };
+    }
+
+    return {
+      badge: '💡 Table Guide',
+      title: `Turn: ${escapeHtml(roomState.turnPlayerName || 'Opponent')}`,
+      msg: `Waiting for <strong>${escapeHtml(roomState.turnPlayerName || 'opponent')}</strong>. You can tap any card anytime to organize your stands.`,
+      targets: []
+    };
+  }
+
+  function renderLiveCoach() {
+    const panel = document.getElementById('liveCoachPanel');
+    updateCoachToggleButton();
+    if (!panel) return;
+
+    const gameViewVisible = document.getElementById('gameView')?.style?.display !== 'none';
+    const showCoach = Boolean(gameViewVisible && (guidedPractice.active || liveCoachEnabled));
+
+    if (!showCoach) {
+      panel.classList.remove('is-visible', 'is-tutorial', 'is-minimized');
+      applyCoachPulseTargets([]);
+      return;
+    }
+
+    panel.classList.add('is-visible');
+    panel.classList.toggle('is-minimized', liveCoachMinimized);
+
+    if (guidedPractice.active) {
+      panel.classList.add('is-tutorial');
+      const step = getCurrentGuidedStep();
+      if (!step) return;
+      const dotsHtml = GUIDED_PRACTICE_STEPS.map((s, idx) => {
+        const cls = idx < guidedPractice.stepIdx ? 'done' : idx === guidedPractice.stepIdx ? 'active' : '';
+        return `<span class="live-coach-dot ${cls}" title="${escapeHtml(s.title)}"></span>`;
+      }).join('');
+      const msgHtml = typeof step.instruction === 'function' ? step.instruction() : step.instruction;
+      const targets = typeof step.targets === 'function' ? step.targets() : step.targets;
+
+      panel.innerHTML = `
+        <div class="live-coach-head" onclick="minimizeLiveCoach(event)">
+          <span class="live-coach-badge">🎓 Guided Practice • ${escapeHtml(step.badge)}</span>
+          <div class="live-coach-head-btns">
+            <button type="button" class="live-coach-icon-btn" onclick="minimizeLiveCoach(event)" title="${liveCoachMinimized ? 'Expand guide' : 'Minimize guide'}" aria-label="Minimize guide">${liveCoachMinimized ? '▴' : '▾'}</button>
+            <button type="button" class="live-coach-icon-btn" onclick="dismissLiveCoach(event)" title="Exit Guided Lesson" aria-label="Exit lesson">✕</button>
+          </div>
+        </div>
+        <div class="live-coach-body">
+          <div class="live-coach-progress">${dotsHtml}</div>
+          <div class="live-coach-title"><span>${escapeHtml(step.title)}</span></div>
+          <p class="live-coach-msg">${msgHtml}</p>
+          <div class="live-coach-actions">
+            <button type="button" class="live-coach-btn" onclick="skipGuidedPractice()">Exit Lesson</button>
+            <div style="display:flex; gap:5px;">
+              <button type="button" class="live-coach-btn" onclick="prevGuidedStep()" ${guidedPractice.stepIdx === 0 ? 'disabled' : ''}>◀ Back</button>
+              <button type="button" class="live-coach-btn primary" onclick="nextGuidedStep()">${guidedPractice.stepIdx === GUIDED_PRACTICE_STEPS.length - 1 ? 'Finish ✓' : 'Next ▶'}</button>
+            </div>
+          </div>
+        </div>`;
+      applyCoachPulseTargets(targets);
+      return;
+    }
+
+    panel.classList.remove('is-tutorial');
+    const data = getContextualCoachData();
+    panel.innerHTML = `
+      <div class="live-coach-head" onclick="minimizeLiveCoach(event)">
+        <span class="live-coach-badge">${escapeHtml(data.badge)}</span>
+        <div class="live-coach-head-btns">
+          <button type="button" class="live-coach-icon-btn" onclick="minimizeLiveCoach(event)" title="${liveCoachMinimized ? 'Expand guide' : 'Minimize guide'}" aria-label="Minimize guide">${liveCoachMinimized ? '▴' : '▾'}</button>
+          <button type="button" class="live-coach-icon-btn" onclick="dismissLiveCoach(event)" title="Turn Guide Off" aria-label="Close guide">✕</button>
+        </div>
+      </div>
+      <div class="live-coach-body">
+        <div class="live-coach-title"><span>${escapeHtml(data.title)}</span></div>
+        <p class="live-coach-msg">${data.msg}</p>
+        ${isDemo && !guidedPractice.active ? `
+          <div class="live-coach-actions">
+            ${guidedPractice.completed
+              ? `<button type="button" class="live-coach-btn primary" onclick="returnToLobbyFromPractice()">🏠 Return to Lobby</button>
+                 <button type="button" class="live-coach-btn" onclick="startGuidedPractice()">🎓 Replay</button>`
+              : `<button type="button" class="live-coach-btn" onclick="startGuidedPractice()">🎓 Replay Guided Lesson</button>
+                 <button type="button" class="live-coach-btn" onclick="returnToLobbyFromPractice()">🏠 Return to Lobby</button>`}
+            <button type="button" class="live-coach-btn" onclick="dismissLiveCoach(event)">Hide Guide</button>
+          </div>` : ''}
+      </div>`;
+    applyCoachPulseTargets(data.targets);
+  }
+
+  window.returnToLobbyFromPractice = returnToLobbyFromPractice;
+  window.toggleLiveCoach = toggleLiveCoach;
+  window.minimizeLiveCoach = minimizeLiveCoach;
+  window.dismissLiveCoach = dismissLiveCoach;
+  window.startGuidedPractice = startGuidedPractice;
+  window.prevGuidedStep = prevGuidedStep;
+  window.nextGuidedStep = nextGuidedStep;
+  window.skipGuidedPractice = skipGuidedPractice;
+  window.renderLiveCoach = renderLiveCoach;
+  window.onGuidedPracticeAction = onGuidedPracticeAction;
+  window.startUITour = startUITour;
+  window.startUITourFromLobby = startUITourFromLobby;
+  window.startUITourFromRules = startUITourFromRules;
+  window.nextUITourStep = nextUITourStep;
+  window.prevUITourStep = prevUITourStep;
+  window.endUITour = endUITour;
+  window.dismissLobbyTourBanner = dismissLobbyTourBanner;
+  window.updateLobbyTourBanner = updateLobbyTourBanner;
+
+  loadLiveCoachPreference(false);
   updateLobbyTourBanner();
 </script>
 </body>
