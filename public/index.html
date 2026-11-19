@@ -3756,7 +3756,34 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   background: rgba(255, 255, 255, 0.18);
   color: #ffffff;
 }
-.live-coach-body { padding: 9px 12px 11px; }
+.live-coach-body { padding: 9px 12px 11px; max-height: min(62vh, 520px); overflow-y: auto; overscroll-behavior: contain; }
+.live-coach-actions button:disabled { opacity: .42; cursor: not-allowed; }
+.live-coach-icon-btn { width: 36px; height: 36px; min-width: 36px; font-size: 15px; }
+@media (max-width: 700px) {
+  .live-coach-panel {
+    top: auto;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px;
+    width: auto;
+    max-width: none;
+    max-height: 42vh;
+    border-radius: 12px;
+  }
+  .live-coach-panel.is-visible { animation: none; }
+  .live-coach-head { min-height: 44px; padding: 5px 8px; }
+  .live-coach-badge { font-size: 10px; min-width: 0; }
+  .live-coach-body { padding: 7px 10px 9px; max-height: calc(42vh - 48px); overflow-y: auto; }
+  .live-coach-title { font-size: 12px; }
+  .live-coach-msg { font-size: 11px; line-height: 1.38; }
+  .live-coach-progress { margin: 5px 0; }
+  .live-coach-actions { gap: 6px; padding-top: 7px; }
+  .live-coach-actions .live-coach-btn { min-height: 36px; padding: 7px 9px; }
+}
+@media (max-height: 560px) and (max-width: 700px) {
+  .live-coach-panel { max-height: 34vh; }
+  .live-coach-body { max-height: calc(34vh - 48px); }
+}
 .live-coach-title {
   font-size: 13px;
   font-weight: 800;
@@ -3832,6 +3859,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
 }
 
+/* Final mobile placement overrides: keep the coach compact and away from the top controls. */
+@media (max-width: 820px) {
+  .live-coach-panel {
+    top: auto;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px;
+    width: auto;
+    max-width: none;
+    max-height: 40vh;
+    transform: none;
+  }
+  .live-coach-panel.is-visible { animation: none; }
+  .live-coach-head { min-height: 44px; padding: 5px 8px; }
+  .live-coach-icon-btn { width: 40px; height: 40px; min-width: 40px; }
+  .live-coach-body { max-height: calc(40vh - 48px); overflow-y: auto; }
+}
+@media (max-height: 560px) and (max-width: 820px) {
+  .live-coach-panel { max-height: 32vh; }
+  .live-coach-body { max-height: calc(32vh - 48px); }
+}
 </style>
 </head>
 <body>
@@ -6097,10 +6145,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (typeof guidedPractice !== 'undefined') {
       guidedPractice.active = false;
       guidedPractice.completed = false;
-      guidedPractice.arrangeGroupDone = false;
-      guidedPractice.arrangeSortDone = false;
-      guidedPractice.arrangeAddStandDone = false;
-      guidedPractice.arrangeTwoColDone = false;
+      guidedPractice.completedSteps = [];
+      guidedPractice.declarationOpened = false;
+      guidedPractice.declarationAttempted = false;
     }
     const coachElReset = document.getElementById('liveCoachPanel');
     if (coachElReset) coachElReset.classList.remove('is-visible', 'is-tutorial');
@@ -9634,7 +9681,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               <button type="button" class="sticky-submit-btn ${isGroupingReady ? 'is-ready-pulse' : ''}" onclick="submitGroupingMeld()">
                 ✅ Submit Groups ${isGroupingReady ? '✨' : ''}
               </button>` : `
-              <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" onclick="declareShow()">
+              <button type="button" class="sticky-submit-btn ${isShowReady ? 'is-ready-pulse' : ''}" onclick="onGuidedPracticeAction('DECLARE_ATTEMPT'); declareShow()">
                 🏆 Submit Declaration ${isShowReady ? '✨' : ''}
               </button>
               <button type="button" class="stand-close-btn" onclick="cancelDeclaration()">✕ Cancel</button>
@@ -15425,89 +15472,70 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     active: false,
     stepIdx: 0,
     completed: false,
-    arrangeGroupDone: false,
-    arrangeSortDone: false,
-    arrangeAddStandDone: false,
-    arrangeTwoColDone: false
+    completedSteps: [],
+    declarationOpened: false,
+    declarationAttempted: false
   };
 
   const GUIDED_PRACTICE_STEPS = [
     {
-      id: 'ARRANGE_HAND',
-      title: 'Step 1: Arrange Your Hand',
-      badge: 'Action 1 of 7 • Before You Draw',
-      instruction: () => {
-        const sIcon = guidedPractice.arrangeSortDone ? '✅' : '⏳';
-        const gIcon = guidedPractice.arrangeGroupDone ? '✅' : '⏳';
-        const aIcon = guidedPractice.arrangeAddStandDone ? '✅' : '⏳';
-        const cIcon = guidedPractice.arrangeTwoColDone ? '✅' : '⏳';
-        return `Before drawing, organize your dealt cards using the toolbar &amp; stand controls:<br>
-          <span>${sIcon} <strong>↕ Sort Suit/Rank</strong> — sort cards by suit &amp; rank.</span><br>
-          <span>${gIcon} <strong>⬇ Move Group</strong> — move a valid run/set to its own stand.</span><br>
-          <span>${aIcon} <strong>+ Add Stand</strong> — add a new blank stand for building groups.</span><br>
-          <span>${cIcon} <strong>2 Cols</strong> — toggle 2-column stand display (or tap <strong>Next ▶</strong> to draw).</span>`;
-      },
-      targets: () => {
-        const list = [];
-        if (!guidedPractice.arrangeSortDone) list.push('.stands-toolbar button[onclick*="sortHand"]');
-        if (!guidedPractice.arrangeGroupDone) list.push('.stand-move-group-btn');
-        if (!guidedPractice.arrangeAddStandDone) list.push('.stands-toolbar button[onclick*="addNewStand"]');
-        if (!guidedPractice.arrangeTwoColDone) list.push('#btnStandColumns');
-        return list.length > 0 ? list : ['.stands-toolbar', '.stand-move-group-btn'];
-      }
-    },
-    {
       id: 'DRAW',
-      title: 'Step 2: Draw a Card',
-      badge: 'Action 2 of 7 • Your Turn',
-      instruction: () => `Your turn! Tap the <strong>Stock Deck</strong> (or <strong>Draw Card</strong>) to draw your ${formatOrdinal(getConfiguredHandSize() + 1)} card.`,
-      targets: () => ['#stockDeckBtn', '#btnDiscard']
+      title: 'Step 1: Draw a Card',
+      badge: 'Action 1 of 6 • Your Turn',
+      instruction: () => {
+        const locked = isDiscardedJoker(roomState?.topDiscard);
+        return locked
+          ? `Tap the <strong>Stock Deck</strong> to draw. The visible discard is locked because it is a Joker, so taking it would break the table rule.`
+          : `Tap the <strong>Stock Deck</strong> or the top <strong>Discard</strong> to draw your ${formatOrdinal(getConfiguredHandSize() + 1)}th card. Drawing first gives you a card to evaluate before deciding what to discard.`;
+      },
+      targets: () => isDiscardedJoker(roomState?.topDiscard) ? ['#stockDeckBtn'] : ['#stockDeckBtn', '#discardContainer']
     },
     {
       id: 'SELECT',
-      title: 'Step 3: Highlight a Card',
-      badge: 'Action 3 of 7 • Move Pad Ready',
-      instruction: () => `You now hold ${getHandCount()} cards. Tap <strong>any card</strong> in your stands below to highlight it and reveal arranging controls.`,
+      title: 'Step 2: Highlight a Card',
+      badge: 'Action 2 of 6 • Select',
+      instruction: () => `You now hold ${getHandCount()} cards. Tap one card to select it. Selection reveals the Move Pad and tells the game which card you want to work with.`,
       targets: () => ['#stand-cards-0 .card', '#standsContainer']
     },
     {
       id: 'MOVE_PAD',
-      title: 'Step 4: Move Card, Group, or Sort',
-      badge: 'Action 4 of 7 • Arrange Highlighted',
-      instruction: () => 'Use the <strong>◀ / ▶</strong> arrows or Stand <strong>▲ / ▼ / ＋</strong> buttons in the Move Pad to move your highlighted card — or tap <strong>⬇ Move Group</strong> / <strong>↕ Sort Suit/Rank</strong> to arrange faster.',
+      title: 'Step 3: Organize Your Hand',
+      badge: 'Action 3 of 6 • Move',
+      instruction: () => 'Use the Move Pad arrows or stand buttons to move your selected card. You can also use <strong>Move Group</strong> or <strong>Sort Suit/Rank</strong>. Organizing helps you spot runs and sets; it does not itself finish your turn.',
       targets: () => ['#reorderBar .reorder-nav-group', '#standMoveOptions', '.stand-move-group-btn', '.stands-toolbar button[onclick*="sortHand"]']
     },
     {
       id: 'DISCARD',
-      title: 'Step 5: Discard a Card',
-      badge: 'Action 5 of 7 • End Turn',
+      title: 'Step 4: Discard a Card',
+      badge: 'Action 4 of 6 • End Turn',
       instruction: () => selectedCardId
-        ? 'Tap <strong>Discard Card</strong> (or tap/drag onto the <strong>Discard</strong> pile) to discard your highlighted card and finish your turn.'
-        : 'Tap any card you do not need, then tap <strong>Discard Card</strong> (or tap the <strong>Discard</strong> pile) to finish your turn.',
-      targets: () => selectedCardId
-        ? ['#btnDiscard', '#standMoveOptions .stand-discard-quick-btn', '#discardContainer']
-        : ['#standsContainer', '#btnDiscard']
+        ? 'Choose a card you do not need, then tap <strong>Discard Card</strong> (or the Discard pile). You must discard one card after drawing to finish your turn and return to 21 cards.'
+        : 'Tap a card you do not need to select it, then tap <strong>Discard Card</strong>. A turn is not complete until you discard.',
+      targets: () => ['#btnDiscard', '#standMoveOptions .stand-discard-quick-btn', '#discardContainer', '#standsContainer']
     },
     {
       id: 'SEQUENCE',
-      title: 'Step 6: Explore Sequences',
-      badge: 'Action 6 of 7 • Forming Groups',
-      instruction: () => 'Notice the green <strong>💎 Pure Run</strong> badges on stands with 3+ consecutive same-suit cards (no Jokers, e.g. <strong>A♠ 2♠ 3♠</strong>). Try <strong>2 Stands / 3 Stands</strong> or tap <strong>Show / Declare</strong> next!',
-      targets: () => ['#stand-rack-0', '#btnDeclare']
+      title: 'Step 5: Spot a Pure Sequence',
+      badge: 'Action 5 of 6 • Recognize Groups',
+      instruction: () => 'Look for 3 or more consecutive cards of the same suit. A pure sequence uses no joker as a substitute. These groups matter because your table requires a minimum number of pure sequences before you can win. Tap <strong>2 Cols</strong> to change the layout or <strong>Sort Suit/Rank</strong> to organize the cards and make runs easier to spot.',
+      targets: () => ['#btnStandColumns', '.stands-toolbar button[onclick*="sortHand"]', '#stand-rack-0', '#standsContainer']
     },
     {
       id: 'DECLARE',
-      title: 'Step 7: Try Show / Declare',
-      badge: 'Action 7 of 7 • Zero Penalty',
+      title: 'Step 6: Try Show / Declare',
+      badge: 'Action 6 of 6 • Practice Declaration',
       instruction: () => {
         const hs = getConfiguredHandSize();
         const reqPure = getActiveRules().minPureSequences || 3;
-        if (declarationMode) {
-          return `You need at least <strong>${reqPure} qualifying pure groups</strong> and <strong>${hs}/${hs}</strong> grouped. Try <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, then tap <strong>🏆 Submit Declaration</strong> (or <strong>✕ Cancel</strong>). When done, tap <strong>🚪 Leave</strong> in the top bar to return to the lobby.`;
+        if (!guidedPractice.declarationOpened) {
+          return `Tap <strong>Show / Declare</strong> to open Grouping Mode. The game checks whether you have at least <strong>${reqPure} pure sequences</strong> and all <strong>${hs} cards grouped</strong>; opening this mode is penalty-free.`;
         }
-        return `Tap <strong>Show / Declare</strong> below to open penalty-free Grouping Mode and test submitting a Show. (Tap <strong>🚪 Leave</strong> in the top bar anytime when done to return to the lobby.)`;
+        if (!guidedPractice.declarationAttempted) {
+          return `Grouping Mode is open. Review the groups, then tap <strong>🏆 Submit Declaration</strong> once to see the validation result. This is a practice hand, so you can safely learn from the result.`;
+        }
+        return 'You tried submitting a declaration. You have completed the hands-on lesson; use <strong>Finish</strong> to keep practicing or return to the lobby.';
       },
-      targets: () => declarationMode
+      targets: () => guidedPractice.declarationOpened
         ? ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]', '.sticky-submit-btn']
         : ['#btnDeclare']
     }
@@ -15668,17 +15696,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedPractice.active = true;
     guidedPractice.stepIdx = 0;
     guidedPractice.completed = false;
-    guidedPractice.arrangeGroupDone = false;
-    guidedPractice.arrangeSortDone = false;
-    guidedPractice.arrangeAddStandDone = false;
-    guidedPractice.arrangeTwoColDone = false;
+    guidedPractice.completedSteps = [];
+    guidedPractice.declarationOpened = false;
+    guidedPractice.declarationAttempted = false;
     lastDrawActionTime = 0;
     liveCoachEnabled = true;
     liveCoachMinimized = false;
 
     startDemoMode({ keepGuided: true });
 
-    // Start Practice Step 1 (Arrange Your Hand) cleanly with handSize cards, DRAW turn stage, zero selection
+    // Start with a real draw so the learner experiences the normal turn sequence first
     selectedCardId = null;
     declarationMode = false;
     declarationGroups = [];
@@ -15687,7 +15714,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       roomState.turnPlayerId = 'p_demo';
       roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
       roomState.turnStage = 'DRAW';
-      roomState.lastAction = 'Guided Practice started • Arrange your dealt hand, then draw a card';
+      roomState.lastAction = 'Guided Practice started • Draw a card to begin your turn';
     }
     const connEl = document.getElementById('connectionStatus');
     if (connEl) {
@@ -15711,6 +15738,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   function nextGuidedStep() {
     if (!guidedPractice.active) return;
+    if (!guidedPractice.completedSteps[guidedPractice.stepIdx]) {
+      window.alert('Complete the action in this step before moving on. The guide will highlight what to do.');
+      return;
+    }
     if (guidedPractice.stepIdx >= GUIDED_PRACTICE_STEPS.length - 1) {
       guidedPractice.active = false;
       guidedPractice.completed = true;
@@ -15720,20 +15751,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedPractice.stepIdx++;
     const nextStep = getCurrentGuidedStep();
     const hs = getConfiguredHandSize();
-    if (nextStep && ['SELECT', 'MOVE_PAD', 'DISCARD', 'SEQUENCE', 'DECLARE'].includes(nextStep.id)) {
-      if (myHand.length < hs + 1 && roomState) {
-        ensureGuidedPracticeHandHasShow();
-        roomState.turnPlayerId = 'p_demo';
-        roomState.turnStage = 'DISCARD';
-      }
-      if (nextStep.id === 'MOVE_PAD' && !selectedCardId && userStands?.[0]?.[0]) {
-        selectedCardId = userStands[0][0].id;
-      }
-      if (nextStep.id === 'DECLARE' && roomState?.turnStage === 'DRAW') {
-        ensureGuidedPracticeHandHasShow();
-        roomState.turnPlayerId = 'p_demo';
-        roomState.turnStage = 'DISCARD';
-      }
+    if (nextStep && nextStep.id === 'DECLARE' && roomState?.turnStage === 'DRAW') {
+      ensureGuidedPracticeHandHasShow();
+      roomState.turnPlayerId = 'p_demo';
+      roomState.turnStage = 'DISCARD';
     }
     renderAll(calculateLocalMaal());
   }
@@ -15741,10 +15762,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function skipGuidedPractice() {
     guidedPractice.active = false;
     guidedPractice.completed = false;
-    guidedPractice.arrangeGroupDone = false;
-    guidedPractice.arrangeSortDone = false;
-    guidedPractice.arrangeAddStandDone = false;
-    guidedPractice.arrangeTwoColDone = false;
+    guidedPractice.completedSteps = [];
+    guidedPractice.declarationOpened = false;
+    guidedPractice.declarationAttempted = false;
     const connEl = document.getElementById('connectionStatus');
     if (connEl && isDemo) {
       connEl.innerText = 'Demo Preview';
@@ -15760,47 +15780,29 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const step = getCurrentGuidedStep();
     if (!step) return;
 
-    if (actionType === 'DRAW' && (step.id === 'DRAW' || step.id === 'ARRANGE_HAND')) {
-      selectedCardId = null; // Prompt learner to tap a card manually in Step 3
-      guidedPractice.stepIdx = 2;
+    const completes = {
+      DRAW: ['DRAW'],
+      SELECT: ['SELECT'],
+      MOVE_PAD: ['MOVE_PAD'],
+      MOVE_GROUP: ['MOVE_PAD'],
+      SORT: ['MOVE_PAD'],
+      DISCARD: ['DISCARD'],
+      TOGGLE_COLS: ['SEQUENCE'],
+      SEQUENCE: ['SEQUENCE']
+    };
+    if ((completes[actionType] || []).includes(step.id)) {
+      guidedPractice.completedSteps[guidedPractice.stepIdx] = true;
+      renderLiveCoach();
       return;
     }
-    if (step.id === 'ARRANGE_HAND') {
-      if (actionType === 'SORT') guidedPractice.arrangeSortDone = true;
-      if (actionType === 'MOVE_GROUP') guidedPractice.arrangeGroupDone = true;
-      if (actionType === 'ADD_STAND') guidedPractice.arrangeAddStandDone = true;
-      if (actionType === 'TOGGLE_COLS') guidedPractice.arrangeTwoColDone = true;
-      if (guidedPractice.arrangeSortDone && guidedPractice.arrangeGroupDone && guidedPractice.arrangeAddStandDone && guidedPractice.arrangeTwoColDone) {
-        guidedPractice.stepIdx = 1; // Advance to DRAW once all four arranging tools are explored
-      }
-      if (actionType === 'TOGGLE_COLS') renderLiveCoach();
+    if (actionType === 'DECLARE_OPEN' && step.id === 'DECLARE') {
+      guidedPractice.declarationOpened = true;
+      renderLiveCoach();
       return;
     }
-    if (actionType === 'SELECT' && step.id === 'SELECT') {
-      guidedPractice.stepIdx = 3;
-      return;
-    }
-    if ((actionType === 'MOVE_PAD' || actionType === 'MOVE_GROUP' || actionType === 'SORT') && step.id === 'MOVE_PAD') {
-      guidedPractice.stepIdx = 4; // Advance to DISCARD
-      return;
-    }
-    if (actionType === 'DISCARD' && step.id === 'DISCARD') {
-      guidedPractice.stepIdx = 5; // Advance to SEQUENCE
-      if (roomState) {
-        ensureGuidedPracticeHandHasShow();
-        roomState.turnPlayerId = 'p_demo';
-        roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
-        roomState.turnStage = 'DISCARD';
-        roomState.lastAction = 'Practice partners played — it is your turn again!';
-      }
-      return;
-    }
-    if (actionType === 'SEQUENCE' && step.id === 'SEQUENCE') {
-      guidedPractice.stepIdx = 6; // Advance to DECLARE
-      return;
-    }
-    if (actionType === 'DECLARE_OPEN' && (step.id === 'SEQUENCE' || step.id === 'DECLARE')) {
-      guidedPractice.stepIdx = 6;
+    if (actionType === 'DECLARE_ATTEMPT' && step.id === 'DECLARE' && guidedPractice.declarationOpened) {
+      guidedPractice.declarationAttempted = true;
+      guidedPractice.completedSteps[guidedPractice.stepIdx] = true;
       renderLiveCoach();
     }
   }
@@ -15823,7 +15825,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return {
         badge: '🎓 Lesson Complete',
         title: 'Nice work — You Finished!',
-        msg: 'You practiced arranging your hand (<strong>Sort</strong>, <strong>Move Group</strong>, <strong>+ Add Stand</strong>, <strong>2 Cols</strong>), drawing, highlighting cards, Move Pad, discarding, and declaring with zero penalties.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
+        msg: 'You practiced the full turn sequence: draw, select, organize, discard, recognize a pure sequence, and try a declaration. This was a penalty-free practice hand.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
         targets: ['#btnLeaveSession']
       };
     }
@@ -15882,8 +15884,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         badge: '💡 Your Turn • Draw',
         title: 'Draw 1 Card',
         msg: locked
-          ? 'Your turn! Tap <strong>Stock Deck</strong> (the top discard is a 🔒 locked Joker and cannot be picked up).'
-          : 'Your turn! Tap <strong>Stock Deck</strong> or the top <strong>Discard</strong> card.',
+          ? 'Your turn! Draw from the <strong>Stock Deck</strong>. The top discard is a 🔒 Joker and cannot be picked up under this table rule.'
+          : 'Your turn! Draw from the <strong>Stock Deck</strong> or the top <strong>Discard</strong>. Taking the discard can be useful when it helps complete a run or set.',
         targets: locked ? ['#stockDeckBtn', '#btnDiscard'] : ['#stockDeckBtn', '#discardContainer', '#btnDiscard']
       };
     }
@@ -15903,7 +15905,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return {
         badge: '💡 Your Turn • Organize & Discard',
         title: `${getHandCount()} Cards Held`,
-        msg: `You have <strong>${getHandCount()} cards</strong>. Organize your hand, then select a card to discard — or tap <strong>Show / Declare</strong> if ready.`,
+        msg: `You have <strong>${getHandCount()} cards</strong>. After drawing, discard one card to end your turn. Keep cards that extend useful runs or sets; avoid breaking a pure sequence unless you have a better plan.`,
         targets: ['#standsContainer', '#btnDeclare']
       };
     }
@@ -15960,7 +15962,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <button type="button" class="live-coach-btn" onclick="skipGuidedPractice()">Exit Lesson</button>
             <div style="display:flex; gap:5px;">
               <button type="button" class="live-coach-btn" onclick="prevGuidedStep()" ${guidedPractice.stepIdx === 0 ? 'disabled' : ''}>◀ Back</button>
-              <button type="button" class="live-coach-btn primary" onclick="nextGuidedStep()">${guidedPractice.stepIdx === GUIDED_PRACTICE_STEPS.length - 1 ? 'Finish ✓' : 'Next ▶'}</button>
+              <button type="button" class="live-coach-btn primary" onclick="nextGuidedStep()" ${guidedPractice.completedSteps[guidedPractice.stepIdx] ? '' : 'disabled'}>${guidedPractice.stepIdx === GUIDED_PRACTICE_STEPS.length - 1 ? 'Finish ✓' : 'Next ▶'}</button>
             </div>
           </div>
         </div>`;
