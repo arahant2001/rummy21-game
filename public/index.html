@@ -3859,6 +3859,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
 }
 
+/* Final mobile placement overrides: keep the coach compact and away from the top controls. */
+@media (max-width: 820px) {
+  .live-coach-panel {
+    top: auto;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px;
+    width: auto;
+    max-width: none;
+    max-height: 40vh;
+    transform: none;
+  }
+  .live-coach-panel.is-visible { animation: none; }
+  .live-coach-head { min-height: 44px; padding: 5px 8px; }
+  .live-coach-icon-btn { width: 40px; height: 40px; min-width: 40px; }
+  .live-coach-body { max-height: calc(40vh - 48px); overflow-y: auto; }
+}
+@media (max-height: 560px) and (max-width: 820px) {
+  .live-coach-panel { max-height: 32vh; }
+  .live-coach-body { max-height: calc(32vh - 48px); }
+}
 </style>
 </head>
 <body>
@@ -6124,10 +6145,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (typeof guidedPractice !== 'undefined') {
       guidedPractice.active = false;
       guidedPractice.completed = false;
-      guidedPractice.arrangeGroupDone = false;
-      guidedPractice.arrangeSortDone = false;
-      guidedPractice.arrangeAddStandDone = false;
-      guidedPractice.arrangeTwoColDone = false;
+      guidedPractice.completedSteps = [];
+      guidedPractice.declarationOpened = false;
+      guidedPractice.declarationAttempted = false;
     }
     const coachElReset = document.getElementById('liveCoachPanel');
     if (coachElReset) coachElReset.classList.remove('is-visible', 'is-tutorial');
@@ -15497,8 +15517,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       id: 'SEQUENCE',
       title: 'Step 5: Spot a Pure Sequence',
       badge: 'Action 5 of 6 • Recognize Groups',
-      instruction: () => 'Look for 3 or more consecutive cards of the same suit. A pure sequence uses no joker as a substitute. These groups matter because your table requires a minimum number of pure sequences before you can win. Tap <strong>2 Cols</strong> to try another hand layout, then continue.',
-      targets: () => ['#btnStandColumns', '#stand-rack-0', '#standsContainer']
+      instruction: () => 'Look for 3 or more consecutive cards of the same suit. A pure sequence uses no joker as a substitute. These groups matter because your table requires a minimum number of pure sequences before you can win. Tap <strong>2 Cols</strong> to change the layout or <strong>Sort Suit/Rank</strong> to organize the cards and make runs easier to spot.',
+      targets: () => ['#btnStandColumns', '.stands-toolbar button[onclick*="sortHand"]', '#stand-rack-0', '#standsContainer']
     },
     {
       id: 'DECLARE',
@@ -15805,7 +15825,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return {
         badge: '🎓 Lesson Complete',
         title: 'Nice work — You Finished!',
-        msg: 'You practiced arranging your hand (<strong>Sort</strong>, <strong>Move Group</strong>, <strong>+ Add Stand</strong>, <strong>2 Cols</strong>), drawing, highlighting cards, Move Pad, discarding, and declaring with zero penalties.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
+        msg: 'You practiced the full turn sequence: draw, select, organize, discard, recognize a pure sequence, and try a declaration. This was a penalty-free practice hand.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
         targets: ['#btnLeaveSession']
       };
     }
