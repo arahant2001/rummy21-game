@@ -3060,6 +3060,40 @@ body.is-dragging-card-mobile {
 .rules-pill-blue { background: rgba(56, 189, 248, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
 .rules-pill-green { background: rgba(50, 197, 138, 0.18); color: #7eedba; border: 1px solid rgba(50, 197, 138, 0.4); }
 .rules-pill-red { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+.rules-glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+.rules-glossary-item {
+  background: rgba(9, 25, 19, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.rules-glossary-term {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f1d27a;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.rules-glossary-def {
+  font-size: 12.2px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 0;
+}
+.rules-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
 .lobby-rules-btn {
   background: rgba(56, 189, 248, 0.12);
   border: 1px solid rgba(56, 189, 248, 0.4);
@@ -3649,6 +3683,40 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   background: linear-gradient(135deg, rgba(23, 126, 90, 0.68), rgba(12, 96, 68, 0.78));
   border-color: rgba(110, 231, 183, 0.85);
 }
+.solo-guided-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 9px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.38;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s ease, border-color .15s ease;
+}
+.solo-guided-toggle:hover {
+  background: rgba(50, 197, 138, 0.09);
+  border-color: rgba(50, 197, 138, 0.34);
+}
+.solo-guided-toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin: 1px 0 0;
+  accent-color: #32c58a;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.solo-guided-toggle strong {
+  color: #7eedba;
+}
+.solo-guided-hint {
+  color: #9db8ac;
+}
 .lobby-secondary-divider {
   display: flex;
   align-items: center;
@@ -3686,12 +3754,26 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   outline: 2px solid rgba(241, 210, 122, 0.9) !important;
   outline-offset: 2px;
 }
+.coach-covered-target {
+  outline: 2.5px dashed #fb7185 !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.38), 0 0 18px rgba(244, 63, 94, 0.55) !important;
+}
+.live-coach-top-mount {
+  position: relative;
+  z-index: 160;
+}
+.live-coach-below-board-mount {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
 .live-coach-panel {
   position: fixed;
   top: 62px;
   right: 16px;
   z-index: 160;
-  width: min(338px, calc(100vw - 24px));
+  width: min(352px, calc(100vw - 24px));
   background: linear-gradient(165deg, rgba(14, 42, 31, 0.97), rgba(7, 20, 14, 0.97));
   border: 1.5px solid rgba(241, 210, 122, 0.58);
   border-radius: 14px;
@@ -3710,18 +3792,46 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   border-color: rgba(50, 197, 138, 0.72);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.78), 0 0 22px rgba(50, 197, 138, 0.22);
 }
+.live-coach-panel.pos-bottom {
+  top: auto;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: 16px;
+}
+.live-coach-panel.pos-below-board {
+  position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 10px 0 12px;
+  z-index: 20;
+  animation: none;
+}
+.live-coach-panel.is-covering-target {
+  border-color: rgba(251, 113, 133, 0.92);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.78), 0 0 0 2px rgba(251, 113, 133, 0.35), 0 0 24px rgba(244, 63, 94, 0.28);
+}
 .live-coach-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 7px 11px;
+  padding: 7px 10px;
   background: rgba(255, 255, 255, 0.04);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
 }
 .live-coach-panel.is-minimized .live-coach-head { border-bottom: none; }
 .live-coach-panel.is-minimized .live-coach-body { display: none; }
+.live-coach-head-main {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
 .live-coach-badge {
   font-size: 10.5px;
   font-weight: 800;
@@ -3731,59 +3841,115 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .live-coach-panel.is-tutorial .live-coach-badge { color: #7eedba; }
+.live-coach-compact-text {
+  display: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+.live-coach-panel.is-minimized .live-coach-compact-text {
+  display: block;
+}
+.live-coach-overlap-chip {
+  display: none;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fecdd3;
+  background: rgba(225, 29, 72, 0.28);
+  border: 1px solid rgba(251, 113, 133, 0.65);
+  border-radius: 999px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.live-coach-panel.is-covering-target .live-coach-overlap-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.live-coach-panel:not(.is-minimized) .live-coach-overlap-chip {
+  display: none;
+}
 .live-coach-head-btns {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
 }
 .live-coach-icon-btn {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   color: #cbd5e1;
-  border-radius: 6px;
-  width: 22px;
-  height: 22px;
+  border-radius: 7px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 7px;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 3px;
+  white-space: nowrap;
 }
 .live-coach-icon-btn:hover {
   background: rgba(255, 255, 255, 0.18);
   color: #ffffff;
 }
-.live-coach-body { padding: 9px 12px 11px; max-height: min(62vh, 520px); overflow-y: auto; overscroll-behavior: contain; }
+.live-coach-body {
+  padding: 8px 12px 10px;
+  display: flex;
+  flex-direction: column;
+}
+.live-coach-scroll {
+  max-height: min(32vh, 230px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+.live-coach-overlap-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 7px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(225, 29, 72, 0.18);
+  border: 1px solid rgba(251, 113, 133, 0.55);
+  color: #fecdd3;
+  font-size: 11px;
+  font-weight: 700;
+}
+.live-coach-panel.is-covering-target .live-coach-overlap-banner {
+  display: flex;
+}
+.live-coach-overlap-move-btn {
+  background: rgba(251, 113, 133, 0.24);
+  border: 1px solid rgba(253, 164, 175, 0.72);
+  color: #fff1f2;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.live-coach-overlap-move-btn:hover {
+  background: rgba(251, 113, 133, 0.42);
+}
 .live-coach-actions button:disabled { opacity: .42; cursor: not-allowed; }
-.live-coach-icon-btn { width: 36px; height: 36px; min-width: 36px; font-size: 15px; }
-@media (max-width: 700px) {
-  .live-coach-panel {
-    top: auto;
-    right: 8px;
-    bottom: max(8px, env(safe-area-inset-bottom));
-    left: 8px;
-    width: auto;
-    max-width: none;
-    max-height: 42vh;
-    border-radius: 12px;
-  }
-  .live-coach-panel.is-visible { animation: none; }
-  .live-coach-head { min-height: 44px; padding: 5px 8px; }
-  .live-coach-badge { font-size: 10px; min-width: 0; }
-  .live-coach-body { padding: 7px 10px 9px; max-height: calc(42vh - 48px); overflow-y: auto; }
-  .live-coach-title { font-size: 12px; }
-  .live-coach-msg { font-size: 11px; line-height: 1.38; }
-  .live-coach-progress { margin: 5px 0; }
-  .live-coach-actions { gap: 6px; padding-top: 7px; }
-  .live-coach-actions .live-coach-btn { min-height: 36px; padding: 7px 9px; }
-}
-@media (max-height: 560px) and (max-width: 700px) {
-  .live-coach-panel { max-height: 34vh; }
-  .live-coach-body { max-height: calc(34vh - 48px); }
-}
 .live-coach-title {
   font-size: 13px;
   font-weight: 800;
@@ -3804,7 +3970,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 .live-coach-progress {
   display: flex;
   gap: 4px;
-  margin: 8px 0 6px;
+  margin: 2px 0 7px;
+  flex-shrink: 0;
 }
 .live-coach-dot {
   flex: 1;
@@ -3820,14 +3987,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  margin-top: 9px;
-  padding-top: 8px;
+  margin-top: 8px;
+  padding-top: 7px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 .live-coach-btn {
   border-radius: 7px;
-  padding: 4px 9px;
+  padding: 5px 9px;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -3850,35 +4018,51 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 }
 @media (max-width: 820px) {
   .live-coach-panel {
-    top: 48px;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    width: calc(100vw - 16px);
-    max-width: 440px;
-  }
-}
-
-/* Final mobile placement overrides: keep the coach compact and away from the top controls. */
-@media (max-width: 820px) {
-  .live-coach-panel {
-    top: auto;
+    top: 52px;
     right: 8px;
-    bottom: max(8px, env(safe-area-inset-bottom));
     left: 8px;
     width: auto;
     max-width: none;
     max-height: 40vh;
+    border-radius: 12px;
     transform: none;
   }
+  .live-coach-panel.pos-bottom {
+    top: auto;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px;
+    right: 8px;
+  }
+  .live-coach-panel.pos-below-board {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    max-height: none;
+    margin: 8px 0 10px;
+  }
   .live-coach-panel.is-visible { animation: none; }
-  .live-coach-head { min-height: 44px; padding: 5px 8px; }
-  .live-coach-icon-btn { width: 40px; height: 40px; min-width: 40px; }
-  .live-coach-body { max-height: calc(40vh - 48px); overflow-y: auto; }
+  .live-coach-head { min-height: 42px; padding: 5px 8px; gap: 6px; }
+  .live-coach-badge { font-size: 10px; }
+  .live-coach-compact-text { font-size: 11px; }
+  .live-coach-icon-btn { min-width: 32px; height: 32px; padding: 0 6px; font-size: 10.5px; }
+  .live-coach-body { padding: 7px 10px 8px; }
+  .live-coach-scroll { max-height: 18vh; }
+  .live-coach-panel.pos-below-board .live-coach-scroll { max-height: 28vh; }
+  .live-coach-title { font-size: 12px; }
+  .live-coach-msg { font-size: 11px; line-height: 1.4; }
+  .live-coach-progress { margin: 2px 0 5px; }
+  .live-coach-actions { gap: 6px; margin-top: 6px; padding-top: 6px; }
+  .live-coach-actions .live-coach-btn { min-height: 34px; padding: 6px 9px; }
+}
+@media (max-width: 480px) {
+  .live-coach-pos-text { display: none; }
 }
 @media (max-height: 560px) and (max-width: 820px) {
-  .live-coach-panel { max-height: 32vh; }
-  .live-coach-body { max-height: calc(32vh - 48px); }
+  .live-coach-panel:not(.pos-below-board) { max-height: 34vh; }
+  .live-coach-panel:not(.pos-below-board) .live-coach-scroll { max-height: 13vh; }
 }
 </style>
 </head>
@@ -3955,7 +4139,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     <span class="meta-dot">&bull;</span>
     <span>Marriage &amp; Honors Points</span>
     <span class="meta-dot">&bull;</span>
-    <span>Pure Sequences</span>
+    <span>Customizable</span>
   </div>
   <div id="lobbyTourBanner" class="lobby-tour-banner" style="display:none;" aria-hidden="true"></div>
   <div id="rejoinBanner" class="rejoin-banner">
@@ -3985,28 +4169,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       </div>
     </div>
 
-    <div class="lobby-path-card">
+    <div class="lobby-path-card" id="soloPracticeCard">
       <div class="lobby-path-head">
-        <span class="lobby-path-title">🃏 Practice Alone</span>
-        <span class="lobby-path-tag">Offline Solo</span>
+        <span class="lobby-path-title">🃏 Solo Practice &amp; Tutorial</span>
+        <span class="lobby-path-tag" id="soloPracticeTag">Offline Solo</span>
       </div>
-      <div class="lobby-path-desc">Play a full practice hand at your own pace with simulated table players — no server or room code needed.</div>
-      <button type="button" class="lobby-path-action" onclick="startDemoMode()">
-        <span>Launch Practice Game</span>
+      <div class="lobby-path-desc">Play offline at your own pace with simulated table players — no server or room code needed.</div>
+      <button type="button" class="lobby-path-action" id="btnStartSoloPractice" onclick="launchSoloPractice()">
+        <span id="btnStartSoloLabel">Start Solo Practice</span>
         <span>▶</span>
       </button>
-    </div>
-
-    <div class="lobby-path-card is-tutorial">
-      <div class="lobby-path-head">
-        <span class="lobby-path-title">🎓 Learn to Play</span>
-        <span class="lobby-path-tag">Guided Lesson</span>
-      </div>
-      <div class="lobby-path-desc">Short hands-on tutorial: draw a card, use the Move Pad, discard, form sequences, and try declaring with no penalties.</div>
-      <button type="button" class="lobby-path-action is-tutorial-btn" onclick="startGuidedPractice()">
-        <span>Start Guided Practice Hand</span>
-        <span>▶</span>
-      </button>
+      <label class="solo-guided-toggle">
+        <input type="checkbox" id="soloGuidedCheckbox" onchange="onSoloGuidedToggleChange(this.checked)" />
+        <span>Include <strong>6-step Guided Lesson</strong> <span class="solo-guided-hint">(draw, move, discard, sequences &amp; show — recommended for first-time players)</span></span>
+      </label>
     </div>
   </div>
 
@@ -4053,7 +4229,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       </button>
     </div>
   </div>
-  <aside id="liveCoachPanel" class="live-coach-panel" role="region" aria-label="Live contextual guide"></aside>
+  <div id="liveCoachTopMount" class="live-coach-top-mount">
+    <aside id="liveCoachPanel" class="live-coach-panel" role="region" aria-label="Live contextual guide"></aside>
+  </div>
 
   <div class="game-hero">
     <div class="game-hero-copy">
@@ -4154,6 +4332,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     <!-- Bottom Player Seat (YOU) integrated at the bottom felt rim -->
     <div id="bottomUserSeat" class="bottom-user-seat-container"></div>
   </div>
+  <div id="liveCoachBelowBoardMount" class="live-coach-below-board-mount"></div>
 
   <!-- Hand Section with Multi-Stand Support -->
   <div>
@@ -4233,6 +4412,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <button id="btnDeclare" class="btn-action btn-declare" onclick="declareShow()"><span><b>Show / Declare</b><small class="action-sub">available after drawing</small></span></button>
     </div>
   </div>
+</div>
 <!-- Action Confirmation Modal (Close Room & Leave Session) -->
 <div id="confirmModal" class="modal" style="display:none; z-index:260;" onclick="if(event.target===this) closeConfirmModal()">
   <div class="modal-content" style="max-width: 440px; padding: 26px 22px; text-align: center; border: 1px solid rgba(217,182,92,0.32); box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
@@ -4434,6 +4614,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <button type="button" class="rules-tab-btn" id="tabBtnMelds" onclick="switchRulesTab('melds')">🎯 Groups &amp; Show</button>
       <button type="button" class="rules-tab-btn" id="tabBtnJokers" onclick="switchRulesTab('jokers')">🃏 Jokers &amp; Honors</button>
       <button type="button" class="rules-tab-btn" id="tabBtnScoring" onclick="switchRulesTab('scoring')">⚡ Scoot &amp; Scoring</button>
+      <button type="button" class="rules-tab-btn" id="tabBtnGlossary" onclick="switchRulesTab('glossary')">📚 Terminology</button>
       <button type="button" class="rules-tab-btn" id="tabBtnCustomize" onclick="switchRulesTab('customize')">⚙️ Customize</button>
     </div>
 
@@ -4441,14 +4622,42 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       <!-- Tab 1: Overview & Table Setup -->
       <div id="rulesTabOverview" class="rules-tab-content">
         <div class="rules-card-box">
-          <h4><span>🎴</span> Game Essentials &amp; Table Setup</h4>
-          <p><strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 3 Printed Jokers (Poochies, 1 per deck)</strong>, totaling <strong>159 cards</strong>. Each player is dealt <strong>21 cards</strong>.</p>
+          <h4><span>🎴</span> Game Essentials, Initial Deal &amp; Goal</h4>
+          <p id="rulesOverviewSetupText"><strong>21-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>3 standard 52-card decks plus 3 Printed Jokers (Poochies, 1 per deck)</strong>, totaling <strong>159 cards</strong>. Initially, <strong>21 cards are dealt to each player</strong>, one <strong>Cut Card</strong> is revealed to establish the hand's Jokers and Honors, and one open card begins the Discard Pile.</p>
+          <p id="rulesOverviewGoalText" style="margin:8px 0 0;"><strong>Your Goal:</strong> Either be the first player to <strong>Declare (Show)</strong> your entire hand validly grouped (to win the round with <strong>0 penalty points</strong> and collect Honors), <strong>or minimize your penalty points</strong> if another player declares first or your hand is weak (by forming protected groups or choosing to <strong>Scoot</strong> early).</p>
+          <div class="rules-quick-links">
+            <button type="button" class="tool-btn" onclick="switchRulesTab('glossary')">📚 Open Terminology Glossary</button>
+            <button type="button" class="tool-btn" onclick="switchRulesTab('scoring')">⚡ Full Scoring &amp; Drop Rules</button>
+          </div>
         </div>
 
         <div class="rules-card-box" style="margin-top:10px;">
-          <h4><span>🔄</span> Turn Structure</h4>
+          <h4><span>🧭</span> High-Level Flow of a Hand</h4>
+          <ol id="rulesOverviewFlowSteps" style="margin: 4px 0 0 20px; padding: 0; display:flex; flex-direction:column; gap:6px;">
+            <li><strong>Cards are dealt to each player:</strong> Every seated player receives <strong>21 cards</strong> face-down. A Cut Card is revealed under the Stock Deck to define Jokers/Honors, and one open card starts the Discard Pile.</li>
+            <li><strong>Arrange cards &amp; evaluate chances of winning:</strong> Sort and organize your cards into stands to spot Pure Sequences, Sequences, Sets, Doubles, and Honors, then decide whether to play for a Show or play defensively to keep points low.</li>
+            <li><strong>On your turn, choose to Scoot or pick up a card:</strong> Before drawing, you may <strong>Scoot (Drop)</strong> to leave the round with a fixed drop penalty (0 pts for Free Scoot), or <strong>Draw 1 card</strong> from either the face-down Stock Deck or the top of the Discard Pile.</li>
+            <li><strong>Organize &amp; Discard (or Declare):</strong> Use your extra card to improve your groups, then either tap <strong>Show / Declare</strong> if all cards meet the winning requirements or <strong>Discard 1 unneeded card</strong> back down to your hand size to pass the turn.</li>
+            <li><strong>Grouping &amp; Point Settlement:</strong> Turns continue clockwise until a player declares a valid Show. Other active players arrange their best valid groups to reduce Deadwood, and <strong>Penalty Points + Honors</strong> are settled for the round.</li>
+          </ol>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>🧮</span> What Points Are &amp; How They Are Calculated</h4>
+          <p id="rulesOverviewPointsIntro" style="margin:0 0 6px;">There are two kinds of points tracked in every round: <strong>Penalty Points</strong> (lower is better — high points hurt you or can eliminate you in Tournament mode) and <strong>Honors / Maal Points</strong> (higher is better — bonus points collected by the round winner).</p>
+          <ul id="rulesOverviewPointsList" style="margin: 4px 0 0 18px; padding: 0;">
+            <li><strong>Card Values for Penalty Points (Deadwood):</strong> Face cards &amp; Aces (<strong>A, K, Q, J, 10</strong>) = <strong>10 pts</strong> each; number cards (<strong>2–9</strong>) = <strong>face value</strong> (2 to 9 pts); <strong>all Jokers</strong> (Pukka Joker, Poochie, Wild Joker) = <strong>0 penalty pts</strong>.</li>
+            <li><strong>If a player Declares (Winner):</strong> Pays <strong>0 penalty points</strong> for the round.</li>
+            <li><strong>If you Scoot / Drop before drawing:</strong> Fixed penalty of <strong>30 pts</strong> (First Drop / Scoot) or <strong>70 pts</strong> (Middle Drop), or <strong>0 pts</strong> for a qualifying Free Scoot / Free Game.</li>
+            <li><strong>If another player Declares first (Deadwood Calculation):</strong> Any cards not in protected groups are added together up to the <strong>120-point</strong> cap. If you formed <strong>3+ Pure Sequences</strong> (or 7+ Doubles), all valid groups are protected (only loose cards count); otherwise, only Jokers, 4+ card Pure Runs, and Tunnelas are protected.</li>
+            <li><strong>Honors (Maal) Settlement:</strong> Holding Cut-suit specials (Marriages, Pukka Jokers, Poochies, Paplus, Taplus) earns Honors points. Under <strong>Winner Takes Honors</strong>, each paying loser also pays the winner's Honors total.</li>
+          </ul>
+        </div>
+
+        <div class="rules-card-box" style="margin-top:10px;">
+          <h4><span>🔄</span> Your Turn Action Details</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li><strong>1. Draw:</strong> On your turn, draw 1 card from either the face-down <strong>Stock Deck</strong> or the face-up <strong>Discard Pile</strong>.</li>
+            <li><strong>1. Draw:</strong> On your turn, draw 1 card from either the face-down <strong>Stock Deck</strong> or the face-up <strong>Discard Pile</strong> (or Scoot/Drop before drawing).</li>
             <li><strong>2. Group &amp; Organize:</strong> Arrange your hand into Stands (1, 2, or 3 stands). Tap any card to open the Move Pad or drag &amp; drop cards directly between stands.</li>
             <li><strong>3. Discard:</strong> Discard 1 card to the Discard Pile to complete your turn.</li>
           </ul>
@@ -4456,7 +4665,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
         <div class="rules-card-box" style="margin-top:10px; border-color: rgba(239, 68, 68, 0.4); background: rgba(30, 20, 20, 0.7);">
           <h4 style="color: #fca5a5;"><span>🔒</span> Joker Pickup Rule (Discard Restriction)</h4>
-          <p style="margin: 0 0 6px;"><strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong></p>
+          <p id="rulesOverviewJokerLockTitle" style="margin: 0 0 6px;"><strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong></p>
           <ul style="margin: 0 0 0 18px; padding: 0;">
             <li>If a player discards any Joker (Wild Joker, Pukka Joker, Paplu, Taplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
             <li><span class="rules-pill rules-pill-green">Exception</span> <strong>Initial Open Card:</strong> If the very first card turned face-up from the deck at the beginning of the round is a Joker, the first player <strong>is permitted to pick it up</strong>!</li>
@@ -4692,8 +4901,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         <div class="rules-card-box" style="margin-top:10px;">
           <h4><span>🛡️</span> Deadwood Protection Rules</h4>
           <ul style="margin: 4px 0 0 18px; padding: 0;">
-            <li><strong>If you have &ge; 3 Pure Sequences or &ge; 7 Doubles:</strong> All valid grouped cards (pure sequences, impure sequences, sets, tunnelas, and double pairs) are protected (0 deadwood). Only loose cards count as deadwood.</li>
-            <li><strong>If you have &lt; 3 Pure Sequences:</strong> ONLY <strong>Jokers</strong>, <strong>Pure Sequences of 4 or more cards</strong>, and <strong>Tunnelas</strong> are protected! All other cards (including 3-card pure runs, sets, impure runs, and loose cards) count as deadwood up to the 120-point maximum.</li>
+            <li id="rulesScoringDeadwoodEnoughPure"><strong>If you have &ge; 3 Pure Sequences or &ge; 7 Doubles:</strong> All valid grouped cards (pure sequences, impure sequences, sets, tunnelas, and double pairs) are protected (0 deadwood). Only loose cards count as deadwood.</li>
+            <li id="rulesScoringDeadwoodLessPure"><strong>If you have &lt; 3 Pure Sequences:</strong> ONLY <strong>Jokers</strong>, <strong>Pure Sequences of 4 or more cards</strong>, and <strong>Tunnelas</strong> are protected! All other cards (including 3-card pure runs, sets, impure runs, and loose cards) count as deadwood up to the 120-point maximum.</li>
             <li>Card values: Face cards (A, K, Q, J, 10) = 10 pts; number cards = face value (2 to 9).</li>
           </ul>
         </div>
@@ -4712,7 +4921,109 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         <div id="rulesTournamentInfoBox" class="rules-card-box" style="margin-top:10px; display:none;"></div>
       </div>
 
-      <!-- Tab 5: Customize Rules & Scoring -->
+      <!-- Tab 5: Terminology Glossary -->
+      <div id="rulesTabGlossary" class="rules-tab-content" style="display:none;">
+        <div class="rules-card-box">
+          <h4><span>📚</span> Rummy Terminology Glossary</h4>
+          <p style="margin:0 0 6px;">Every key term used at the table and in the rules, explained clearly:</p>
+          <div class="rules-glossary-grid">
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Cut Card / Cut Joker</div>
+              <p class="rules-glossary-def">The card revealed from the deck at the start of each hand. Its rank and suit determine who becomes the Pukka Joker, Wild Jokers, Paplu, and Taplu for that round.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Deadwood <span class="rules-pill rules-pill-red">Penalty Pts</span></div>
+              <p class="rules-glossary-def">The penalty point sum of ungrouped or unprotected cards remaining in your hand when another player declares (A/K/Q/J/10 = 10 pts, 2–9 = face value, Jokers = 0 pts), capped at 120 pts by default.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Declare / Show <span class="rules-pill rules-pill-green">Win Round</span></div>
+              <p class="rules-glossary-def">Submitting a complete, valid hand—all dealt cards grouped with the required Pure Sequences (plus 1 final discard after drawing)—to win the hand with 0 penalty points.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Discard Pile</div>
+              <p class="rules-glossary-def">The face-up pile where players throw 1 unwanted card to finish a turn. Opponents may draw the top card unless it is a 🔒 locked Joker.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Double (Pair)</div>
+              <p class="rules-glossary-def">Two identical cards of the exact same rank and suit across the multi-deck shoe (e.g., two K♠s). Holding 7 dealt or 8 drawn Doubles qualifies for a Doubles Show.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Drop (First / Middle)</div>
+              <p class="rules-glossary-def">Folding at the start of your turn before drawing. A First Drop (Scoot) costs 30 pts; a Middle Drop (after taking at least one turn) costs 70 pts.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Free Scoot / Free Game</div>
+              <p class="rules-glossary-def">Exiting a round with 0 penalty points and 0 Honors paid when dealt 6 Doubles before drawing (Free Scoot) or holding 7 Doubles after drawing (Free Game).</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Grouping Mode</div>
+              <p class="rules-glossary-def">The interactive organizer opened when you tap Show / Declare or when an opponent declares, letting you lock in Pure Sequences, Runs, and Sets to minimize Deadwood.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Honors (Maal) <span class="rules-pill rules-pill-gold">Bonus Pts</span></div>
+              <p class="rules-glossary-def">Special bonus points awarded for Cut-suit specials (Marriage, Pukka Joker, Poochie, Paplu, Taplu). Under Winner Takes Honors, paying losers pay the winner's Honors total.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Impure Sequence</div>
+              <p class="rules-glossary-def">A run of 3+ consecutive same-suit cards where one or more missing cards are filled in by a Joker (e.g., 4♥ - 5♥ - Joker).</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Joker <span class="rules-pill rules-pill-blue">Wild Card</span></div>
+              <p class="rules-glossary-def">Any card that can substitute for another card inside an Impure Sequence or Set (Printed Poochies, Pukka Jokers, and Cut-rank Wild Jokers). Worth 0 Deadwood pts; thrown Jokers are 🔒 locked.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Marriage <span class="rules-pill rules-pill-gold">50 pts</span></div>
+              <p class="rules-glossary-def">Holding the trio of Taplu + Pukka Joker + Paplu together in the Cut Suit (e.g., 6♦ - 7♦ - 8♦ when 7♦ is Cut). Counts as both 50 Honors pts and a Pure Sequence.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Paplu <span class="rules-pill rules-pill-blue">+1 Cut Suit</span></div>
+              <p class="rules-glossary-def">The card in the Cut Card's exact suit one rank higher (+1 rank, wrapping K → A). It earns tiered Honors (Maal) points and combines with Pukka Joker + Taplu to form a Marriage.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Poochie (Printed Joker)</div>
+              <p class="rules-glossary-def">Printed Joker cards (PJ★) included in the packs. Acts as a wild card in groups and awards tiered Honors points. Grouping 3 Poochies together counts as a Pure Sequence.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Pukka Joker (Tiplu)</div>
+              <p class="rules-glossary-def">Cards matching BOTH the exact rank and suit of the Cut Card. Acts as a wild card and earns tiered Honors points (20 / 40+ pts).</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Pure Sequence <span class="rules-pill rules-pill-green">Required</span></div>
+              <p class="rules-glossary-def">3 or more consecutive cards of the same suit with NO wild substitution (e.g., 8♣ - 9♣ - 10♣). At least 3 Pure Sequences are required by default to Declare.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Scoot</div>
+              <p class="rules-glossary-def">Voluntarily folding on your turn before drawing a card to cap your loss (30 pts on your first turn, 70 pts Middle Drop) rather than risking up to 120 Deadwood pts.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Set (Trial)</div>
+              <p class="rules-glossary-def">3 or 4 cards of the same rank in different suits (e.g., Q♠ - Q♥ - Q♦), optionally using Jokers to fill a suit.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Stand</div>
+              <p class="rules-glossary-def">One of the organizer trays holding cards in your hand. Moving cards between Stands keeps your hand tidy without affecting your turn.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Stock Deck</div>
+              <p class="rules-glossary-def">The face-down draw deck in the center of the table. You may always draw from the Stock Deck on your turn, especially when the Discard is a 🔒 locked Joker.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Taplu (Nichlu) <span class="rules-pill rules-pill-green">-1 Cut Suit</span></div>
+              <p class="rules-glossary-def">The card in the Cut Card's exact suit one rank lower (-1 rank, wrapping A → K). Shares the Paplu/Taplu Honors pool and completes a Marriage with Pukka Joker + Paplu.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Tunnela</div>
+              <p class="rules-glossary-def">Three identical cards of the exact same rank and suit across the decks (e.g., three 9♠s). Always protected from Deadwood, counts as a Pure Sequence, and 3 Tunnelas wins instantly.</p>
+            </div>
+            <div class="rules-glossary-item">
+              <div class="rules-glossary-term">Wild Joker</div>
+              <p class="rules-glossary-def">Cards matching the Cut Card's rank in the other 3 suits. Wild in sequences and sets with 0 Deadwood pts (and 0 Honors pts).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: Customize Rules & Scoring -->
       <div id="rulesTabCustomize" class="rules-tab-content" style="display:none;"></div>
     </div>
 
@@ -5483,6 +5794,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     forfeitPenalty: 100,
     maxDeadwood: 120,
     minPureSequences: 3,
+    count3CardPureAsDeadwood: true,
     allowTunnelaAsPure: true,
     allow3TunellasShow: true,
     allow3PoochiesAsPure: true,
@@ -5531,6 +5843,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       ...DEFAULT_RULES,
       presetName: 'Tournament',
       maxDeadwood: 210,
+      count3CardPureAsDeadwood: false,
       eliminationEnabled: true,
       scoreLimit: 500
     }
@@ -5579,6 +5892,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       forfeitPenalty: DEFAULT_RULES.forfeitPenalty,
       maxDeadwood: clampRuleInt(src.maxDeadwood, 40, 300, DEFAULT_RULES.maxDeadwood),
       minPureSequences: clampRuleInt(src.minPureSequences, 1, 4, DEFAULT_RULES.minPureSequences),
+      count3CardPureAsDeadwood: src.count3CardPureAsDeadwood !== false,
       allowTunnelaAsPure: true,
       allow3TunellasShow: src.allow3TunellasShow !== false,
       allow3PoochiesAsPure: src.allow3PoochiesAsPure !== false,
@@ -5619,8 +5933,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         ? 'Tournament'
         : 'Custom House Rules';
     const extraPatch = {};
-    if (key === 'eliminationEnabled' && val && base.maxDeadwood === DEFAULT_RULES.maxDeadwood) {
-      extraPatch.maxDeadwood = Math.min(300, (base.cardsPerPlayer || 21) * 10);
+    if (key === 'eliminationEnabled' && val) {
+      if (base.maxDeadwood === DEFAULT_RULES.maxDeadwood) {
+        extraPatch.maxDeadwood = Math.min(300, (base.cardsPerPlayer || 21) * 10);
+      }
+      if (base.count3CardPureAsDeadwood === DEFAULT_RULES.count3CardPureAsDeadwood) {
+        extraPatch.count3CardPureAsDeadwood = false;
+      }
     }
     if (key === 'cardsPerPlayer') {
       const prevCards = base.cardsPerPlayer || 21;
@@ -5724,7 +6043,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-field" title="Exceeding this points total (excluding Honors) eliminates the player in Tournament mode">Tournament Score Limit<input type="number" min="100" max="5000" step="50" value="${r.scoreLimit}" onchange="updateLobbyRuleField('scoreLimit', this.value)"></label>
         </div>
         <div class="rules-check-row">
-          <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateLobbyRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (players exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors lose &amp; sit out; last standing wins)</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateLobbyRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors eliminates player)</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.count3CardPureAsDeadwood ? 'checked' : ''} onchange="updateLobbyRuleField('count3CardPureAsDeadwood', this.checked)"> Count 3-card Pure Sequences as deadwood unless ${r.minPureSequences}+ Pure Groups are formed</label>
           <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateLobbyRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
           <label class="rules-check-item" style="${doublesLocked ? 'opacity:0.55;' : ''}"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} ${doublesLocked ? 'disabled' : ''} onchange="updateLobbyRuleField('allowDoublesShow', this.checked)"> ${doublesLocked ? 'Allow Doubles Show &amp; Free Scoot (Disabled below 21 cards)' : `Allow Doubles Show (${r.dealtDoublesForShow} dealt / ${r.drawnDoublesForShow} drawn) &amp; Free Scoot (${r.freeScootDealtDoubles}/${r.freeGameDrawnDoubles})`}</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allow3TunellasShow ? 'checked' : ''} onchange="updateLobbyRuleField('allow3TunellasShow', this.checked)"> Allow 3 Tunellas Instant Show</label>
@@ -5825,10 +6145,55 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
   window.toggleStandColumns = toggleStandColumns;
 
+  function isGuidedLessonPreviouslyDone() {
+    try { return localStorage.getItem('rummy_guided_lesson_done') === '1'; } catch (_) { return false; }
+  }
+  function markGuidedLessonDone() {
+    try {
+      localStorage.setItem('rummy_guided_lesson_done', '1');
+      localStorage.setItem('rummy_solo_guided_pref', 'off');
+    } catch (_) {}
+    syncSoloPracticeLobbyOption();
+  }
+  function applySoloPracticeLobbyVisuals(includeGuided) {
+    const card = document.getElementById('soloPracticeCard');
+    const tag = document.getElementById('soloPracticeTag');
+    const btn = document.getElementById('btnStartSoloPractice');
+    const lbl = document.getElementById('btnStartSoloLabel');
+    if (card) card.classList.toggle('is-tutorial', Boolean(includeGuided));
+    if (tag) tag.innerText = includeGuided ? 'Guided Lesson' : 'Offline Solo';
+    if (btn) btn.classList.toggle('is-tutorial-btn', Boolean(includeGuided));
+    if (lbl) lbl.innerText = includeGuided ? 'Start Solo Practice (with Guided Lesson)' : 'Start Solo Practice';
+  }
+  function syncSoloPracticeLobbyOption() {
+    const cb = document.getElementById('soloGuidedCheckbox');
+    let pref = null;
+    try { pref = localStorage.getItem('rummy_solo_guided_pref'); } catch (_) {}
+    const shouldCheck = pref === 'on' ? true : (pref === 'off' ? false : !isGuidedLessonPreviouslyDone());
+    if (cb) cb.checked = shouldCheck;
+    applySoloPracticeLobbyVisuals(shouldCheck);
+  }
+  function onSoloGuidedToggleChange(checked) {
+    const val = Boolean(checked);
+    try { localStorage.setItem('rummy_solo_guided_pref', val ? 'on' : 'off'); } catch (_) {}
+    applySoloPracticeLobbyVisuals(val);
+  }
+  function launchSoloPractice() {
+    const cb = document.getElementById('soloGuidedCheckbox');
+    if (cb && cb.checked) {
+      startGuidedPractice();
+    } else {
+      startDemoMode();
+    }
+  }
+  window.onSoloGuidedToggleChange = onSoloGuidedToggleChange;
+  window.launchSoloPractice = launchSoloPractice;
+
   initLayoutMode();
   initStandColumns();
   renderLobbyRulesPanel();
   renderRulesButtonState();
+  syncSoloPracticeLobbyOption();
 
   // Restore saved player name and room from previous session
   try {
@@ -6158,6 +6523,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     updateLobbyTourBanner();
     renderLobbyRulesPanel();
     renderRulesButtonState();
+    syncSoloPracticeLobbyOption();
 
     if (message) {
       window.alert(message);
@@ -8076,7 +8442,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const maxCap = roomState.maxPlayers || MAX_PLAYERS;
     // 1. Update Fallback Legacy Summary
     if (summary) {
-      if (!playing) summary.innerText = `${roomState.players.length}/${maxCap} seated`;
+      if (!playing) summary.innerText = `${roomState.players.length} of max ${maxCap} seated`;
       else if (isMyTurn) summary.innerText = roomState.turnStage === 'DRAW' ? 'Your turn: Draw' : 'Your turn: Discard';
       else summary.innerText = `Turn: ${roomState.turnPlayerName || 'Opponent'}`;
     }
@@ -8095,7 +8461,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
       if (!playing) {
-        bannerMsg = `Waiting in lobby (${roomState.players.length}/${maxCap} seated)`;
+        bannerMsg = `Waiting in lobby (${roomState.players.length} of max ${maxCap} seated)`;
         if (turnNotice) turnNotice.innerText = 'Lobby';
         if (turnDot) turnDot.className = 'turn-indicator-dot';
       } else if (isMyTurn) {
@@ -8381,9 +8747,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (count < 2) {
         notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 min &bull; ${maxCap} max)</button>`;
       } else if (needsMorePacks) {
-        notice.innerHTML = `<button onclick="openRulesModal(); switchRulesTab('customize');" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; background:linear-gradient(135deg,#b45309,#d97706);" title="${count} players at ${handSize} cards require ${neededPacks} packs (${rNow.decks} selected)">Set ${neededPacks} Packs to Start (${count}/${maxCap} seated)</button>`;
+        notice.innerHTML = `<button onclick="openRulesModal(); switchRulesTab('customize');" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; background:linear-gradient(135deg,#b45309,#d97706);" title="${count} players at ${handSize} cards require ${neededPacks} packs (${rNow.decks} selected)">Set ${neededPacks} Packs to Start (${count} of max ${maxCap} seated)</button>`;
       } else {
-        notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count}/${maxCap} seated)</button>`;
+        notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} of max ${maxCap} seated)</button>`;
       }
       dot.classList.remove('active');
     } else if (isRoundOverPhase) {
@@ -8622,7 +8988,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                   <span>⚡</span> Group Your Cards to Minimize Deadwood
                 </div>
                 <div class="declare-subtitle">
-                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Form <b>${rRule.minPureSequences}+ Pure Groups</b> to protect all your groups. Otherwise, only Jokers, 4+ Pure Groups, and Tunellas are exempt.
+                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Form <b>${rRule.minPureSequences}+ Pure Groups</b> to protect all your groups. Otherwise, ${rRule.count3CardPureAsDeadwood ? 'only Jokers, 4+ Pure Groups, and Tunellas' : 'Jokers, all Pure Groups (3+ cards), and Tunellas'} are exempt.
                 </div>
               </div>
               <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -9727,13 +10093,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const groups=declarationGroups.map((g,i)=>{
       let protectionBadge = '';
       if (isGroupingPhase && deadwoodCalc) {
+        const rGrp = getActiveRules();
         const isPure = g.type === 'PURE_SEQUENCE';
-        const is4Plus = isPure && g.cards.length >= 4;
+        const isPureProtected = isPure && (!rGrp.count3CardPureAsDeadwood || g.cards.length >= 4);
         const isTun = declarationIsTunella(g.cards);
         if (deadwoodCalc.hasRequiredPure) {
           protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Protected (0 pts)</span>`;
-        } else if (is4Plus) {
-          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ 4+ Group (Protected)</span>`;
+        } else if (isPureProtected) {
+          const pureLabel = rGrp.count3CardPureAsDeadwood ? '🛡️ 4+ Group (Protected)' : '🛡️ Pure Group (Protected)';
+          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">${pureLabel}</span>`;
         } else if (isTun) {
           protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Tunella (Protected)</span>`;
         } else {
@@ -9979,7 +10347,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           });
           if (isPure) {
             pureSequences++;
-            if (cards.length >= 4) {
+            if (!r.count3CardPureAsDeadwood || cards.length >= 4) {
               cards.forEach(c => exemptIds.add(c.id));
             }
           }
@@ -13740,11 +14108,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const noCapThreshold = Math.min(300, handSize * 10);
     const overviewTab = document.getElementById('rulesTabOverview');
     if (overviewTab) {
-      const firstBoxP = overviewTab.querySelector('.rules-card-box p');
-      if (firstBoxP) {
-        firstBoxP.innerHTML = `<strong>${handSize}-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>${r.decks} standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Up to <strong>${MAX_PLAYERS} players</strong> can join a table (using up to 6 packs); each player is dealt <strong>${handSize} cards</strong>.`;
+      const setupP = document.getElementById('rulesOverviewSetupText') || overviewTab.querySelector('.rules-card-box p');
+      if (setupP) {
+        setupP.innerHTML = `<strong>${handSize}-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>${r.decks} standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Initially, <strong>${handSize} cards are dealt to each player</strong> (up to ${MAX_PLAYERS} players at a table), one <strong>Cut Card</strong> is revealed to establish Jokers and Honors, and one open card begins the Discard Pile.`;
       }
-      const lockTitle = overviewTab.querySelector('.rules-card-box:nth-child(3) p');
+      const goalP = document.getElementById('rulesOverviewGoalText');
+      if (goalP) {
+        goalP.innerHTML = `<strong>Your Goal:</strong> Either be the first player to <strong>Declare (Show)</strong> all <strong>${handSize} cards</strong> in valid groups with at least <strong>${r.minPureSequences} Pure Sequence(s)</strong> (winning with <strong>0 penalty points</strong> and collecting Honors), <strong>or minimize your penalty points</strong> if another player declares first or your hand is weak (by forming protected groups or choosing to <strong>Scoot</strong> early).`;
+      }
+      const flowList = document.getElementById('rulesOverviewFlowSteps');
+      if (flowList && flowList.children[0]) {
+        flowList.children[0].innerHTML = `<strong>Cards are dealt to each player:</strong> Every seated player receives <strong>${handSize} cards</strong> face-down. A Cut Card is revealed under the Stock Deck to define Jokers/Honors, and one open card starts the Discard Pile.`;
+      }
+      const ptsList = document.getElementById('rulesOverviewPointsList');
+      if (ptsList && ptsList.children.length >= 4) {
+        ptsList.children[2].innerHTML = `<strong>If you Scoot / Drop before drawing:</strong> Fixed penalty of <strong>${r.firstDrop} pts</strong> (First Drop / Scoot) or <strong>${r.middleDrop} pts</strong> (Middle Drop), or <strong>0 pts</strong> for a qualifying Free Scoot / Free Game.`;
+        const lessPureProtectedText = r.count3CardPureAsDeadwood
+          ? 'only Jokers, 4+ card Pure Runs, and Tunnelas are protected'
+          : 'Jokers, all Pure Sequences (including 3-card pure runs), and Tunnelas are protected';
+        ptsList.children[3].innerHTML = `<strong>If another player Declares first (Deadwood Calculation):</strong> Any cards not in protected groups are added together up to the <strong>${r.maxDeadwood}-point</strong> cap${r.maxDeadwood >= noCapThreshold ? ' (No Cap)' : ''}. If you formed <strong>${r.minPureSequences}+ Pure Sequences</strong>${r.allowDoublesShow ? ` (or ${r.dealtDoublesForShow}+ Doubles)` : ''}, all valid groups are protected (only loose cards count); otherwise, ${lessPureProtectedText}.`;
+      }
+      const lockTitle = document.getElementById('rulesOverviewJokerLockTitle');
       if (lockTitle) {
         lockTitle.innerHTML = r.blockDiscardedJokerPickup
           ? '<strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong>'
@@ -13820,6 +14204,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (rows[3]) rows[3].children[2].innerHTML = `<strong>${r.middleDrop} points</strong>`;
       if (rows[4]) rows[4].children[2].innerHTML = `<strong>${r.forfeitPenalty} points</strong>`;
       if (rows[5]) rows[5].children[2].innerHTML = r.maxDeadwood >= noCapThreshold ? `<strong>${r.maxDeadwood} points (No Cap)</strong>` : `<strong>${r.maxDeadwood} points</strong>`;
+      const enoughPureEl = document.getElementById('rulesScoringDeadwoodEnoughPure');
+      if (enoughPureEl) {
+        enoughPureEl.innerHTML = `<strong>If you have &ge; ${r.minPureSequences} Pure Sequences${r.allowDoublesShow ? ` or &ge; ${r.freeGameDrawnDoubles} Doubles` : ''}:</strong> All valid grouped cards (pure sequences, impure sequences, sets, tunnelas${r.allowDoublesShow ? ', and double pairs' : ''}) are protected (0 deadwood). Only loose cards count as deadwood.`;
+      }
+      const lessPureEl = document.getElementById('rulesScoringDeadwoodLessPure');
+      if (lessPureEl) {
+        lessPureEl.innerHTML = r.count3CardPureAsDeadwood
+          ? `<strong>If you have &lt; ${r.minPureSequences} Pure Sequences:</strong> ONLY <strong>Jokers</strong>, <strong>Pure Sequences of 4 or more cards</strong>, and <strong>Tunnelas</strong> are protected! All other cards (including 3-card pure runs, sets, impure runs, and loose cards) count as deadwood up to the ${r.maxDeadwood}-point maximum.`
+          : `<strong>If you have &lt; ${r.minPureSequences} Pure Sequences:</strong> <strong>Jokers</strong>, <strong>all Pure Sequences (including 3-card pure runs)</strong>, and <strong>Tunnelas</strong> are protected! Sets, impure runs, and loose cards count as deadwood up to the ${r.maxDeadwood}-point maximum.`;
+      }
       const tourneyBox = document.getElementById('rulesTournamentInfoBox');
       if (tourneyBox) {
         if (r.eliminationEnabled) {
@@ -13881,7 +14275,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <label class="rules-field" title="Exceeding this points total (excluding Honors) eliminates the player in Tournament mode">Tournament Score Limit<input type="number" min="100" max="5000" step="50" value="${r.scoreLimit}" onchange="updateModalRuleField('scoreLimit', this.value)"></label>
         </div>
         <div class="rules-check-row">
-          <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateModalRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors loses; last standing wins)</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.eliminationEnabled ? 'checked' : ''} onchange="updateModalRuleField('eliminationEnabled', this.checked)"> Tournament Elimination (exceeding <strong>${r.scoreLimit}</strong> pts excl. Honors eliminates player)</label>
+          <label class="rules-check-item"><input type="checkbox" ${r.count3CardPureAsDeadwood ? 'checked' : ''} onchange="updateModalRuleField('count3CardPureAsDeadwood', this.checked)"> Count 3-card Pure Sequences as deadwood unless ${r.minPureSequences}+ Pure Groups are formed</label>
           <label class="rules-check-item"><input type="checkbox" ${r.blockDiscardedJokerPickup ? 'checked' : ''} onchange="updateModalRuleField('blockDiscardedJokerPickup', this.checked)"> Block picking up discarded Jokers from open pile</label>
           <label class="rules-check-item" style="${doublesLocked ? 'opacity:0.55;' : ''}"><input type="checkbox" ${r.allowDoublesShow ? 'checked' : ''} ${doublesLocked ? 'disabled' : ''} onchange="updateModalRuleField('allowDoublesShow', this.checked)"> ${doublesLocked ? 'Allow Doubles Show &amp; Free Scoot (Disabled below 21 cards)' : 'Allow Doubles Show &amp; Free Scoot / Free Game'}</label>
           <label class="rules-check-item"><input type="checkbox" ${r.allow3TunellasShow ? 'checked' : ''} onchange="updateModalRuleField('allow3TunellasShow', this.checked)"> Allow 3 Tunellas Instant Show</label>
@@ -13997,6 +14392,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       melds: { btn: 'tabBtnMelds', content: 'rulesTabMelds' },
       jokers: { btn: 'tabBtnJokers', content: 'rulesTabJokers' },
       scoring: { btn: 'tabBtnScoring', content: 'rulesTabScoring' },
+      glossary: { btn: 'tabBtnGlossary', content: 'rulesTabGlossary' },
       customize: { btn: 'tabBtnCustomize', content: 'rulesTabCustomize' }
     };
     if (tabKey === 'customize') renderRulesCustomizeTab();
@@ -14273,6 +14669,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (typeof guidedPractice !== 'undefined' && guidedPractice.active) {
       guidedPractice.active = false;
       guidedPractice.completed = true;
+      markGuidedLessonDone();
     }
     const waitModal = document.getElementById('groupingWaitModal');
     if (waitModal) waitModal.style.display = 'none';
@@ -14442,7 +14839,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             if (Array.isArray(g.cards) && declarationPure(g.cards)) return true;
             return false;
           }).length;
-          const hasMinPure = isWinner || pPureCount >= 3;
+          const rRes = getActiveRules();
+          const reqPureRes = rRes.minPureSequences || 3;
+          const hasMinPure = isWinner || pPureCount >= reqPureRes;
 
           const pDeadwoodCalc = (!isWinner)
             ? calculateCurrentDeadwood(groups, handCards)
@@ -14459,9 +14858,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             : `<span style="color:#94a3b8;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">SETTLED (${p.deadwood || 0} pts deadwood${deadwoodCardsText})</span>`;
 
           if (!isWinner) {
+            const lessPureSummary = rRes.count3CardPureAsDeadwood
+              ? `(&lt;${reqPureRes}: Only Jokers, 4+ groups &amp; Tunellas protected)`
+              : `(&lt;${reqPureRes}: Jokers, all Pure Runs &amp; Tunellas protected)`;
             statusBadge += hasMinPure
-              ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/3 Pure Groups (Groups Protected)</span>`
-              : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/3 Pure Groups (&lt;3: Only Jokers, 4+ groups &amp; Tunellas protected)</span>`;
+              ? ` <span style="color:#86efac;background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">✅ ${pPureCount}/${reqPureRes} Pure Groups (Groups Protected)</span>`
+              : ` <span style="color:#fbbf24;background:rgba(234,179,8,0.14);border:1px solid rgba(234,179,8,0.3);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">⚠️ ${pPureCount}/${reqPureRes} Pure Groups ${lessPureSummary}</span>`;
           }
 
           let groupsHtml = '';
@@ -14505,7 +14907,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               const isPure = g.type === 'PURE_SEQUENCE' || declarationPure(gCards);
               const isSeq = g.type === 'SEQUENCE';
               const isTun = declarationIsTunella(gCards);
-              const is4PlusPure = isPure && gCards.length >= 4;
+              const isPureProtected = isPure && (!rRes.count3CardPureAsDeadwood || gCards.length >= 4);
               const gWilds = gCards.filter(c => declarationIsWild(c));
               const gNaturals = gCards.filter(c => !declarationIsWild(c));
 
@@ -14514,8 +14916,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               if (!isWinner) {
                 if (hasMinPure) {
                   protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Protected (0 pts)</span>';
-                } else if (is4PlusPure) {
-                  protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ 4+ Run Protected (0 pts)</span>';
+                } else if (isPureProtected) {
+                  const pureProtectLabel = rRes.count3CardPureAsDeadwood ? '🛡️ 4+ Run Protected (0 pts)' : '🛡️ Pure Run Protected (0 pts)';
+                  protectNote = `<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">${pureProtectLabel}</span>`;
                 } else if (isTun) {
                   protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Tunella Protected (0 pts)</span>';
                 } else {
@@ -14523,7 +14926,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                     protectNote = `<span style="color:#fbbf24;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Unprotected (${gNaturals.length} cards deadwood • ${gWilds.length} Joker exempt)</span>`;
                     badgeBorder = 'border-color:rgba(234,179,8,0.4);background:rgba(234,179,8,0.06);';
                   } else {
-                    protectNote = '<span style="color:#f87171;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Deadwood (Needs 3 Pure Runs)</span>';
+                    protectNote = `<span style="color:#f87171;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Deadwood (Needs ${reqPureRes} Pure Runs)</span>`;
                     badgeBorder = 'border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.06);';
                   }
                 }
@@ -14795,6 +15198,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeMaalModal();
+      if (typeof closeRulesModal === 'function') closeRulesModal();
       if (typeof uiTourActive !== 'undefined' && uiTourActive) endUITour();
     }
   });
@@ -15465,8 +15869,44 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   // --- Floating Live Coach & Guided Practice Lesson Engine ---
   const LIVE_COACH_STORAGE_KEY = 'rummy_live_coach';
+  const LIVE_COACH_POS_KEY = 'rummy_live_coach_pos';
   let liveCoachEnabled = false;
   let liveCoachMinimized = false;
+  let liveCoachPosition = null; // 'top' | 'below-board' | 'bottom'
+  let liveCoachLastTargets = [];
+  let liveCoachOverlapState = { covering: false, label: '' };
+
+  function getDefaultLiveCoachPosition() {
+    return (typeof window !== 'undefined' && window.innerWidth <= 820) ? 'bottom' : 'top';
+  }
+
+  function loadLiveCoachPosition() {
+    try {
+      const saved = localStorage.getItem(LIVE_COACH_POS_KEY);
+      if (saved === 'top' || saved === 'below-board' || saved === 'bottom') {
+        liveCoachPosition = saved;
+        return;
+      }
+    } catch (_) {}
+    liveCoachPosition = getDefaultLiveCoachPosition();
+  }
+  loadLiveCoachPosition();
+
+  function setLiveCoachPosition(pos, e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (pos !== 'top' && pos !== 'below-board' && pos !== 'bottom') return;
+    liveCoachPosition = pos;
+    try { localStorage.setItem(LIVE_COACH_POS_KEY, pos); } catch (_) {}
+    renderLiveCoach();
+  }
+
+  function cycleLiveCoachPosition(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const order = ['top', 'below-board', 'bottom'];
+    const cur = liveCoachPosition || getDefaultLiveCoachPosition();
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    setLiveCoachPosition(next);
+  }
 
   const guidedPractice = {
     active: false,
@@ -15481,59 +15921,72 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     {
       id: 'DRAW',
       title: 'Step 1: Draw a Card',
-      badge: 'Action 1 of 6 • Your Turn',
+      badge: '1/6 • Your Turn',
+      compact: () => isDiscardedJoker(roomState?.topDiscard)
+        ? 'Draw from Stock Deck (top discard is a locked Joker)'
+        : `Tap Stock Deck or top Discard to draw your ${formatOrdinal(getConfiguredHandSize() + 1)} card`,
       instruction: () => {
         const locked = isDiscardedJoker(roomState?.topDiscard);
         return locked
-          ? `Tap the <strong>Stock Deck</strong> to draw. The visible discard is locked because it is a Joker, so taking it would break the table rule.`
-          : `Tap the <strong>Stock Deck</strong> or the top <strong>Discard</strong> to draw your ${formatOrdinal(getConfiguredHandSize() + 1)}th card. Drawing first gives you a card to evaluate before deciding what to discard.`;
+          ? 'Tap the <strong>Stock Deck</strong> to draw because the visible discard is a 🔒 locked Joker — taking a discarded Joker breaks the table rule.'
+          : `Tap the <strong>Stock Deck</strong> or top <strong>Discard</strong> to draw your ${formatOrdinal(getConfiguredHandSize() + 1)} card. Drawing first gives you a candidate card before choosing what to discard.`;
       },
       targets: () => isDiscardedJoker(roomState?.topDiscard) ? ['#stockDeckBtn'] : ['#stockDeckBtn', '#discardContainer']
     },
     {
       id: 'SELECT',
       title: 'Step 2: Highlight a Card',
-      badge: 'Action 2 of 6 • Select',
-      instruction: () => `You now hold ${getHandCount()} cards. Tap one card to select it. Selection reveals the Move Pad and tells the game which card you want to work with.`,
+      badge: '2/6 • Select',
+      compact: () => `Tap any card in your hand (${getHandCount()} held) to select & reveal Move Pad`,
+      instruction: () => `You now hold ${getHandCount()} cards. Tap one card to select it — highlighting reveals the Move Pad and tells the game which card you want to move or discard.`,
       targets: () => ['#stand-cards-0 .card', '#standsContainer']
     },
     {
       id: 'MOVE_PAD',
       title: 'Step 3: Organize Your Hand',
-      badge: 'Action 3 of 6 • Move',
-      instruction: () => 'Use the Move Pad arrows or stand buttons to move your selected card. You can also use <strong>Move Group</strong> or <strong>Sort Suit/Rank</strong>. Organizing helps you spot runs and sets; it does not itself finish your turn.',
+      badge: '3/6 • Move & Sort',
+      compact: () => 'Use Move Pad arrows, Move Group, or Sort Suit/Rank to arrange cards',
+      instruction: () => 'Use the Move Pad arrows or stand buttons to move your selected card. You can also tap <strong>⬇ Move Group</strong> or <strong>↕ Sort Suit/Rank</strong>. Organizing helps you spot runs and sets without ending your turn.',
       targets: () => ['#reorderBar .reorder-nav-group', '#standMoveOptions', '.stand-move-group-btn', '.stands-toolbar button[onclick*="sortHand"]']
     },
     {
       id: 'DISCARD',
       title: 'Step 4: Discard a Card',
-      badge: 'Action 4 of 6 • End Turn',
+      badge: '4/6 • End Turn',
+      compact: () => `Tap an unneeded card & press Discard Card to return to ${getConfiguredHandSize()} cards`,
       instruction: () => selectedCardId
-        ? 'Choose a card you do not need, then tap <strong>Discard Card</strong> (or the Discard pile). You must discard one card after drawing to finish your turn and return to 21 cards.'
-        : 'Tap a card you do not need to select it, then tap <strong>Discard Card</strong>. A turn is not complete until you discard.',
+        ? `Tap <strong>Discard Card</strong> (or the Discard pile). Because you drew an extra card, you must discard 1 card to finish your turn and return to ${getConfiguredHandSize()} cards.`
+        : `Tap a card you do not need to select it, then tap <strong>Discard Card</strong>. A turn is not complete until you discard back down to ${getConfiguredHandSize()} cards.`,
       targets: () => ['#btnDiscard', '#standMoveOptions .stand-discard-quick-btn', '#discardContainer', '#standsContainer']
     },
     {
       id: 'SEQUENCE',
       title: 'Step 5: Spot a Pure Sequence',
-      badge: 'Action 5 of 6 • Recognize Groups',
-      instruction: () => 'Look for 3 or more consecutive cards of the same suit. A pure sequence uses no joker as a substitute. These groups matter because your table requires a minimum number of pure sequences before you can win. Tap <strong>2 Cols</strong> to change the layout or <strong>Sort Suit/Rank</strong> to organize the cards and make runs easier to spot.',
+      badge: '5/6 • Pure Run',
+      compact: () => 'Spot 3+ consecutive same-suit cards with no Joker (try 2 Cols or Sort)',
+      instruction: () => {
+        const reqPure = getActiveRules().minPureSequences || 3;
+        return `This is a <strong>pure sequence</strong>: three or more consecutive cards of the same suit, with no Joker. Because your table requires at least <strong>${reqPure}</strong> pure sequences before winning, look for green <strong>💎 Pure Run</strong> badges — tap <strong>2 Cols</strong> or <strong>Sort Suit/Rank</strong> to spot runs faster.`;
+      },
       targets: () => ['#btnStandColumns', '.stands-toolbar button[onclick*="sortHand"]', '#stand-rack-0', '#standsContainer']
     },
     {
       id: 'DECLARE',
       title: 'Step 6: Try Show / Declare',
-      badge: 'Action 6 of 6 • Practice Declaration',
+      badge: '6/6 • Show Practice',
+      compact: () => !guidedPractice.declarationOpened
+        ? 'Tap Show / Declare to open Grouping Mode (penalty-free)'
+        : (!guidedPractice.declarationAttempted ? 'Tap Submit Declaration to test validation' : 'Lesson complete — press Finish or Return to Lobby'),
       instruction: () => {
         const hs = getConfiguredHandSize();
         const reqPure = getActiveRules().minPureSequences || 3;
         if (!guidedPractice.declarationOpened) {
-          return `Tap <strong>Show / Declare</strong> to open Grouping Mode. The game checks whether you have at least <strong>${reqPure} pure sequences</strong> and all <strong>${hs} cards grouped</strong>; opening this mode is penalty-free.`;
+          return `Tap <strong>Show / Declare</strong> to open Grouping Mode. The game checks for at least <strong>${reqPure} pure sequences</strong> and all <strong>${hs} cards grouped</strong>; opening this mode is penalty-free. When finished, tap <strong>🚪 Leave</strong> anytime to return to the lobby.`;
         }
         if (!guidedPractice.declarationAttempted) {
-          return `Grouping Mode is open. Review the groups, then tap <strong>🏆 Submit Declaration</strong> once to see the validation result. This is a practice hand, so you can safely learn from the result.`;
+          return `Grouping Mode is open. Review the groups, then tap <strong>🏆 Submit Declaration</strong> once to see the validation result. This is a practice hand, so there are zero penalties.`;
         }
-        return 'You tried submitting a declaration. You have completed the hands-on lesson; use <strong>Finish</strong> to keep practicing or return to the lobby.';
+        return 'You tried submitting a declaration and completed the hands-on lesson! Tap <strong>Finish ✓</strong> or <strong>🏠 Return to Lobby</strong> whenever you are ready.';
       },
       targets: () => guidedPractice.declarationOpened
         ? ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]', '.sticky-submit-btn']
@@ -15606,22 +16059,113 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     renderLiveCoach();
   }
 
+  function describeCoachTargetElement(sel, el) {
+    if (!sel && !el) return 'a needed control';
+    const s = sel || '';
+    if (s.includes('stockDeckBtn') || el?.id === 'stockDeckBtn') return 'Stock Deck';
+    if (s.includes('discardContainer') || el?.id === 'discardContainer') return 'Discard Pile';
+    if (s.includes('btnDiscard') || el?.id === 'btnDiscard') return 'Discard Button';
+    if (s.includes('btnDeclare') || el?.id === 'btnDeclare') return 'Show / Declare';
+    if (s.includes('reorderBar') || el?.id === 'reorderBar') return 'Move Pad';
+    if (s.includes('standMoveOptions') || el?.id === 'standMoveOptions') return 'Stand Moves';
+    if (s.includes('btnStandColumns') || el?.id === 'btnStandColumns') return '2 Cols Button';
+    if (s.includes('sortHand')) return 'Sort Button';
+    if (s.includes('stand-move-group-btn')) return 'Move Group';
+    if (s.includes('sticky-submit-btn')) return 'Submit Declaration';
+    if (s.includes('guide-me-btn-trigger')) return 'Guide Me';
+    if (s.includes('autoGroupFullHand')) return 'Auto-Group';
+    if (s.includes('btnLeaveSession')) return 'Leave Button';
+    if (s.includes('stand-rack') || s.includes('standsContainer') || s.includes('.card')) return 'Your Hand';
+    return 'Needed Control';
+  }
+
+  function checkLiveCoachOverlap(selectors) {
+    const panel = document.getElementById('liveCoachPanel');
+    document.querySelectorAll('.coach-covered-target').forEach(el => el.classList.remove('coach-covered-target'));
+    liveCoachOverlapState = { covering: false, label: '' };
+
+    if (!panel || !panel.classList.contains('is-visible') || liveCoachPosition === 'below-board') {
+      if (panel) panel.classList.remove('is-covering-target');
+      return;
+    }
+    const pRect = panel.getBoundingClientRect ? panel.getBoundingClientRect() : null;
+    if (!pRect || pRect.width <= 0 || pRect.height <= 0) {
+      panel.classList.remove('is-covering-target');
+      return;
+    }
+
+    const list = Array.isArray(selectors) ? selectors : [];
+    let firstLabel = '';
+    for (const sel of list) {
+      if (!sel) continue;
+      let el = null;
+      try { el = document.querySelector(sel); } catch (_) {}
+      if (!el || panel.contains(el)) continue;
+      if (el.disabled || el.classList?.contains('btn-disabled') || el.style?.display === 'none') continue;
+      const eRect = el.getBoundingClientRect ? el.getBoundingClientRect() : null;
+      if (!eRect || eRect.width <= 0 || eRect.height <= 0) continue;
+
+      const overlapX = Math.min(pRect.right, eRect.right) - Math.max(pRect.left, eRect.left);
+      const overlapY = Math.min(pRect.bottom, eRect.bottom) - Math.max(pRect.top, eRect.top);
+      if (overlapX > 4 && overlapY > 4) {
+        el.classList?.add('coach-covered-target');
+        if (!firstLabel) firstLabel = describeCoachTargetElement(sel, el);
+      }
+    }
+
+    if (firstLabel) {
+      liveCoachOverlapState = { covering: true, label: firstLabel };
+      panel.classList.add('is-covering-target');
+      const bannerTextEl = document.getElementById('liveCoachOverlapLabel');
+      const chipEl = document.getElementById('liveCoachOverlapChip');
+      if (bannerTextEl) bannerTextEl.textContent = `Covering ${firstLabel}`;
+      if (chipEl) chipEl.title = `Covering ${firstLabel} — tap Move to reposition`;
+    } else {
+      panel.classList.remove('is-covering-target');
+    }
+  }
+
   function applyCoachPulseTargets(selectors) {
     document.querySelectorAll('.coach-pulse').forEach(el => el.classList.remove('coach-pulse'));
-    if (!Array.isArray(selectors) || liveCoachMinimized) return;
-    if (!liveCoachEnabled && !guidedPractice.active) return;
-    const gameViewVisible = document.getElementById('gameView')?.style?.display !== 'none';
-    if (!gameViewVisible) return;
+    const list = Array.isArray(selectors) ? selectors : [];
+    liveCoachLastTargets = list;
 
-    selectors.forEach(sel => {
-      if (!sel) return;
-      try {
-        const el = document.querySelector(sel);
-        if (el && !el.disabled && !el.classList.contains('btn-disabled') && el.style.display !== 'none') {
-          el.classList.add('coach-pulse');
-        }
-      } catch (_) {}
+    const gameViewVisible = document.getElementById('gameView')?.style?.display !== 'none';
+    if (!gameViewVisible || (!liveCoachEnabled && !guidedPractice.active)) {
+      checkLiveCoachOverlap([]);
+      return;
+    }
+
+    if (!liveCoachMinimized) {
+      list.forEach(sel => {
+        if (!sel) return;
+        try {
+          const el = document.querySelector(sel);
+          if (el && !el.disabled && !el.classList.contains('btn-disabled') && el.style.display !== 'none') {
+            el.classList.add('coach-pulse');
+          }
+        } catch (_) {}
+      });
+    }
+
+    checkLiveCoachOverlap(list);
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => checkLiveCoachOverlap(list));
+    }
+  }
+
+  let liveCoachOverlapRaf = null;
+  function scheduleCoachOverlapRecheck() {
+    if (!liveCoachEnabled && !guidedPractice.active) return;
+    if (liveCoachOverlapRaf || typeof requestAnimationFrame !== 'function') return;
+    liveCoachOverlapRaf = requestAnimationFrame(() => {
+      liveCoachOverlapRaf = null;
+      checkLiveCoachOverlap(liveCoachLastTargets);
     });
+  }
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('resize', scheduleCoachOverlapRecheck, { passive: true });
+    window.addEventListener('scroll', scheduleCoachOverlapRecheck, { passive: true });
   }
 
   function buildShowablePracticeHand(handSize, roles, allowPoochie) {
@@ -15654,18 +16198,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     const left = handSize - count;
     if (left === 1 && groupsNeeded.length > 0) {
-      if (allowPoochie) {
-        groupsNeeded[0].push({ id: `gp_pj_${Date.now()}`, suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true });
-      } else {
-        groupsNeeded[0].push({ id: `gp_ext1_${Date.now()}`, suit: '♠', rank: '4', rankValue: 4, isPoochie: false });
-      }
+      groupsNeeded[0].push({ id: `gp_ext1_${Date.now()}`, suit: '♠', rank: '4', rankValue: 4, isPoochie: false });
     } else if (left === 2 && groupsNeeded.length > 0) {
       groupsNeeded[0].push({ id: `gp_ext1_${Date.now()}`, suit: '♠', rank: '4', rankValue: 4, isPoochie: false });
-      groupsNeeded[1].push({ id: `gp_ext2_${Date.now()}`, suit: '♥', rank: 'Q', rv: 12, rankValue: 12, isPoochie: false });
+      if (groupsNeeded[1]) {
+        groupsNeeded[1].push({ id: `gp_ext2_${Date.now()}`, suit: '♥', rank: 'Q', rankValue: 12, isPoochie: false });
+      }
     }
     const base = groupsNeeded.flat().slice(0, handSize);
     const finishDiscard = { id: `gp_fin_${Date.now()}`, suit: '♥', rank: 'K', rankValue: 13, isPoochie: false };
-    return { cards: [...base, finishDiscard], stands: groupsNeeded.length >= 3 ? [groupsNeeded.slice(0, 2).flat(), groupsNeeded.slice(2, 4).flat(), [...groupsNeeded.slice(4).flat(), finishDiscard]] : [base, [finishDiscard], []] };
+    return { cards: [...base, finishDiscard], stands: [...groupsNeeded.map(g => [...g]), [finishDiscard]] };
   }
 
   function ensureGuidedPracticeHandHasShow() {
@@ -15745,16 +16287,29 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (guidedPractice.stepIdx >= GUIDED_PRACTICE_STEPS.length - 1) {
       guidedPractice.active = false;
       guidedPractice.completed = true;
+      markGuidedLessonDone();
       renderAll(calculateLocalMaal());
       return;
     }
     guidedPractice.stepIdx++;
     const nextStep = getCurrentGuidedStep();
     const hs = getConfiguredHandSize();
-    if (nextStep && nextStep.id === 'DECLARE' && roomState?.turnStage === 'DRAW') {
+    if (nextStep?.id === 'SELECT' && !guidedPractice.completedSteps[guidedPractice.stepIdx]) {
+      selectedCardId = null; // Clear auto-selected drawn card so single tap highlights and completes Step 2
+    } else if (nextStep?.id === 'MOVE_PAD' && !selectedCardId && userStands?.[0]?.[0]) {
+      selectedCardId = userStands[0][0].id;
+    } else if (nextStep?.id === 'DISCARD' && myHand.length < hs + 1 && roomState) {
       ensureGuidedPracticeHandHasShow();
       roomState.turnPlayerId = 'p_demo';
+      roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
       roomState.turnStage = 'DISCARD';
+    } else if (nextStep?.id === 'DECLARE') {
+      ensureGuidedPracticeHandHasShow();
+      if (roomState) {
+        roomState.turnPlayerId = 'p_demo';
+        roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
+        roomState.turnStage = 'DISCARD';
+      }
     }
     renderAll(calculateLocalMaal());
   }
@@ -15765,6 +16320,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     guidedPractice.completedSteps = [];
     guidedPractice.declarationOpened = false;
     guidedPractice.declarationAttempted = false;
+    markGuidedLessonDone();
     const connEl = document.getElementById('connectionStatus');
     if (connEl && isDemo) {
       connEl.innerText = 'Demo Preview';
@@ -15825,16 +16381,23 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return {
         badge: '🎓 Lesson Complete',
         title: 'Nice work — You Finished!',
-        msg: 'You practiced the full turn sequence: draw, select, organize, discard, recognize a pure sequence, and try a declaration. This was a penalty-free practice hand.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
+        compact: 'Lesson complete — tap Return to Lobby or Leave when ready',
+        msg: 'You practiced the full turn sequence: draw, select, organize, discard, recognize a pure sequence, and try a declaration with zero penalties.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
         targets: ['#btnLeaveSession']
       };
     }
 
     if (!roomState || roomState.status === 'LOBBY') {
+      const seated = (roomState?.players || []).filter(p => !p.hasLeft).length;
       return {
         badge: '💡 Table Guide',
         title: 'Waiting in Lobby',
-        msg: `Share Room Code <strong>${escapeHtml(roomState?.id || 'FAMILY')}</strong>. Tap <strong>Start Game</strong> once at least 2 players are seated.`,
+        compact: seated < 2
+          ? `Share Room Code ${roomState?.id || 'FAMILY'} (need 2+ players to start)`
+          : 'Tap Start Game to deal the first hand',
+        msg: seated < 2
+          ? `Share Room Code <strong>${escapeHtml(roomState?.id || 'FAMILY')}</strong> so family members join the same private table — Rummy requires <strong>at least 2 players</strong> before dealing cards.`
+          : `${seated} players seated! Tap <strong>Start Game</strong> to deal ${handSize} cards each and reveal the Cut Joker.`,
         targets: ['#turnNotice button']
       };
     }
@@ -15843,69 +16406,110 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
       const grouped = declarationGroups.flatMap(g => g.cards || []).length;
       const targetCount = roomState.status === 'GROUPING' ? myHand.length : handSize;
+      const ungrouped = Math.max(0, targetCount - grouped);
       if (pure < reqPure) {
         return {
           badge: '💡 Declaration Guide',
-          title: `Pure Groups: ${pure} / ${reqPure}`,
-          msg: `You need at least <strong>${reqPure} qualifying pure groups</strong>. Tap <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>, or select 3+ consecutive same-suit cards.`,
+          title: `Pure Sequences: ${pure} / ${reqPure}`,
+          compact: `Need ${reqPure - pure} more pure sequence(s) — 3+ consecutive same-suit cards, no Joker`,
+          msg: `You need at least <strong>${reqPure} pure sequences</strong> — consecutive cards of the same suit with <strong>no Joker</strong>${r.allowMarriageAsPure ? ' (or a Cut-Suit Marriage)' : ''}. Because Jokers cannot substitute in pure groups, form those first using <strong>🧭 Guide Me</strong> or <strong>⚡ Auto-Group</strong>.`,
           targets: ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]']
         };
       }
-      if (grouped < targetCount) {
+      if (ungrouped > 0) {
+        const noun = ungrouped === 1 ? '1 card is' : `${ungrouped} cards are`;
         return {
           badge: '💡 Declaration Guide',
-          title: `Grouping Cards: ${grouped} / ${targetCount}`,
-          msg: `Pure groups met (<strong>${pure}/${reqPure}</strong>)! Keep grouping cards until <strong>${targetCount}/${targetCount}</strong> are grouped.`,
+          title: `${grouped} / ${targetCount} Grouped`,
+          compact: `Enough pure sequences (${pure}/${reqPure}), but ${noun} still ungrouped`,
+          msg: `You have enough pure sequences (<strong>${pure}/${reqPure}</strong>), but <strong>${noun} still ungrouped</strong>. Group remaining cards into valid runs or sets so ${roomState.status === 'GROUPING' ? 'loose cards do not count as deadwood penalty points' : `all ${targetCount} cards are valid before declaring`}.`,
           targets: ['.guide-me-btn-trigger', 'button[onclick*="autoGroupFullHand"]']
         };
       }
       return {
         badge: '💡 Ready to Submit',
         title: `${targetCount} / ${targetCount} Grouped!`,
+        compact: roomState.status === 'GROUPING' ? 'All cards grouped — tap Submit Groups' : 'All cards grouped — tap Submit Declaration',
         msg: roomState.status === 'GROUPING'
-          ? 'Tap <strong>✅ Submit Groups</strong> now to lock in your protected hand.'
-          : 'All cards ready! Tap <strong>🏆 Submit Declaration</strong> to declare, or <strong>✕ Cancel</strong> with zero penalty.',
+          ? 'All cards are locked into valid groups with zero loose deadwood. Tap <strong>✅ Submit Groups</strong> to finish your protected settle.'
+          : `All <strong>${targetCount} cards</strong> are validly grouped and your <strong>${reqPure}+ pure sequences</strong> are met! Tap <strong>🏆 Submit Declaration</strong> (or <strong>✕ Cancel</strong> with zero penalty).`,
         targets: ['.sticky-submit-btn']
       };
     }
 
     if (myPlayer?.isEliminated || myPlayer?.hasDropped || myPlayer?.hasForfeited) {
+      const reason = myPlayer?.isEliminated
+        ? 'Eliminated from the tournament table (score exceeded limit)'
+        : (myPlayer?.hasForfeited ? 'Forfeited this hand after an invalid show' : 'Scooted early to lock in drop points');
       return {
         badge: '💡 Spectator Guide',
         title: 'Hand Folded',
-        msg: `Watching <strong>${escapeHtml(roomState.turnPlayerName || 'active players')}</strong> finish this hand.`,
+        compact: `Watching ${roomState.turnPlayerName || 'active players'} finish this hand`,
+        msg: `${reason}. Watching <strong>${escapeHtml(roomState.turnPlayerName || 'active players')}</strong> finish so the next hand can begin.`,
         targets: []
+      };
+    }
+
+    if (isMyTurn && canDraw && selCard && !declarationMode) {
+      const locked = isDiscardedJoker(roomState.topDiscard);
+      return {
+        badge: '💡 Draw Before Discarding',
+        title: `Draw First (${escapeHtml(selLabel)} Selected)`,
+        compact: `Cannot discard yet because you haven't drawn this turn — draw 1 card first`,
+        msg: `You cannot discard yet because <strong>you haven't drawn this turn</strong> (you still hold ${getHandCount()} cards). ${locked ? 'Draw from the <strong>Stock Deck</strong> because the top discard is a 🔒 locked Joker.' : 'Draw from <strong>Stock Deck</strong> or <strong>Discard</strong> first'} — or use the Move Pad to arrange <strong>${escapeHtml(selLabel)}</strong>.`,
+        targets: locked ? ['#stockDeckBtn', '#reorderBar .reorder-nav-group'] : ['#stockDeckBtn', '#discardContainer', '#reorderBar .reorder-nav-group']
       };
     }
 
     if (isMyTurn && canDraw) {
       const locked = isDiscardedJoker(roomState.topDiscard);
+      const isInitialOpenJoker = Boolean(roomState.topDiscard?.isInitialOpenCard && declarationIsWild(roomState.topDiscard));
       return {
         badge: '💡 Your Turn • Draw',
         title: 'Draw 1 Card',
+        compact: locked
+          ? 'Draw from Stock because visible discard is a locked Joker'
+          : 'Tap Stock Deck or top Discard to start your turn',
         msg: locked
-          ? 'Your turn! Draw from the <strong>Stock Deck</strong>. The top discard is a 🔒 Joker and cannot be picked up under this table rule.'
-          : 'Your turn! Draw from the <strong>Stock Deck</strong> or the top <strong>Discard</strong>. Taking the discard can be useful when it helps complete a run or set.',
-        targets: locked ? ['#stockDeckBtn', '#btnDiscard'] : ['#stockDeckBtn', '#discardContainer', '#btnDiscard']
+          ? 'Draw from the <strong>Stock Deck</strong> because the visible discard is a <strong>🔒 locked Joker</strong> — discarded Jokers cannot be picked up once thrown.'
+          : (isInitialOpenJoker
+            ? 'Your turn! Draw from <strong>Stock Deck</strong> or pick up the <strong>initial open Joker</strong> — because it was dealt at the start of the round, picking up this first Joker is allowed.'
+            : `Your turn! Tap <strong>Stock Deck</strong> for a mystery card or <strong>Discard</strong> if the top card completes a run or set — every turn starts by drawing to reach ${drawnSize} cards.`),
+        targets: locked ? ['#stockDeckBtn'] : ['#stockDeckBtn', '#discardContainer']
       };
     }
 
     if (selCard && !declarationMode) {
+      if (canDiscard) {
+        const isWildSel = declarationIsWild(selCard);
+        return {
+          badge: '💡 Card Selected • Discard Ready',
+          title: `Selected ${escapeHtml(selLabel)}`,
+          compact: isWildSel
+            ? `${selLabel} is a Joker/wild — consider keeping it or moving to a group`
+            : `Move ${selLabel} or tap Discard Card to end turn at ${handSize} cards`,
+          msg: isWildSel
+            ? `<strong>${escapeHtml(selLabel)}</strong> is a Joker/wild card — keeping it gives wild flexibility in sequences (or Honors points), whereas discarding a Joker locks it from opponents. Move it with the arrows or discard only if unneeded.`
+            : `Use the <strong>◀ / ▶</strong> arrows or Stand <strong>▲ / ▼</strong> buttons to move <strong>${escapeHtml(selLabel)}</strong>, or tap <strong>Discard Card</strong> because you hold ${getHandCount()} cards and must discard down to ${handSize} to end your turn.`,
+          targets: ['#reorderBar .reorder-nav-group', '#standMoveOptions', '#btnDiscard']
+        };
+      }
       return {
-        badge: '💡 Card Selected',
+        badge: '💡 Arranging Between Turns',
         title: `Moving ${escapeHtml(selLabel)}`,
-        msg: canDiscard
-          ? `Use the <strong>◀ / ▶</strong> arrows or Stand <strong>▲ / ▼</strong> buttons to move ${escapeHtml(selLabel)}, or tap <strong>Discard Card</strong> to end your turn.`
-          : 'Use the arrows to move it, or choose another stand.',
-        targets: canDiscard ? ['#reorderBar .reorder-nav-group', '#standMoveOptions', '#btnDiscard'] : ['#reorderBar .reorder-nav-group', '#standMoveOptions']
+        compact: `Arrange ${selLabel} with Move Pad (discard unlocks on your turn)`,
+        msg: `Waiting for <strong>${escapeHtml(roomState.turnPlayerName || 'opponent')}</strong> — you cannot draw or discard until it is your turn, so you can safely move <strong>${escapeHtml(selLabel)}</strong> between stands now.`,
+        targets: ['#reorderBar .reorder-nav-group', '#standMoveOptions']
       };
     }
 
     if (isMyTurn && canDiscard) {
+      const pureStandCount = (userStands || []).filter(st => Array.isArray(st) && st.length >= 3 && detectBestGroupType(st)?.type === 'PURE_SEQUENCE').length;
       return {
         badge: '💡 Your Turn • Organize & Discard',
         title: `${getHandCount()} Cards Held`,
-        msg: `You have <strong>${getHandCount()} cards</strong>. After drawing, discard one card to end your turn. Keep cards that extend useful runs or sets; avoid breaking a pure sequence unless you have a better plan.`,
+        compact: `Discard 1 unneeded card to end your turn (${pureStandCount}/${reqPure} pure stands ready)`,
+        msg: `You have <strong>${getHandCount()} cards</strong> because you already drew this turn — select an unneeded card to <strong>Discard</strong> back down to ${handSize} and pass the turn, or tap <strong>Show / Declare</strong> if all ${handSize} cards are grouped with ${reqPure}+ pure sequences${pureStandCount > 0 ? ` (${pureStandCount} pure run stand${pureStandCount === 1 ? '' : 's'} spotted)` : ''}.`,
         targets: ['#standsContainer', '#btnDeclare']
       };
     }
@@ -15913,7 +16517,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     return {
       badge: '💡 Table Guide',
       title: `Turn: ${escapeHtml(roomState.turnPlayerName || 'Opponent')}`,
-      msg: `Waiting for <strong>${escapeHtml(roomState.turnPlayerName || 'opponent')}</strong>. You can tap any card anytime to organize your stands.`,
+      compact: `Waiting for ${roomState.turnPlayerName || 'opponent'} — organize stands anytime`,
+      msg: `Waiting for <strong>${escapeHtml(roomState.turnPlayerName || 'opponent')}</strong> — drawing and discarding are locked until your turn, so you can sort or move cards across stands meanwhile.`,
       targets: []
     };
   }
@@ -15927,13 +16532,35 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const showCoach = Boolean(gameViewVisible && (guidedPractice.active || liveCoachEnabled));
 
     if (!showCoach) {
-      panel.classList.remove('is-visible', 'is-tutorial', 'is-minimized');
+      panel.classList.remove('is-visible', 'is-tutorial', 'is-minimized', 'pos-bottom', 'pos-below-board', 'is-covering-target');
       applyCoachPulseTargets([]);
       return;
     }
 
+    if (!liveCoachPosition) loadLiveCoachPosition();
+    const pos = liveCoachPosition || getDefaultLiveCoachPosition();
+    const topMount = document.getElementById('liveCoachTopMount');
+    const belowBoardMount = document.getElementById('liveCoachBelowBoardMount');
+    if (pos === 'below-board' && belowBoardMount && panel.parentElement !== belowBoardMount) {
+      belowBoardMount.appendChild(panel);
+    } else if (pos !== 'below-board' && topMount && panel.parentElement !== topMount) {
+      topMount.appendChild(panel);
+    }
+
     panel.classList.add('is-visible');
     panel.classList.toggle('is-minimized', liveCoachMinimized);
+    panel.classList.toggle('pos-bottom', pos === 'bottom');
+    panel.classList.toggle('pos-below-board', pos === 'below-board');
+
+    const posMeta = pos === 'top'
+      ? { icon: '⬇', label: 'Below Board', title: 'Move guide below the board (current: Top)' }
+      : pos === 'below-board'
+        ? { icon: '⏬', label: 'Bottom', title: 'Dock guide near bottom of screen (current: Below Board)' }
+        : { icon: '⬆', label: 'Top', title: 'Move guide to top (current: Bottom)' };
+    const expandLabel = liveCoachMinimized ? '▾ Expand' : '▴ Compact';
+    const expandTitle = liveCoachMinimized ? 'Expand full instruction & controls' : 'Switch to compact one-line bar';
+    const quickUncoverPos = pos === 'below-board' ? 'bottom' : 'below-board';
+    const quickUncoverLabel = pos === 'below-board' ? 'Move to Bottom' : 'Move Below Board';
 
     if (guidedPractice.active) {
       panel.classList.add('is-tutorial');
@@ -15944,22 +16571,38 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         return `<span class="live-coach-dot ${cls}" title="${escapeHtml(s.title)}"></span>`;
       }).join('');
       const msgHtml = typeof step.instruction === 'function' ? step.instruction() : step.instruction;
+      const compactText = typeof step.compact === 'function' ? step.compact() : (step.compact || step.title);
       const targets = typeof step.targets === 'function' ? step.targets() : step.targets;
 
       panel.innerHTML = `
         <div class="live-coach-head" onclick="minimizeLiveCoach(event)">
-          <span class="live-coach-badge">🎓 Guided Practice • ${escapeHtml(step.badge)}</span>
+          <div class="live-coach-head-main">
+            <span class="live-coach-badge">🎓 ${escapeHtml(step.badge)}</span>
+            <span class="live-coach-compact-text" title="${escapeHtml(compactText)}">${escapeHtml(compactText)}</span>
+            <span id="liveCoachOverlapChip" class="live-coach-overlap-chip">⚠️ Covering</span>
+          </div>
           <div class="live-coach-head-btns">
-            <button type="button" class="live-coach-icon-btn" onclick="minimizeLiveCoach(event)" title="${liveCoachMinimized ? 'Expand guide' : 'Minimize guide'}" aria-label="Minimize guide">${liveCoachMinimized ? '▴' : '▾'}</button>
+            <button type="button" class="live-coach-icon-btn" onclick="cycleLiveCoachPosition(event)" title="${escapeHtml(posMeta.title)}" aria-label="${escapeHtml(posMeta.title)}">${posMeta.icon}<span class="live-coach-pos-text"> ${posMeta.label}</span></button>
+            <button type="button" class="live-coach-icon-btn" onclick="minimizeLiveCoach(event)" title="${expandTitle}" aria-label="${expandTitle}" aria-expanded="${!liveCoachMinimized}">${expandLabel}</button>
             <button type="button" class="live-coach-icon-btn" onclick="dismissLiveCoach(event)" title="Exit Guided Lesson" aria-label="Exit lesson">✕</button>
           </div>
         </div>
         <div class="live-coach-body">
           <div class="live-coach-progress">${dotsHtml}</div>
-          <div class="live-coach-title"><span>${escapeHtml(step.title)}</span></div>
-          <p class="live-coach-msg">${msgHtml}</p>
+          <div class="live-coach-scroll">
+            <div class="live-coach-title"><span>${escapeHtml(step.title)}</span></div>
+            <p class="live-coach-msg">${msgHtml}</p>
+          </div>
+          <div id="liveCoachOverlapBanner" class="live-coach-overlap-banner">
+            <span>⚠️ <span id="liveCoachOverlapLabel">Covering a control</span></span>
+            <button type="button" class="live-coach-overlap-move-btn" onclick="setLiveCoachPosition('${quickUncoverPos}', event)">${quickUncoverLabel}</button>
+          </div>
           <div class="live-coach-actions">
-            <button type="button" class="live-coach-btn" onclick="skipGuidedPractice()">Exit Lesson</button>
+            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+              <button type="button" class="live-coach-btn" onclick="openRulesModal('overview')" title="Read Help Overview, High-Level Steps &amp; Scoring">📖 Help</button>
+              <button type="button" class="live-coach-btn" onclick="openRulesModal('glossary')" title="Open Rummy Terminology (Paplu, Joker, Scoot, Declare...)">📚 Terms</button>
+              <button type="button" class="live-coach-btn" onclick="skipGuidedPractice()">Exit Lesson</button>
+            </div>
             <div style="display:flex; gap:5px;">
               <button type="button" class="live-coach-btn" onclick="prevGuidedStep()" ${guidedPractice.stepIdx === 0 ? 'disabled' : ''}>◀ Back</button>
               <button type="button" class="live-coach-btn primary" onclick="nextGuidedStep()" ${guidedPractice.completedSteps[guidedPractice.stepIdx] ? '' : 'disabled'}>${guidedPractice.stepIdx === GUIDED_PRACTICE_STEPS.length - 1 ? 'Finish ✓' : 'Next ▶'}</button>
@@ -15972,30 +16615,50 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     panel.classList.remove('is-tutorial');
     const data = getContextualCoachData();
+    const compactMsg = data.compact || data.title || 'Guide active';
     panel.innerHTML = `
       <div class="live-coach-head" onclick="minimizeLiveCoach(event)">
-        <span class="live-coach-badge">${escapeHtml(data.badge)}</span>
+        <div class="live-coach-head-main">
+          <span class="live-coach-badge">${escapeHtml(data.badge)}</span>
+          <span class="live-coach-compact-text" title="${escapeHtml(compactMsg)}">${escapeHtml(compactMsg)}</span>
+          <span id="liveCoachOverlapChip" class="live-coach-overlap-chip">⚠️ Covering</span>
+        </div>
         <div class="live-coach-head-btns">
-          <button type="button" class="live-coach-icon-btn" onclick="minimizeLiveCoach(event)" title="${liveCoachMinimized ? 'Expand guide' : 'Minimize guide'}" aria-label="Minimize guide">${liveCoachMinimized ? '▴' : '▾'}</button>
+          <button type="button" class="live-coach-icon-btn" onclick="cycleLiveCoachPosition(event)" title="${escapeHtml(posMeta.title)}" aria-label="${escapeHtml(posMeta.title)}">${posMeta.icon}<span class="live-coach-pos-text"> ${posMeta.label}</span></button>
+          <button type="button" class="live-coach-icon-btn" onclick="minimizeLiveCoach(event)" title="${expandTitle}" aria-label="${expandTitle}" aria-expanded="${!liveCoachMinimized}">${expandLabel}</button>
           <button type="button" class="live-coach-icon-btn" onclick="dismissLiveCoach(event)" title="Turn Guide Off" aria-label="Close guide">✕</button>
         </div>
       </div>
       <div class="live-coach-body">
-        <div class="live-coach-title"><span>${escapeHtml(data.title)}</span></div>
-        <p class="live-coach-msg">${data.msg}</p>
-        ${isDemo && !guidedPractice.active ? `
-          <div class="live-coach-actions">
-            ${guidedPractice.completed
-              ? `<button type="button" class="live-coach-btn primary" onclick="returnToLobbyFromPractice()">🏠 Return to Lobby</button>
-                 <button type="button" class="live-coach-btn" onclick="startGuidedPractice()">🎓 Replay</button>`
-              : `<button type="button" class="live-coach-btn" onclick="startGuidedPractice()">🎓 Replay Guided Lesson</button>
-                 <button type="button" class="live-coach-btn" onclick="returnToLobbyFromPractice()">🏠 Return to Lobby</button>`}
-            <button type="button" class="live-coach-btn" onclick="dismissLiveCoach(event)">Hide Guide</button>
-          </div>` : ''}
+        <div class="live-coach-scroll">
+          <div class="live-coach-title"><span>${escapeHtml(data.title)}</span></div>
+          <p class="live-coach-msg">${data.msg}</p>
+        </div>
+        <div id="liveCoachOverlapBanner" class="live-coach-overlap-banner">
+          <span>⚠️ <span id="liveCoachOverlapLabel">Covering a control</span></span>
+          <button type="button" class="live-coach-overlap-move-btn" onclick="setLiveCoachPosition('${quickUncoverPos}', event)">${quickUncoverLabel}</button>
+        </div>
+        <div class="live-coach-actions">
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            <button type="button" class="live-coach-btn" onclick="openRulesModal('overview')" title="Open Help Overview, High-Level Steps &amp; Points">📖 Help</button>
+            <button type="button" class="live-coach-btn" onclick="openRulesModal('glossary')" title="Look up terms like Paplu, Joker, Scoot, Declare">📚 Terms</button>
+          </div>
+          ${isDemo && !guidedPractice.active ? `
+            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+              ${guidedPractice.completed
+                ? `<button type="button" class="live-coach-btn primary" onclick="returnToLobbyFromPractice()">🏠 Return to Lobby</button>
+                   <button type="button" class="live-coach-btn" onclick="startGuidedPractice()">🎓 Replay Lesson</button>`
+                : `<button type="button" class="live-coach-btn" onclick="startGuidedPractice()">${isGuidedLessonPreviouslyDone() ? '🎓 Replay Lesson' : '🎓 Start Guided Lesson'}</button>
+                   <button type="button" class="live-coach-btn" onclick="returnToLobbyFromPractice()">🏠 Return to Lobby</button>`}
+              <button type="button" class="live-coach-btn" onclick="dismissLiveCoach(event)">Hide</button>
+            </div>` : ''}
+        </div>
       </div>`;
     applyCoachPulseTargets(data.targets);
   }
 
+  window.setLiveCoachPosition = setLiveCoachPosition;
+  window.cycleLiveCoachPosition = cycleLiveCoachPosition;
   window.returnToLobbyFromPractice = returnToLobbyFromPractice;
   window.toggleLiveCoach = toggleLiveCoach;
   window.minimizeLiveCoach = minimizeLiveCoach;
