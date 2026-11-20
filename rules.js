@@ -22,6 +22,7 @@ export const DEFAULT_RULES = {
   forfeitPenalty: 100,
   maxDeadwood: 120,
   minPureSequences: 3,
+  count3CardPureAsDeadwood: true,
   allowTunnelaAsPure: true,
   allow3TunellasShow: true,
   allow3PoochiesAsPure: true,
@@ -71,6 +72,7 @@ export const RULE_PRESETS = {
     ...DEFAULT_RULES,
     presetName: 'Tournament',
     maxDeadwood: 210,
+    count3CardPureAsDeadwood: false,
     eliminationEnabled: true,
     scoreLimit: 500
   }
@@ -123,6 +125,7 @@ export function sanitizeRules(raw) {
     forfeitPenalty: DEFAULT_RULES.forfeitPenalty,
     maxDeadwood: clampInt(src.maxDeadwood, 40, 300, DEFAULT_RULES.maxDeadwood),
     minPureSequences: clampInt(src.minPureSequences, 1, 4, DEFAULT_RULES.minPureSequences),
+    count3CardPureAsDeadwood: src.count3CardPureAsDeadwood !== false,
     allowTunnelaAsPure: true,
     allow3TunellasShow: src.allow3TunellasShow !== false,
     allow3PoochiesAsPure: src.allow3PoochiesAsPure !== false,
@@ -366,8 +369,8 @@ export function calculateGroupedDeadwood(groups, hand, cutCard, rules = DEFAULT_
           usedIds.add(id);
           validMeldedIds.add(id);
         }
-        // Pure sequences of 4 or more cards are exempt from deadwood even without required pure sequences
-        if (isPure && cards.length >= 4) {
+        // Pure sequences of 4+ cards (or all pure sequences when count3CardPureAsDeadwood is false) are exempt from deadwood even without required pure sequences
+        if (isPure && (!rConfig.count3CardPureAsDeadwood || cards.length >= 4)) {
           for (const id of cardIds) qualifyingExemptIds.add(id);
         }
         // Tunellas are exempt from deadwood even without required pure sequences
@@ -460,7 +463,7 @@ export function getDeadwoodCards(groups, hand, cutCard, rules = DEFAULT_RULES) {
           usedIds.add(id);
           validMeldedIds.add(id);
         }
-        if (isPure && cards.length >= 4) {
+        if (isPure && (!rConfig.count3CardPureAsDeadwood || cards.length >= 4)) {
           for (const id of cardIds) qualifyingExemptIds.add(id);
         }
         if (isTun) {
