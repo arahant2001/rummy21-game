@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, countTunellas, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS, getMaxPlayersForRules } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, countTunellas, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS, MIN_NON_HAND_CARDS, shuffleCards, getMaxPlayersForRules } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +21,25 @@ app.get('/health', (req, res) => {
 
 const rooms = new Map();
 
+function recycleDiscardIntoStock(room) {
+  if (!room || !Array.isArray(room.discardPile) || room.discardPile.length <= 1) {
+    return 0;
+  }
+  const top = room.discardPile.pop();
+  const recycled = room.discardPile.map(card => {
+    const clean = { ...card };
+    delete clean.isInitialOpenCard;
+    delete clean.discardedBy;
+    delete clean.isDiscardedJoker;
+    delete clean.isJoker;
+    return clean;
+  });
+  shuffleCards(recycled);
+  room.deck = recycled;
+  room.discardPile = top ? [top] : [];
+  return recycled.length;
+}
+
 function ensurePlayerHand(player, room, targetCount = null) {
   if (!player.hand) player.hand = [];
   const rConfig = room.rules || DEFAULT_RULES;
@@ -28,15 +47,14 @@ function ensurePlayerHand(player, room, targetCount = null) {
   if (!room.deck || !Array.isArray(room.deck)) room.deck = createDeck(rConfig);
   while (player.hand.length < handTarget) {
     if (room.deck.length === 0) {
-      if (Array.isArray(room.discardPile) && room.discardPile.length > 1) {
-        const top = room.discardPile.pop();
-        room.deck = room.discardPile.reverse();
-        room.discardPile = top ? [top] : [];
-      } else {
+      recycleDiscardIntoStock(room);
+      if (room.deck.length === 0) {
         room.deck = createDeck(rConfig);
       }
     }
-    player.hand.push(room.deck.pop());
+    const nextCard = room.deck.pop();
+    if (!nextCard) break;
+    player.hand.push(nextCard);
   }
   // Clamp invariant: player hand never exceeds handTarget + 1 cards
   if (player.hand.length > handTarget + 1) {
@@ -720,7 +738,7 @@ wss.on('connection', (ws) => {
         const rConfig = userRoom.rules || DEFAULT_RULES;
         const handTarget = rConfig.cardsPerPlayer || 21;
         const deck = createDeck(rConfig);
-        const minCardsNeeded = userRoom.players.length * handTarget + 5;
+        const minCardsNeeded = userRoom.players.length * handTarget + MIN_NON_HAND_CARDS;
         if (deck.length < minCardsNeeded) {
           const cardsPerPack = 52 + (rConfig.poochiesPerDeck ?? 1);
           const neededPacks = Math.min(6, Math.ceil(minCardsNeeded / cardsPerPack));
@@ -785,19 +803,31 @@ wss.on('connection', (ws) => {
         if (activePlayer.hand.length < handTarget) {
           ensurePlayerHand(activePlayer, userRoom, handTarget);
         }
+        let recycledCount = 0;
         if (userRoom.deck.length === 0) {
-          // Recycle discard pile if stock runs dry
-          const top = userRoom.discardPile.pop();
-          userRoom.deck = userRoom.discardPile.reverse();
-          userRoom.discardPile = [top];
+          // Reshuffle buried discards back into Stock if stock runs dry
+          recycledCount = recycleDiscardIntoStock(userRoom);
         }
-        activePlayer.hand.push(userRoom.deck.pop());
+        if (userRoom.deck.length === 0) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: 'Stock deck is empty and no buried discards remain to reshuffle.'
+            }));
+          }
+          return;
+        }
+        const drawnCard = userRoom.deck.pop();
+        if (!drawnCard) return;
+        activePlayer.hand.push(drawnCard);
         // Clamp invariant: exactly drawnTarget cards
         if (activePlayer.hand.length > drawnTarget) {
           activePlayer.hand = activePlayer.hand.slice(0, drawnTarget);
         }
         userRoom.turnStage = 'DISCARD';
-        userRoom.lastAction = 'DRAW_STOCK';
+        userRoom.lastAction = recycledCount > 0
+          ? `♻️ Discard pile reshuffled into Stock (${recycledCount} cards)`
+          : 'DRAW_STOCK';
         broadcastRoom(userRoom);
       }
 

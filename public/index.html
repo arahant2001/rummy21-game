@@ -3789,8 +3789,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   animation: slideDown .2s ease-out;
 }
 .live-coach-panel.is-tutorial {
-  border-color: rgba(50, 197, 138, 0.72);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.78), 0 0 22px rgba(50, 197, 138, 0.22);
+  border-color: rgba(251, 113, 133, 0.92);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.78), 0 0 0 2px rgba(251, 113, 133, 0.35), 0 0 24px rgba(244, 63, 94, 0.28);
 }
 .live-coach-panel.pos-bottom {
   top: auto;
@@ -5774,6 +5774,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   // --- 1, 5, 6: Layout Preset, Rejoin Banner, & Custom House Rules ---
   const MAX_PLAYERS = 10;
+  const MIN_NON_HAND_CARDS = 20;
   const DEFAULT_RULES = {
     presetName: 'Classic South Indian',
     decks: 3,
@@ -5924,7 +5925,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
   function getPackMaxPlayers(packs, poochiesPerDeck, cardsPerPlayer) {
     const total = packs * (52 + poochiesPerDeck);
-    return Math.min(MAX_PLAYERS, Math.max(2, Math.floor((total - 5) / Math.max(13, cardsPerPlayer))));
+    return Math.min(MAX_PLAYERS, Math.max(2, Math.floor((total - MIN_NON_HAND_CARDS) / Math.max(13, cardsPerPlayer))));
   }
   function applyRuleFieldChange(base, key, val) {
     const nextPresetName = ((key === 'scoreLimit' || key === 'decks' || key === 'maxDeadwood' || key === 'cardsPerPlayer') && base.eliminationEnabled)
@@ -8745,8 +8746,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       const rNow = getActiveRules();
       const maxCap = getPackMaxPlayers(rNow.decks, rNow.poochiesPerDeck, handSize);
       const totalDeckCards = rNow.decks * (52 + rNow.poochiesPerDeck);
-      const needsMorePacks = (count * handSize + 5) > totalDeckCards;
-      const neededPacks = Math.min(6, Math.ceil((count * handSize + 5) / (52 + rNow.poochiesPerDeck)));
+      const needsMorePacks = (count * handSize + MIN_NON_HAND_CARDS) > totalDeckCards;
+      const neededPacks = Math.min(6, Math.ceil((count * handSize + MIN_NON_HAND_CARDS) / (52 + rNow.poochiesPerDeck)));
       if (count < 2) {
         notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 min &bull; max ${maxCap})</button>`;
       } else if (needsMorePacks) {
@@ -16682,7 +16683,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return;
     }
 
-    panel.classList.remove('is-tutorial');
+    panel.classList.toggle('is-tutorial', Boolean(guidedPractice.completed));
     const data = getContextualCoachData();
     const compactMsg = data.compact || data.title || 'Guide active';
     panel.innerHTML = `
