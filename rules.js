@@ -84,6 +84,14 @@ function clampInt(val, min, max, fallback) {
   return Math.max(min, Math.min(max, Math.round(n)));
 }
 
+export function getMaxPlayersForRules(rules = DEFAULT_RULES) {
+  const packs = clampInt(rules?.decks, 3, 6, DEFAULT_RULES.decks);
+  const poochies = clampInt(rules?.poochiesPerDeck, 0, 2, DEFAULT_RULES.poochiesPerDeck);
+  const cardsPerPlayer = clampInt(rules?.cardsPerPlayer, 13, 28, DEFAULT_RULES.cardsPerPlayer);
+  const total = packs * (52 + poochies);
+  return Math.min(MAX_PLAYERS, Math.max(2, Math.floor((total - 5) / Math.max(13, cardsPerPlayer))));
+}
+
 export function sanitizeRules(raw) {
   const src = (raw && typeof raw === 'object') ? raw : {};
   const presetName = typeof src.presetName === 'string' && src.presetName.trim()

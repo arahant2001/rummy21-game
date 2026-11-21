@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, countTunellas, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS } from './rules.js';
+import { createDeck, resolveJokerRoles, calculateMaal, calculateDeadwood, calculateGroupedDeadwood, getDeadwoodCards, validateShow, countDoubles, countTunellas, isWildCard, autoArrangeHandToGroups, CONFIG, DEFAULT_RULES, RULE_PRESETS, sanitizeRules, MAX_PLAYERS, getMaxPlayersForRules } from './rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,7 +57,7 @@ function getSafeRoom(room) {
   return {
     id: room.id,
     status: room.status,
-    maxPlayers: MAX_PLAYERS,
+    maxPlayers: getMaxPlayersForRules(rConfig),
     rules: rConfig,
     winnerId: room.winnerId || null,
     winnerName: room.winnerName || null,

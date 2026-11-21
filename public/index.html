@@ -4181,7 +4181,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       </button>
       <label class="solo-guided-toggle">
         <input type="checkbox" id="soloGuidedCheckbox" onchange="onSoloGuidedToggleChange(this.checked)" />
-        <span>Include <strong>6-step Guided Lesson</strong> <span class="solo-guided-hint">(draw, move, discard, sequences &amp; show — recommended for first-time players)</span></span>
+        <span>Include <strong>Guided Lesson</strong> <span class="solo-guided-hint">(evaluate/scoot, draw, move, discard, sequences &amp; show — recommended for first-time players)</span></span>
       </label>
     </div>
   </div>
@@ -8439,7 +8439,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const myForfeited = Boolean(me && (me.hasForfeited || me.dropType === 'FORFEIT'));
     const myDropped = Boolean(me && me.hasDropped);
 
-    const maxCap = roomState.maxPlayers || MAX_PLAYERS;
+    const rStrip = getActiveRules();
+    const maxCap = getPackMaxPlayers(rStrip.decks, rStrip.poochiesPerDeck, rStrip.cardsPerPlayer);
     // 1. Update Fallback Legacy Summary
     if (summary) {
       if (!playing) summary.innerText = `${roomState.players.length} of max ${maxCap} seated`;
@@ -8461,7 +8462,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       if (tableTurnBanner) tableTurnBanner.classList.remove('is-winner-banner');
       if (!playing) {
-        bannerMsg = `Waiting in lobby (${roomState.players.length} of max ${maxCap} seated)`;
+        bannerMsg = roomState.players.length > maxCap
+          ? `Waiting in lobby (${roomState.players.length} seated • current packs fit ${maxCap})`
+          : `Waiting in lobby (${roomState.players.length} of max ${maxCap} seated)`;
         if (turnNotice) turnNotice.innerText = 'Lobby';
         if (turnDot) turnDot.className = 'turn-indicator-dot';
       } else if (isMyTurn) {
@@ -8739,15 +8742,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     if (!roomState || roomState.status === 'LOBBY') {
       const count = roomState ? roomState.players.length : 1;
-      const maxCap = roomState?.maxPlayers || MAX_PLAYERS;
       const rNow = getActiveRules();
+      const maxCap = getPackMaxPlayers(rNow.decks, rNow.poochiesPerDeck, handSize);
       const totalDeckCards = rNow.decks * (52 + rNow.poochiesPerDeck);
       const needsMorePacks = (count * handSize + 5) > totalDeckCards;
       const neededPacks = Math.min(6, Math.ceil((count * handSize + 5) / (52 + rNow.poochiesPerDeck)));
       if (count < 2) {
-        notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 min &bull; ${maxCap} max)</button>`;
+        notice.innerHTML = `<button disabled class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; opacity:0.6; cursor:not-allowed;" title="Waiting for at least 2 players to join">Waiting for players (${count}/2 min &bull; max ${maxCap})</button>`;
       } else if (needsMorePacks) {
-        notice.innerHTML = `<button onclick="openRulesModal(); switchRulesTab('customize');" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; background:linear-gradient(135deg,#b45309,#d97706);" title="${count} players at ${handSize} cards require ${neededPacks} packs (${rNow.decks} selected)">Set ${neededPacks} Packs to Start (${count} of max ${maxCap} seated)</button>`;
+        notice.innerHTML = `<button onclick="openRulesModal(); switchRulesTab('customize');" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0; background:linear-gradient(135deg,#b45309,#d97706);" title="${count} players at ${handSize} cards require ${neededPacks} packs (${rNow.decks} selected)">Set ${neededPacks} Packs to Start (${count} seated &bull; packs fit ${maxCap})</button>`;
       } else {
         notice.innerHTML = `<button onclick="startGame()" class="btn-primary" style="padding:4px 14px; font-size:12px; margin-top:0;">Start Game (${count} of max ${maxCap} seated)</button>`;
       }
@@ -13200,6 +13203,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     userStands = [pairCards, singles.slice(0, half), singles.slice(half)];
     myHand = userStands.flat();
     saveStandsToStorage();
+    if (typeof onGuidedPracticeAction === 'function') {
+      onGuidedPracticeAction('PAIRS');
+    }
     renderAll(null);
     const r = getActiveRules();
     const freeNote = r.allowDoublesShow ? ` (Free Scoot: ${r.freeScootDealtDoubles} dealt / ${r.freeGameDrawnDoubles} drawn)` : '';
@@ -13258,6 +13264,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else if (isFreeGameDrawn) {
       penalty = 0;
       label = `Free Game (${r.freeGameDrawnDoubles}+ Doubles: 0 pts & 0 honors)`;
+    }
+
+    if (isDemo && typeof guidedPractice !== 'undefined' && guidedPractice.active && getCurrentGuidedStep?.()?.id === 'EVALUATE') {
+      const freeNote = r.allowDoublesShow ? ` (or 0 pts Free Scoot with ${r.freeScootDealtDoubles}+ dealt Doubles)` : '';
+      window.alert(`💡 Scoot (First Drop) Explained:\nIn a real match, tapping Scoot before drawing folds your hand for a fixed ${r.firstDrop} pts penalty${freeNote} instead of risking up to ${r.maxDeadwood} pts deadwood.\n\nWe'll keep your practice hand open so you can continue the guided lesson — tap Next ▶ to draw and play!`);
+      onGuidedPracticeAction('SCOOT_EVAL');
+      return;
     }
 
     if (!dropConfirming) {
@@ -14110,7 +14123,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (overviewTab) {
       const setupP = document.getElementById('rulesOverviewSetupText') || overviewTab.querySelector('.rules-card-box p');
       if (setupP) {
-        setupP.innerHTML = `<strong>${handSize}-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>${r.decks} standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Initially, <strong>${handSize} cards are dealt to each player</strong> (up to ${MAX_PLAYERS} players at a table), one <strong>Cut Card</strong> is revealed to establish Jokers and Honors, and one open card begins the Discard Pile.`;
+        const dynamicMax = getPackMaxPlayers(r.decks, r.poochiesPerDeck, handSize);
+        setupP.innerHTML = `<strong>${handSize}-Card Rummy</strong> (also known as <em>Marriage Rummy</em>) is played with <strong>${r.decks} standard 52-card decks plus ${totalPoochies} Printed Jokers (Poochies, ${r.poochiesPerDeck} per deck)</strong>, totaling <strong>${totalCards} cards</strong>. Initially, <strong>${handSize} cards are dealt to each player</strong> (up to <strong>${dynamicMax} players</strong> with current packs, ${MAX_PLAYERS} table cap), one <strong>Cut Card</strong> is revealed to establish Jokers and Honors, and one open card begins the Discard Pile.`;
       }
       const goalP = document.getElementById('rulesOverviewGoalText');
       if (goalP) {
@@ -15241,6 +15255,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     roomState = {
       id: 'DEMO-TABLE',
+      maxPlayers: getPackMaxPlayers(rDemoInit.decks, rDemoInit.poochiesPerDeck, demoHandSize),
       rules: rDemoInit,
       handNumber: 1,
       starterIndex: 0,
@@ -15917,7 +15932,46 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     declarationAttempted: false
   };
 
+  function summarizeGuidedHandForEvaluation() {
+    const cards = (Array.isArray(userStands) && userStands.length > 0 ? userStands.flat() : (myHand || [])).filter(Boolean);
+    const r = getActiveRules();
+    const wildCount = cards.filter(c => declarationIsWild(c)).length;
+    const doublesCount = countDoubles(cards).count;
+    const arranged = autoArrangeHandToGroups(cards);
+    const pureCount = arranged.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const maalPts = calculateLocalMaal()?.total || 0;
+    let verdict = 'Borderline hand — organize cards closely to decide whether to Play or Scoot';
+    if (r.allowDoublesShow && doublesCount >= r.freeScootDealtDoubles) {
+      verdict = `Strong Free Scoot option (${doublesCount} Pairs = 0 pts!)`;
+    } else if (pureCount >= 2 || (pureCount >= 1 && wildCount >= 2)) {
+      verdict = 'Playable hand — good foundation to build toward a Show';
+    } else if (pureCount === 0 && wildCount === 0) {
+      verdict = `Weak hand — in a real match, Scooting early (${r.firstDrop} pts) often saves points`;
+    }
+    return { wildCount, doublesCount, pureCount, maalPts, verdict, rules: r };
+  }
+
   const GUIDED_PRACTICE_STEPS = [
+    {
+      id: 'EVALUATE',
+      title: 'Step 0: Arrange & Evaluate Hand',
+      badge: 'Step 0 • Scoot or Play?',
+      compact: () => guidedPractice.completedSteps[0]
+        ? 'Hand evaluated — tap Next ▶ to play & draw (or check Scoot)'
+        : 'Arrange your dealt cards & evaluate whether to Play or Scoot',
+      instruction: () => {
+        const ev = summarizeGuidedHandForEvaluation();
+        const r = ev.rules;
+        if (!guidedPractice.completedSteps[0]) {
+          return `Before drawing on your first turn, <strong>arrange your cards</strong> to evaluate your chances of winning. Tap <strong>↕ Sort Suit/Rank</strong>, <strong>👯 Pairs</strong>, or organize your stands. Strong Jokers &amp; Pure Runs mean <strong>Play</strong>; a weak hand means <strong>Scoot</strong> early for a fixed <strong>${r.firstDrop} pt</strong> First Drop instead of risking up to ${r.maxDeadwood} pts deadwood.`;
+        }
+        const freeScootNote = r.allowDoublesShow ? ` (or 0 pts with ${r.freeScootDealtDoubles}+ Doubles)` : '';
+        return `<strong>Hand snapshot:</strong> ${ev.pureCount} Pure Run(s), ${ev.wildCount} Joker(s), ${ev.doublesCount} Pair(s), ${ev.maalPts} Honors pts — <em>${ev.verdict}</em>. In a real game, tap <strong>Scoot</strong> before drawing to fold for ${r.firstDrop} pts${freeScootNote}. Tap <strong>Next ▶</strong> to play this hand and draw!`;
+      },
+      targets: () => guidedPractice.completedSteps[0]
+        ? ['#btnDrop', '#standsContainer']
+        : ['.stands-toolbar button[onclick*="sortHand"]', '.stands-toolbar button[onclick*="groupDoublesIntoStands"]', '#btnDrop', '#standsContainer']
+    },
     {
       id: 'DRAW',
       title: 'Step 1: Draw a Card',
@@ -16070,6 +16124,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (s.includes('standMoveOptions') || el?.id === 'standMoveOptions') return 'Stand Moves';
     if (s.includes('btnStandColumns') || el?.id === 'btnStandColumns') return '2 Cols Button';
     if (s.includes('sortHand')) return 'Sort Button';
+    if (s.includes('groupDoublesIntoStands')) return 'Pairs Button';
+    if (s.includes('btnDrop') || el?.id === 'btnDrop') return 'Scoot Button';
     if (s.includes('stand-move-group-btn')) return 'Move Group';
     if (s.includes('sticky-submit-btn')) return 'Submit Declaration';
     if (s.includes('guide-me-btn-trigger')) return 'Guide Me';
@@ -16256,7 +16312,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       roomState.turnPlayerId = 'p_demo';
       roomState.turnPlayerName = document.getElementById('playerName')?.value || 'You';
       roomState.turnStage = 'DRAW';
-      roomState.lastAction = 'Guided Practice started • Draw a card to begin your turn';
+      roomState.lastAction = 'Guided Practice started • Step 0: Arrange your cards & decide whether to Play or Scoot';
     }
     const connEl = document.getElementById('connectionStatus');
     if (connEl) {
@@ -16337,15 +16393,28 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (!step) return;
 
     const completes = {
+      SORT: ['EVALUATE', 'MOVE_PAD'],
+      PAIRS: ['EVALUATE'],
+      SCOOT_EVAL: ['EVALUATE'],
+      ADD_STAND: ['EVALUATE'],
       DRAW: ['DRAW'],
       SELECT: ['SELECT'],
-      MOVE_PAD: ['MOVE_PAD'],
-      MOVE_GROUP: ['MOVE_PAD'],
-      SORT: ['MOVE_PAD'],
+      MOVE_PAD: ['EVALUATE', 'MOVE_PAD'],
+      MOVE_GROUP: ['EVALUATE', 'MOVE_PAD'],
       DISCARD: ['DISCARD'],
-      TOGGLE_COLS: ['SEQUENCE'],
-      SEQUENCE: ['SEQUENCE']
+      TOGGLE_COLS: ['EVALUATE', 'SEQUENCE'],
+      SEQUENCE: ['EVALUATE', 'SEQUENCE']
     };
+    if (actionType === 'DRAW' && step.id === 'EVALUATE') {
+      guidedPractice.completedSteps[0] = true;
+      const drawIdx = GUIDED_PRACTICE_STEPS.findIndex(s => s.id === 'DRAW');
+      if (drawIdx >= 0) {
+        guidedPractice.stepIdx = drawIdx;
+        guidedPractice.completedSteps[drawIdx] = true;
+      }
+      renderLiveCoach();
+      return;
+    }
     if ((completes[actionType] || []).includes(step.id)) {
       guidedPractice.completedSteps[guidedPractice.stepIdx] = true;
       renderLiveCoach();
@@ -16382,7 +16451,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         badge: '🎓 Lesson Complete',
         title: 'Nice work — You Finished!',
         compact: 'Lesson complete — tap Return to Lobby or Leave when ready',
-        msg: 'You practiced the full turn sequence: draw, select, organize, discard, recognize a pure sequence, and try a declaration with zero penalties.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
+        msg: 'You practiced the full turn flow: arrange &amp; evaluate (Play vs. Scoot), draw, select, organize, discard, recognize a pure sequence, and try a declaration with zero penalties.<br>When you\'re ready to join a family table or change settings, tap <strong>🏠 Return to Lobby</strong> below or <strong>🚪 Leave</strong> in the top bar.',
         targets: ['#btnLeaveSession']
       };
     }
