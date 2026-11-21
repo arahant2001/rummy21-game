@@ -20,6 +20,51 @@ app.get('/health', (req, res) => {
 });
 
 const rooms = new Map();
+const ROOM_INACTIVITY_TIMEOUT_MS = Math.max(
+  1000,
+  parseInt(process.env.ROOM_INACTIVITY_TIMEOUT_MS || String(60 * 60 * 1000), 10) || (60 * 60 * 1000)
+);
+
+function clearRoomTimers(room) {
+  if (!room) return;
+  if (room.groupingTimer) {
+    clearTimeout(room.groupingTimer);
+    room.groupingTimer = null;
+  }
+  if (room.cleanupTimer) {
+    clearTimeout(room.cleanupTimer);
+    room.cleanupTimer = null;
+  }
+  if (room.inactivityTimer) {
+    clearTimeout(room.inactivityTimer);
+    room.inactivityTimer = null;
+  }
+}
+
+function touchRoomActivity(room) {
+  if (!room) return;
+  room.lastActivityAt = Date.now();
+  if (room.inactivityTimer) {
+    clearTimeout(room.inactivityTimer);
+    room.inactivityTimer = null;
+  }
+  room.inactivityTimer = setTimeout(() => {
+    if (!rooms.has(room.id) || rooms.get(room.id) !== room) return;
+    (room.players || []).forEach(p => {
+      if (p.ws && p.ws.readyState === WebSocket.OPEN) {
+        try {
+          p.ws.send(JSON.stringify({
+            type: 'ROOM_CLOSED',
+            reason: 'inactivity_timeout',
+            message: `Table "${room.id}" was closed after 1 hour of inactivity.`
+          }));
+        } catch (_) {}
+      }
+    });
+    clearRoomTimers(room);
+    rooms.delete(room.id);
+  }, ROOM_INACTIVITY_TIMEOUT_MS);
+}
 
 function recycleDiscardIntoStock(room) {
   if (!room || !Array.isArray(room.discardPile) || room.discardPile.length <= 1) {
@@ -75,6 +120,9 @@ function getSafeRoom(room) {
   return {
     id: room.id,
     status: room.status,
+    hasStarted: Boolean(room.hasStarted),
+    creatorId: room.creatorId || null,
+    creatorName: room.creatorName || null,
     maxPlayers: getMaxPlayersForRules(rConfig),
     rules: rConfig,
     winnerId: room.winnerId || null,
@@ -507,6 +555,10 @@ wss.on('connection', (ws) => {
           rooms.set(roomId, {
             id: roomId,
             status: 'LOBBY',
+            hasStarted: false,
+            creatorId: null,
+            creatorName: null,
+            lastActivityAt: Date.now(),
             rules: sanitizeRules(data.rules),
             players: [],
             deck: [],
@@ -523,12 +575,6 @@ wss.on('connection', (ws) => {
         userRoom = rooms.get(roomId);
         userRoom.sessionScores = userRoom.sessionScores || {};
 
-        // Cancel any pending room deletion timer since active reconnect occurred
-        if (userRoom.cleanupTimer) {
-          clearTimeout(userRoom.cleanupTimer);
-          userRoom.cleanupTimer = null;
-        }
-
         // 1. Reconnection Check: Support mobile players reconnecting after tab switch / screen sleep
         const existingPlayer = userRoom.players.find(p => 
           (data.playerId && p.id === data.playerId) || 
@@ -544,6 +590,7 @@ wss.on('connection', (ws) => {
             clearTimeout(userRoom.cleanupTimer);
             userRoom.cleanupTimer = null;
           }
+          touchRoomActivity(userRoom);
           // Invariant: Ensure non-eliminated rejoining player has configured hand count if game is active
           if (userRoom.status === 'PLAYING' && !existingPlayer.isEliminated && existingPlayer._inCurrentHand !== false) {
             ensurePlayerHand(existingPlayer, userRoom, userRoom.rules?.cardsPerPlayer || 21);
@@ -563,6 +610,33 @@ wss.on('connection', (ws) => {
           return;
         }
 
+        if (userRoom.hasStarted) {
+          const modeLabel = userRoom.rules?.eliminationEnabled ? 'tournament' : 'game';
+          const safeAttemptName = playerName || 'A player';
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'GAME_IN_PROGRESS',
+              roomId,
+              isTournament: Boolean(userRoom.rules?.eliminationEnabled),
+              message: `A ${modeLabel} has already started at table "${roomId}", so new players cannot join.\n\nPlease create a new table with a different room code and invite others to join you there.`
+            }));
+          }
+          const tableNoticeMsg = `${safeAttemptName} tried to join table "${roomId}" but was rejected because the ${modeLabel} has already started. Close the table and re-enter if you want ${safeAttemptName} to join.`;
+          userRoom.players.forEach(p => {
+            if (p.ws && p.ws.readyState === WebSocket.OPEN) {
+              p.ws.send(JSON.stringify({
+                type: 'TABLE_NOTICE',
+                kind: 'join_rejected',
+                playerName: safeAttemptName,
+                roomId,
+                message: tableNoticeMsg
+              }));
+            }
+          });
+          userRoom = null;
+          return;
+        }
+
         const seatedCount = userRoom.players.filter(p => !p.hasLeft).length;
         if (seatedCount >= MAX_PLAYERS) {
           if (ws.readyState === WebSocket.OPEN) {
@@ -574,6 +648,11 @@ wss.on('connection', (ws) => {
           }
           userRoom = null;
           return;
+        }
+
+        if (userRoom.cleanupTimer) {
+          clearTimeout(userRoom.cleanupTimer);
+          userRoom.cleanupTimer = null;
         }
 
         playerId = `p_${Math.random().toString(36).substring(2, 9)}`;
@@ -610,68 +689,52 @@ wss.on('connection', (ws) => {
           ws
         };
 
-        // Requirement 3: When a non-eliminated player joins mid-game, deal them the room's configured hand count
-        if (userRoom.status === 'PLAYING' && !wasEliminated) {
-          ensurePlayerHand(newPlayer, userRoom, userRoom.rules?.cardsPerPlayer || 21);
-          newPlayer._inCurrentHand = true;
-        }
-
         userRoom.players.push(newPlayer);
+        if (!userRoom.creatorId) {
+          userRoom.creatorId = newPlayer.id;
+          userRoom.creatorName = newPlayer.name;
+        }
+        touchRoomActivity(userRoom);
         broadcastRoom(userRoom);
+        return;
       }
 
       if (!userRoom) return;
+      touchRoomActivity(userRoom);
 
       if (data.type === 'UPDATE_RULES') {
-        if (userRoom.status === 'LOBBY' || userRoom.status === 'ROUND_OVER') {
-          const nextRules = sanitizeRules(data.rules);
-          if (userRoom.status !== 'LOBBY' && userRoom.rules) {
-            nextRules.cardsPerPlayer = userRoom.rules.cardsPerPlayer ?? DEFAULT_RULES.cardsPerPlayer;
-            nextRules.decks = userRoom.rules.decks ?? DEFAULT_RULES.decks;
-            nextRules.poochiesPerDeck = userRoom.rules.poochiesPerDeck ?? DEFAULT_RULES.poochiesPerDeck;
-          }
-          userRoom.rules = nextRules;
-          if (!userRoom.rules.eliminationEnabled) {
-            userRoom.tournamentFinished = false;
-            userRoom.tournamentWinnerId = null;
-            userRoom.tournamentWinnerName = null;
-            userRoom.players.forEach(p => { p.isEliminated = false; });
-            Object.values(userRoom.sessionScores || {}).forEach(sc => {
-              if (sc) {
-                sc.isEliminated = false;
-                sc.eliminatedInHand = null;
-              }
-            });
-          } else {
-            userRoom.players.forEach(p => {
-              const sk = (p.name || '').trim().toLowerCase();
-              const sc = userRoom.sessionScores?.[sk];
-              const elim = Boolean(sc && sc.points > userRoom.rules.scoreLimit);
-              p.isEliminated = elim;
-              if (sc) sc.isEliminated = elim;
-            });
-            const surviving = userRoom.players.filter(p => !p.hasLeft && !p.isEliminated);
-            if (userRoom.status === 'ROUND_OVER' && userRoom.players.length >= 2 && surviving.length === 1) {
-              userRoom.tournamentFinished = true;
-              userRoom.tournamentWinnerId = surviving[0].id;
-              userRoom.tournamentWinnerName = surviving[0].name;
-            } else {
-              userRoom.tournamentFinished = false;
-              userRoom.tournamentWinnerId = null;
-              userRoom.tournamentWinnerName = null;
-            }
-          }
-          const updater = userRoom.players.find(p => p.id === playerId);
-          userRoom.lastAction = `${updater ? updater.name : 'Host'} updated the table rules.`;
-          broadcastRoom(userRoom);
-        } else {
+        if (userRoom.hasStarted || userRoom.status !== 'LOBBY') {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'INVALID_MOVE',
-              message: 'Table rules can only be changed in the Lobby or between hands.'
+              message: 'Table rules can only be customized before the game starts.'
             }));
           }
+          return;
         }
+        if (userRoom.creatorId && userRoom.creatorId !== playerId) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: `Only ${userRoom.creatorName || 'the table creator'} (who created this table) can customize the table rules before Start.`
+            }));
+          }
+          return;
+        }
+        userRoom.rules = sanitizeRules(data.rules);
+        userRoom.tournamentFinished = false;
+        userRoom.tournamentWinnerId = null;
+        userRoom.tournamentWinnerName = null;
+        userRoom.players.forEach(p => { p.isEliminated = false; });
+        Object.values(userRoom.sessionScores || {}).forEach(sc => {
+          if (sc) {
+            sc.isEliminated = false;
+            sc.eliminatedInHand = null;
+          }
+        });
+        const updater = userRoom.players.find(p => p.id === playerId);
+        userRoom.lastAction = `${updater ? updater.name : 'Host'} updated the table rules.`;
+        broadcastRoom(userRoom);
         return;
       }
 
@@ -784,6 +847,7 @@ wss.on('connection', (ws) => {
         initialOpen.isInitialOpenCard = true; // First open card can be picked up even if a Joker
         userRoom.discardPile = [initialOpen];
         userRoom.deck = deck;
+        userRoom.hasStarted = true;
         userRoom.status = 'PLAYING';
         userRoom.turnIndex = 0;
         userRoom.turnStage = 'DRAW';
@@ -1078,14 +1142,7 @@ wss.on('connection', (ws) => {
             }));
           }
         });
-        if (userRoom.groupingTimer) {
-          clearTimeout(userRoom.groupingTimer);
-          userRoom.groupingTimer = null;
-        }
-        if (userRoom.cleanupTimer) {
-          clearTimeout(userRoom.cleanupTimer);
-          userRoom.cleanupTimer = null;
-        }
+        clearRoomTimers(userRoom);
         rooms.delete(userRoom.id);
         return;
       }
@@ -1177,6 +1234,10 @@ wss.on('connection', (ws) => {
         } else {
           // In LOBBY or ROUND_OVER
           userRoom.players = userRoom.players.filter(p => p.id !== playerId);
+          if (!userRoom.hasStarted && userRoom.creatorId === playerId) {
+            userRoom.creatorId = userRoom.players[0]?.id || null;
+            userRoom.creatorName = userRoom.players[0]?.name || null;
+          }
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'SESSION_LEFT',
@@ -1185,6 +1246,7 @@ wss.on('connection', (ws) => {
           }
           userRoom.lastAction = `${leavingPlayer.name} left the table.`;
           if (userRoom.players.length === 0) {
+            clearRoomTimers(userRoom);
             rooms.delete(userRoom.id);
           } else {
             broadcastRoom(userRoom);
@@ -1203,20 +1265,19 @@ wss.on('connection', (ws) => {
       const p = userRoom.players.find(x => x.id === playerId);
       if (p && p.ws === ws) {
         p.ws = null;
-        if (userRoom.status === 'LOBBY') {
+        if (!userRoom.hasStarted) {
           userRoom.players = userRoom.players.filter(pl => pl.id !== playerId);
+          if (userRoom.creatorId === playerId) {
+            userRoom.creatorId = userRoom.players[0]?.id || null;
+            userRoom.creatorName = userRoom.players[0]?.name || null;
+          }
         }
       }
       const allDisconnected = userRoom.players.length === 0 || userRoom.players.every(p => !p.ws);
       if (allDisconnected) {
-        // Prevent session drops: give 30 minutes grace period for phones/laptops to reconnect
-        if (!userRoom.cleanupTimer) {
-          userRoom.cleanupTimer = setTimeout(() => {
-            const stillEmpty = !userRoom.players || userRoom.players.length === 0 || userRoom.players.every(p => !p.ws);
-            if (stillEmpty) {
-              rooms.delete(userRoom.id);
-            }
-          }, 30 * 60 * 1000);
+        // Keep room alive until the 1-hour inactivity timeout expires so players can reconnect
+        if (!userRoom.inactivityTimer) {
+          touchRoomActivity(userRoom);
         }
       } else {
         broadcastRoom(userRoom);
