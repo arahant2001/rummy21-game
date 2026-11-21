@@ -134,6 +134,7 @@ function getSafeRoom(room) {
     turnPlayerId: room.players[room.turnIndex]?.id || null,
     turnPlayerName: room.players[room.turnIndex]?.name || '',
     turnStage: room.turnStage,
+    lastMove: room.lastMove || null,
     cutCard: room.cutCard,
     roles: room.cutCard ? resolveJokerRoles(room.cutCard) : null,
     topDiscard,
@@ -445,6 +446,7 @@ function dealNextHand(room) {
   room.winnerId = null;
   room.winnerName = null;
   room.lastRoundResult = null;
+  room.lastMove = null;
   room.groupingDeadline = null;
   if (room.groupingTimer) {
     clearTimeout(room.groupingTimer);
@@ -847,6 +849,7 @@ wss.on('connection', (ws) => {
         initialOpen.isInitialOpenCard = true; // First open card can be picked up even if a Joker
         userRoom.discardPile = [initialOpen];
         userRoom.deck = deck;
+        userRoom.lastMove = null;
         userRoom.hasStarted = true;
         userRoom.status = 'PLAYING';
         userRoom.turnIndex = 0;
@@ -889,6 +892,14 @@ wss.on('connection', (ws) => {
           activePlayer.hand = activePlayer.hand.slice(0, drawnTarget);
         }
         userRoom.turnStage = 'DISCARD';
+        userRoom.moveSeq = (userRoom.moveSeq || 0) + 1;
+        userRoom.lastMove = {
+          seq: userRoom.moveSeq,
+          type: 'DRAW_STOCK',
+          playerId: activePlayer.id,
+          playerName: activePlayer.name,
+          at: Date.now()
+        };
         userRoom.lastAction = recycledCount > 0
           ? `♻️ Discard pile reshuffled into Stock (${recycledCount} cards)`
           : 'DRAW_STOCK';
@@ -918,12 +929,22 @@ wss.on('connection', (ws) => {
           if (activePlayer.hand.length < handTarget) {
             ensurePlayerHand(activePlayer, userRoom, handTarget);
           }
-          activePlayer.hand.push(userRoom.discardPile.pop());
+          const pickedCard = userRoom.discardPile.pop();
+          activePlayer.hand.push(pickedCard);
           // Clamp invariant: exactly drawnTarget cards
           if (activePlayer.hand.length > drawnTarget) {
             activePlayer.hand = activePlayer.hand.slice(0, drawnTarget);
           }
           userRoom.turnStage = 'DISCARD';
+          userRoom.moveSeq = (userRoom.moveSeq || 0) + 1;
+          userRoom.lastMove = {
+            seq: userRoom.moveSeq,
+            type: 'DRAW_DISCARD',
+            playerId: activePlayer.id,
+            playerName: activePlayer.name,
+            card: pickedCard,
+            at: Date.now()
+          };
           userRoom.lastAction = 'DRAW_DISCARD';
           broadcastRoom(userRoom);
         }
@@ -948,6 +969,15 @@ wss.on('connection', (ws) => {
           discarded.isInitialOpenCard = false; // Discarded by a player!
           userRoom.discardPile.push(discarded);
           activePlayer.turnsTaken++;
+          userRoom.moveSeq = (userRoom.moveSeq || 0) + 1;
+          userRoom.lastMove = {
+            seq: userRoom.moveSeq,
+            type: 'DISCARD',
+            playerId: activePlayer.id,
+            playerName: activePlayer.name,
+            card: discarded,
+            at: Date.now()
+          };
           userRoom.lastAction = `${activePlayer.name} discarded ${discarded.rank}${discarded.suit}`;
 
           // Invariant: after discard, hand must have strictly handTarget cards
@@ -1132,6 +1162,15 @@ wss.on('connection', (ws) => {
       }
 
       if (data.type === 'CLOSE_ROOM') {
+        if (userRoom.creatorId && userRoom.creatorId !== playerId) {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'INVALID_MOVE',
+              message: `Only ${userRoom.creatorName || 'the table creator'} (who created this table) can close the room.`
+            }));
+          }
+          return;
+        }
         const closingPlayer = userRoom.players.find(p => p.id === playerId);
         const closingName = closingPlayer ? closingPlayer.name : 'A player';
         userRoom.players.forEach(p => {

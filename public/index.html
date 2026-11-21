@@ -456,6 +456,9 @@
       background:linear-gradient(135deg,#fffefb 0%,#f8f7f2 100%) !important;
       border:0 !important;
       border-radius:7px !important;
+      transform:translateZ(0);
+      -webkit-backface-visibility:hidden;
+      backface-visibility:hidden;
     }
     .card.red .card-inner{color:#b91c1c}
     .card:not(.red) .card-inner{color:#172033}
@@ -491,6 +494,13 @@
       object-fit: fill;
       pointer-events: none;
       z-index: 2;
+      opacity: 0;
+      transition: opacity 140ms ease-out;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    .card-vector-img.is-loaded {
+      opacity: 1;
     }
 
     /* Interactive cards inside formed declaration groups */
@@ -564,8 +574,45 @@
       animation: none !important;
     }
     .card-glide-clone.card-glide-clone--active {
-      transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+      transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 380ms ease, box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1) !important;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35) !important;
+    }
+    .card-glide-clone.card-glide-clone--flight {
+      transition: transform 420ms cubic-bezier(0.2, 0.92, 0.24, 1), opacity 420ms ease, box-shadow 420ms ease !important;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42), 0 0 14px rgba(241, 210, 122, 0.28) !important;
+    }
+    .card-flight-back-clone {
+      border-radius: 9px !important;
+      overflow: hidden;
+      background: linear-gradient(145deg, #1d4ed8, #1e3a8a) !important;
+      border: 2px solid rgba(255, 255, 255, 0.85) !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-flight-back-clone img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 7px;
+      pointer-events: none;
+    }
+    .pile-pulse-draw {
+      animation: pilePulseDraw 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes pilePulseDraw {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.07); filter: drop-shadow(0 0 12px rgba(241, 210, 122, 0.65)); }
+      100% { transform: scale(1); }
+    }
+    .pile-pulse-discard {
+      animation: pilePulseDiscard 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes pilePulseDiscard {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.06); filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.65)); }
+      100% { transform: scale(1); }
     }
     .card.card-glide-hidden {
       opacity: 0 !important;
@@ -583,27 +630,30 @@
       will-change: transform;
     }
     .card.card-just-moved {
-      animation: cardMoveSettle 340ms cubic-bezier(0.22, 1, 0.36, 1);
+      animation: cardMoveSettle 380ms cubic-bezier(0.22, 1, 0.36, 1);
     }
     @keyframes cardMoveSettle {
-      0% { box-shadow: 0 0 0 3px rgba(241, 210, 122, 0.65), 0 12px 24px rgba(0, 0, 0, 0.45); }
+      0% { box-shadow: 0 0 0 3px rgba(241, 210, 122, 0.72), 0 12px 24px rgba(0, 0, 0, 0.45); }
       100% { }
     }
     .card.card-discard-landed {
-      animation: cardDiscardSettle 300ms cubic-bezier(0.22, 1, 0.36, 1);
+      animation: cardDiscardSettle 340ms cubic-bezier(0.22, 1, 0.36, 1);
     }
     @keyframes cardDiscardSettle {
-      0% { transform: scale(1.05); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.55), 0 12px 24px rgba(0, 0, 0, 0.48); }
+      0% { transform: scale(1.07); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.62), 0 14px 26px rgba(0, 0, 0, 0.5); }
       100% { transform: scale(1); }
     }
     @media (prefers-reduced-motion: reduce) {
       .card-flight,
       .card-glide-clone,
       .card-glide-clone.card-glide-clone--active,
+      .card-glide-clone.card-glide-clone--flight,
       .card.card-flip-prep,
       .card.card-flip-active { transition: none !important; }
       .card.card-just-moved,
-      .card.card-discard-landed { animation: none !important; }
+      .card.card-discard-landed,
+      .pile-pulse-draw,
+      .pile-pulse-discard { animation: none !important; }
     }
     .card-group-move-clone {
       position: fixed !important;
@@ -6355,7 +6405,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     modal.style.display = 'flex';
   }
 
+  function canCloseCurrentRoom() {
+    if (isDemo || !roomState) return true;
+    const creatorId = roomState.creatorId || roomState.players?.[0]?.id || null;
+    const myId = getMyPlayerId();
+    if (!creatorId || !myId) return true;
+    return creatorId === myId;
+  }
+
   function promptCloseRoom() {
+    if (!canCloseCurrentRoom()) {
+      const creatorName = roomState?.creatorName || roomState?.players?.[0]?.name || 'the table creator';
+      window.alert(`Only ${creatorName} (who created this table) can close the room.`);
+      return;
+    }
     const isPlaying = roomState && (roomState.status === 'PLAYING' || roomState.status === 'GROUPING');
     if (isPlaying) {
       showConfirmModal({
@@ -6389,6 +6452,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function executeCloseRoom() {
     if (isDemo) {
       resetToLobbyScreen('Test table closed.');
+      return;
+    }
+    if (!canCloseCurrentRoom()) {
+      const creatorName = roomState?.creatorName || roomState?.players?.[0]?.name || 'the table creator';
+      window.alert(`Only ${creatorName} (who created this table) can close the room.`);
       return;
     }
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -6518,6 +6586,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     lastDeclDragNotice = null;
     hasInitializedGroupingPhase = false;
     lastRoundResultData = null;
+    lastAnimatedMoveSeq = 0;
     globalSessionScores = [];
     updateSessionHeaderBadge();
     currentRoundWinnerName = null;
@@ -6780,32 +6849,32 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             selectedCardId = null;
           }
 
-          // Capture the visible source before the board is re-rendered.
-          // Only animate when this client's hand actually changes.
+          // Capture visible pile/hand origins BEFORE re-rendering the board.
           const previousIds = new Set((myHand || []).map(c => c.id));
           const previousElements = new Map();
           (myHand || []).forEach(c => {
             const el = document.getElementById('card-' + c.id);
             if (el) previousElements.set(c.id, el);
           });
-          const action = msg.room?.lastAction || '';
-          const sourceEl = action === 'DRAW_STOCK'
-            ? document.getElementById('stockDeckBtn')
-            : action === 'DRAW_DISCARD'
-              ? document.getElementById('discardContainer')
-              : null;
-          const sourceFlight = sourceEl ? captureCardFlight(sourceEl) : null;
+          const preStockEl = document.querySelector('#stockDeckBtn .deck-card') || document.getElementById('stockDeckBtn');
+          const preStockRect = preStockEl ? preStockEl.getBoundingClientRect() : null;
+          const preDiscardCardEl = document.querySelector('#discardContainer .card');
+          const preDiscardRect = (preDiscardCardEl || document.getElementById('discardContainer'))?.getBoundingClientRect() || null;
+          const preDiscardClone = preDiscardCardEl ? preDiscardCardEl.cloneNode(true) : null;
 
           syncIncomingHand(msg.yourHand);
 
           const incomingIds = new Set((msg.yourHand || []).map(c => c.id));
           const drawnIds = [...incomingIds].filter(id => !previousIds.has(id));
           const discardedIds = [...previousIds].filter(id => !incomingIds.has(id));
-          const discardedFlight = discardedIds.length
-            ? captureCardFlight(previousElements.get(discardedIds[0]))
+          const discardedOrigin = discardedIds.length && previousElements.get(discardedIds[0])
+            ? getOriginFromElement(previousElements.get(discardedIds[0]))
             : null;
 
           const isDeclarationAcceptedNow = prevStatus === 'PLAYING' && roomState?.status === 'GROUPING';
+          const lastMove = msg.room?.lastMove || null;
+          const isFreshMove = Boolean(lastMove && lastMove.seq && lastMove.seq > lastAnimatedMoveSeq);
+          const myLiveId = getMyPlayerId();
 
           // Sound triggers for draws, discards, and accepted declarations
           if (drawnIds.length) {
@@ -6831,13 +6900,36 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             (Date.now() - lastOptimisticDiscard.at) < 2500
           );
 
+          if (isFreshMove) {
+            lastAnimatedMoveSeq = lastMove.seq;
+          }
+
           requestAnimationFrame(() => {
-            if (drawnIds.length && sourceFlight) {
-              playCardFlight(sourceFlight, document.getElementById('card-' + drawnIds[0]));
+            // 1. Your own draw from Stock or Discard
+            if (drawnIds.length === 1 && !isNewHand && previousIds.size > 0) {
+              const inferredType = (lastMove && (lastMove.type === 'DRAW_STOCK' || lastMove.type === 'DRAW_DISCARD'))
+                ? lastMove.type
+                : (msg.room?.lastAction === 'DRAW_DISCARD' ? 'DRAW_DISCARD' : 'DRAW_STOCK');
+              const srcRect = inferredType === 'DRAW_DISCARD' ? preDiscardRect : preStockRect;
+              const srcClone = inferredType === 'DRAW_DISCARD' ? preDiscardClone : null;
+              animateDrawCardFlight(inferredType, drawnIds[0], srcRect, srcClone);
             }
-            if (discardedFlight && !isRecentOptimisticDiscard) {
-              const dcCard = document.querySelector('#discardContainer .card') || document.getElementById('discardContainer');
-              playCardFlight(discardedFlight, dcCard);
+            // 2. Your own discard (if not already animated optimistically on click/drag)
+            else if (discardedOrigin && !isRecentOptimisticDiscard && !isDeclarationAcceptedNow) {
+              const dcCard = document.querySelector('#discardContainer .card');
+              if (dcCard) {
+                animateDiscardGlide({ id: discardedIds[0] }, discardedOrigin, null);
+              }
+            }
+            // 3. Opponent draw from Stock / Discard or opponent discard
+            else if (isFreshMove && lastMove.playerId && lastMove.playerId !== myLiveId) {
+              if (lastMove.type === 'DRAW_STOCK') {
+                animateOpponentCardFlight('DRAW_STOCK', lastMove.playerId, preStockRect, null);
+              } else if (lastMove.type === 'DRAW_DISCARD') {
+                animateOpponentCardFlight('DRAW_DISCARD', lastMove.playerId, preDiscardRect, preDiscardClone);
+              } else if (lastMove.type === 'DISCARD') {
+                animateOpponentCardFlight('DISCARD', lastMove.playerId, null, null);
+              }
             } else if (newTopDiscardId && newTopDiscardId !== prevTopDiscardId && !isRecentOptimisticDiscard) {
               const dcCard = document.querySelector('#discardContainer .card');
               if (dcCard) {
@@ -6855,7 +6947,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                   dcCard.style.removeProperty('--flip-dy');
                   dcCard.style.removeProperty('--flip-scale');
                   dcCard.style.removeProperty('--flip-rot');
-                }, 320);
+                }, 340);
               }
             }
           });
@@ -6891,6 +6983,146 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     };
   }
 
+  let lastAnimatedMoveSeq = 0;
+
+  function getOriginFromElement(el) {
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    return {
+      centerX: rect.left + rect.width / 2,
+      centerY: rect.top + rect.height / 2,
+      width: rect.width,
+      height: rect.height,
+      scale: 1.06,
+      rot: -4,
+      el: el.cloneNode(true)
+    };
+  }
+
+  function pulsePileElement(el, cls = 'pile-pulse-draw') {
+    if (!el || prefersReducedCardMotion()) return;
+    el.classList.remove('pile-pulse-draw', 'pile-pulse-discard');
+    void el.offsetWidth;
+    el.classList.add(cls);
+    setTimeout(() => el.classList.remove(cls), 400);
+  }
+
+  function createFlightCardBackNode() {
+    const back = document.createElement('div');
+    back.className = 'card card-flight-back-clone';
+    const img = document.createElement('img');
+    img.src = 'https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/BLUE_BACK.svg';
+    img.alt = '';
+    img.draggable = false;
+    img.onerror = function() { this.style.display = 'none'; };
+    back.appendChild(img);
+    return back;
+  }
+
+  function animateDrawCardFlight(sourceType, drawnCardId, sourceRect, sourceCardClone) {
+    if (!drawnCardId || prefersReducedCardMotion()) return;
+    // Scroll Stand 1 synchronously BEFORE measuring target card coordinates
+    if (typeof ensureCardVisibleInStandSync === 'function') {
+      ensureCardVisibleInStandSync(drawnCardId);
+    }
+    const targetEl = document.getElementById('card-' + drawnCardId);
+    const fallbackPile = sourceType === 'DRAW_DISCARD'
+      ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+      : (document.querySelector('#stockDeckBtn .deck-card') || document.getElementById('stockDeckBtn'));
+    const rect = (sourceRect && sourceRect.width && sourceRect.height)
+      ? sourceRect
+      : (fallbackPile ? fallbackPile.getBoundingClientRect() : null);
+
+    pulsePileElement(sourceType === 'DRAW_DISCARD' ? document.getElementById('discardContainer') : document.getElementById('stockDeckBtn'), 'pile-pulse-draw');
+    if (!targetEl || !rect || !rect.width || !rect.height) return;
+
+    const startOrigin = {
+      centerX: rect.left + rect.width / 2,
+      centerY: rect.top + rect.height / 2,
+      width: rect.width,
+      height: rect.height,
+      scale: 1.08,
+      rot: sourceType === 'DRAW_DISCARD' ? 4 : -6,
+      el: sourceType === 'DRAW_DISCARD' && sourceCardClone ? sourceCardClone : targetEl
+    };
+    spawnOverlayCardGlide({
+      cardId: drawnCardId,
+      sourceNode: startOrigin.el,
+      startOrigin,
+      targetEl,
+      kind: 'draw'
+    });
+  }
+
+  function animateOpponentCardFlight(moveType, oppPlayerId, sourceRect, sourceCardClone) {
+    if (prefersReducedCardMotion()) return;
+    const seatEl = oppPlayerId
+      ? (document.querySelector(`.pokerist-seat[data-seat-player-id="${oppPlayerId}"] .seat-avatar-ring`) ||
+         document.querySelector(`.pokerist-seat[data-seat-player-id="${oppPlayerId}"]`))
+      : null;
+    if (!seatEl) return;
+    const seatRect = seatEl.getBoundingClientRect();
+    if (!seatRect.width || !seatRect.height) return;
+
+    if (moveType === 'DRAW_STOCK' || moveType === 'DRAW_DISCARD') {
+      const pileEl = moveType === 'DRAW_DISCARD'
+        ? (document.querySelector('#discardContainer .card') || document.getElementById('discardContainer'))
+        : (document.querySelector('#stockDeckBtn .deck-card') || document.getElementById('stockDeckBtn'));
+      const rect = (sourceRect && sourceRect.width && sourceRect.height)
+        ? sourceRect
+        : (pileEl ? pileEl.getBoundingClientRect() : null);
+      pulsePileElement(moveType === 'DRAW_DISCARD' ? document.getElementById('discardContainer') : document.getElementById('stockDeckBtn'), 'pile-pulse-draw');
+      if (!rect || !rect.width || !rect.height) return;
+
+      const clone = (moveType === 'DRAW_DISCARD' && sourceCardClone)
+        ? sourceCardClone.cloneNode(true)
+        : createFlightCardBackNode();
+      clone.removeAttribute('id');
+      clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+      clone.classList.add('card-glide-clone');
+      clone.style.position = 'fixed';
+      clone.style.left = rect.left + 'px';
+      clone.style.top = rect.top + 'px';
+      clone.style.width = rect.width + 'px';
+      clone.style.height = rect.height + 'px';
+      clone.style.opacity = '1';
+      clone.style.transform = 'translate3d(0px, 0px, 0) scale(1.04) rotate(0deg)';
+      document.body.appendChild(clone);
+      void clone.offsetWidth;
+
+      const dx = (seatRect.left + seatRect.width / 2) - (rect.left + rect.width / 2);
+      const dy = (seatRect.top + seatRect.height / 2) - (rect.top + rect.height / 2);
+      clone.classList.add('card-glide-clone--flight');
+      clone.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(0.46) rotate(${moveType === 'DRAW_DISCARD' ? 8 : -8}deg)`;
+      clone.style.opacity = '0.25';
+      setTimeout(() => { if (clone.parentNode) clone.remove(); }, 440);
+      return;
+    }
+
+    if (moveType === 'DISCARD') {
+      const dcCard = document.querySelector('#discardContainer .card');
+      if (!dcCard) return;
+      pulsePileElement(document.getElementById('discardContainer'), 'pile-pulse-discard');
+      const startOrigin = {
+        centerX: seatRect.left + seatRect.width / 2,
+        centerY: seatRect.top + seatRect.height / 2,
+        width: seatRect.width,
+        height: seatRect.height,
+        scale: 0.56,
+        rot: -8,
+        el: dcCard
+      };
+      spawnOverlayCardGlide({
+        cardId: dcCard.getAttribute('data-card-id') || 'opp-discard',
+        sourceNode: dcCard,
+        startOrigin,
+        targetEl: dcCard,
+        kind: 'discard'
+      });
+    }
+  }
+
   function captureCardFlight(el) {
     if (!el) return null;
     const rect = el.getBoundingClientRect();
@@ -6907,16 +7139,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   }
 
   function playCardFlight(flight, targetEl) {
-    if (!flight || !targetEl) return;
+    if (!flight || !targetEl || prefersReducedCardMotion()) return;
     const targetRect = targetEl.getBoundingClientRect();
     document.body.appendChild(flight.clone);
+    void flight.clone.offsetWidth;
     const dx = targetRect.left + targetRect.width / 2 - (flight.rect.left + flight.rect.width / 2);
     const dy = targetRect.top + targetRect.height / 2 - (flight.rect.top + flight.rect.height / 2);
-    requestAnimationFrame(() => {
-      flight.clone.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(0.82)';
-      flight.clone.style.opacity = '0.72';
-    });
-    setTimeout(() => flight.clone.remove(), 450);
+    flight.clone.style.transform = 'translate3d(' + dx.toFixed(1) + 'px, ' + dy.toFixed(1) + 'px, 0) scale(0.92)';
+    flight.clone.style.opacity = '0.85';
+    setTimeout(() => { if (flight.clone.parentNode) flight.clone.remove(); }, 450);
   }
 
   let pendingDiscardSource = null;
@@ -7156,10 +7387,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const sRot = startOrigin.rot || 0;
     clone.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(${sScale}) rotate(${sRot}deg)`;
 
-    const until = Date.now() + 360;
+    const isFlight = kind === 'draw' || kind === 'discard';
+    const durationMs = isFlight ? 440 : 400;
+    const until = Date.now() + durationMs;
     if (kind === 'discard') {
       activeDiscardGlide = { cardId, until };
-    } else if (kind === 'stand') {
+    } else if (kind === 'stand' || kind === 'draw') {
       activeStandGlide = { cardId, until };
     }
 
@@ -7167,7 +7400,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     document.body.appendChild(clone);
     void clone.offsetWidth;
 
-    clone.classList.add('card-glide-clone--active');
+    clone.classList.add(isFlight ? 'card-glide-clone--flight' : 'card-glide-clone--active');
     clone.style.transform = 'translate3d(0px, 0px, 0) scale(1) rotate(0deg)';
 
     let finished = false;
@@ -7183,15 +7416,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         if (freshDc) {
           freshDc.classList.remove('card-glide-hidden');
           freshDc.classList.add('card-discard-landed');
-          setTimeout(() => freshDc.classList.remove('card-discard-landed'), 320);
+          setTimeout(() => freshDc.classList.remove('card-discard-landed'), 360);
         }
-      } else if (kind === 'stand') {
+      } else if (kind === 'stand' || kind === 'draw') {
         if (activeStandGlide && activeStandGlide.cardId === cardId) activeStandGlide = null;
         const freshCard = document.getElementById('card-' + cardId);
         if (freshCard) {
           freshCard.classList.remove('card-glide-hidden');
           freshCard.classList.add('card-just-moved');
-          setTimeout(() => freshCard.classList.remove('card-just-moved'), 360);
+          setTimeout(() => freshCard.classList.remove('card-just-moved'), 400);
         }
       } else {
         targetEl.classList.remove('card-glide-hidden');
@@ -7201,7 +7434,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (ev.target === clone && ev.propertyName === 'transform') finish();
     };
     clone.addEventListener('transitionend', onEnd);
-    setTimeout(finish, 360);
+    setTimeout(finish, durationMs);
     return true;
   }
 
@@ -7266,11 +7499,17 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       animateStandSiblings(standSnapshot, cardObj?.id);
     }
     const dcCard = document.querySelector('#discardContainer .card');
+    pulsePileElement(document.getElementById('discardContainer'), 'pile-pulse-discard');
     if (!dcCard || !sourceOrigin) return;
+    const liftedOrigin = {
+      ...sourceOrigin,
+      scale: sourceOrigin.scale && sourceOrigin.scale !== 1 ? sourceOrigin.scale : 1.08,
+      rot: sourceOrigin.rot || -4
+    };
     spawnOverlayCardGlide({
       cardId: cardObj?.id || 'discard',
-      sourceNode: sourceOrigin.el || dcCard,
-      startOrigin: sourceOrigin,
+      sourceNode: liftedOrigin.el || dcCard,
+      startOrigin: liftedOrigin,
       targetEl: dcCard,
       kind: 'discard'
     });
@@ -8300,6 +8539,63 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     return '<div class="pip-grid pip-'+n+'">'+items+'</div>';
   }
 
+  const loadedCardSvgUrls = new Set();
+  const failedCardSvgUrls = new Set();
+
+  function onCardVectorImgLoad(img) {
+    if (!img) return;
+    const src = img.getAttribute('src') || img.src || '';
+    if (img.naturalWidth > 0) {
+      if (src) loadedCardSvgUrls.add(src);
+      img.classList.add('is-loaded');
+    } else {
+      if (src) failedCardSvgUrls.add(src);
+      img.style.display = 'none';
+    }
+  }
+  function onCardVectorImgError(img) {
+    if (!img) return;
+    const src = img.getAttribute('src') || img.src || '';
+    if (src) failedCardSvgUrls.add(src);
+    img.style.display = 'none';
+  }
+  window.onCardVectorImgLoad = onCardVectorImgLoad;
+  window.onCardVectorImgError = onCardVectorImgError;
+
+  let hasPreloadedCardSvgs = false;
+  function preloadAllCardSvgs() {
+    if (hasPreloadedCardSvgs) return;
+    hasPreloadedCardSvgs = true;
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const suits = ['S', 'H', 'C', 'D'];
+    const urls = [
+      'https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/BLUE_BACK.svg',
+      'https://cdn.jsdelivr.net/gh/djp952/external-vectorcards@master/svg/joker2.svg'
+    ];
+    for (const s of suits) {
+      for (const r of ranks) {
+        urls.push(`https://cdn.jsdelivr.net/gh/richardschneider/cardsJS@master/cards/${r}${s}.svg`);
+      }
+    }
+    urls.forEach((url, idx) => {
+      setTimeout(() => {
+        if (loadedCardSvgUrls.has(url) || failedCardSvgUrls.has(url)) return;
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => {
+          if (img.naturalWidth > 0) loadedCardSvgUrls.add(url);
+        };
+        img.onerror = () => { failedCardSvgUrls.add(url); };
+        img.src = url;
+      }, Math.floor(idx / 6) * 45);
+    });
+  }
+  if (typeof window !== 'undefined') {
+    const startPreload = () => setTimeout(preloadAllCardSvgs, 500);
+    if (document.readyState === 'complete') startPreload();
+    else window.addEventListener('load', startPreload, { once: true });
+  }
+
   function getStandardCardSvgUrl(card) {
     if (!card) return '';
     if (card.rank === 'PJ' || card.isPoochie || card.suit === '★') {
@@ -8365,10 +8661,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       ? `<div class="card-pts-chip ${ptsChip.isWild ? 'is-wild-chip' : ''}">${ptsChip.text}</div>`
       : '';
 
-    // Chris Aguilar's open-source SVG deck via jsDelivr CDN
+    // Vector SVG deck via jsDelivr CDN — stays transparent until loaded so inline card art renders instantly with zero blank frames
     const svgUrl = getStandardCardSvgUrl(card);
-    const vectorImgHtml = svgUrl
-      ? `<img src="${svgUrl}" alt="${displayRank}${card.suit}" class="card-vector-img" draggable="false" loading="eager" onerror="this.style.display='none';" />`
+    const isSvgAlreadyLoaded = Boolean(svgUrl && loadedCardSvgUrls.has(svgUrl));
+    const vectorImgHtml = (svgUrl && !failedCardSvgUrls.has(svgUrl))
+      ? `<img src="${svgUrl}" alt="" aria-hidden="true" class="card-vector-img${isSvgAlreadyLoaded ? ' is-loaded' : ''}" draggable="false" loading="eager" decoding="${isSvgAlreadyLoaded ? 'sync' : 'async'}" onload="onCardVectorImgLoad(this)" onerror="onCardVectorImgError(this)" />`
       : '';
 
     let centerHtml = '';
@@ -8605,7 +8902,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           const isDealer = roomState.dealerId === p.id;
 
           return `
-            <div class="pokerist-seat ${isWinner ? 'is-winner-seat' : ''} ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${(forfeited || isElim) ? 'is-forfeited' : ''}">
+            <div class="pokerist-seat ${isWinner ? 'is-winner-seat' : ''} ${isCurrent ? 'is-turn' : ''} ${dropped ? 'is-dropped' : ''} ${(forfeited || isElim) ? 'is-forfeited' : ''}" data-seat-player-id="${escapeHtml(p.id)}">
               <div class="seat-avatar-wrap">
                 ${isWinner ? '<div class="seat-winner-crown" title="Round Winner">👑</div>' : ''}
                 <div class="seat-avatar-ring">
@@ -8729,8 +9026,104 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     renderDiscardHistory();
 
-    // Render Multiple Stands
+    // Reconcile creator-only Close Room button visibility
+    const closeRoomBtn = document.getElementById('btnCloseRoom');
+    if (closeRoomBtn) {
+      closeRoomBtn.style.display = canCloseCurrentRoom() ? '' : 'none';
+    }
+
+    // Reconcile GROUPING phase state BEFORE renderStands() so opponents immediately see arrange-groups controls
+    const isGroupingPhase = roomState?.status === 'GROUPING';
+    const mePlayerForGrouping = isDemo
+      ? roomState?.players?.find(p => p.id === 'p_demo')
+      : roomState?.players?.find(p => p.id === getMyPlayerId() || (p.name || '').trim().toLowerCase() === (document.getElementById('playerName')?.value || '').trim().toLowerCase());
+    const meGrouped = Boolean(mePlayerForGrouping?.isGrouped);
+    const meEliminatedForGrouping = Boolean(mePlayerForGrouping?.isEliminated);
+    const meDroppedForGrouping = Boolean(mePlayerForGrouping?.hasDropped || mePlayerForGrouping?.hasForfeited || meEliminatedForGrouping);
+    let justOpenedOpponentGrouping = false;
+
+    if (roomState?.status === 'ROUND_OVER' || roomState?.status === 'LOBBY') {
+      declarationMode = false;
+      hasInitializedGroupingPhase = false;
+    }
+
+    const waitModal = document.getElementById('groupingWaitModal');
+    if (isGroupingPhase) {
+      if (meGrouped || meDroppedForGrouping) {
+        declarationMode = false;
+        if (waitModal) {
+          waitModal.style.display = 'flex';
+          const activeNonDropped = (roomState.players || []).filter(p => !p.hasDropped && !p.isEliminated);
+          const readyCount = activeNonDropped.filter(p => p.isGrouped).length;
+          const totalActive = activeNonDropped.length;
+
+          const waitTitle = document.getElementById('groupingWaitTitle');
+          const waitSub = document.getElementById('groupingWaitSubtitle');
+          const waitProg = document.getElementById('groupingWaitProgress');
+          const playersList = document.getElementById('groupingPlayersList');
+
+          if (waitTitle) {
+            waitTitle.innerText = mePlayerForGrouping?.id === roomState.winnerId
+              ? '🏆 Declaration Accepted!'
+              : (meEliminatedForGrouping ? '💀 Spectating Grouping Phase' : '✅ Groups Submitted!');
+          }
+          if (waitSub) {
+            waitSub.innerText = mePlayerForGrouping?.id === roomState.winnerId
+              ? 'Waiting for all other players to finish grouping their cards...'
+              : 'Waiting for remaining active players to finish grouping their cards...';
+          }
+          if (waitProg) {
+            waitProg.innerText = `${readyCount} / ${totalActive} players finished grouping`;
+          }
+          if (playersList) {
+            playersList.innerHTML = (roomState.players || []).map(p => {
+              if (p.isEliminated) {
+                return `<div class="wait-player-row dropped"><span>${escapeHtml(p.name)}</span><span>💀 Eliminated (spectating)</span></div>`;
+              }
+              if (p.hasDropped) {
+                return `<div class="wait-player-row dropped"><span>${escapeHtml(p.name)}</span><span>🚫 Dropped (${p.dropPenalty || 30} pts)</span></div>`;
+              }
+              if (p.isGrouped) {
+                return `<div class="wait-player-row ready"><span>${escapeHtml(p.name)}</span><span>✅ Ready</span></div>`;
+              }
+              return `<div class="wait-player-row waiting"><span>${escapeHtml(p.name)}</span><span>⏳ Grouping cards...</span></div>`;
+            }).join('');
+          }
+        }
+      } else {
+        if (waitModal) waitModal.style.display = 'none';
+        declarationMode = true; // Open manual grouping mode immediately for active non-declarer
+        if (!hasInitializedGroupingPhase) {
+          hasInitializedGroupingPhase = true;
+          justOpenedOpponentGrouping = true;
+          declarationGroups = [];
+          declarationSelectedIds.clear();
+          guidedCardIds.clear();
+          guideMeState = null;
+          lastDeclSelectedCardId = null;
+        }
+      }
+      startGroupingCountdownTracker();
+    } else {
+      hasInitializedGroupingPhase = false;
+      if (groupingCountdownInterval) {
+        clearInterval(groupingCountdownInterval);
+        groupingCountdownInterval = null;
+      }
+      if (waitModal && !isDemoGroupingWait) waitModal.style.display = 'none';
+    }
+
+    // Render Multiple Stands (now uses up-to-date declarationMode on the very first GROUPING frame!)
     renderStands();
+
+    if (justOpenedOpponentGrouping) {
+      requestAnimationFrame(() => {
+        const dpEl = document.getElementById('declarationPanel');
+        if (dpEl && dpEl.scrollIntoView) {
+          try { dpEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (_) {}
+        }
+      });
+    }
 
     // Maal Header Badge
     const data = maalData?.details ? maalData : calculateLocalMaal();
@@ -8940,85 +9333,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           : (myEliminated ? 'eliminated' : myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealt3TunellasShow ? '3 Tunellas instant win!' : isDrawn3TunellasShow ? '3 Tunellas ready!' : isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
-    const isGroupingPhase = roomState?.status === 'GROUPING';
-    const mePlayer = isDemo
-      ? roomState?.players?.find(p => p.id === 'p_demo')
-      : roomState?.players?.find(p => p.id === getMyPlayerId() || (p.name || '').trim().toLowerCase() === (document.getElementById('playerName')?.value || '').trim().toLowerCase());
-
-    const meGrouped = Boolean(mePlayer?.isGrouped);
-    const meEliminated = Boolean(mePlayer?.isEliminated);
-    const meDropped = Boolean(mePlayer?.hasDropped || mePlayer?.hasForfeited || meEliminated);
-
-    if (roomState?.status === 'ROUND_OVER' || roomState?.status === 'LOBBY') {
-      declarationMode = false;
-      hasInitializedGroupingPhase = false;
-    }
-
-    // Grouping Wait Modal handling
-    const waitModal = document.getElementById('groupingWaitModal');
-    if (isGroupingPhase) {
-      if (meGrouped || meDropped) {
-        declarationMode = false;
-        if (waitModal) {
-          waitModal.style.display = 'flex';
-          const activeNonDropped = (roomState.players || []).filter(p => !p.hasDropped && !p.isEliminated);
-          const readyCount = activeNonDropped.filter(p => p.isGrouped).length;
-          const totalActive = activeNonDropped.length;
-
-          const waitTitle = document.getElementById('groupingWaitTitle');
-          const waitSub = document.getElementById('groupingWaitSubtitle');
-          const waitProg = document.getElementById('groupingWaitProgress');
-          const playersList = document.getElementById('groupingPlayersList');
-
-          if (waitTitle) {
-            waitTitle.innerText = mePlayer?.id === roomState.winnerId
-              ? '🏆 Declaration Accepted!'
-              : (meEliminated ? '💀 Spectating Grouping Phase' : '✅ Groups Submitted!');
-          }
-          if (waitSub) {
-            waitSub.innerText = mePlayer?.id === roomState.winnerId
-              ? 'Waiting for all other players to finish grouping their cards...'
-              : 'Waiting for remaining active players to finish grouping their cards...';
-          }
-          if (waitProg) {
-            waitProg.innerText = `${readyCount} / ${totalActive} players finished grouping`;
-          }
-          if (playersList) {
-            playersList.innerHTML = (roomState.players || []).map(p => {
-              if (p.isEliminated) {
-                return `<div class="wait-player-row dropped"><span>${escapeHtml(p.name)}</span><span>💀 Eliminated (spectating)</span></div>`;
-              }
-              if (p.hasDropped) {
-                return `<div class="wait-player-row dropped"><span>${escapeHtml(p.name)}</span><span>🚫 Dropped (${p.dropPenalty || 30} pts)</span></div>`;
-              }
-              if (p.isGrouped) {
-                return `<div class="wait-player-row ready"><span>${escapeHtml(p.name)}</span><span>✅ Ready</span></div>`;
-              }
-              return `<div class="wait-player-row waiting"><span>${escapeHtml(p.name)}</span><span>⏳ Grouping cards...</span></div>`;
-            }).join('');
-          }
-        }
-      } else {
-        if (waitModal) waitModal.style.display = 'none';
-        declarationMode = true; // Open manual grouping mode for the active non-declarer
-        if (!hasInitializedGroupingPhase) {
-          hasInitializedGroupingPhase = true;
-          declarationGroups = [];
-          declarationSelectedIds.clear();
-          guidedCardIds.clear();
-          guideMeState = null;
-          lastDeclSelectedCardId = null;
-        }
-      }
-      startGroupingCountdownTracker();
-    } else {
-      hasInitializedGroupingPhase = false;
-      if (groupingCountdownInterval) {
-        clearInterval(groupingCountdownInterval);
-        groupingCountdownInterval = null;
-      }
-      if (waitModal && !isDemoGroupingWait) waitModal.style.display = 'none';
-    }
+    // (GROUPING phase state & groupingWaitModal already reconciled before renderStands() above)
 
     const actionSecEl = document.querySelector('.action-section');
     const actionsGridEl = document.querySelector('.actions-grid');
@@ -9125,6 +9440,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                 ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
               </div>` : ''}`;
         }
+      }
+      if (isGroupingPhase) {
+        updateGroupingCountdownUI();
       }
     }
     const stockBtn = document.getElementById('stockDeckBtn');
@@ -15470,8 +15788,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     roomState.turnStage = 'DRAW';
     renderAll(calculateLocalMaal());
 
-    // In demo mode, if turn passed to opponent, simulate their move and advance clockwise to next player
+    // In demo mode, if turn passed to opponent, simulate their draw + discard with flight animations
     if (nextPlayer.id !== 'p_demo') {
+      setTimeout(() => {
+        if (!isDemo || roomState?.status !== 'PLAYING') return;
+        const stockEl = document.querySelector('#stockDeckBtn .deck-card') || document.getElementById('stockDeckBtn');
+        const stockRect = stockEl ? stockEl.getBoundingClientRect() : null;
+        soundSystem.playCardDraw();
+        animateOpponentCardFlight('DRAW_STOCK', nextPlayer.id, stockRect, null);
+      }, 360);
       setTimeout(() => {
         if (!isDemo || roomState?.status !== 'PLAYING') return;
         const rDemoTurn = getActiveRules();
@@ -15502,9 +15827,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
         roomState.topDiscard = oppCard;
         roomState.lastAction = `${nextPlayer.name} drew and discarded ${oppCard.rank}${oppCard.suit}`;
+        soundSystem.playCardDiscard();
 
         // Advance clockwise to next seat
         passDemoTurn();
+        requestAnimationFrame(() => animateOpponentCardFlight('DISCARD', nextPlayer.id, null, null));
       }, 1100);
     }
   }
@@ -15540,7 +15867,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function simulateDrawStock() {
     if (!canPlayerDraw()) return;
     soundSystem.playCardDraw();
-    const sourceFlight = captureCardFlight(document.getElementById('stockDeckBtn'));
+    const stockCardEl = document.querySelector('#stockDeckBtn .deck-card') || document.getElementById('stockDeckBtn');
+    const sourceRect = stockCardEl ? stockCardEl.getBoundingClientRect() : null;
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const suits = ['♠', '♥', '♣', '♦'];
     const rRoles = roomState?.roles;
@@ -15586,8 +15914,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       onGuidedPracticeAction('DRAW');
     }
     renderAll(calculateLocalMaal());
-    requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + newCard.id)));
-    if (selectedCardId) scrollCardIntoView(newCard.id);
+    requestAnimationFrame(() => animateDrawCardFlight('DRAW_STOCK', newCard.id, sourceRect, null));
   }
 
   function simulateDrawDiscard() {
@@ -15597,7 +15924,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       return;
     }
     soundSystem.playCardDraw();
-    const sourceFlight = captureCardFlight(document.getElementById('discardContainer'));
+    const preDcCard = document.querySelector('#discardContainer .card');
+    const sourceRect = (preDcCard || document.getElementById('discardContainer'))?.getBoundingClientRect() || null;
+    const sourceClone = preDcCard ? preDcCard.cloneNode(true) : null;
     if (!roomState.topDiscard) return;
     const drawn = roomState.topDiscard;
 
@@ -15624,8 +15953,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       onGuidedPracticeAction('DRAW');
     }
     renderAll(calculateLocalMaal());
-    requestAnimationFrame(() => playCardFlight(sourceFlight, document.getElementById('card-' + drawn.id)));
-    if (selectedCardId) scrollCardIntoView(drawn.id);
+    requestAnimationFrame(() => animateDrawCardFlight('DRAW_DISCARD', drawn.id, sourceRect, sourceClone));
   }
 
   function simulateDiscard() {
