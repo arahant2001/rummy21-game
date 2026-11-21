@@ -6203,6 +6203,25 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   window.rejoinSavedRoom = rejoinSavedRoom;
   window.dismissRejoinBanner = dismissRejoinBanner;
 
+  function canViewportAccommodateTwoCols() {
+    const w = window.innerWidth || document.documentElement?.clientWidth || 0;
+    return w >= 768;
+  }
+  function hasSavedStandColumnsPref() {
+    try {
+      const saved = localStorage.getItem('rummy_stand_columns');
+      return saved === '1' || saved === '2';
+    } catch (_) {
+      return false;
+    }
+  }
+  function hasSavedTableSessionData() {
+    try {
+      if (sessionStorage.getItem('rummy_active_session') === 'true') return true;
+      if (typeof getStandsStorageKey === 'function' && sessionStorage.getItem(getStandsStorageKey())) return true;
+    } catch (_) {}
+    return false;
+  }
   function applyStandColumnsState(isTwoCol) {
     document.body.classList.toggle('stands-two-col', isTwoCol);
     const btn = document.getElementById('btnStandColumns');
@@ -6217,9 +6236,24 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (shortEl) shortEl.innerText = '2C';
   }
   function initStandColumns() {
-    let cols = '1';
-    try { cols = localStorage.getItem('rummy_stand_columns') || '1'; } catch (_) {}
-    applyStandColumnsState(cols === '2');
+    let cols = null;
+    try { cols = localStorage.getItem('rummy_stand_columns'); } catch (_) {}
+    if (cols === '1' || cols === '2') {
+      applyStandColumnsState(cols === '2');
+    } else {
+      applyStandColumnsState(canViewportAccommodateTwoCols());
+    }
+  }
+  function applyFreshTableEntryDefaults() {
+    if (!hasSavedStandColumnsPref() && !hasSavedTableSessionData()) {
+      applyStandColumnsState(canViewportAccommodateTwoCols());
+    }
+    if (!hasSavedTableSessionData()) {
+      if (!Array.isArray(userStands) || userStands.length < 3) {
+        userStands = [[], [], []];
+        standTypes = ['PURE_SEQUENCE', 'PURE_SEQUENCE', 'PURE_SEQUENCE'];
+      }
+    }
   }
   function toggleStandColumns() {
     const isNowTwoCol = !document.body.classList.contains('stands-two-col');
@@ -6561,6 +6595,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       sessionStorage.removeItem('rummy_active_session');
       sessionStorage.removeItem('rummy_player_id');
       localStorage.removeItem('rummy_player_id');
+      const staleStandKeys = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const k = sessionStorage.key(i);
+        if (k && k.startsWith('rummy_stands_')) staleStandKeys.push(k);
+      }
+      staleStandKeys.forEach(k => sessionStorage.removeItem(k));
     } catch (_) {}
     if (clientPingTimer) {
       clearInterval(clientPingTimer);
@@ -6689,6 +6729,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         connectionStatus.style.color = '#8ee6bf';
         connectionStatus.style.borderColor = 'rgba(50,197,138,.25)';
       }
+      applyFreshTableEntryDefaults();
       document.getElementById('lobbyView').style.display = 'none';
       document.getElementById('gameView').style.display = 'flex';
       soundSystem.updateUI();
@@ -7687,6 +7728,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     // Always keep myHand strictly synced to clampedIncoming (all 22 cards preserved)
     myHand = clampedIncoming;
     saveStandsToStorage();
+  }
+
+  function shuffleCardList(cards) {
+    const arr = Array.isArray(cards) ? [...cards] : [];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   function initDefaultStands(count = 3) {
@@ -15577,7 +15627,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         newHand.push({ id: `c_n_${demoHandNumber}_${newHand.length + 1}`, suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false });
       }
 
-      myHand = newHand.slice(0, demoHandSize);
+      myHand = shuffleCardList(newHand.slice(0, demoHandSize));
       initDefaultStands(3);
     }
 
@@ -15589,7 +15639,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     window.alert(demoEliminated
       ? `🎴 Hand #${demoHandNumber} Dealt!\nYou exceeded the Tournament score limit and are spectating this hand.`
-      : `🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Clockwise turn order)\nCards arranged into 3 stands.`);
+      : `🎴 Hand #${demoHandNumber} Dealt!\nDealer: ${dealer.name}\nStarter: ${starter.name} (Clockwise turn order)\nCards dealt across 3 stands.`);
 
     if (starter.id !== 'p_demo') {
       setTimeout(() => {
@@ -15722,9 +15772,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       { id: 'c_28', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false },
       { id: 'c_29', suit: '♥', rank: 'A', rankValue: 1, isPoochie: false }
     ];
-    myHand = baseDemoHand.slice(0, demoHandSize);
+    myHand = shuffleCardList(baseDemoHand.slice(0, demoHandSize));
 
-    // Auto arrange into 3 groups by default
+    // Apply fresh table entry defaults (3 stands + 2 cols on non-mobile when no saved session)
+    applyFreshTableEntryDefaults();
+    // Distribute scrambled cards across 3 stands (no auto-arrange)
     initDefaultStands(3);
 
     document.getElementById('lobbyView').style.display = 'none';
