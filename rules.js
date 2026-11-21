@@ -1,6 +1,7 @@
 export const SUITS = ['♠', '♥', '♦', '♣'];
 export const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 export const MAX_PLAYERS = 10;
+export const MIN_NON_HAND_CARDS = 20; // 1 Cut Card + 1 Initial Discard + at least 18 Stock cards
 
 export const DEFAULT_RULES = {
   presetName: 'Classic South Indian',
@@ -82,6 +83,23 @@ function clampInt(val, min, max, fallback) {
   const n = Number(val);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+export function shuffleCards(cards) {
+  if (!Array.isArray(cards)) return [];
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  return cards;
+}
+
+export function getMaxPlayersForRules(rules = DEFAULT_RULES) {
+  const packs = clampInt(rules?.decks, 3, 6, DEFAULT_RULES.decks);
+  const poochies = clampInt(rules?.poochiesPerDeck, 0, 2, DEFAULT_RULES.poochiesPerDeck);
+  const cardsPerPlayer = clampInt(rules?.cardsPerPlayer, 13, 28, DEFAULT_RULES.cardsPerPlayer);
+  const total = packs * (52 + poochies);
+  return Math.min(MAX_PLAYERS, Math.max(2, Math.floor((total - MIN_NON_HAND_CARDS) / Math.max(13, cardsPerPlayer))));
 }
 
 export function sanitizeRules(raw) {
