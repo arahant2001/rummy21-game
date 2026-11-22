@@ -597,7 +597,7 @@ function isSequence(cards, cutCard, rules = DEFAULT_RULES) {
   if (isPureSequence(cards, cutCard, rules)) return true;
   const wilds = cards.filter(c => isWildCard(c, cutCard));
   const naturals = cards.filter(c => !isWildCard(c, cutCard));
-  if (!naturals.length) return false;
+  if (!naturals.length) return wilds.length >= 3;
   const suit = naturals[0].suit;
   if (!naturals.every(c => c.suit === suit)) return false;
 
@@ -884,6 +884,25 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
 
   const effectiveRoles = cutCard ? resolveJokerRoles(cutCard) : null;
 
+  // 0. If 3-Tunellas instant show is enabled and present in hand, lock in all Tunellas first
+  if (rConfig.allow3TunellasShow) {
+    const initialTun = countTunellas(pool);
+    if (initialTun.count >= 3) {
+      for (const trio of initialTun.tunellas) {
+        if (trio.every(c => c && !usedIds.has(c.id))) {
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cardIds: trio.map(c => c.id),
+            cards: trio,
+            _kind: 'TUNELLA'
+          });
+        }
+      }
+    }
+  }
+
   // 1. Optimal Pure Groups per suit (Natural Pure Runs + Tunellas + Marriage)
   // Maximizes pure sequence count and strictly avoids jokers whenever pure sequences can form without them.
   // Do not greedily extend 4th+ cards yet so unused natural cards remain free for Sets first.
@@ -934,6 +953,28 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
         });
       } else {
         searchingPoochies = false;
+      }
+    }
+  }
+
+  // 2b. If still below required Pure Sequences, recognize any remaining Tunellas (including Joker/Paplu/Taplu Tunellas)
+  {
+    let currentPureCount = groups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    if (currentPureCount < rConfig.minPureSequences) {
+      const remTun = countTunellas(getAvailable());
+      for (const trio of remTun.tunellas) {
+        if (currentPureCount >= rConfig.minPureSequences) break;
+        if (trio.every(c => c && !usedIds.has(c.id))) {
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cardIds: trio.map(c => c.id),
+            cards: trio,
+            _kind: 'TUNELLA'
+          });
+          currentPureCount++;
+        }
       }
     }
   }
@@ -1020,6 +1061,43 @@ export function autoArrangeHandToGroups(cards, cutCard, rules = DEFAULT_RULES) {
         });
         searchingJokerSet = true;
         break;
+      }
+    }
+  }
+
+  // 4c. Remaining Tunellas (e.g., unused Joker/Paplu/Taplu Tunellas not needed by incomplete Joker Runs/Sets)
+  {
+    const remTun = countTunellas(getAvailable());
+    for (const trio of remTun.tunellas) {
+      if (trio.every(c => c && !usedIds.has(c.id))) {
+        trio.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'PURE_SEQUENCE',
+          typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+          cardIds: trio.map(c => c.id),
+          cards: trio,
+          _kind: 'TUNELLA'
+        });
+      }
+    }
+  }
+
+  // 4d. 3-Joker Sequences (any 3 remaining Jokers form a legal Joker Sequence)
+  {
+    let searchingAllJokerSeq = true;
+    while (searchingAllJokerSeq) {
+      const availWildcards = getAvailable().filter(c => isWildCard(c, cutCard));
+      if (availWildcards.length >= 3) {
+        const trio = availWildcards.slice(0, 3);
+        trio.forEach(c => usedIds.add(c.id));
+        groups.push({
+          type: 'SEQUENCE',
+          typeLabel: 'Joker Sequence (3 Jokers)',
+          cardIds: trio.map(c => c.id),
+          cards: trio
+        });
+      } else {
+        searchingAllJokerSeq = false;
       }
     }
   }
