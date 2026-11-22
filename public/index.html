@@ -4696,7 +4696,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <h4><span>🧮</span> What Points Are &amp; How They Are Calculated</h4>
           <p id="rulesOverviewPointsIntro" style="margin:0 0 6px;">There are two kinds of points tracked in every round: <strong>Penalty Points</strong> (lower is better — high points hurt you or can eliminate you in Tournament mode) and <strong>Honors / Maal Points</strong> (higher is better — bonus points collected by the round winner).</p>
           <ul id="rulesOverviewPointsList" style="margin: 4px 0 0 18px; padding: 0;">
-            <li><strong>Card Values for Penalty Points (Deadwood):</strong> Face cards &amp; Aces (<strong>A, K, Q, J, 10</strong>) = <strong>10 pts</strong> each; number cards (<strong>2–9</strong>) = <strong>face value</strong> (2 to 9 pts); <strong>all Jokers</strong> (Pukka Joker, Poochie, Wild Joker) = <strong>0 penalty pts</strong>.</li>
+            <li><strong>Card Values for Penalty Points (Deadwood):</strong> Face cards &amp; Aces (<strong>A, K, Q, J, 10</strong>) = <strong>10 pts</strong> each; number cards (<strong>2–9</strong>) = <strong>face value</strong> (2 to 9 pts); <strong>all Jokers</strong> (Joker, Pukka Joker, Poochie, Paplu, Taplu) = <strong>0 penalty pts</strong>.</li>
             <li><strong>If a player Declares (Winner):</strong> Pays <strong>0 penalty points</strong> for the round.</li>
             <li><strong>If you Scoot / Drop before drawing:</strong> Fixed penalty of <strong>30 pts</strong> (First Drop / Scoot) or <strong>70 pts</strong> (Middle Drop), or <strong>0 pts</strong> for a qualifying Free Scoot / Free Game.</li>
             <li><strong>If another player Declares first (Deadwood Calculation):</strong> Any cards not in protected groups are added together up to the <strong>120-point</strong> cap. If you formed <strong>3+ Pure Sequences</strong> (or 7+ Doubles), all valid groups are protected (only loose cards count); otherwise, only Jokers, 4+ card Pure Runs, and Tunnelas are protected.</li>
@@ -4717,7 +4717,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <h4 style="color: #fca5a5;"><span>🔒</span> Joker Pickup Rule (Discard Restriction)</h4>
           <p id="rulesOverviewJokerLockTitle" style="margin: 0 0 6px;"><strong>Discarded Jokers CANNOT be picked up from the discard pile!</strong></p>
           <ul style="margin: 0 0 0 18px; padding: 0;">
-            <li>If a player discards any Joker (Wild Joker, Pukka Joker, Paplu, Taplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
+            <li>If a player discards any Joker (Joker, Pukka Joker, Paplu, Taplu, or Poochie), opponents <strong>cannot draw it</strong>. The card is marked with 🔒 and you must draw from the Stock deck instead.</li>
             <li><span class="rules-pill rules-pill-green">Exception</span> <strong>Initial Open Card:</strong> If the very first card turned face-up from the deck at the beginning of the round is a Joker, the first player <strong>is permitted to pick it up</strong>!</li>
           </ul>
         </div>
@@ -4798,7 +4798,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <h4><span>✅</span> Valid Show Requirements</h4>
           <p>To declare a winning Show, all 21 cards must be arranged into valid groups with:</p>
           <ul style="margin: 6px 0 0 18px; padding: 0;">
-            <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.</li>
+            <li><span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least 3 Pure Sequences:</strong> A sequence of 3 or more consecutive cards of the same suit without Joker substitution.</li>
             <li><span class="rules-pill rules-pill-gold">Special</span> <strong>Groups that count as a Pure Sequence in this game:</strong>
               <ul style="margin: 4px 0 0 16px; padding: 0;">
                 <li><strong>Natural Suited Run:</strong> 3+ consecutive cards in one suit. <em>Note: A natural sequence can include a joker card, as long as it is played in its natural suit and number (e.g. if 5♠ is the Pukka Joker, 5♠ - 6♠ - 7♠ is a pure sequence; 5♥ - 6♥ - 7♥ is also a pure sequence).</em></li>
@@ -4807,7 +4807,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                 <li><strong>Tunnela:</strong> Exactly 3 identical cards of the same rank and same suit (e.g. <strong>K♥ - K♥ - K♥</strong>) qualifies as a Pure Sequence!</li>
               </ul>
             </li>
-            <li><strong>Remaining Groups:</strong> All other cards must be arranged into valid Sequences (pure or using Wild Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
+            <li><strong>Remaining Groups:</strong> All other cards must be arranged into valid Sequences (pure or using Jokers), Sets (3 or 4 cards of same rank in distinct suits), or Tunnelas.</li>
             <li><strong>Auto-Grouping Priority:</strong> When auto-grouping upon declare, <strong>Pure Sequences always take precedence over Sets</strong> (e.g. if 9♠ can participate in an 8♠-9♠-10♠ pure sequence or a 9♠-9♦-9♣ set, it will prioritize the pure sequence).</li>
           </ul>
         </div>
@@ -4885,7 +4885,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                 <td><strong>Tiered Pool:</strong> 1 = <strong>10 pts</strong> &bull; 2 = <strong>30 pts</strong> &bull; 3 = <strong>50 pts</strong> (+10 each after)</td>
               </tr>
               <tr>
-                <td><span class="rules-pill rules-pill-blue">WILD JOKER</span></td>
+                <td><span class="rules-pill rules-pill-blue">JOKER</span></td>
                 <td>Same rank as Cut Card in other 3 suits (e.g. 7♠, 7♥, 7♣)</td>
                 <td>Free wild card in groups (0 honors pts)</td>
               </tr>
@@ -4979,7 +4979,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           <div class="rules-glossary-grid">
             <div class="rules-glossary-item">
               <div class="rules-glossary-term">Cut Card / Cut Joker</div>
-              <p class="rules-glossary-def">The card revealed from the deck at the start of each hand. Its rank and suit determine who becomes the Pukka Joker, Wild Jokers, Paplu, and Taplu for that round.</p>
+              <p class="rules-glossary-def">The card revealed from the deck at the start of each hand. Its rank and suit determine who becomes the Pukka Joker, Jokers, Paplu, and Taplu for that round.</p>
             </div>
             <div class="rules-glossary-item">
               <div class="rules-glossary-term">Deadwood <span class="rules-pill rules-pill-red">Penalty Pts</span></div>
@@ -5015,11 +5015,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             </div>
             <div class="rules-glossary-item">
               <div class="rules-glossary-term">Impure Sequence</div>
-              <p class="rules-glossary-def">A run of 3+ consecutive same-suit cards where one or more missing cards are filled in by a Joker (e.g., 4♥ - 5♥ - Joker).</p>
+              <p class="rules-glossary-def">A run of 3+ consecutive same-suit cards where one or more missing cards are filled in by a Joker (e.g., 4♥ - 5♥ - Joker), or a group of 3+ Jokers.</p>
             </div>
             <div class="rules-glossary-item">
               <div class="rules-glossary-term">Joker <span class="rules-pill rules-pill-blue">Wild Card</span></div>
-              <p class="rules-glossary-def">Any card that can substitute for another card inside an Impure Sequence or Set (Printed Poochies, Pukka Jokers, and Cut-rank Wild Jokers). Worth 0 Deadwood pts; thrown Jokers are 🔒 locked.</p>
+              <p class="rules-glossary-def">Cards matching the Cut Card's rank in the other 3 suits (0 Honors pts), as well as Printed Poochies and Pukka Jokers. Can substitute for another card inside an Impure Sequence or Set. Worth 0 Deadwood pts; thrown Jokers are 🔒 locked.</p>
             </div>
             <div class="rules-glossary-item">
               <div class="rules-glossary-term">Marriage <span class="rules-pill rules-pill-gold">50 pts</span></div>
@@ -5064,10 +5064,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <div class="rules-glossary-item">
               <div class="rules-glossary-term">Tunnela</div>
               <p class="rules-glossary-def">Three identical cards of the exact same rank and suit across the decks (e.g., three 9♠s). Always protected from Deadwood, counts as a Pure Sequence, and 3 Tunnelas wins instantly.</p>
-            </div>
-            <div class="rules-glossary-item">
-              <div class="rules-glossary-term">Wild Joker</div>
-              <p class="rules-glossary-def">Cards matching the Cut Card's rank in the other 3 suits. Wild in sequences and sets with 0 Deadwood pts (and 0 Honors pts).</p>
             </div>
           </div>
         </div>
@@ -7983,7 +7979,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     {
       const byExact = new Map();
       for (const c of cards) {
-        if (declarationIsWildForCut(c, cut, roles)) continue;
+        if (!c || c.isPoochie || c.rank === 'PJ' || c.suit === '★') continue;
         const key = `${c.suit}_${c.rank}`;
         if (!byExact.has(key)) byExact.set(key, []);
         byExact.get(key).push(c);
@@ -7992,13 +7988,14 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         if (list.length >= 3) {
           const orderedList = prefId ? [...list.filter(c => c.id === prefId), ...list.filter(c => c.id !== prefId)] : list;
           const trio = orderedList.slice(0, 3);
+          const isWildTun = declarationIsWildForCut(trio[0], cut, roles);
           allCandidates.push({
             cards: trio,
             type: 'PURE_SEQUENCE',
             shortLabel: 'Tunella (3)',
             typeLabel: 'Tunella Pure Group',
             prio: 1,
-            wildCount: 0,
+            wildCount: isWildTun ? 3 : 0,
             firstIdx: minStandIdx(trio)
           });
         }
@@ -8063,6 +8060,21 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               firstIdx: minStandIdx(trio)
             });
           }
+        }
+      }
+      if (availWilds.length >= 3) {
+        const trio = availWilds.slice(0, 3);
+        if (declarationSequence(trio)) {
+          allCandidates.push({
+            cards: trio,
+            type: 'SEQUENCE',
+            shortLabel: 'Jokers (3)',
+            typeLabel: 'Joker Sequence (3 Jokers)',
+            prio: 2,
+            wildCount: 3,
+            overlapNatural: 0,
+            firstIdx: minStandIdx(trio)
+          });
         }
       }
     }
@@ -8701,7 +8713,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       } else if (tag === 'POOCHIE') {
         tagClass = 'role-poochie'; tagLabel = '★ POOCHIE'; roleRingClass = 'has-role-poochie';
       } else if (tag === 'JOKER') {
-        tagClass = 'role-joker'; tagLabel = '🃏 WILD'; roleRingClass = 'has-role-wild';
+        tagClass = 'role-joker'; tagLabel = '🃏 JOKER'; roleRingClass = 'has-role-wild';
       } else if (tag === 'CUT') {
         tagClass = 'role-cut'; tagLabel = '✂ CUT'; roleRingClass = 'has-role-cut';
       }
@@ -10588,7 +10600,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               </button>
               <div class="stand-cards" id="decl-ungrouped-cards-${sIdx}" onscroll="updateElementScrollButtons('decl-ungrouped-cards-${sIdx}', 'decl-ungrouped-left-${sIdx}', 'decl-ungrouped-right-${sIdx}')">${cards.map(c => {
                 const chip = isGroupingPhase
-                  ? (declarationIsWild(c) ? { text: '0p Wild', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
+                  ? (declarationIsWild(c) ? { text: '0p Joker', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
                   : null;
                 return renderCard(c, getCardTag(c), true, false, chip);
               }).join('')}</div>
@@ -10836,7 +10848,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if(declarationIsMarriage(cards) || declarationIsThreePoochies(cards)) return true;
     if(declarationPure(cards)) return true;
     const wilds=cards.filter(declarationIsWild), naturals=cards.filter(c=>!declarationIsWild(c));
-    if(!naturals.length) return false;
+    if(!naturals.length) return wilds.length >= 3;
     const suit=naturals[0].suit;
     if(!naturals.every(c=>c.suit===suit)) return false;
     const n=cards.length;
@@ -10900,6 +10912,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         icon: '🃏'
       };
     }
+    if (declarationIsTunella(cards)) {
+      return {
+        type: 'PURE_SEQUENCE',
+        label: `Tunella (${cards[0].rank}${cards[0].suit} x3)`,
+        verb: 'Tunella (Pure Group)',
+        badge: '3 Identical Cards (Pure Group)',
+        icon: '🎯'
+      };
+    }
     if (declarationPure(cards)) {
       return {
         type: 'PURE_SEQUENCE',
@@ -10910,11 +10931,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       };
     }
     if (declarationSequence(cards)) {
+      const allWilds = cards.every(declarationIsWild);
       return {
         type: 'SEQUENCE',
-        label: 'Joker Group',
-        verb: 'Joker Group',
-        badge: 'Sequence with Wilds',
+        label: allWilds ? `Joker Group (${cards.length} Jokers)` : 'Joker Group',
+        verb: allWilds ? 'Joker Group (All Jokers)' : 'Joker Group',
+        badge: allWilds ? '3+ Jokers Sequence' : 'Sequence with Jokers',
         icon: '🃏'
       };
     }
@@ -11010,10 +11032,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 4. Fallback Tunellas (3 identical cards)
+    // 4. Fallback Tunellas (any 3 identical non-Poochie cards, including Joker/Paplu/Taplu)
     const tunMap = new Map();
     for (const c of availCards) {
-      if (declarationIsWild(c)) continue;
+      if (!c || c.isPoochie || c.rank === 'PJ' || c.suit === '★') continue;
       const k = `${c.suit}_${c.rank}`;
       if (!tunMap.has(k)) tunMap.set(k, []);
       tunMap.get(k).push(c);
@@ -11069,6 +11091,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             }
           }
         }
+      }
+      if (availWilds.length >= 3) {
+        const trio = availWilds.slice(0, 3);
+        const names = trio.map(c => c.isPoochie ? 'PJ★' : `${c.rank}${c.suit}`).join(' + ');
+        addCandidate(trio, 'SEQUENCE', 'Joker Group (3 Jokers)',
+          `Joker Sequence: ${names}`,
+          'A group of 3 Jokers forms a legal Joker Sequence.');
       }
     }
 
@@ -11428,6 +11457,22 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
+    // 0. If 3-Tunellas instant show is enabled and present in hand, lock in all Tunellas first
+    const initialTunInfo = rRule.allow3TunellasShow !== false ? countTunellas(pool) : { count: 0, tunellas: [] };
+    if (initialTunInfo.count >= 3) {
+      for (const trio of initialTunInfo.tunellas) {
+        if (trio.every(c => c && !usedCardIds.has(c.id))) {
+          trio.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cards: trio,
+            _kind: 'TUNELLA'
+          });
+        }
+      }
+    }
+
     // 1. Optimal Pure Groups per suit (maximizes count & prioritizes avoiding jokers)
     for (const suit of suits) {
       const availNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
@@ -11474,6 +11519,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           });
         } else {
           searchingPoochies = false;
+        }
+      }
+    }
+
+    // 2b. If still below required Pure Groups, recognize any remaining Tunellas (including Joker/Paplu/Taplu Tunellas)
+    {
+      let currentPureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      if (currentPureCount < rRule.minPureSequences) {
+        const remTun = countTunellas(getAvailable());
+        for (const trio of remTun.tunellas) {
+          if (currentPureCount >= rRule.minPureSequences) break;
+          if (trio.every(c => c && !usedCardIds.has(c.id))) {
+            trio.forEach(c => usedCardIds.add(c.id));
+            newGroups.push({
+              type: 'PURE_SEQUENCE',
+              typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+              cards: trio,
+              _kind: 'TUNELLA'
+            });
+            currentPureCount++;
+          }
         }
       }
     }
@@ -11562,6 +11628,41 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
+    // 4c. Remaining Tunellas (e.g., unused Joker/Paplu/Taplu Tunellas not needed by incomplete Joker Runs/Sets)
+    {
+      const remTun = countTunellas(getAvailable());
+      for (const trio of remTun.tunellas) {
+        if (trio.every(c => c && !usedCardIds.has(c.id))) {
+          trio.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cards: trio,
+            _kind: 'TUNELLA'
+          });
+        }
+      }
+    }
+
+    // 4d. 3-Joker Sequences (any 3 remaining Jokers form a legal Joker Sequence)
+    {
+      let searchingAllJokerSeq = true;
+      while (searchingAllJokerSeq) {
+        const availWildcards = getAvailable().filter(c => declarationIsWild(c));
+        if (availWildcards.length >= 3) {
+          const trio = availWildcards.slice(0, 3);
+          trio.forEach(c => usedCardIds.add(c.id));
+          newGroups.push({
+            type: 'SEQUENCE',
+            typeLabel: 'Joker Group (3 Jokers)',
+            cards: trio
+          });
+        } else {
+          searchingAllJokerSeq = false;
+        }
+      }
+    }
+
     // 5. Extend consecutive Pure Runs strictly with remaining NON-WILD cards (never swallow a joker)
     for (const g of newGroups) {
       if (g.type !== 'PURE_SEQUENCE' || g._kind !== 'RUN') continue;
@@ -11629,7 +11730,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const handSize = getConfiguredHandSize();
     if (showNotification) {
       if (verifiedGroups.length > 0) {
-        if (totalGrouped === handSize && pureCount >= rRule.minPureSequences) {
+        if (initialTunInfo.count >= 3) {
+          window.alert(`🎉 3 Tunellas detected (${initialTunInfo.count} Tunellas)! Your instant 3-Tunellas Show is grouped and ready to declare!`);
+        } else if (totalGrouped === handSize && pureCount >= rRule.minPureSequences) {
           window.alert(`🎉 Perfect! Auto-grouped ${verifiedGroups.length} valid groups (${pureCount} Pure Groups). All ${handSize} cards are grouped and ready!`);
         } else {
           window.alert(`Auto-detected ${verifiedGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Groups). Use Guide Me or tap cards below to adjust.`);
@@ -14179,6 +14282,24 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const suits = ['♠', '♥', '♣', '♦'];
     const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
+    // 0. If 3-Tunellas instant show is enabled and present in hand, lock in all Tunellas first
+    if (rRule.allow3TunellasShow !== false) {
+      const initTun = countTunellas(pool);
+      if (initTun.count >= 3) {
+        for (const trio of initTun.tunellas) {
+          if (trio.every(c => c && !usedIds.has(c.id))) {
+            trio.forEach(c => usedIds.add(c.id));
+            groups.push({
+              type: 'PURE_SEQUENCE',
+              typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+              cards: trio,
+              _kind: 'TUNELLA'
+            });
+          }
+        }
+      }
+    }
+
     // 1. Optimal Pure Groups per suit (Natural Pure Runs + Tunellas + Marriage)
     for (const suit of suits) {
       const suitNaturals = getAvailable().filter(c => c && c.suit === suit && !c.isPoochie && c.rank !== 'PJ' && c.suit !== '★');
@@ -14225,6 +14346,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           });
         } else {
           searchingPoochies = false;
+        }
+      }
+    }
+
+    // 2b. If still below required Pure Sequences, recognize any remaining Tunellas (including Joker/Paplu/Taplu Tunellas)
+    {
+      let currentPureCount = groups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      if (currentPureCount < rRule.minPureSequences) {
+        const remTun = countTunellas(getAvailable());
+        for (const trio of remTun.tunellas) {
+          if (currentPureCount >= rRule.minPureSequences) break;
+          if (trio.every(c => c && !usedIds.has(c.id))) {
+            trio.forEach(c => usedIds.add(c.id));
+            groups.push({
+              type: 'PURE_SEQUENCE',
+              typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+              cards: trio,
+              _kind: 'TUNELLA'
+            });
+            currentPureCount++;
+          }
         }
       }
     }
@@ -14309,6 +14451,41 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           });
           searchingJokerSet = true;
           break;
+        }
+      }
+    }
+
+    // 4c. Remaining Tunellas (e.g., unused Joker/Paplu/Taplu Tunellas not needed by incomplete Joker Runs/Sets)
+    {
+      const remTun = countTunellas(getAvailable());
+      for (const trio of remTun.tunellas) {
+        if (trio.every(c => c && !usedIds.has(c.id))) {
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'PURE_SEQUENCE',
+            typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+            cards: trio,
+            _kind: 'TUNELLA'
+          });
+        }
+      }
+    }
+
+    // 4d. 3-Joker Sequences (any 3 remaining Jokers form a legal Joker Sequence)
+    {
+      let searchingAllJokerSeq = true;
+      while (searchingAllJokerSeq) {
+        const availWildcards = getAvailable().filter(c => isWildFn(c));
+        if (availWildcards.length >= 3) {
+          const trio = availWildcards.slice(0, 3);
+          trio.forEach(c => usedIds.add(c.id));
+          groups.push({
+            type: 'SEQUENCE',
+            typeLabel: 'Joker Group (3 Jokers)',
+            cards: trio
+          });
+        } else {
+          searchingAllJokerSeq = false;
         }
       }
     }
@@ -14589,7 +14766,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         topIntroP.innerHTML = `To declare a winning Show, all <strong>${handSize} cards</strong> must be arranged into valid groups with:`;
       }
       const items = meldsTab.querySelectorAll('.rules-card-box:first-child > ul > li');
-      if (items[0]) items[0].innerHTML = `<span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least ${r.minPureSequences} Pure Sequence(s):</strong> A sequence of 3 or more consecutive cards of the same suit without Wild Joker substitution.`;
+      if (items[0]) items[0].innerHTML = `<span class="rules-pill rules-pill-green">Mandatory</span> <strong>At least ${r.minPureSequences} Pure Sequence(s):</strong> A sequence of 3 or more consecutive cards of the same suit without Joker substitution.`;
       const rows = meldsTab.querySelectorAll('.rules-table tbody tr');
       if (rows[0]) {
         rows[0].children[2].innerHTML = r.allow3TunellasShow
