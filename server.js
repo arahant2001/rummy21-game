@@ -724,11 +724,21 @@ function advanceTurn(room) {
   room.turnStage = 'DRAW';
 }
 
+function reassignCreatorIfNeeded(room) {
+  if (!room || !Array.isArray(room.players)) return;
+  const activeCreator = room.players.find(p => p.id === room.creatorId && !p.hasLeft);
+  if (activeCreator) return;
+  const nextCreator = room.players.find(p => !p.hasLeft) || room.players[0] || null;
+  room.creatorId = nextCreator ? nextCreator.id : null;
+  room.creatorName = nextCreator ? nextCreator.name : null;
+}
+
 function dealNextHand(room) {
   if (!room.players.length) return;
 
   // Prune players who left the session or disconnected
   room.players = room.players.filter(p => !p.hasLeft && p.ws);
+  reassignCreatorIfNeeded(room);
   const survivingPlayers = room.players.filter(p => !p.isEliminated);
   if (survivingPlayers.length < 2) {
     room.status = 'LOBBY';
@@ -1501,6 +1511,7 @@ wss.on('connection', (ws) => {
         if (wasPlaying && leavingPlayer.isEliminated && !leavingPlayer._inCurrentHand) {
           leavingPlayer.hasLeft = true;
           leavingPlayer.ws = null;
+          reassignCreatorIfNeeded(userRoom);
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'SESSION_LEFT',
@@ -1513,19 +1524,49 @@ wss.on('connection', (ws) => {
           const rConfig = userRoom.rules || DEFAULT_RULES;
           const forfeitPts = rConfig.forfeitPenalty ?? 100;
           const midPts = rConfig.middleDrop ?? 70;
-          // If leaving after a wrong declare, invalid show, or forfeit, penalize forfeitPts instead of normal mid-scoot
-          const isForfeit = Boolean(leavingPlayer.hasForfeited || leavingPlayer.dropType === 'FORFEIT' || leavingPlayer.dropPenalty === forfeitPts || data.forfeit);
-          const penalty = isForfeit ? forfeitPts : midPts;
-          const dropType = isForfeit ? 'FORFEIT' : 'MIDDLE_DROP';
-          const penaltyLabel = isForfeit ? `Wrong Declare / Forfeit: ${forfeitPts} pts` : `Mid-scoot: ${midPts} pts`;
+          const isGroupingWinner = userRoom.status === 'GROUPING' && userRoom.winnerId === leavingPlayer.id;
+          const isAlreadyGroupedOpp = userRoom.status === 'GROUPING' && leavingPlayer.isGrouped && !leavingPlayer.hasDropped;
+          const alreadyLockedDrop = Boolean(leavingPlayer.hasDropped);
 
-          leavingPlayer.hasDropped = true;
-          leavingPlayer.hasForfeited = isForfeit;
-          leavingPlayer.dropType = dropType;
-          leavingPlayer.dropPenalty = penalty;
-          leavingPlayer.hasLeft = true;
+          let sessionLeftMessage = `You left the game as a Mid-Scoot (${midPts} pts penalty).`;
+          let actionSuffix = `Mid-scoot: ${midPts} pts`;
 
-          // Ensure sessionScores entry exists; finalizeRound will settle dropPenalty + winnerMaal cleanly once per hand
+          if (isGroupingWinner) {
+            // Winner already declared validly; preserve win and let remaining opponents finish grouping
+            leavingPlayer.hasLeft = true;
+            sessionLeftMessage = 'You left the table. Your winning declaration remains locked for this hand.';
+            actionSuffix = 'declared winner left while opponents group';
+          } else if (isAlreadyGroupedOpp) {
+            // Opponent already submitted groups; preserve submitted groups & hand snapshot for scoring
+            leavingPlayer.hasLeft = true;
+            sessionLeftMessage = 'You left the table. Your submitted groups will be scored for this hand.';
+            actionSuffix = 'left after submitting groups';
+          } else if (alreadyLockedDrop) {
+            // Preserve already-locked drop type/penalty (e.g., First Drop 30, Free Scoot 0, or Forfeit 100)
+            leavingPlayer.hasLeft = true;
+            const lockedPts = leavingPlayer.isFreeScoot ? 0 : (leavingPlayer.dropPenalty || 0);
+            sessionLeftMessage = leavingPlayer.isFreeScoot
+              ? 'You left the table (Free Scoot: 0 pts & 0 Honors).'
+              : `You left the table (locked penalty: ${lockedPts} pts).`;
+            actionSuffix = leavingPlayer.isFreeScoot ? 'Free Scoot: 0 pts' : `already dropped: ${lockedPts} pts`;
+          } else {
+            // Active un-dropped player leaving mid-hand: apply forfeit or mid-scoot penalty
+            const isForfeit = Boolean(leavingPlayer.hasForfeited || leavingPlayer.dropType === 'FORFEIT' || leavingPlayer.dropPenalty === forfeitPts || data.forfeit);
+            const penalty = isForfeit ? forfeitPts : midPts;
+            const dropType = isForfeit ? 'FORFEIT' : 'MIDDLE_DROP';
+            actionSuffix = isForfeit ? `Wrong Declare / Forfeit: ${forfeitPts} pts` : `Mid-scoot: ${midPts} pts`;
+            sessionLeftMessage = isForfeit
+              ? `You left the game after a wrong declare / forfeit (${forfeitPts} pts penalty).`
+              : `You left the game as a Mid-Scoot (${midPts} pts penalty).`;
+
+            leavingPlayer.hasDropped = true;
+            leavingPlayer.hasForfeited = isForfeit;
+            leavingPlayer.dropType = dropType;
+            leavingPlayer.dropPenalty = penalty;
+            leavingPlayer.hasLeft = true;
+          }
+
+          // Ensure sessionScores entry exists; finalizeRound will settle cleanly once per hand
           const scoreKey = (leavingPlayer.name || '').trim().toLowerCase();
           if (!userRoom.sessionScores[scoreKey]) {
             userRoom.sessionScores[scoreKey] = {
@@ -1542,47 +1583,59 @@ wss.on('connection', (ws) => {
             };
           }
 
-          userRoom.lastAction = `${leavingPlayer.name} left the game (${penaltyLabel})`;
+          reassignCreatorIfNeeded(userRoom);
+          userRoom.lastAction = `${leavingPlayer.name} left the game (${actionSuffix})`;
 
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'SESSION_LEFT',
-              message: isForfeit
-                ? `You left the game after a wrong declare / forfeit (${forfeitPts} pts penalty).`
-                : `You left the game as a Mid-Scoot (${midPts} pts penalty).`
+              message: sessionLeftMessage
             }));
           }
           leavingPlayer.ws = null;
-          leavingPlayer._finalHandSnapshot = Array.isArray(leavingPlayer.hand) ? [...leavingPlayer.hand] : [];
-          leavingPlayer.hand = [];
+          if (!Array.isArray(leavingPlayer._finalHandSnapshot) || leavingPlayer._finalHandSnapshot.length === 0) {
+            leavingPlayer._finalHandSnapshot = Array.isArray(leavingPlayer.hand) ? [...leavingPlayer.hand] : [];
+          }
+          if (!isGroupingWinner && !isAlreadyGroupedOpp) {
+            leavingPlayer.hand = [];
+          }
 
-          const activeIndex = userRoom.turnIndex;
-          const isLeavingTurn = userRoom.players[activeIndex]?.id === playerId;
-
-          const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.isEliminated && !p.hasLeft);
-          if (activeNonDropped.length <= 1 && userRoom.players.length > 1) {
-            const soleWinner = activeNonDropped[0] || userRoom.players.find(p => !p.hasLeft && !p.isEliminated);
-            if (soleWinner) {
-              userRoom.winnerId = soleWinner.id;
-              userRoom.winnerName = soleWinner.name;
+          if (userRoom.status === 'GROUPING') {
+            // Finalize immediately if no ungrouped active opponents remain
+            const ungroupedRemaining = userRoom.players.filter(
+              p => p.id !== userRoom.winnerId && !p.hasDropped && !p.isEliminated && !p.hasLeft && !p.isGrouped
+            );
+            if (ungroupedRemaining.length === 0) {
               finalizeRound(userRoom);
             } else {
-              userRoom.status = 'LOBBY';
               broadcastRoom(userRoom);
             }
           } else {
-            if (isLeavingTurn) {
-              advanceTurn(userRoom);
+            const activeIndex = userRoom.turnIndex;
+            const isLeavingTurn = userRoom.players[activeIndex]?.id === playerId;
+
+            const activeNonDropped = userRoom.players.filter(p => !p.hasDropped && !p.isEliminated && !p.hasLeft);
+            if (activeNonDropped.length <= 1 && userRoom.players.length > 1) {
+              const soleWinner = activeNonDropped[0] || userRoom.players.find(p => !p.hasLeft && !p.isEliminated);
+              if (soleWinner) {
+                userRoom.winnerId = soleWinner.id;
+                userRoom.winnerName = soleWinner.name;
+                finalizeRound(userRoom);
+              } else {
+                userRoom.status = 'LOBBY';
+                broadcastRoom(userRoom);
+              }
+            } else {
+              if (isLeavingTurn) {
+                advanceTurn(userRoom);
+              }
+              broadcastRoom(userRoom);
             }
-            broadcastRoom(userRoom);
           }
         } else {
           // In LOBBY or ROUND_OVER
           userRoom.players = userRoom.players.filter(p => p.id !== playerId);
-          if (!userRoom.hasStarted && userRoom.creatorId === playerId) {
-            userRoom.creatorId = userRoom.players[0]?.id || null;
-            userRoom.creatorName = userRoom.players[0]?.name || null;
-          }
+          reassignCreatorIfNeeded(userRoom);
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'SESSION_LEFT',
@@ -1593,6 +1646,37 @@ wss.on('connection', (ws) => {
           if (userRoom.players.length === 0) {
             clearRoomTimers(userRoom);
             rooms.delete(userRoom.id);
+          } else if (userRoom.status === 'ROUND_OVER') {
+            if (userRoom.tournamentFinished) {
+              const connectedPool = userRoom.players.filter(x => x.ws && !x.hasLeft);
+              const pool = connectedPool.length > 0 ? connectedPool : userRoom.players;
+              if (pool.length >= 2 && pool.every(x => x.readyForNextHand)) {
+                Object.values(userRoom.sessionScores || {}).forEach(sc => {
+                  if (!sc) return;
+                  sc.handsPlayed = 0;
+                  sc.handsWon = 0;
+                  sc.points = 0;
+                  sc.honors = 0;
+                  sc.maal = 0;
+                  sc.totalScore = 0;
+                  sc.isEliminated = false;
+                  sc.eliminatedInHand = null;
+                });
+                userRoom.players.forEach(pl => { pl.isEliminated = false; });
+                userRoom.handNumber = 0;
+                userRoom.starterIndex = -1;
+                userRoom.tournamentFinished = false;
+                userRoom.tournamentWinnerId = null;
+                userRoom.tournamentWinnerName = null;
+                dealNextHand(userRoom);
+              }
+            } else {
+              const survivingPool = userRoom.players.filter(x => !x.isEliminated && !x.hasLeft);
+              if (survivingPool.length >= 2 && survivingPool.every(x => x.readyForNextHand)) {
+                dealNextHand(userRoom);
+              }
+            }
+            broadcastRoom(userRoom);
           } else {
             broadcastRoom(userRoom);
           }

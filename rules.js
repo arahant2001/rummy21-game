@@ -660,13 +660,10 @@ export function validateShow(groups, hand, cutCard, isDealt = false, rules = DEF
     if (!group || !Array.isArray(group.cardIds)) return { valid: false, reason: 'Invalid group format.' };
     const type = group.type || 'SEQUENCE';
     if (type === 'DOUBLE') {
-      if (group.cardIds.length !== 2) return { valid: false, reason: 'A Double must contain exactly 2 identical cards.' };
-      const [c1, c2] = group.cardIds.map(id => hand.find(c => c.id === id));
-      if (!c1 || !c2) return { valid: false, reason: 'Cards not found in hand.' };
-      const isIdentical = (c1.isPoochie && c2.isPoochie) || (c1.rank === c2.rank && c1.suit === c2.suit);
-      if (!isIdentical) return { valid: false, reason: 'A Double must be two identical cards of the same rank and suit.' };
-      group.cardIds.forEach(id => { used.add(id); });
-      continue;
+      return {
+        valid: false,
+        reason: `Doubles can only win as a full Doubles Show (${rConfig.dealtDoublesForShow} dealt / ${rConfig.drawnDoublesForShow} drawn), not mixed into a normal meld declaration.`
+      };
     }
 
     if (group.cardIds.length < 3) return { valid: false, reason: 'Every group must contain at least 3 cards (or 2 for a double).' };
