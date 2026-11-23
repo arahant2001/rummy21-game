@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
@@ -12,6 +13,7 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
+app.use(express.json({ limit: '16kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Render health check / quick deployment sanity check
@@ -20,10 +22,295 @@ app.get('/health', (req, res) => {
 });
 
 const rooms = new Map();
+const SERVER_STARTED_AT = Date.now();
 const ROOM_INACTIVITY_TIMEOUT_MS = Math.max(
   1000,
   parseInt(process.env.ROOM_INACTIVITY_TIMEOUT_MS || String(60 * 60 * 1000), 10) || (60 * 60 * 1000)
 );
+
+// --- Developer Rooms Backdoor Auth & Inspector ---
+const DEV_SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+const DEV_LOGIN_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const DEV_LOGIN_MAX_ATTEMPTS = 12;
+const devSessions = new Map(); // token -> { expiresAt }
+const devLoginAttempts = new Map(); // ip -> { count, resetAt }
+let claimedDevAuth = null; // { salt, hash } when DEV_ADMIN_PASSCODE is unset
+
+function getConfiguredDevPasscode() {
+  const raw = process.env.DEV_ADMIN_PASSCODE;
+  return typeof raw === 'string' && raw.trim().length > 0 ? raw.trim() : null;
+}
+
+function sha256Buffer(value) {
+  return crypto.createHash('sha256').update(String(value), 'utf8').digest();
+}
+
+function verifyDevPasscode(candidate) {
+  if (typeof candidate !== 'string' || candidate.length === 0 || candidate.length > 256) return false;
+  const envPass = getConfiguredDevPasscode();
+  if (envPass) {
+    // Configured env passcode always overrides any claimed fallback hash
+    return crypto.timingSafeEqual(sha256Buffer(candidate), sha256Buffer(envPass));
+  }
+  if (!claimedDevAuth) return false;
+  const derived = crypto.scryptSync(candidate, claimedDevAuth.salt, 64);
+  const stored = Buffer.from(claimedDevAuth.hash, 'hex');
+  return derived.length === stored.length && crypto.timingSafeEqual(derived, stored);
+}
+
+function createDevSessionToken() {
+  const now = Date.now();
+  // Prune expired sessions opportunistically
+  for (const [tok, meta] of devSessions.entries()) {
+    if (!meta || meta.expiresAt <= now) devSessions.delete(tok);
+  }
+  const token = crypto.randomBytes(32).toString('hex');
+  devSessions.set(token, { expiresAt: now + DEV_SESSION_TTL_MS });
+  return token;
+}
+
+function extractBearerToken(req) {
+  const auth = req.headers.authorization;
+  if (typeof auth !== 'string') return null;
+  const match = auth.match(/^Bearer\s+([a-f0-9]{64})$/i);
+  return match ? match[1] : null;
+}
+
+function isDevRequestAuthenticated(req) {
+  const token = extractBearerToken(req);
+  if (token) {
+    const sess = devSessions.get(token);
+    if (sess && sess.expiresAt > Date.now()) {
+      return true;
+    }
+    if (sess) devSessions.delete(token);
+  }
+  const headerPass = req.headers['x-dev-passcode'];
+  if (typeof headerPass === 'string' && headerPass.length > 0) {
+    const rl = checkDevLoginRateLimit(req);
+    if (rl.allowed && verifyDevPasscode(headerPass)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function checkDevLoginRateLimit(req) {
+  const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
+  const now = Date.now();
+  if (devLoginAttempts.size > 500) {
+    for (const [k, v] of devLoginAttempts.entries()) {
+      if (!v || v.resetAt <= now) devLoginAttempts.delete(k);
+    }
+  }
+  const rec = devLoginAttempts.get(ip);
+  if (!rec || rec.resetAt <= now) {
+    devLoginAttempts.set(ip, { count: 1, resetAt: now + DEV_LOGIN_WINDOW_MS });
+    return { allowed: true };
+  }
+  if (rec.count >= DEV_LOGIN_MAX_ATTEMPTS) {
+    return { allowed: false, retryAfterSec: Math.max(1, Math.ceil((rec.resetAt - now) / 1000)) };
+  }
+  rec.count += 1;
+  return { allowed: true };
+}
+
+function formatDurationCompact(ms) {
+  const totalSec = Math.max(0, Math.floor((Number(ms) || 0) / 1000));
+  const hrs = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  if (hrs > 0) return `${hrs}h ${mins}m ${secs}s`;
+  if (mins > 0) return `${mins}m ${secs}s`;
+  return `${secs}s`;
+}
+
+function buildTableConfigSummary(rules) {
+  const r = sanitizeRules(rules || DEFAULT_RULES);
+  const preset = r.presetName || 'Custom';
+  const modeStr = r.eliminationEnabled ? `Tournament (${r.scoreLimit} cap)` : preset;
+  const extras = [];
+  if (r.allowDoublesShow) extras.push(`Doubles ${r.dealtDoublesForShow}/${r.drawnDoublesForShow}`);
+  if (r.allow3TunellasShow) extras.push('3-Tunellas');
+  if (r.count3CardPureAsDeadwood) extras.push('3-Pure DW');
+  const extrasText = extras.length > 0 ? ` • ${extras.join(', ')}` : '';
+  return `${modeStr} • ${r.cardsPerPlayer} cards • ${r.decks} decks (${r.poochiesPerDeck} Poochie/deck) • ${r.minPureSequences} Pure min • Max DW ${r.maxDeadwood} • Drops ${r.firstDrop}/${r.middleDrop}/${r.forfeitPenalty}${extrasText}`;
+}
+
+function buildDevRoomsSnapshot() {
+  const now = Date.now();
+  const list = [];
+  for (const room of rooms.values()) {
+    const r = sanitizeRules(room.rules || DEFAULT_RULES);
+    const createdAt = room.createdAt || room.lastActivityAt || now;
+    const startedAt = room.startedAt || null;
+    const handStartedAt = room.handStartedAt || null;
+    const lastActivityAt = room.lastActivityAt || createdAt;
+    const playingMs = startedAt ? Math.max(0, now - startedAt) : 0;
+    const handElapsedMs = handStartedAt ? Math.max(0, now - handStartedAt) : 0;
+    const roomAgeMs = Math.max(0, now - createdAt);
+    const idleMs = Math.max(0, now - lastActivityAt);
+    const turnPlayer = Array.isArray(room.players) ? room.players[room.turnIndex] : null;
+
+    const players = (room.players || []).map(p => ({
+      name: p.name,
+      connected: Boolean(p.ws && p.ws.readyState === WebSocket.OPEN),
+      isCreator: Boolean(room.creatorId && p.id === room.creatorId),
+      hasDropped: Boolean(p.hasDropped),
+      hasForfeited: Boolean(p.hasForfeited),
+      isEliminated: Boolean(p.isEliminated),
+      cardCount: Array.isArray(p.hand) ? p.hand.length : 0
+    }));
+
+    list.push({
+      id: room.id,
+      status: room.status,
+      hasStarted: Boolean(room.hasStarted),
+      handNumber: room.handNumber || 1,
+      creatorName: room.creatorName || players[0]?.name || null,
+      turnPlayerName: turnPlayer ? turnPlayer.name : null,
+      turnStage: room.turnStage || 'WAITING',
+      deckCount: Array.isArray(room.deck) ? room.deck.length : 0,
+      playerCount: players.length,
+      connectedCount: players.filter(p => p.connected).length,
+      maxPlayers: getMaxPlayersForRules(r),
+      players,
+      configSummary: buildTableConfigSummary(r),
+      config: {
+        presetName: r.presetName,
+        eliminationEnabled: r.eliminationEnabled,
+        scoreLimit: r.scoreLimit,
+        cardsPerPlayer: r.cardsPerPlayer,
+        decks: r.decks,
+        poochiesPerDeck: r.poochiesPerDeck,
+        minPureSequences: r.minPureSequences,
+        maxDeadwood: r.maxDeadwood,
+        firstDrop: r.firstDrop,
+        middleDrop: r.middleDrop,
+        forfeitPenalty: r.forfeitPenalty,
+        groupingTimeSec: r.groupingTimeSec,
+        allowDoublesShow: r.allowDoublesShow,
+        dealtDoublesForShow: r.dealtDoublesForShow,
+        drawnDoublesForShow: r.drawnDoublesForShow,
+        allow3TunellasShow: r.allow3TunellasShow,
+        count3CardPureAsDeadwood: r.count3CardPureAsDeadwood,
+        blockDiscardedJokerPickup: r.blockDiscardedJokerPickup,
+        honors: {
+          marriagePts: r.marriagePts,
+          tiplu1: r.tiplu1,
+          tiplu2: r.tiplu2,
+          poochie1: r.poochie1,
+          poochie2: r.poochie2,
+          poochie3: r.poochie3,
+          papluTaplu1: r.papluTaplu1,
+          papluTaplu2: r.papluTaplu2,
+          papluTaplu3: r.papluTaplu3
+        }
+      },
+      createdAt,
+      startedAt,
+      handStartedAt,
+      lastActivityAt,
+      playingMs,
+      playingFormatted: startedAt ? formatDurationCompact(playingMs) : 'Not started',
+      handElapsedMs,
+      handElapsedFormatted: handStartedAt ? formatDurationCompact(handElapsedMs) : '—',
+      roomAgeMs,
+      roomAgeFormatted: formatDurationCompact(roomAgeMs),
+      idleMs,
+      idleFormatted: formatDurationCompact(idleMs)
+    });
+  }
+
+  // Sort active playing/grouping rooms first, then by longest playing time / newest creation
+  const statusRank = { PLAYING: 0, GROUPING: 1, ROUND_OVER: 2, LOBBY: 3 };
+  list.sort((a, b) => {
+    const rDiff = (statusRank[a.status] ?? 9) - (statusRank[b.status] ?? 9);
+    if (rDiff !== 0) return rDiff;
+    if (b.playingMs !== a.playingMs) return b.playingMs - a.playingMs;
+    return b.createdAt - a.createdAt;
+  });
+
+  return {
+    serverTime: now,
+    serverUptimeMs: Math.max(0, now - SERVER_STARTED_AT),
+    serverUptimeFormatted: formatDurationCompact(now - SERVER_STARTED_AT),
+    totals: {
+      rooms: list.length,
+      playingRooms: list.filter(r => r.status === 'PLAYING' || r.status === 'GROUPING').length,
+      lobbyRooms: list.filter(r => r.status === 'LOBBY').length,
+      playersSeated: list.reduce((sum, r) => sum + r.playerCount, 0),
+      playersConnected: list.reduce((sum, r) => sum + r.connectedCount, 0)
+    },
+    rooms: list
+  };
+}
+
+app.get('/dev', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'dev.html'));
+});
+
+app.get('/api/dev/status', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const envConfigured = Boolean(getConfiguredDevPasscode());
+  res.json({
+    envConfigured,
+    needsSetup: !envConfigured && !claimedDevAuth,
+    authenticated: isDevRequestAuthenticated(req)
+  });
+});
+
+app.post('/api/dev/setup', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (getConfiguredDevPasscode()) {
+    return res.status(403).json({ error: 'Developer passcode is already configured via environment variable.' });
+  }
+  if (claimedDevAuth) {
+    return res.status(409).json({ error: 'Developer passcode has already been claimed. Please sign in.' });
+  }
+  const passcode = typeof req.body?.passcode === 'string' ? req.body.passcode.trim() : '';
+  if (passcode.length < 8 || passcode.length > 128) {
+    return res.status(400).json({ error: 'Passcode must be between 8 and 128 characters.' });
+  }
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(passcode, salt, 64).toString('hex');
+  claimedDevAuth = { salt, hash };
+  const token = createDevSessionToken();
+  return res.status(201).json({ ok: true, token });
+});
+
+app.post('/api/dev/login', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const rl = checkDevLoginRateLimit(req);
+  if (!rl.allowed) {
+    return res.status(429).json({ error: `Too many attempts. Try again in ${rl.retryAfterSec}s.` });
+  }
+  if (!getConfiguredDevPasscode() && !claimedDevAuth) {
+    return res.status(409).json({ error: 'Developer passcode not initialized yet. Complete first-run setup.' });
+  }
+  const passcode = typeof req.body?.passcode === 'string' ? req.body.passcode.trim() : '';
+  if (!verifyDevPasscode(passcode)) {
+    return res.status(401).json({ error: 'Invalid developer passcode.' });
+  }
+  const token = createDevSessionToken();
+  return res.json({ ok: true, token });
+});
+
+app.post('/api/dev/logout', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const token = extractBearerToken(req);
+  if (token) devSessions.delete(token);
+  res.json({ ok: true });
+});
+
+app.get('/api/dev/rooms', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (!isDevRequestAuthenticated(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Sign in with your developer passcode.' });
+  }
+  return res.json(buildDevRoomsSnapshot());
+});
 
 function clearRoomTimers(room) {
   if (!room) return;
@@ -529,6 +816,9 @@ function dealNextHand(room) {
   room.deck = deck;
   room.status = 'PLAYING';
   room.turnStage = 'DRAW';
+  const nowDeal = Date.now();
+  if (!room.startedAt) room.startedAt = nowDeal;
+  room.handStartedAt = nowDeal;
   const starter = room.players[room.starterIndex];
   room.lastAction = `Hand #${room.handNumber} dealt. ${starter ? starter.name : 'First player'} starts drawing.`;
 }
@@ -563,13 +853,17 @@ wss.on('connection', (ws) => {
         const playerName = (data.playerName || 'Player').trim();
 
         if (!rooms.has(roomId)) {
+          const createdNow = Date.now();
           rooms.set(roomId, {
             id: roomId,
             status: 'LOBBY',
             hasStarted: false,
             creatorId: null,
             creatorName: null,
-            lastActivityAt: Date.now(),
+            createdAt: createdNow,
+            startedAt: null,
+            handStartedAt: null,
+            lastActivityAt: createdNow,
             rules: sanitizeRules(data.rules),
             players: [],
             deck: [],
@@ -861,6 +1155,9 @@ wss.on('connection', (ws) => {
         userRoom.lastMove = null;
         userRoom.hasStarted = true;
         userRoom.status = 'PLAYING';
+        const gameStartNow = Date.now();
+        if (!userRoom.startedAt) userRoom.startedAt = gameStartNow;
+        userRoom.handStartedAt = gameStartNow;
         userRoom.turnIndex = 0;
         userRoom.turnStage = 'DRAW';
 
