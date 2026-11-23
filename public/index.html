@@ -888,6 +888,11 @@
       gap: 8px;
       align-items: start;
     }
+    @media (max-width: 640px) {
+      body.stands-two-col .stands-container {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
     body.stands-two-col.compact-fit-mode .stands-container {
       gap: 5px;
     }
@@ -2049,6 +2054,11 @@ body.stands-two-col .stand-rack.is-in-place-grouping .stand-cards {
   background: linear-gradient(180deg, rgba(72, 48, 14, 0.58), rgba(38, 25, 8, 0.65));
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42), 0 0 14px rgba(245, 158, 11, 0.18);
 }
+.stand-group-cluster.cluster-double {
+  border-color: rgba(192, 132, 252, 0.68);
+  background: linear-gradient(180deg, rgba(64, 28, 92, 0.58), rgba(34, 14, 52, 0.66));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42), 0 0 14px rgba(192, 132, 252, 0.22);
+}
 .stand-group-cluster.cluster-unprotected {
   border-style: dashed;
   border-color: rgba(248, 113, 113, 0.65);
@@ -2087,10 +2097,27 @@ body.stands-two-col .stand-rack.is-in-place-grouping .stand-cards {
   color: #fde68a;
   border-color: rgba(245, 158, 11, 0.55);
 }
+.stand-group-cluster-label.label-double {
+  background: #3b1759;
+  color: #e9d5ff;
+  border-color: rgba(192, 132, 252, 0.6);
+}
 .stand-group-cluster-label.label-unprotected {
   background: #4c171d;
   color: #fca5a5;
   border-color: rgba(248, 113, 113, 0.55);
+}
+.btn-declare.btn-declare-instant-ready {
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.78), 0 0 22px rgba(52, 211, 153, 0.45) !important;
+  animation: instantShowPulse 1.6s ease-in-out infinite;
+}
+@keyframes instantShowPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.75), 0 0 14px rgba(52, 211, 153, 0.35); }
+  50% { box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.95), 0 0 26px rgba(52, 211, 153, 0.65); }
+}
+.revealed-group-block.double {
+  border-color: rgba(192, 132, 252, 0.45);
+  background: rgba(192, 132, 252, 0.08);
 }
 .card.is-loose-in-grouping {
   opacity: 0.9;
@@ -9420,6 +9447,23 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const canDraw = canPlayerDraw() && !myEliminated;
     const canDiscard = isMyTurn && roomState.turnStage === 'DISCARD' && myCount >= drawnSize;
 
+    const rCfg = getActiveRules();
+    const myTurnsTaken = myPlayer?.turnsTaken || 0;
+    const isFirstDrop = myTurnsTaken === 0;
+    const dropPenaltyPts = isFirstDrop ? rCfg.firstDrop : rCfg.middleDrop;
+    const dropTypeLabel = isFirstDrop ? 'First Drop' : 'Middle Drop';
+
+    const dInfo = countDoubles(myHand);
+    const tInfo = countTunellas(myHand);
+    const isDealtTurn = isFirstDrop && !canDiscard;
+    const isFreeScootDealt = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.freeScootDealtDoubles;
+    const isFreeGameDrawn = rCfg.allowDoublesShow && (myTurnsTaken > 0 || canDiscard) && dInfo.count >= rCfg.freeGameDrawnDoubles;
+
+    const isDealtDoublesShow = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.dealtDoublesForShow;
+    const isDrawnDoublesShow = rCfg.allowDoublesShow && canDiscard && dInfo.count >= rCfg.drawnDoublesForShow;
+    const isDealt3TunellasShow = rCfg.allow3TunellasShow && isDealtTurn && tInfo.count >= 3;
+    const isDrawn3TunellasShow = rCfg.allow3TunellasShow && canDiscard && tInfo.count >= 3;
+
     // Contextual turn guidance
     const guide = document.getElementById('stageGuideText');
     const isRoundOverPhase = roomState?.status === 'ROUND_OVER';
@@ -9431,20 +9475,25 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         const wName = escapeHtml(roomState.winnerName || currentRoundWinnerName || 'Winner');
         guide.innerHTML = `<strong>Round Complete:</strong> 🏆 ${wName} won this hand.`;
       } else if (myEliminated) {
-        guide.innerHTML = `<strong>💀 Tournament Eliminated (&gt; ${getActiveRules().scoreLimit} pts):</strong> You are no longer dealt cards and are spectating ${escapeHtml(roomState.turnPlayerName || 'active players')}.`;
+        guide.innerHTML = `<strong>💀 Tournament Eliminated (&gt; ${rCfg.scoreLimit} pts):</strong> You are no longer dealt cards and are spectating ${escapeHtml(roomState.turnPlayerName || 'active players')}.`;
       } else if (myForfeited) {
-        guide.innerHTML = `<strong>You forfeited (${getActiveRules().forfeitPenalty} pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
+        guide.innerHTML = `<strong>You forfeited (${rCfg.forfeitPenalty} pts penalty):</strong> Hand folded. Now watching ${roomState.turnPlayerName || 'other players'} finish the hand.`;
       } else if (myDropped) {
-        const rCfg = getActiveRules();
         const pen = myPlayer?.dropPenalty !== undefined ? myPlayer.dropPenalty : (myPlayer?.dropType === 'FIRST_DROP' ? rCfg.firstDrop : rCfg.middleDrop);
         const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === rCfg.firstDrop ? `First Drop: ${rCfg.firstDrop} pts` : `Middle Drop: ${rCfg.middleDrop} pts`);
         guide.innerHTML = `<strong>You scooted (${kind}):</strong> Hand folded. Watching ${roomState.turnPlayerName || 'other players'} finish.`;
       } else if (isGroupingNow) {
         guide.innerHTML = `<strong>Grouping Phase:</strong> ${escapeHtml(roomState.winnerName || 'Winner')} declared! Group your cards below (manually, Guide Me, or Auto-Group) and click Submit Groups.`;
+      } else if (isMyTurn && canDraw && (isDealtDoublesShow || isDealt3TunellasShow)) {
+        const dealtReason = isDealt3TunellasShow ? '3 Tunellas' : `${dInfo.count} Doubles`;
+        guide.innerHTML = `<strong>✨ Dealt Instant Win Ready (${dealtReason}):</strong> Tap <strong>Declare</strong> <em>before drawing a card</em> to win immediately — or draw if you prefer to keep playing.`;
       } else if (isMyTurn && canDraw) {
         guide.innerHTML = `<strong>Your turn:</strong> Double-tap or drag Stock/Discard to draw your ${formatOrdinal(drawnSize)} card.`;
       } else if (isMyTurn && canDiscard) {
         guide.innerHTML = `<strong>Your turn (${myCount} cards):</strong> Select a card &amp; tap Discard pile (or drag card there), or Show / Declare.`;
+      } else if (!isMyTurn && (isDealtDoublesShow || isDealt3TunellasShow)) {
+        const dealtReason = isDealt3TunellasShow ? '3 Tunellas' : `${dInfo.count} Doubles`;
+        guide.innerHTML = `<strong>✨ Dealt ${dealtReason}!</strong> On your turn, tap <strong>Declare</strong> <em>before drawing</em> to win immediately. Waiting for ${escapeHtml(roomState.turnPlayerName || 'another player')}.`;
       } else {
         const actionInfo = roomState.lastAction ? `[${roomState.lastAction}] ` : '';
         guide.innerHTML = `<strong>Waiting:</strong> ${actionInfo}Watch the table while ${roomState.turnPlayerName || 'another player'} plays.`;
@@ -9483,40 +9532,28 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       notice.innerText = `💀 Eliminated (Spectating) • Turn: ${roomState.turnPlayerName}`;
     } else if (myForfeited) {
       dot.classList.remove('active');
-      notice.innerText = `Forfeited (${getActiveRules().forfeitPenalty} pts) • Turn: ${roomState.turnPlayerName}`;
+      notice.innerText = `Forfeited (${rCfg.forfeitPenalty} pts) • Turn: ${roomState.turnPlayerName}`;
     } else if (myDropped) {
       dot.classList.remove('active');
-      const rCfg = getActiveRules();
       const pen = myPlayer?.dropPenalty !== undefined ? myPlayer.dropPenalty : (myPlayer?.dropType === 'FIRST_DROP' ? rCfg.firstDrop : rCfg.middleDrop);
       const kind = myPlayer?.dropType === 'FREE_SCOOT' ? 'Free Scoot: 0 pts' : (myPlayer?.dropType === 'FIRST_DROP' || pen === rCfg.firstDrop ? `First Drop: ${rCfg.firstDrop} pts` : `Middle Drop: ${rCfg.middleDrop} pts`);
       notice.innerText = `Scooted (${kind}) • Turn: ${roomState.turnPlayerName}`;
     } else if (isMyTurn) {
       dot.classList.add('active');
-      notice.innerText = canDraw
-        ? `Your Turn: Draw a card (${myCount}/${handSize})`
-        : `Your Turn: Discard a card (${myCount}/${drawnSize})`;
+      if (canDraw && (isDealtDoublesShow || isDealt3TunellasShow)) {
+        notice.innerText = isDealt3TunellasShow
+          ? `Your Turn: Declare 3 Tunellas NOW (before drawing) or Draw`
+          : `Your Turn: Declare ${dInfo.count} Doubles NOW (before drawing) or Draw`;
+      } else {
+        notice.innerText = canDraw
+          ? `Your Turn: Draw a card (${myCount}/${handSize})`
+          : `Your Turn: Discard a card (${myCount}/${drawnSize})`;
+      }
     } else {
       dot.classList.remove('active');
       const actionPrefix = roomState.lastAction ? `${roomState.lastAction} • ` : '';
       notice.innerText = `${actionPrefix}Turn: ${roomState.turnPlayerName}`;
     }
-
-    const rCfg = getActiveRules();
-    const myTurnsTaken = myPlayer?.turnsTaken || 0;
-    const isFirstDrop = myTurnsTaken === 0;
-    const dropPenaltyPts = isFirstDrop ? rCfg.firstDrop : rCfg.middleDrop;
-    const dropTypeLabel = isFirstDrop ? 'First Drop' : 'Middle Drop';
-
-    const dInfo = countDoubles(myHand);
-    const tInfo = countTunellas(myHand);
-    const isDealtTurn = isFirstDrop && !canDiscard;
-    const isFreeScootDealt = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.freeScootDealtDoubles;
-    const isFreeGameDrawn = rCfg.allowDoublesShow && (myTurnsTaken > 0 || canDiscard) && dInfo.count >= rCfg.freeGameDrawnDoubles;
-
-    const isDealtDoublesShow = rCfg.allowDoublesShow && isDealtTurn && dInfo.count >= rCfg.dealtDoublesForShow;
-    const isDrawnDoublesShow = rCfg.allowDoublesShow && dInfo.count >= rCfg.drawnDoublesForShow;
-    const isDealt3TunellasShow = rCfg.allow3TunellasShow && isDealtTurn && tInfo.count >= 3;
-    const isDrawn3TunellasShow = rCfg.allow3TunellasShow && canDiscard && tInfo.count >= 3;
 
     const btnDrop = document.getElementById('btnDrop');
     if (btnDrop) {
@@ -9583,7 +9620,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const declareBtn = document.getElementById('btnDeclare');
     if (declareBtn) {
       const canDeclare = (isMyTurn && (canDiscard || isDealtDoublesShow || isDealt3TunellasShow)) && !myDropped && !myForfeited && !myEliminated;
+      const isDealtInstantNow = isMyTurn && canDraw && (isDealtDoublesShow || isDealt3TunellasShow) && !myDropped && !myForfeited && !myEliminated;
       declareBtn.classList.toggle('btn-disabled', !canDeclare && !declarationMode);
+      declareBtn.classList.toggle('btn-declare-instant-ready', isDealtInstantNow && !declarationMode);
       const b = declareBtn.querySelector('b');
       const sub = declareBtn.querySelector('.action-sub');
       if (b) {
@@ -9596,7 +9635,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (sub) {
         sub.innerText = declarationMode
           ? `submit your ${handSize}-card show`
-          : (myEliminated ? 'eliminated' : myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealt3TunellasShow ? '3 Tunellas instant win!' : isDrawn3TunellasShow ? '3 Tunellas ready!' : isDealtDoublesShow ? 'win dealt without drawing!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
+          : (myEliminated ? 'eliminated' : myForfeited ? `forfeited (${rCfg.forfeitPenalty} pts)` : myDropped ? 'scooted' : (isDealt3TunellasShow ? 'before drawing — instant win!' : isDrawn3TunellasShow ? '3 Tunellas ready!' : isDealtDoublesShow ? 'before drawing — instant win!' : isDrawnDoublesShow ? `${rCfg.drawnDoublesForShow} doubles ready!` : (canDiscard ? 'ready to group & declare' : 'draw card first to declare')));
       }
     }
     // (GROUPING phase state & groupingWaitModal already reconciled before renderStands() above)
@@ -10553,23 +10592,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     lastInPlaceGroupingResult = inPlaceRes;
     declarationGroups = inPlaceRes.groups;
 
-    const groupedCards = declarationGroups.flatMap(g => g.cards);
+    const meldGroupsOnly = declarationGroups.filter(g => g && g.type !== 'DOUBLE');
+    const doubleClustersOnly = declarationGroups.filter(g => g && g.type === 'DOUBLE');
+    const groupedCards = meldGroupsOnly.flatMap(g => g.cards);
     const grouped = groupedCards.length;
-    const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+    const pure = meldGroupsOnly.filter(g => g.type === 'PURE_SEQUENCE').length;
     const declHandSize = rRule.cardsPerPlayer || 21;
     const declDrawnSize = declHandSize + 1;
-    const remaining = inPlaceRes.ungroupedCards;
+    const remaining = inPlaceRes.nonMeldCards || inPlaceRes.ungroupedCards;
     const finishCardId = inPlaceRes.finishCardId;
     const finishCard = finishCardId ? myHand.find(c => c && c.id === finishCardId) : null;
-    const deadwoodCalc = isGroupingPhase ? calculateCurrentDeadwood(declarationGroups, myHand) : null;
+    const deadwoodCalc = isGroupingPhase ? calculateCurrentDeadwood(meldGroupsOnly, myHand) : null;
 
+    const myPDecl = roomState?.players?.find(p => p.id === (isDemo ? 'p_demo' : getMyPlayerId()));
+    const myTurnsDecl = myPDecl?.turnsTaken || 0;
+    const isDealtDrawStage = !isGroupingPhase && myTurnsDecl === 0 && roomState?.turnStage === 'DRAW' && myHand.length === declHandSize;
     const dInfo = countDoubles(myHand);
     const tInfo = countTunellas(myHand);
-    const isDoublesReady = Boolean(rRule.allowDoublesShow && (
-      (dInfo.count >= rRule.dealtDoublesForShow && myHand.length === declHandSize) ||
-      (dInfo.count >= rRule.drawnDoublesForShow && myHand.length === declDrawnSize)
-    ));
-    const is3TunellasReady = Boolean(rRule.allow3TunellasShow && tInfo.count >= 3 && (myHand.length === declHandSize || myHand.length === declDrawnSize));
+    const isDealtDoublesReady = Boolean(rRule.allowDoublesShow && isDealtDrawStage && dInfo.count >= rRule.dealtDoublesForShow);
+    const isDrawnDoublesReady = Boolean(rRule.allowDoublesShow && !isGroupingPhase && roomState?.turnStage === 'DISCARD' && myHand.length >= declDrawnSize && dInfo.count >= rRule.drawnDoublesForShow);
+    const isDoublesReady = isDealtDoublesReady || isDrawnDoublesReady;
+    const is3TunellasReady = Boolean(rRule.allow3TunellasShow && !isGroupingPhase && tInfo.count >= 3 && (isDealtDrawStage || (roomState?.turnStage === 'DISCARD' && myHand.length >= declDrawnSize)));
     const isShowReady = (!isGroupingPhase && grouped === declHandSize && pure >= rRule.minPureSequences && remaining.length === 1 && Boolean(finishCard))
       || (!isGroupingPhase && (isDoublesReady || is3TunellasReady));
     const isGroupingReady = isGroupingPhase && deadwoodCalc && (deadwoodCalc.points === 0 || (grouped === myHand.length && pure >= rRule.minPureSequences));
@@ -10616,11 +10659,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else if (isGroupingPhase) {
       statusTipHtml = deadwoodCalc && deadwoodCalc.points === 0
         ? `<span style="color:#86efac;">🛡️ 0 deadwood! Tap <b>Submit Groups</b> when ready.</span>`
-        : `Adjacent cards on your stands group automatically. Drag or tap a card to adjust.`;
+        : `Adjacent melds, Tunellas &amp; leftover Doubles group automatically. Drag or tap a card to adjust.`;
     } else if (is3TunellasReady) {
-      statusTipHtml = `<span style="color:#86efac;">✨ 3 Tunellas ready! Tap <b>Submit Declaration</b> to win.</span>`;
+      statusTipHtml = isDealtDrawStage
+        ? `<span style="color:#86efac;">✨ 3 Dealt Tunellas ready (no draw needed)! Tap <b>Submit Declaration</b> to win.</span>`
+        : `<span style="color:#86efac;">✨ 3 Tunellas ready! Tap <b>Submit Declaration</b> to win.</span>`;
     } else if (isDoublesReady) {
-      statusTipHtml = `<span style="color:#86efac;">✨ ${dInfo.count} Doubles ready! Tap <b>Submit Declaration</b> to win.</span>`;
+      statusTipHtml = isDealtDoublesReady
+        ? `<span style="color:#86efac;">✨ ${dInfo.count} Dealt Doubles ready (declared before drawing — no discard needed)! Tap <b>Submit Declaration</b> to win.</span>`
+        : `<span style="color:#86efac;">✨ ${dInfo.count} Doubles ready! Tap <b>Submit Declaration</b> to win.</span>`;
     } else if (isShowReady) {
       statusTipHtml = finishIsHonor
         ? `<span style="color:#fde68a;">✨ Ready! Note: Finish card <b>${finishCardLabel}</b> earns <b>0 honors</b> — tap another card to swap if you want to keep its honors.</span>`
@@ -10628,6 +10675,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       statusTipHtml = `Place group cards next to each other on your stands (drag or tap to use Move Pad).`;
     }
+
+    const showDoublesBadge = Boolean(rRule.allowDoublesShow && (isDoublesReady || doubleClustersOnly.length > 0 || dInfo.count >= 4));
+    const doublesReqTarget = isDealtDrawStage
+      ? rRule.dealtDoublesForShow
+      : (isGroupingPhase ? rRule.freeGameDrawnDoubles : rRule.drawnDoublesForShow);
+    const doublesBadgeMet = dInfo.count >= doublesReqTarget;
 
     const stickyBarHtml = `
       <div class="sticky-grouping-bar" id="stickyGroupingBar">
@@ -10639,9 +10692,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(255,255,255,0.06); color:#cfdad4; border:1px solid rgba(255,255,255,0.1);">
               ${grouped} / ${isGroupingPhase ? myHand.length : declHandSize} Grouped
             </span>
+            ${showDoublesBadge ? `
+              <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${doublesBadgeMet ? 'background:rgba(192,132,252,0.22); color:#e9d5ff; border:1px solid rgba(192,132,252,0.5);' : 'background:rgba(192,132,252,0.12); color:#d8b4fe; border:1px solid rgba(192,132,252,0.3);'}">
+                👯 ${dInfo.count}${doublesBadgeMet ? ` / ${doublesReqTarget} Doubles ✅` : ` Double${dInfo.count === 1 ? '' : 's'}`}
+              </span>` : ''}
             ${isGroupingPhase && deadwoodCalc ? `
               <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${deadwoodCalc.points === 0 ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : (deadwoodCalc.hasRequiredPure ? 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);')}">
-                Deadwood: ${deadwoodCalc.points} pts ${deadwoodCalc.hasRequiredPure ? '(Groups Protected)' : '(Need 3 Pure)'}
+                Deadwood: ${deadwoodCalc.points} pts ${deadwoodCalc.isDoubles ? '(7+ Doubles Protected)' : deadwoodCalc.hasRequiredPure ? '(Groups Protected)' : '(Need 3 Pure)'}
               </span>` : `
               ${myHand.length >= declDrawnSize ? `
                 <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${finishCard ? 'background:rgba(245,158,11,0.2); color:#fde68a; border:1px solid rgba(245,158,11,0.4);' : 'background:rgba(255,255,255,0.06); color:#94a3b8; border:1px solid rgba(255,255,255,0.1);'}">
@@ -10706,17 +10763,22 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               const g = seg.group;
               const isPure = g.type === 'PURE_SEQUENCE';
               const isSeq = g.type === 'SEQUENCE';
+              const isDouble = g.type === 'DOUBLE';
               const isTun = declarationIsTunella(g.cards);
               const isPureProtected = isPure && (!rRule.count3CardPureAsDeadwood || g.cards.length >= 4);
-              const isProtectedInGrouping = !isGroupingPhase || !deadwoodCalc || deadwoodCalc.hasRequiredPure || isPureProtected || isTun;
+              const isDoubleProtected = isDouble && Boolean(deadwoodCalc?.isDoubles);
+              const isProtectedInGrouping = !isGroupingPhase || !deadwoodCalc || (isDouble ? isDoubleProtected : (deadwoodCalc.hasRequiredPure || isPureProtected || isTun));
 
-              let clusterCls = isPure ? 'cluster-pure' : isSeq ? 'cluster-seq' : 'cluster-set';
-              let labelCls = isPure ? 'label-pure' : isSeq ? 'label-seq' : 'label-set';
+              let clusterCls = isPure ? 'cluster-pure' : isSeq ? 'cluster-seq' : isDouble ? 'cluster-double' : 'cluster-set';
+              let labelCls = isPure ? 'label-pure' : isSeq ? 'label-seq' : isDouble ? 'label-double' : 'label-set';
               if (isGroupingPhase && !isProtectedInGrouping) {
                 clusterCls += ' cluster-unprotected';
                 labelCls = 'label-unprotected';
               }
-              const protIcon = isGroupingPhase ? (isProtectedInGrouping ? ' 🛡️' : ' ⚠️') : '';
+              const doublePts = isDouble ? g.cards.reduce((sum, c) => sum + cardDeadwoodVal(c), 0) : 0;
+              const protIcon = isGroupingPhase
+                ? (isProtectedInGrouping ? ' 🛡️' : (isDouble && doublePts > 0 ? ` (+${doublePts}p)` : ' ⚠️'))
+                : '';
               const shortText = `${g.shortLabel || g.typeLabel}${protIcon}`;
               const innerCards = g.cards.map(c => renderCard(c, getCardTag(c), true, false, null)).join('');
               return `<div class="stand-group-cluster ${clusterCls}" title="${escapeHtml(g.typeLabel)}">${innerCards}<span class="stand-group-cluster-label ${labelCls}">${shortText}</span></div>`;
@@ -11694,7 +11756,54 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     };
   }
 
-  function solveAllStandsInPlace(stands, isGroupingPhase, excludeCardId = null, splitAfterIds = null) {
+  function isIdenticalDoublePair(c1, c2) {
+    if (!c1 || !c2) return false;
+    const p1 = Boolean(c1.isPoochie || c1.rank === 'PJ' || c1.suit === '★');
+    const p2 = Boolean(c2.isPoochie || c2.rank === 'PJ' || c2.suit === '★');
+    if (p1 && p2) return true;
+    if (p1 || p2) return false;
+    return c1.rank === c2.rank && c1.suit === c2.suit;
+  }
+
+  function groupAdjacentLooseDoublesInSegments(segments, excludeCardId = null, splitAfterIds = null) {
+    if (!Array.isArray(segments) || segments.length === 0) {
+      return { segments: [], doubleGroups: [] };
+    }
+    const out = [];
+    const doubleGroups = [];
+    let i = 0;
+    while (i < segments.length) {
+      const seg = segments[i];
+      if (
+        seg && seg.kind === 'LOOSE' &&
+        i + 1 < segments.length &&
+        segments[i + 1] && segments[i + 1].kind === 'LOOSE'
+      ) {
+        const c1 = seg.card;
+        const c2 = segments[i + 1].card;
+        const excluded = Boolean(excludeCardId && (c1?.id === excludeCardId || c2?.id === excludeCardId));
+        const splitBetween = Boolean(splitAfterIds && c1?.id && splitAfterIds.has(c1.id));
+        if (!excluded && !splitBetween && isIdenticalDoublePair(c1, c2)) {
+          const cardLabel = (c1.isPoochie || c1.rank === 'PJ' || c1.suit === '★') ? '★ PJ' : `${c1.rank}${c1.suit}`;
+          const dblGroup = {
+            type: 'DOUBLE',
+            typeLabel: `Double (${cardLabel} x2)`,
+            shortLabel: '👯 Double',
+            cards: [c1, c2]
+          };
+          out.push({ kind: 'GROUP', group: dblGroup });
+          doubleGroups.push(dblGroup);
+          i += 2;
+          continue;
+        }
+      }
+      out.push(seg);
+      i += 1;
+    }
+    return { segments: out, doubleGroups };
+  }
+
+  function solveAllStandsInPlace(stands, isGroupingPhase, excludeCardId = null, splitAfterIds = null, includeAdjacentDoubles = true) {
     const r = getActiveRules();
     const reqPure = r.minPureSequences || 3;
     const maxPureSols = stands.map(st => solveStandContiguousDP(st, 'MAX_PURE', excludeCardId, splitAfterIds));
@@ -11727,15 +11836,40 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    const standSegments = chosenSols.map(sol => sol.segments);
-    const groups = chosenSols.flatMap(sol => sol.groups);
-    const ungroupedCards = chosenSols.flatMap(sol => sol.segments.filter(seg => seg.kind === 'LOOSE').map(seg => seg.card));
+    // Non-meld loose cards BEFORE pairing neighboring doubles (used for normal 21-card finish-discard & meld math)
+    const nonMeldCards = chosenSols.flatMap(sol => sol.segments.filter(seg => seg.kind === 'LOOSE').map(seg => seg.card));
+    const meldGroups = chosenSols.flatMap(sol => sol.groups);
+    const pureCount = chosenSols.reduce((s, sol) => s + sol.pureCount, 0);
+    const meldGroupedCount = chosenSols.reduce((s, sol) => s + sol.groupedCount, 0);
+
+    // Post-pass: automatically group neighboring identical Doubles ONLY from leftover loose cards
+    // (Tunellas, Pure Sequences, Joker Sequences, and Sets ALWAYS take preference!)
+    const standSegments = [];
+    const groups = [];
+    const doubleGroups = [];
+    for (const sol of chosenSols) {
+      if (includeAdjacentDoubles) {
+        const paired = groupAdjacentLooseDoublesInSegments(sol.segments, excludeCardId, splitAfterIds);
+        standSegments.push(paired.segments);
+        paired.segments.forEach(seg => {
+          if (seg.kind === 'GROUP') groups.push(seg.group);
+        });
+        doubleGroups.push(...paired.doubleGroups);
+      } else {
+        standSegments.push(sol.segments);
+        groups.push(...sol.groups);
+      }
+    }
+    const ungroupedCards = standSegments.flatMap(segs => segs.filter(seg => seg.kind === 'LOOSE').map(seg => seg.card));
     return {
       standSegments,
       groups,
+      meldGroups,
+      doubleGroups,
       ungroupedCards,
-      pureCount: chosenSols.reduce((s, sol) => s + sol.pureCount, 0),
-      groupedCount: chosenSols.reduce((s, sol) => s + sol.groupedCount, 0)
+      nonMeldCards,
+      pureCount,
+      groupedCount: meldGroupedCount
     };
   }
 
@@ -11756,21 +11890,21 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       declarationFinishCardId = null;
     }
 
-    let res = solveAllStandsInPlace(safeStands, isGroupingPhase, pinnedFinishId, splitSet);
+    let res = solveAllStandsInPlace(safeStands, isGroupingPhase, pinnedFinishId, splitSet, true);
     let resolvedFinishCardId = pinnedFinishId;
 
     if (!isGroupingPhase && allCards.length >= handSize + 1) {
       if (pinnedFinishId) {
         resolvedFinishCardId = pinnedFinishId;
-      } else if (res.ungroupedCards.length === 1) {
-        resolvedFinishCardId = res.ungroupedCards[0].id;
-      } else if (res.ungroupedCards.length === 0 && res.groupedCount === allCards.length) {
+      } else if (res.nonMeldCards.length === 1) {
+        resolvedFinishCardId = res.nonMeldCards[0].id;
+      } else if (res.nonMeldCards.length === 0 && res.groupedCount === allCards.length) {
         // All 22 cards grouped cleanly — auto-pick the best 1 card to leave lowered as Finish Discard,
         // maximizing remaining Honors (never discarding an honors card if a non-honors card works!).
         let bestCandidate = null;
         for (const cand of allCards) {
-          const testRes = solveAllStandsInPlace(safeStands, false, cand.id, splitSet);
-          if (testRes.groupedCount === handSize && testRes.pureCount >= reqPure && testRes.ungroupedCards.length === 1) {
+          const testRes = solveAllStandsInPlace(safeStands, false, cand.id, splitSet, true);
+          if (testRes.groupedCount === handSize && testRes.pureCount >= reqPure && testRes.nonMeldCards.length === 1) {
             const remHonors = calculateLocalMaal(allCards.filter(c => c.id !== cand.id))?.total || 0;
             const isWild = declarationIsWild(cand) ? 1 : 0;
             const faceVal = cardDeadwoodVal(cand);
@@ -11798,7 +11932,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         if (isDrawn3Tun || isDrawnDbl) {
           const tunIds = new Set(tInfo.tunellas.slice(0, 3).flat().map(c => c.id));
           const dblIds = new Set(dInfo.pairs.slice(0, r.drawnDoublesForShow).flat().map(c => c.id));
-          const pool = res.ungroupedCards.length > 0 ? res.ungroupedCards : allCards;
+          const pool = res.ungroupedCards.length > 0 ? res.ungroupedCards : (res.nonMeldCards.length > 0 ? res.nonMeldCards : allCards);
           const safeCandidates = pool.filter(c => (!isDrawn3Tun || !tunIds.has(c.id)) && (!isDrawnDbl || !dblIds.has(c.id)));
           const pickFrom = safeCandidates.length > 0 ? safeCandidates : pool;
           // Prefer dropping a card that keeps maximum honors
@@ -11811,7 +11945,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               bestPick = c;
             }
           }
-          if (bestPick) resolvedFinishCardId = bestPick.id;
+          if (bestPick) {
+            resolvedFinishCardId = bestPick.id;
+            // Re-run with finish card excluded so finish card is never absorbed into a Double cluster
+            res = solveAllStandsInPlace(safeStands, false, resolvedFinishCardId, splitSet, true);
+          }
         }
       }
     }
@@ -12105,10 +12243,25 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         verifiedGroups.push(cleanG);
       }
     }
-    const remaining = pool.filter(c => !claimedIds.has(c.id));
+    const rawRemaining = pool.filter(c => !claimedIds.has(c.id));
+    // Place any leftover identical pairs adjacent to each other so neighboring Doubles raise automatically
+    const remDoubles = countDoubles(rawRemaining);
+    const remPairedIds = new Set();
+    const orderedRemaining = [];
+    remDoubles.pairs.forEach(pair => {
+      pair.forEach(c => {
+        if (c && !remPairedIds.has(c.id)) {
+          remPairedIds.add(c.id);
+          orderedRemaining.push(c);
+        }
+      });
+    });
+    rawRemaining.forEach(c => {
+      if (c && !remPairedIds.has(c.id)) orderedRemaining.push(c);
+    });
     return {
       groups: verifiedGroups,
-      remaining,
+      remaining: orderedRemaining,
       pureCount: verifiedGroups.filter(g => g.type === 'PURE_SEQUENCE').length,
       groupedCount: claimedIds.size,
       initialTunCount: initialTunInfo.count
@@ -12165,9 +12318,54 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     let bestOpt = computeOptimalGroupsForHand(pool);
     let bestFinishCard = null;
 
-    // For Declarer holding 22 cards: if all 22 grouped or not yet a clean 21+1 show, try excluding 1 card
-    // preferring the valid 21-card show that maximizes remaining Honors!
-    if (!isGroupingPhase && pool.length === handSize + 1) {
+    // If holding a qualifying Doubles Show (7 dealt / 8 drawn) or 7+ Doubles in Opponent Grouping
+    // (and not a 3-Tunellas show), Auto-Arrange directly groups all Doubles cleanly onto the stands!
+    const myPAuto = roomState?.players?.find(p => p.id === (isDemo ? 'p_demo' : getMyPlayerId()));
+    const isDealtAuto = !isGroupingPhase && (myPAuto?.turnsTaken || 0) === 0 && roomState?.turnStage === 'DRAW' && pool.length === handSize;
+    const autoTunInfo = rRule.allow3TunellasShow ? countTunellas(pool) : { count: 0, tunellas: [] };
+    const autoDblInfo = rRule.allowDoublesShow ? countDoubles(pool) : { count: 0, pairs: [] };
+    const qualifyDealtDoubles = isDealtAuto && autoDblInfo.count >= rRule.dealtDoublesForShow;
+    const qualifyDrawnDoubles = !isGroupingPhase && pool.length === handSize + 1 && autoDblInfo.count >= rRule.drawnDoublesForShow;
+    const qualifyGroupingDoubles = isGroupingPhase && autoDblInfo.count >= rRule.freeGameDrawnDoubles;
+    const isNormal21ShowReady = bestOpt.groupedCount >= handSize && bestOpt.pureCount >= reqPure;
+
+    if (rRule.allowDoublesShow && autoTunInfo.count < 3 && !isNormal21ShowReady && (qualifyDealtDoubles || qualifyDrawnDoubles || qualifyGroupingDoubles)) {
+      const dblGroups = [];
+      const usedDblIds = new Set();
+      autoDblInfo.pairs.forEach(pair => {
+        if (pair.every(c => c && !usedDblIds.has(c.id))) {
+          pair.forEach(c => usedDblIds.add(c.id));
+          const lbl = (pair[0].isPoochie || pair[0].rank === 'PJ' || pair[0].suit === '★') ? '★ PJ' : `${pair[0].rank}${pair[0].suit}`;
+          dblGroups.push({
+            type: 'DOUBLE',
+            typeLabel: `Double (${lbl} x2)`,
+            shortLabel: '👯 Double',
+            cards: pair
+          });
+        }
+      });
+      const remAfterDoubles = pool.filter(c => !usedDblIds.has(c.id));
+      bestOpt = {
+        groups: dblGroups,
+        remaining: remAfterDoubles,
+        pureCount: 0,
+        groupedCount: usedDblIds.size,
+        initialTunCount: autoTunInfo.count
+      };
+      if (qualifyDrawnDoubles) {
+        const pickFrom = remAfterDoubles.length > 0 ? remAfterDoubles : pool;
+        let bestPick = pickFrom[0];
+        let bestH = -1;
+        for (const cand of pickFrom) {
+          const h = calculateLocalMaal(pool.filter(c => c.id !== cand.id))?.total || 0;
+          if (h > bestH || (h === bestH && !declarationIsWild(cand) && declarationIsWild(bestPick))) {
+            bestH = h;
+            bestPick = cand;
+          }
+        }
+        bestFinishCard = bestPick || null;
+      }
+    } else if (!isGroupingPhase && pool.length === handSize + 1) {
       if (bestOpt.remaining.length === 1 && bestOpt.groupedCount === handSize && bestOpt.pureCount >= reqPure) {
         bestFinishCard = bestOpt.remaining[0];
       } else {
@@ -12292,20 +12490,27 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     syncInPlaceGroupingState(true);
     if (!skipConfirm) {
       const r = getActiveRules();
-      const deadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
-      const pureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-
+      const meldGroupsOnly = declarationGroups.filter(g => g && g.type !== 'DOUBLE');
+      const deadwoodCalc = calculateCurrentDeadwood(meldGroupsOnly, myHand);
+      const pureCount = meldGroupsOnly.filter(g => g.type === 'PURE_SEQUENCE').length;
+      const isDoublesProtected = Boolean(deadwoodCalc.isDoubles);
       const hasRequiredPure = pureCount >= r.minPureSequences;
+      const isProtectedReady = hasRequiredPure || isDoublesProtected;
+
       showConfirmModal({
-        icon: hasRequiredPure ? '✅' : '⚠️',
-        title: hasRequiredPure ? 'Ready to Submit Groups?' : 'Submit Groups with Deadwood?',
-        badgeText: hasRequiredPure ? `${pureCount} Pure Groups (${deadwoodCalc.points} pts)` : `${pureCount}/${r.minPureSequences} Pure Groups`,
-        badgeClass: (hasRequiredPure && deadwoodCalc.points === 0) ? 'success' : 'danger',
-        message: hasRequiredPure
-          ? `You have formed <strong>${declarationGroups.length} groups</strong> with <strong>${pureCount} Pure Groups</strong>. All your groups are protected.<br>Estimated Deadwood: <strong>${deadwoodCalc.points} pts</strong>.<br><br>Ready to submit your groups and view round results?`
-          : `You currently have <strong>${pureCount} / ${r.minPureSequences} Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to adjust your stands first?`,
+        icon: isProtectedReady ? '✅' : '⚠️',
+        title: isProtectedReady ? 'Ready to Submit Groups?' : 'Submit Groups with Deadwood?',
+        badgeText: isDoublesProtected
+          ? `${r.freeGameDrawnDoubles}+ Doubles Protected (0 pts)`
+          : (hasRequiredPure ? `${pureCount} Pure Groups (${deadwoodCalc.points} pts)` : `${pureCount}/${r.minPureSequences} Pure Groups`),
+        badgeClass: (isProtectedReady && deadwoodCalc.points === 0) ? 'success' : 'danger',
+        message: isDoublesProtected
+          ? `You hold <strong>${countDoubles(myHand).count} Doubles</strong>, protecting your entire hand.<br>Estimated Deadwood: <strong>0 pts</strong>.<br><br>Ready to submit your groups and view round results?`
+          : hasRequiredPure
+            ? `You have formed <strong>${meldGroupsOnly.length} groups</strong> with <strong>${pureCount} Pure Groups</strong>. All your meld groups are protected.<br>Estimated Deadwood: <strong>${deadwoodCalc.points} pts</strong>.<br><br>Ready to submit your groups and view round results?`
+            : `You currently have <strong>${pureCount} / ${r.minPureSequences} Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to adjust your stands first?`,
         actionText: 'Submit Groups',
-        actionClass: (hasRequiredPure && deadwoodCalc.points === 0) ? 'primary' : 'danger',
+        actionClass: (isProtectedReady && deadwoodCalc.points === 0) ? 'primary' : 'danger',
         onConfirm: () => submitGroupingMeld(true)
       });
       return;
@@ -14388,7 +14593,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     const inPlaceRes = syncInPlaceGroupingState(false);
 
-    const grouped = declarationGroups.flatMap(g => g.cards);
+    const meldGroupsOnly = declarationGroups.filter(g => g && g.type !== 'DOUBLE');
+    const grouped = meldGroupsOnly.flatMap(g => g.cards);
     const unique = new Set(grouped.map(c => c.id));
 
     // Verify no cards duplicated across groups
@@ -14398,18 +14604,32 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     const remaining = myHand.filter(c => !unique.has(c.id));
-    const doubleGroups = declarationGroups.filter(g => g.type === 'DOUBLE').length;
-    const isDoublesShow = isDealtDoublesShow || (isDrawnDoublesShow && (doubleGroups >= r.drawnDoublesForShow || dInfo.count >= r.drawnDoublesForShow));
+    const isDrawnDoublesValidNow = r.allowDoublesShow && canDiscardNow && dInfo.count >= r.drawnDoublesForShow;
+    const isDoublesShow = isDealtDoublesShow || isDrawnDoublesValidNow;
     const is3TunellasShow = isDealt3TunellasShow || isDrawn3TunellasShow;
 
     let finalDiscardId = null;
     let discardedCard = null;
+    let submittedDeclGroups = meldGroupsOnly;
 
     if (isDealtDoublesShow || isDealt3TunellasShow) {
       // Dealt Doubles or Dealt 3 Tunellas: declaring without drawing a card (all 21 cards shown)
       if (!isDealt3TunellasShow && dInfo.count < r.dealtDoublesForShow) {
         window.alert(`Declaring without drawing requires holding at least ${r.dealtDoublesForShow} doubles dealt. You have ${dInfo.count}.`);
         return;
+      }
+      if (isDealt3TunellasShow) {
+        submittedDeclGroups = tInfo.tunellas.map(trio => ({
+          type: 'PURE_SEQUENCE',
+          typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+          cards: trio
+        }));
+      } else {
+        submittedDeclGroups = dInfo.pairs.map(pair => ({
+          type: 'DOUBLE',
+          typeLabel: `Double (${(pair[0].isPoochie || pair[0].rank === 'PJ') ? '★ PJ' : `${pair[0].rank}${pair[0].suit}`} x2)`,
+          cards: pair
+        }));
       }
     } else if (isDrawn3TunellasShow || isDoublesShow) {
       // Drawn 3 Tunellas / Drawn Doubles instant show (22 cards: pick 1 safe final discard preserving the show & max Honors)
@@ -14447,6 +14667,20 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         finalDiscardId = safeDiscard.id;
         discardedCard = safeDiscard;
       }
+      const postDiscardHand = myHand.filter(c => c && c.id !== finalDiscardId);
+      if (isDrawn3TunellasShow) {
+        submittedDeclGroups = countTunellas(postDiscardHand).tunellas.map(trio => ({
+          type: 'PURE_SEQUENCE',
+          typeLabel: `Tunella (${trio[0].rank}${trio[0].suit} x3)`,
+          cards: trio
+        }));
+      } else {
+        submittedDeclGroups = countDoubles(postDiscardHand).pairs.map(pair => ({
+          type: 'DOUBLE',
+          typeLabel: `Double (${(pair[0].isPoochie || pair[0].rank === 'PJ') ? '★ PJ' : `${pair[0].rank}${pair[0].suit}`} x2)`,
+          cards: pair
+        }));
+      }
     } else {
       // Normal declaration after drawing (drawnSize cards: handSize grouped + 1 final discard)
       if (remaining.length !== 1 || unique.size !== handSize) {
@@ -14456,19 +14690,19 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       finalDiscardId = remaining[0].id;
       discardedCard = remaining[0];
 
-      const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      const pure = meldGroupsOnly.filter(g => g.type === 'PURE_SEQUENCE').length;
       if (pure < r.minPureSequences) {
         window.alert(`You currently have ${pure} Pure Sequence(s). At least ${r.minPureSequences} Pure Sequence(s) are required for a valid ${handSize}-card declaration.`);
         return;
       }
     }
 
-    const groups = declarationGroups.map(g => ({ type: g.type, cardIds: g.cards.map(c => c.id) }));
+    const groups = submittedDeclGroups.map(g => ({ type: g.type, cardIds: g.cards.map(c => c.id) }));
     if (isDemo) {
       const meP = roomState.players.find(p => p.id === 'p_demo');
       if (meP) {
         meP.isGrouped = true;
-        meP.declaredGroups = declarationGroups;
+        meP.declaredGroups = submittedDeclGroups;
       }
       if (discardedCard) {
         myHand = myHand.filter(c => c && c.id !== discardedCard.id);
@@ -16000,9 +16234,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                   }
                 }
               }
-              const isPure = g.type === 'PURE_SEQUENCE' || declarationPure(gCards);
-              const isSeq = g.type === 'SEQUENCE';
-              const isTun = declarationIsTunella(gCards);
+              const isDouble = g.type === 'DOUBLE';
+              const isPure = !isDouble && (g.type === 'PURE_SEQUENCE' || declarationPure(gCards));
+              const isSeq = !isDouble && g.type === 'SEQUENCE';
+              const isTun = !isDouble && declarationIsTunella(gCards);
               const isPureProtected = isPure && (!rRes.count3CardPureAsDeadwood || gCards.length >= 4);
               const gWilds = gCards.filter(c => declarationIsWild(c));
               const gNaturals = gCards.filter(c => !declarationIsWild(c));
@@ -16010,7 +16245,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               let protectNote = '';
               let badgeBorder = '';
               if (!isWinner) {
-                if (hasMinPure) {
+                if (isDouble) {
+                  if (pDeadwoodCalc?.isDoubles) {
+                    protectNote = `<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Protected (${rRes.freeGameDrawnDoubles}+ Doubles, 0 pts)</span>`;
+                  } else if (gWilds.length === gCards.length) {
+                    protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Jokers Exempt (0 pts)</span>';
+                  } else {
+                    protectNote = `<span style="color:#f87171;font-size:10px;margin-left:6px;font-weight:700;">⚠️ Deadwood (Needs ${rRes.freeGameDrawnDoubles}+ Doubles or 3+ Meld)</span>`;
+                    badgeBorder = 'border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.06);';
+                  }
+                } else if (hasMinPure) {
                   protectNote = '<span style="color:#86efac;font-size:10px;margin-left:6px;font-weight:700;">🛡️ Protected (0 pts)</span>';
                 } else if (isPureProtected) {
                   const pureProtectLabel = rRes.count3CardPureAsDeadwood ? '🛡️ 4+ Run Protected (0 pts)' : '🛡️ Pure Run Protected (0 pts)';
@@ -16028,9 +16272,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                 }
               }
 
-              const icon = isPure ? '💎' : isSeq ? '🃏' : '👑';
-              const label = g.typeLabel || (isPure ? 'Pure Sequence' : isSeq ? 'Sequence' : 'Set');
-              const badgeClass = isPure ? 'pure' : isSeq ? 'seq' : 'set';
+              const icon = isDouble ? '👯' : isPure ? '💎' : isSeq ? '🃏' : '👑';
+              const label = g.typeLabel || (isDouble ? 'Double' : isPure ? 'Pure Sequence' : isSeq ? 'Sequence' : 'Set');
+              const badgeClass = isDouble ? 'double' : isPure ? 'pure' : isSeq ? 'seq' : 'set';
               return `
                 <div class="revealed-group-block ${badgeClass}" style="${badgeBorder}">
                   <div class="revealed-group-badge">
