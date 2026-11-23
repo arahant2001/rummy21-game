@@ -901,7 +901,8 @@
       flex-wrap: wrap;
       gap: 4px;
     }
-    body.stands-two-col .stands-container .sticky-meld-bar {
+    body.stands-two-col .stands-container .sticky-meld-bar,
+    body.stands-two-col .stands-container .sticky-grouping-bar {
       grid-column: 1 / -1;
     }
     body.stands-two-col .stand-cards {
@@ -1998,6 +1999,198 @@ input{background:rgba(3,12,8,.72);border-color:rgba(255,255,255,.10)}
 .sticky-submit-btn.is-ready-pulse:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.65), 0 0 20px rgba(34, 197, 94, 0.72);
+}
+
+/* In-Place Raised Visual Grouping on Stands */
+.stand-rack.is-in-place-grouping {
+  border-color: rgba(217, 182, 92, 0.28);
+}
+.stand-rack.is-in-place-grouping .stand-cards {
+  padding: 22px 8px 20px 8px;
+  gap: 8px;
+  align-items: flex-end;
+  min-height: calc(var(--card-h) + 46px);
+}
+body.compact-fit-mode .stand-rack.is-in-place-grouping .stand-cards {
+  padding: 18px 6px 18px 6px;
+  min-height: calc(var(--card-h) + 38px);
+}
+body.stands-two-col .stand-rack.is-in-place-grouping .stand-cards {
+  padding: 20px 6px 18px 6px;
+  gap: 7px;
+}
+.stand-group-cluster {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px 11px 6px;
+  margin: 0 6px 0 0;
+  border-radius: 11px;
+  border: 1.5px solid rgba(52, 211, 153, 0.55);
+  background: linear-gradient(180deg, rgba(16, 68, 46, 0.55), rgba(8, 36, 24, 0.62));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42), 0 0 12px rgba(52, 211, 153, 0.14);
+  transform: translateY(-8px);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+}
+.stand-group-cluster.cluster-pure {
+  border-color: rgba(52, 211, 153, 0.62);
+  background: linear-gradient(180deg, rgba(16, 72, 48, 0.58), rgba(8, 36, 24, 0.65));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42), 0 0 14px rgba(52, 211, 153, 0.18);
+}
+.stand-group-cluster.cluster-seq {
+  border-color: rgba(56, 189, 248, 0.62);
+  background: linear-gradient(180deg, rgba(12, 54, 74, 0.58), rgba(7, 28, 42, 0.65));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42), 0 0 14px rgba(56, 189, 248, 0.18);
+}
+.stand-group-cluster.cluster-set {
+  border-color: rgba(245, 158, 11, 0.62);
+  background: linear-gradient(180deg, rgba(72, 48, 14, 0.58), rgba(38, 25, 8, 0.65));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42), 0 0 14px rgba(245, 158, 11, 0.18);
+}
+.stand-group-cluster.cluster-unprotected {
+  border-style: dashed;
+  border-color: rgba(248, 113, 113, 0.65);
+  background: linear-gradient(180deg, rgba(72, 24, 28, 0.48), rgba(34, 12, 16, 0.56));
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.36);
+}
+.stand-group-cluster-label {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.1;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 6;
+}
+.stand-group-cluster-label.label-pure {
+  background: #0d3d2a;
+  color: #86efac;
+  border-color: rgba(52, 211, 153, 0.55);
+}
+.stand-group-cluster-label.label-seq {
+  background: #0c354a;
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.55);
+}
+.stand-group-cluster-label.label-set {
+  background: #472f0a;
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.55);
+}
+.stand-group-cluster-label.label-unprotected {
+  background: #4c171d;
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.55);
+}
+.card.is-loose-in-grouping {
+  opacity: 0.9;
+  filter: saturate(0.92);
+  margin-bottom: 1px;
+}
+.card.is-finish-discard {
+  box-shadow: 0 0 0 2.5px rgba(251, 191, 36, 0.9), 0 6px 16px rgba(245, 158, 11, 0.38) !important;
+  outline: 1.5px dashed rgba(254, 240, 138, 0.75);
+  outline-offset: 2px;
+  opacity: 1 !important;
+  filter: none !important;
+}
+.card-pts-chip.is-finish-chip {
+  background: linear-gradient(135deg, #f59e0b, #b45309) !important;
+  color: #fffbeb !important;
+  border-color: #fde68a !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.3px;
+}
+.sticky-grouping-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sticky-grouping-tip {
+  font-size: 11px;
+  color: #cfdad4;
+  line-height: 1.3;
+  flex: 1 1 200px;
+}
+.sticky-grouping-fallback-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sticky-auto-arrange-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  min-height: 30px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #dfe9e3;
+  font-size: 11.5px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sticky-auto-arrange-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(217, 182, 92, 0.5);
+}
+.sticky-auto-arrange-btn.has-savings {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(217, 182, 92, 0.25));
+  border-color: rgba(241, 210, 122, 0.72);
+  color: #fef08a;
+  box-shadow: 0 0 12px rgba(217, 182, 92, 0.25);
+}
+.sticky-auto-arrange-btn.has-savings:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(217, 182, 92, 0.36));
+  transform: translateY(-1px);
+}
+.stand-finish-quick-btn {
+  background: rgba(245, 158, 11, 0.22) !important;
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  color: #fde68a !important;
+  font-weight: 800 !important;
+}
+.stand-finish-quick-btn.is-pinned {
+  background: rgba(245, 158, 11, 0.42) !important;
+  color: #ffffff !important;
+}
+.stand-split-quick-btn {
+  background: rgba(56, 189, 248, 0.16) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  color: #bae6fd !important;
+  font-weight: 750 !important;
+}
+@media (max-width: 480px) {
+  .stand-rack.is-in-place-grouping .stand-cards {
+    padding: 18px 4px 18px 4px;
+    gap: 6px;
+  }
+  .stand-group-cluster {
+    padding: 4px 4px 10px 4px;
+    gap: 3px;
+    margin: 0 4px 0 0;
+    transform: translateY(-6px);
+  }
+  .stand-group-cluster-label {
+    font-size: 8.5px;
+    padding: 1.5px 6px;
+    bottom: -9px;
+  }
 }
 
 /* In-Stand inline meld buttons inside .declaration-ungrouped header */
@@ -5619,9 +5812,25 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   let declarationMode = false;
   let declarationGroups = [];
   let declarationSelectedIds = new Set();
+  let declarationFinishCardId = null;
+  let declarationSplitAfterIds = new Set();
+  let preAutoArrangeStandsSnapshot = null;
+  let lastInPlaceGroupingResult = null;
   let guidedCardIds = new Set();
   let guideMeState = null;
   let lastDeclSelectedCardId = null;
+
+  function resetDeclarationAuxState() {
+    declarationFinishCardId = null;
+    declarationSplitAfterIds = new Set();
+    preAutoArrangeStandsSnapshot = null;
+    lastInPlaceGroupingResult = null;
+    declarationSelectedIds.clear();
+    guidedCardIds.clear();
+    guideMeState = null;
+    lastDeclSelectedCardId = null;
+    lastDeclDragNotice = null;
+  }
   let globalSessionScores = [];
   let demoHandNumber = 1;
   let demoStarterIndex = 0;
@@ -6842,10 +7051,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           if (roomState?.status === 'ROUND_OVER') {
             declarationMode = false;
             declarationGroups = [];
-            declarationSelectedIds.clear();
-            guidedCardIds.clear();
-            guideMeState = null;
-            lastDeclSelectedCardId = null;
+            resetDeclarationAuxState();
             hasInitializedGroupingPhase = false;
             const readyMap = {};
             (roomState.players || []).forEach(p => {
@@ -6856,10 +7062,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             if (roomState?.status === 'LOBBY') {
               declarationMode = false;
               declarationGroups = [];
-              declarationSelectedIds.clear();
-              guidedCardIds.clear();
-              guideMeState = null;
-              lastDeclSelectedCardId = null;
+              resetDeclarationAuxState();
               hasInitializedGroupingPhase = false;
               lastRoundResultData = null;
             }
@@ -6882,7 +7085,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             initDefaultStands(3);
             declarationMode = false;
             declarationGroups = [];
-            declarationSelectedIds.clear();
+            resetDeclarationAuxState();
             selectedCardId = null;
           }
 
@@ -6994,18 +7197,16 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
 
       if (msg.type === 'SHOW_INVALID') {
-        declarationMode = false; declarationGroups = []; declarationSelectedIds.clear(); alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\n\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
+        declarationMode = false; declarationGroups = []; resetDeclarationAuxState(); selectedCardId = null; alert('Invalid declaration: ' + msg.reason + (msg.penalty ? `\n\nPenalty: ${msg.penalty} points. Your hand is folded and play continues.` : ''));
         renderAll(null);
       }
 
-      if (msg.type === 'DECLARATION_FORFEITED') { declarationMode=false; declarationGroups=[]; declarationSelectedIds.clear(); alert('Declaration forfeited. Penalty: 100 points. Play continues.'); renderAll(null); }
+      if (msg.type === 'DECLARATION_FORFEITED') { declarationMode=false; declarationGroups=[]; resetDeclarationAuxState(); selectedCardId = null; alert('Declaration forfeited. Penalty: 100 points. Play continues.'); renderAll(null); }
       if (msg.type === 'SHOW_RESULT') {
         declarationMode = false;
         declarationGroups = [];
-        declarationSelectedIds.clear();
-        guidedCardIds.clear();
-        guideMeState = null;
-        lastDeclSelectedCardId = null;
+        resetDeclarationAuxState();
+        selectedCardId = null;
         hasInitializedGroupingPhase = false;
         lastRoundResultData = msg;
         if (msg.sessionScores) {
@@ -8678,8 +8879,10 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const redClass = isRed ? 'red' : '';
     const suitClass = card.suit === '♠' ? 'suit-spades' : card.suit === '♣' ? 'suit-clubs' : card.suit === '♥' ? 'suit-hearts' : card.suit === '♦' ? 'suit-diamonds' : '';
     const suitTitle = card.suit === '♣' ? 'Clubs (♣)' : card.suit === '♠' ? 'Spades (♠)' : card.suit === '♥' ? 'Hearts (♥)' : card.suit === '♦' ? 'Diamonds (♦)' : '';
-    const selClass = isLocked ? '' : (declarationMode ? (declarationSelectedIds.has(card.id) ? 'is-selected' : '') : (selectedCardId === card.id ? 'is-selected' : ''));
+    const selClass = isLocked ? '' : (selectedCardId === card.id ? 'is-selected' : '');
     const guidedClass = (!isLocked && declarationMode && guidedCardIds.has(card.id)) ? 'is-guided' : '';
+    const finishClass = (!isLocked && ptsChip && ptsChip.isFinish) ? 'is-finish-discard' : '';
+    const looseClass = (!isLocked && ptsChip && ptsChip.isLoose && !ptsChip.isFinish) ? 'is-loose-in-grouping' : '';
     const lockedClass = isLocked ? 'locked-card-item' : '';
     const clickAttr = isLocked ? '' : `onclick="selectCard('${card.id}')"`;
     const hasFinePointer = Boolean(window.matchMedia && window.matchMedia('(any-pointer: fine)').matches);
@@ -8719,8 +8922,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
       tagHtml = `<div class="card-role-tag ${tagClass}">${tagLabel}</div>`;
     }
-    const ptsHtml = ptsChip
-      ? `<div class="card-pts-chip ${ptsChip.isWild ? 'is-wild-chip' : ''}">${ptsChip.text}</div>`
+    const ptsHtml = (ptsChip && ptsChip.text)
+      ? `<div class="card-pts-chip ${ptsChip.isFinish ? 'is-finish-chip' : (ptsChip.isWild ? 'is-wild-chip' : '')}">${ptsChip.text}</div>`
       : '';
 
     // Vector SVG deck via jsDelivr CDN — stays transparent until loaded so inline card art renders instantly with zero blank frames
@@ -8740,7 +8943,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     return `
-      <div class="card ${redClass} ${poochieClass} ${selClass} ${guidedClass} ${suitClass} ${lockedClass} ${roleRingClass}" data-card-id="${card.id}" ${dragAttrs} ${clickAttr}>
+      <div class="card ${redClass} ${poochieClass} ${selClass} ${guidedClass} ${finishClass} ${looseClass} ${suitClass} ${lockedClass} ${roleRingClass}" data-card-id="${card.id}" ${dragAttrs} ${clickAttr}>
         ${tagHtml}
         ${ptsHtml}
         <div class="card-inner">
@@ -9107,12 +9310,14 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (roomState?.status === 'ROUND_OVER' || roomState?.status === 'LOBBY') {
       declarationMode = false;
       hasInitializedGroupingPhase = false;
+      resetDeclarationAuxState();
     }
 
     const waitModal = document.getElementById('groupingWaitModal');
     if (isGroupingPhase) {
       if (meGrouped || meDroppedForGrouping) {
         declarationMode = false;
+        resetDeclarationAuxState();
         if (waitModal) {
           waitModal.style.display = 'flex';
           const activeNonDropped = (roomState.players || []).filter(p => !p.hasDropped && !p.isEliminated);
@@ -9154,15 +9359,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
       } else {
         if (waitModal) waitModal.style.display = 'none';
-        declarationMode = true; // Open manual grouping mode immediately for active non-declarer
+        declarationMode = true; // Open in-place grouping mode immediately for active non-declarer
         if (!hasInitializedGroupingPhase) {
           hasInitializedGroupingPhase = true;
           justOpenedOpponentGrouping = true;
           declarationGroups = [];
-          declarationSelectedIds.clear();
-          guidedCardIds.clear();
-          guideMeState = null;
-          lastDeclSelectedCardId = null;
+          selectedCardId = null;
+          resetDeclarationAuxState();
         }
       }
       startGroupingCountdownTracker();
@@ -9187,8 +9390,9 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       });
     }
 
-    // Maal Header Badge
-    const data = maalData?.details ? maalData : calculateLocalMaal();
+    // Maal Header Badge (always exclude finish card when declarer is in declarationMode)
+    const excludeFinishForLiveMaal = declarationMode && !isGroupingPhase && Boolean(getActiveDeclarationFinishCardId());
+    const data = (!excludeFinishForLiveMaal && maalData?.details) ? maalData : calculateLocalMaal();
     const total = data ? data.total : 0;
     const maalText = document.getElementById('maalPtsText');
     if (maalText) {
@@ -9408,27 +9612,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       if (!declarationMode) dp.innerHTML = '';
       if (declarationMode) {
         const rRule = getActiveRules();
-        const groupedCards = declarationGroups.flatMap(g => g.cards);
-        const grouped = groupedCards.length;
-        const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-        const groupedIds = new Set(groupedCards.map(c => c.id));
-        const remaining = myHand.filter(c => !groupedIds.has(c.id));
-        const dInfoPanel = countDoubles(myHand);
-        const tInfoPanel = countTunellas(myHand);
-        const isDoublesPanelReady = rRule.allowDoublesShow && ((dInfoPanel.count >= rRule.dealtDoublesForShow && myHand.length === handSize) || (dInfoPanel.count >= rRule.drawnDoublesForShow && myHand.length === drawnSize));
-        const is3TunellasPanelReady = rRule.allow3TunellasShow && tInfoPanel.count >= 3 && (myHand.length === handSize || myHand.length === drawnSize);
-        const isShowReady = (grouped === handSize && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesPanelReady || is3TunellasPanelReady;
-
         if (isGroupingPhase) {
-          const estDeadwood = calculateCurrentDeadwood(declarationGroups, myHand);
           dp.innerHTML = `
-            <div class="declare-panel-head" style="margin-bottom:6px; padding-bottom:6px;">
+            <div class="declare-panel-head" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
               <div>
                 <div class="declare-title" style="color:#7eedba;">
-                  <span>⚡</span> Group Your Cards to Minimize Deadwood
+                  <span>⚡</span> Grouping Cards on Your Stands
                 </div>
                 <div class="declare-subtitle">
-                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Form <b>${rRule.minPureSequences}+ Pure Groups</b> to protect all your groups. Otherwise, ${rRule.count3CardPureAsDeadwood ? 'only Jokers, 4+ Pure Groups, and Tunellas' : 'Jokers, all Pure Groups (3+ cards), and Tunellas'} are exempt.
+                  ${escapeHtml(roomState?.winnerName || 'Winner')} declared! Adjacent cards on your stands are grouped &amp; raised automatically. Drag or tap any card to adjust, then submit.
                 </div>
               </div>
               <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -9436,71 +9628,19 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
                   ⏱️ <span class="groupingTimerSecSpan">${formatGroupingTime(rRule.groupingTimeSec)}</span> left
                 </span>
               </div>
-            </div>
-            <div class="declare-checklist">
-              <div class="checklist-item ${estDeadwood.hasRequiredPure ? 'done' : 'pending'}">
-                <span class="checklist-icon">${estDeadwood.hasRequiredPure ? '✅' : '⏳'}</span>
-                <div>
-                  <div><strong>${estDeadwood.pureSequences} / ${rRule.minPureSequences}</strong> Pure Groups</div>
-                  <div style="font-size:9px; opacity:0.85;">${estDeadwood.hasRequiredPure ? 'All groups protected!' : `Need ${rRule.minPureSequences} to protect Sets/Joker Groups`}</div>
-                </div>
-              </div>
-              <div class="checklist-item ${grouped >= Math.max(0, myHand.length - 3) ? 'done' : 'pending'}">
-                <span class="checklist-icon">${grouped >= Math.max(0, myHand.length - 3) ? '✅' : '🃏'}</span>
-                <div>
-                  <div><strong>${grouped} / ${myHand.length}</strong> Cards Grouped</div>
-                  <div style="font-size:9px; opacity:0.85;">${declarationGroups.length} group(s) formed</div>
-                </div>
-              </div>
-              <div class="checklist-item ${estDeadwood.points === 0 ? 'done' : 'pending'}">
-                <span class="checklist-icon">${estDeadwood.points === 0 ? '🛡️' : '📊'}</span>
-                <div>
-                  <div><strong>${estDeadwood.points} pts</strong> Est. Deadwood</div>
-                  <div style="font-size:9px; opacity:0.85;">${estDeadwood.hasRequiredPure ? 'Protected' : `${estDeadwood.deadwoodCount} loose cards (Jokers exempt)`}</div>
-                </div>
-              </div>
             </div>`;
         } else {
           dp.innerHTML = `
-            <div class="declare-panel-head" style="margin-bottom:6px; padding-bottom:6px;">
+            <div class="declare-panel-head" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
               <div>
                 <div class="declare-title">
                   <span>🏆</span> Declare ${handSize}-Card Show
                 </div>
                 <div class="declare-subtitle">
-                  Group ${handSize} cards below using <b>🧭 Guide Me</b>, <b>⚡ Auto-Group</b>, or by tapping cards. The 1 remaining card becomes your final discard.
+                  Adjacent cards on your stands are raised into groups automatically. Leave 1 card lowered as your <b>Finish Discard</b> (no honor points count on the finish card).
                 </div>
               </div>
-            </div>
-
-            <div class="declare-checklist">
-              <div class="checklist-item ${pure >= rRule.minPureSequences ? 'done' : 'pending'}">
-                <span class="checklist-icon">${pure >= rRule.minPureSequences ? '✅' : '⏳'}</span>
-                <div>
-                  <div><strong>${pure} / ${rRule.minPureSequences}</strong> Pure Groups</div>
-                  <div style="font-size:9px; opacity:0.85;">${pure >= rRule.minPureSequences ? 'Requirement met' : `Min ${rRule.minPureSequences} natural runs`}</div>
-                </div>
-              </div>
-              <div class="checklist-item ${grouped === handSize ? 'done' : 'pending'}">
-                <span class="checklist-icon">${grouped === handSize ? '✅' : '⏳'}</span>
-                <div>
-                  <div><strong>${grouped} / ${handSize}</strong> Cards Grouped</div>
-                  <div style="font-size:9px; opacity:0.85;">${grouped === handSize ? `All ${handSize} cards grouped` : `${handSize - grouped} left to group`}</div>
-                </div>
-              </div>
-              <div class="checklist-item ${remaining.length === 1 ? 'done' : 'pending'}">
-                <span class="checklist-icon">${remaining.length === 1 ? '🎴' : '⏳'}</span>
-                <div>
-                  <div><strong>${remaining.length === 1 ? (remaining[0].rank + remaining[0].suit) : `${remaining.length} cards`}</strong> Finish Discard</div>
-                  <div style="font-size:9px; opacity:0.85;">${remaining.length === 1 ? 'Auto-selected finish card' : 'Leave 1 card ungrouped'}</div>
-                </div>
-              </div>
-            </div>
-
-            ${isShowReady ? `
-              <div class="declare-banner-ready">
-                ✨ Show is complete and valid! Tap <strong>Submit Declaration</strong> below to claim your win.
-              </div>` : ''}`;
+            </div>`;
         }
       }
       if (isGroupingPhase) {
@@ -9543,11 +9683,43 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (typeof renderLiveCoach === 'function') renderLiveCoach();
   }
 
-  function calculateLocalMaal() {
+  function isCardHonorValuable(card) {
+    if (!card) return false;
+    if (card.isPoochie || card.suit === '★' || card.rank === 'PJ') return true;
+    const roles = roomState?.roles;
+    if (!roles) return false;
+    return Boolean(
+      card.suit === roles.tipluSuit &&
+      (card.rank === roles.tipluRank || card.rank === roles.papluRank || card.rank === roles.nichluRank)
+    );
+  }
+
+  function getActiveDeclarationFinishCardId() {
+    if (!declarationMode || roomState?.status === 'GROUPING') return null;
+    const allCards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
+    const handSize = getConfiguredHandSize();
+    if (allCards.length < handSize + 1) return null; // Dealt 21-card show has no finish card
+    if (declarationFinishCardId && allCards.some(c => c && c.id === declarationFinishCardId)) {
+      return declarationFinishCardId;
+    }
+    if (lastInPlaceGroupingResult && lastInPlaceGroupingResult.finishCardId && allCards.some(c => c && c.id === lastInPlaceGroupingResult.finishCardId)) {
+      return lastInPlaceGroupingResult.finishCardId;
+    }
+    return null;
+  }
+
+  function getMaalEligibleCards(cardsOverride = null) {
+    if (Array.isArray(cardsOverride)) return cardsOverride.filter(Boolean);
+    const base = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
+    const finId = getActiveDeclarationFinishCardId();
+    return finId ? base.filter(c => c && c.id !== finId) : base.filter(Boolean);
+  }
+
+  function calculateLocalMaal(cardsOverride = null) {
     const cut = roomState?.cutCard, roles = roomState?.roles;
     if (!cut || !roles) return null;
     const r = getActiveRules();
-    const cards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
+    const cards = getMaalEligibleCards(cardsOverride);
     let poochies = 0, tiplus = 0, paplus = 0, nichlus = 0;
     for (const card of cards) {
       if (!card) continue;
@@ -9731,9 +9903,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       `;
     }
 
-    // Find all cards in hand that earned Maal
+    // Find all cards in hand that earned Maal (excluding finish discard card during declaration)
     const contributing = [];
-    const heldCards = (Array.isArray(userStands) && userStands.length > 0) ? userStands.flat() : (Array.isArray(myHand) ? myHand : []);
+    const heldCards = getMaalEligibleCards();
+    const excludedFinishId = getActiveDeclarationFinishCardId();
+    const excludedFinishCard = excludedFinishId ? ((Array.isArray(myHand) ? myHand : []).find(c => c && c.id === excludedFinishId) || null) : null;
     if (cut && roles.tipluRank) {
       for (const card of heldCards) {
         if (!card) continue;
@@ -9754,8 +9928,11 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     const heldListEl = document.getElementById('maalHeldCardsList');
     if (heldListEl) {
+      const finishExclusionNote = (excludedFinishCard && isCardHonorValuable(excludedFinishCard))
+        ? `<div style="width:100%; font-size:11px; color:#fde68a; margin-top:4px;">🎴 Finish card (${excludedFinishCard.isPoochie ? '★ PJ' : `${excludedFinishCard.rank}${excludedFinishCard.suit}`}) is excluded — no honor points count on the finish discard.</div>`
+        : '';
       if (contributing.length === 0) {
-        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Honors cards in your hand currently. Draw Jokers, Poochies, or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Honors!</span>';
+        heldListEl.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">No Honors cards in your hand currently. Draw Jokers, Poochies, or ' + tipluName + ', ' + papluName + ', ' + tupluName + ' to score Honors!</span>' + finishExclusionNote;
       } else {
         heldListEl.innerHTML = contributing.map(({card, role}) => {
           const isRed = card.suit === '♥' || card.suit === '♦';
@@ -9767,7 +9944,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
               <span style="font-size:10px; color:#94a3b8; font-weight:normal;">(${role})</span>
             </span>
           `;
-        }).join('');
+        }).join('') + finishExclusionNote;
       }
     }
 
@@ -9793,7 +9970,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
   let lastMaalTotal = null;
   function renderMaalDetails(maalData) {
-    const data = (maalData && typeof maalData.total === 'number' && maalData.details) ? maalData : calculateLocalMaal();
+    const excludeFinish = declarationMode && roomState?.status !== 'GROUPING' && Boolean(getActiveDeclarationFinishCardId());
+    const data = (!excludeFinish && maalData && typeof maalData.total === 'number' && maalData.details) ? maalData : calculateLocalMaal();
     const total = data ? data.total : 0;
     const maalText = document.getElementById('maalPtsText');
     if (maalText) {
@@ -10370,104 +10548,85 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     ensureUserStandsSyncedWithHand();
     const rRule = getActiveRules();
+    const isGroupingPhase = roomState?.status === 'GROUPING';
+    const inPlaceRes = computeInPlaceStandGrouping(userStands, { isGroupingPhase });
+    lastInPlaceGroupingResult = inPlaceRes;
+    declarationGroups = inPlaceRes.groups;
+
     const groupedCards = declarationGroups.flatMap(g => g.cards);
     const grouped = groupedCards.length;
     const pure = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-    const groupedIds = new Set(groupedCards.map(c => c.id));
-    const remaining = myHand.filter(c => !groupedIds.has(c.id));
-    const standBuckets = (Array.isArray(userStands) ? userStands : [])
-      .map((stand, sIdx) => ({
-        sIdx,
-        cards: (stand || []).filter(c => c && !groupedIds.has(c.id))
-      }))
-      .filter(b => b.cards.length > 0);
-    const selectedCards = myHand.filter(c => declarationSelectedIds.has(c.id));
-    const selCount = declarationSelectedIds.size;
-    const isGroupingPhase = roomState?.status === 'GROUPING';
-    const deadwoodCalc = isGroupingPhase ? calculateCurrentDeadwood(declarationGroups, myHand) : null;
-
-    const isPureValid = declarationPure(selectedCards);
-    const isSeqValid = declarationSequence(selectedCards);
-    const isSetValid = declarationSet(selectedCards);
-    const detected = detectBestGroupType(selectedCards);
-    const dInfo = countDoubles(myHand);
-    const tInfo = countTunellas(myHand);
     const declHandSize = rRule.cardsPerPlayer || 21;
     const declDrawnSize = declHandSize + 1;
+    const remaining = inPlaceRes.ungroupedCards;
+    const finishCardId = inPlaceRes.finishCardId;
+    const finishCard = finishCardId ? myHand.find(c => c && c.id === finishCardId) : null;
+    const deadwoodCalc = isGroupingPhase ? calculateCurrentDeadwood(declarationGroups, myHand) : null;
+
+    const dInfo = countDoubles(myHand);
+    const tInfo = countTunellas(myHand);
     const isDoublesReady = Boolean(rRule.allowDoublesShow && (
       (dInfo.count >= rRule.dealtDoublesForShow && myHand.length === declHandSize) ||
       (dInfo.count >= rRule.drawnDoublesForShow && myHand.length === declDrawnSize)
     ));
     const is3TunellasReady = Boolean(rRule.allow3TunellasShow && tInfo.count >= 3 && (myHand.length === declHandSize || myHand.length === declDrawnSize));
-    const isShowReady = (grouped === declHandSize && pure >= rRule.minPureSequences && remaining.length === 1) || isDoublesReady || is3TunellasReady;
-    const isGroupingReady = isGroupingPhase && grouped === myHand.length && pure >= rRule.minPureSequences;
+    const isShowReady = (!isGroupingPhase && grouped === declHandSize && pure >= rRule.minPureSequences && remaining.length === 1 && Boolean(finishCard))
+      || (!isGroupingPhase && (isDoublesReady || is3TunellasReady));
+    const isGroupingReady = isGroupingPhase && deadwoodCalc && (deadwoodCalc.points === 0 || (grouped === myHand.length && pure >= rRule.minPureSequences));
 
-    let coachBannerHtml = '';
-    if (guideMeState && guideMeState.active) {
-      if (guideMeState.cardIds && guideMeState.cardIds.length >= 3) {
-        coachBannerHtml = `
-          <div class="guide-me-banner">
-            <div class="guide-me-copy">
-              🧭 <strong>${guideMeState.title}</strong> (${guideMeState.index + 1}/${guideMeState.total}) — ${guideMeState.reason}
-            </div>
-            <div class="guide-me-actions">
-              <button type="button" class="sticky-submit-btn" onclick="confirmGuidedGroup()">✓ Lock Group (${guideMeState.cardIds.length})</button>
-              <button type="button" class="stand-close-btn" onclick="guideMeNextGroup(true)">⏭ Next Tip</button>
-              <button type="button" class="stand-close-btn" onclick="dismissGuideMe()">✕ Hide</button>
-            </div>
-          </div>`;
-      } else {
-        coachBannerHtml = `
-          <div class="guide-me-banner">
-            <div class="guide-me-copy">
-              🧭 <strong>Guide Me Tip</strong> — ${guideMeState.reason}
-            </div>
-            <div class="guide-me-actions">
-              <button type="button" class="stand-close-btn" onclick="dismissGuideMe()">✕ Got it</button>
-            </div>
-          </div>`;
+    // Evaluate non-destructive Auto-Arrange comparison for fallback button
+    const autoCmp = getAutoArrangeComparison(inPlaceRes, isGroupingPhase);
+    let autoArrangeLabel = '⚡ Auto-Arrange';
+    let autoArrangeHasSavings = false;
+    let autoArrangeTitle = 'Rearrange cards across stands into optimal groups';
+    if (isGroupingPhase) {
+      if (autoCmp.ptsSaved > 0) {
+        autoArrangeLabel = `⚡ Auto-Arrange (saves ${autoCmp.ptsSaved} pts)`;
+        autoArrangeHasSavings = true;
+        autoArrangeTitle = `Auto-Arrange can reduce your deadwood from ${deadwoodCalc.points} pts to ${autoCmp.autoDeadwood} pts`;
+      } else if (autoCmp.extraPure > 0) {
+        autoArrangeLabel = `⚡ Auto-Arrange (+${autoCmp.extraPure} Pure)`;
+        autoArrangeHasSavings = true;
+        autoArrangeTitle = `Auto-Arrange can find ${autoCmp.autoPure} Pure Groups across your stands`;
       }
-    } else if (detected) {
-      coachBannerHtml = `
-        <div style="width:100%;">
-          <button type="button" class="btn-declare-smart btn-declare-valid" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="autoGroupSelected()">
-            <span>${detected.icon} <b>Lock ${detected.verb}</b> (${selCount} cards selected)</span>
-            <small class="declare-btn-sub">${detected.badge} • Click to lock group</small>
-          </button>
-        </div>`;
-    } else if (selCount >= 3) {
-      coachBannerHtml = `
-        <div class="guide-me-banner" style="border-color:rgba(240,107,120,0.45); background:rgba(40,20,24,0.75);">
-          <div class="guide-me-copy" style="color:#fca5a5;">
-            ⚠️ <strong>Not a valid group yet</strong> (${selCount} cards selected) — Need consecutive same-suit cards, a set of 3–4 same rank, or tap Guide Me.
-          </div>
-          <div class="guide-me-actions">
-            <button type="button" class="stand-close-btn" onclick="guideMeNextGroup(false)">🧭 Guide Me</button>
-            <button type="button" class="stand-close-btn" onclick="clearDeclarationSelection()">✕ Clear</button>
-          </div>
-        </div>`;
-    } else if (lastDeclDragNotice) {
-      coachBannerHtml = `
-        <div class="guide-me-banner" style="padding:6px 10px; border-color:rgba(245,158,11,0.45); background:rgba(45,32,12,0.82);">
-          <div class="guide-me-copy" style="font-size:11px; color:#fde68a;">↩ ${escapeHtml(lastDeclDragNotice)}</div>
-          <div class="guide-me-actions">
-            <button type="button" class="stand-close-btn" onclick="dismissDeclDragNotice()">✕</button>
-          </div>
-        </div>`;
     } else {
-      const tipMsg = selCount > 0
-        ? `👆 Select <b>${3 - selCount} more card${3 - selCount > 1 ? 's' : ''}</b> (${selCount}/3 min) below, or tap <b>Guide Me</b> for a suggestion.`
-        : is3TunellasReady
-          ? `✨ 3 Tunellas detected! Tap <b>Submit Declaration</b> to claim an instant win.`
-          : isDoublesReady
-            ? `✨ ${dInfo.count} Doubles detected! Tap <b>Submit Declaration</b> to win.`
-            : isShowReady
-              ? `✨ All ${declHandSize} cards are grouped! Tap <b>Submit Declaration</b> to win.`
-              : `💡 Drag cards directly in/out of any group, or tap <b>🧭 Guide Me</b> / <b>⚡ Auto-Group</b>.`;
-      coachBannerHtml = `
-        <div class="guide-me-banner" style="padding:6px 10px; background:rgba(255,255,255,0.035); border-color:rgba(255,255,255,0.10);">
-          <div class="guide-me-copy" style="font-size:11px; color:#cfdad4;">${tipMsg}</div>
-        </div>`;
+      if (!isShowReady && autoCmp.autoIsShowReady) {
+        autoArrangeLabel = '⚡ Auto-Arrange (Valid Show!)';
+        autoArrangeHasSavings = true;
+        autoArrangeTitle = 'Auto-Arrange can form a complete valid declaration across your stands';
+      } else if (!isShowReady && (autoCmp.extraGrouped > 0 || autoCmp.extraPure > 0)) {
+        autoArrangeLabel = autoCmp.extraPure > 0
+          ? `⚡ Auto-Arrange (+${autoCmp.extraPure} Pure)`
+          : `⚡ Auto-Arrange (+${autoCmp.extraGrouped} cards)`;
+        autoArrangeHasSavings = true;
+        autoArrangeTitle = 'Auto-Arrange can group more cards across your stands';
+      }
+    }
+
+    const liveHonorsData = !isGroupingPhase ? calculateLocalMaal() : null;
+    const liveHonorsPts = liveHonorsData ? liveHonorsData.total : 0;
+    const finishCardLabel = finishCard
+      ? (finishCard.isPoochie ? '★ PJ' : `${finishCard.rank}${finishCard.suit}`)
+      : null;
+    const finishIsHonor = Boolean(finishCard && isCardHonorValuable(finishCard));
+
+    let statusTipHtml = '';
+    if (lastDeclDragNotice) {
+      statusTipHtml = `<span style="color:#fde68a;">✨ ${escapeHtml(lastDeclDragNotice)}</span>`;
+    } else if (isGroupingPhase) {
+      statusTipHtml = deadwoodCalc && deadwoodCalc.points === 0
+        ? `<span style="color:#86efac;">🛡️ 0 deadwood! Tap <b>Submit Groups</b> when ready.</span>`
+        : `Adjacent cards on your stands group automatically. Drag or tap a card to adjust.`;
+    } else if (is3TunellasReady) {
+      statusTipHtml = `<span style="color:#86efac;">✨ 3 Tunellas ready! Tap <b>Submit Declaration</b> to win.</span>`;
+    } else if (isDoublesReady) {
+      statusTipHtml = `<span style="color:#86efac;">✨ ${dInfo.count} Doubles ready! Tap <b>Submit Declaration</b> to win.</span>`;
+    } else if (isShowReady) {
+      statusTipHtml = finishIsHonor
+        ? `<span style="color:#fde68a;">✨ Ready! Note: Finish card <b>${finishCardLabel}</b> earns <b>0 honors</b> — tap another card to swap if you want to keep its honors.</span>`
+        : `<span style="color:#86efac;">✨ All ${declHandSize} cards grouped &amp; <b>${finishCardLabel}</b> set as finish discard. Tap <b>Submit Declaration</b>!</span>`;
+    } else {
+      statusTipHtml = `Place group cards next to each other on your stands (drag or tap to use Move Pad).`;
     }
 
     const stickyBarHtml = `
@@ -10475,15 +10634,23 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         <div class="sticky-grouping-summary">
           <div class="sticky-grouping-badges">
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${pure >= rRule.minPureSequences ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);'}">
-              ${pure} / ${rRule.minPureSequences} Pure Groups ${pure >= rRule.minPureSequences ? '✅' : '⏳'}
+              ${pure} / ${rRule.minPureSequences} Pure ${pure >= rRule.minPureSequences ? '✅' : '⏳'}
             </span>
             <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(255,255,255,0.06); color:#cfdad4; border:1px solid rgba(255,255,255,0.1);">
               ${grouped} / ${isGroupingPhase ? myHand.length : declHandSize} Grouped
             </span>
             ${isGroupingPhase && deadwoodCalc ? `
-              <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${deadwoodCalc.hasRequiredPure ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);'}">
-                Deadwood: ${deadwoodCalc.points} pts ${deadwoodCalc.hasRequiredPure ? '(Protected)' : `(${deadwoodCalc.deadwoodCount} cards, Jokers exempt)`}
-              </span>` : ''}
+              <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${deadwoodCalc.points === 0 ? 'background:rgba(34,197,94,0.18); color:#86efac; border:1px solid rgba(34,197,94,0.3);' : (deadwoodCalc.hasRequiredPure ? 'background:rgba(234,179,8,0.18); color:#fde047; border:1px solid rgba(234,179,8,0.3);' : 'background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.3);')}">
+                Deadwood: ${deadwoodCalc.points} pts ${deadwoodCalc.hasRequiredPure ? '(Groups Protected)' : '(Need 3 Pure)'}
+              </span>` : `
+              ${myHand.length >= declDrawnSize ? `
+                <span style="padding:2px 7px; border-radius:6px; font-weight:700; ${finishCard ? 'background:rgba(245,158,11,0.2); color:#fde68a; border:1px solid rgba(245,158,11,0.4);' : 'background:rgba(255,255,255,0.06); color:#94a3b8; border:1px solid rgba(255,255,255,0.1);'}">
+                  🎴 Finish: ${finishCardLabel ? `${finishCardLabel}${finishIsHonor ? ' (0 honors)' : ''}` : `${remaining.length} loose`}
+                </span>` : ''}
+              <span style="padding:2px 7px; border-radius:6px; font-weight:700; background:rgba(217,182,92,0.14); color:#f1d27a; border:1px solid rgba(217,182,92,0.3);" title="Winner Honors excluding finish card">
+                Honors: ${liveHonorsPts} pts
+              </span>
+            `}
           </div>
           <div style="display:inline-flex; align-items:center; gap:6px;">
             ${isGroupingPhase ? `
@@ -10498,156 +10665,106 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           </div>
         </div>
 
-        ${coachBannerHtml}
-
-        <div class="sticky-grouping-actions">
-          <button type="button" class="sticky-meld-btn guide-me-btn-trigger" onclick="guideMeNextGroup(${guideMeState?.active ? 'true' : 'false'})" title="Highlight the best next group from your remaining cards">
-            <span>🧭 Guide Me</span>
-            <span class="btn-group-sub">${guideMeState?.active ? 'Next suggestion' : 'Suggest group'}</span>
-          </button>
-          <button type="button" class="sticky-meld-btn active" onclick="autoGroupFullHand()" title="Automatically scan and group entire hand into Pure Groups, Joker Groups, and Sets">
-            <span>⚡ Auto-Group</span>
-            <span class="btn-group-sub">All hand</span>
-          </button>
-          <button type="button" class="sticky-meld-btn active" onclick="autoGroupFromStands()" title="Convert your table stands into valid groups">
-            <span>⚡ From Stands</span>
-            <span class="btn-group-sub">From racks</span>
-          </button>
-          <button type="button" class="sticky-meld-btn ${isPureValid ? 'active' : ''}" onclick="groupSelectedCards('PURE_SEQUENCE')" ${!isPureValid ? 'disabled' : ''} title="Pure Group: Consecutive cards in same suit, no printed jokers">
-            <span>💎 Pure Group ${isPureValid ? '✓' : ''}</span>
-            <span class="btn-group-sub">Min 3</span>
-          </button>
-          <button type="button" class="sticky-meld-btn ${isSeqValid ? 'active' : ''}" onclick="groupSelectedCards('SEQUENCE')" ${!isSeqValid ? 'disabled' : ''} title="Joker Group: Consecutive cards in same suit, wilds allowed">
-            <span>🃏 Joker Group ${isSeqValid ? '✓' : ''}</span>
-            <span class="btn-group-sub">Wilds ok</span>
-          </button>
-          <button type="button" class="sticky-meld-btn ${isSetValid ? 'active' : ''}" onclick="groupSelectedCards('SET')" ${!isSetValid ? 'disabled' : ''} title="Set: 3 or 4 cards of same rank in different suits">
-            <span>👑 Set ${isSetValid ? '✓' : ''}</span>
-            <span class="btn-group-sub">3-4 cards</span>
-          </button>
-          <button type="button" class="sticky-meld-btn" onclick="ungroupAllDeclaration()" title="Disband all formed groups back to Cards to Group">
-            <span>↩ Ungroup All</span>
-            <span class="btn-group-sub">Reset groups</span>
-          </button>
+        <div class="sticky-grouping-tools">
+          <div class="sticky-grouping-tip">${statusTipHtml}</div>
+          <div class="sticky-grouping-fallback-btns">
+            <button type="button" class="sticky-auto-arrange-btn ${autoArrangeHasSavings ? 'has-savings' : ''}" onclick="autoGroupFullHand(false)" title="${escapeHtml(autoArrangeTitle)}">
+              ${autoArrangeLabel}
+            </button>
+            ${preAutoArrangeStandsSnapshot ? `
+              <button type="button" class="stand-close-btn" onclick="undoAutoArrangeStands()" title="Restore your previous stand layout">
+                ↩ Undo Arrange
+              </button>` : ''}
+          </div>
         </div>
       </div>
     `;
 
-    const groups=declarationGroups.map((g,i)=>{
-      let protectionBadge = '';
-      if (isGroupingPhase && deadwoodCalc) {
-        const rGrp = getActiveRules();
-        const isPure = g.type === 'PURE_SEQUENCE';
-        const isPureProtected = isPure && (!rGrp.count3CardPureAsDeadwood || g.cards.length >= 4);
-        const isTun = declarationIsTunella(g.cards);
-        if (deadwoodCalc.hasRequiredPure) {
-          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Protected (0 pts)</span>`;
-        } else if (isPureProtected) {
-          const pureLabel = rGrp.count3CardPureAsDeadwood ? '🛡️ 4+ Group (Protected)' : '🛡️ Pure Group (Protected)';
-          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">${pureLabel}</span>`;
-        } else if (isTun) {
-          protectionBadge = `<span style="background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">🛡️ Tunella (Protected)</span>`;
+    const standsHtml = userStands.map((stand, sIdx) => {
+      const segs = inPlaceRes.standSegments[sIdx] || [];
+      const standGroupCount = segs.filter(seg => seg.kind === 'GROUP').length;
+      const standLooseCards = segs.filter(seg => seg.kind === 'LOOSE').map(seg => seg.card);
+      const standLoosePts = standLooseCards.reduce((sum, c) => sum + cardDeadwoodVal(c), 0);
+
+      let standSummaryPill = '';
+      if (stand.length > 0) {
+        if (standGroupCount > 0 && standLooseCards.length === 0) {
+          standSummaryPill = `<span class="stand-meld-pill pure">✓ ${standGroupCount} group${standGroupCount > 1 ? 's' : ''}</span>`;
+        } else if (standGroupCount > 0) {
+          const looseLbl = isGroupingPhase ? `${standLoosePts}p loose` : `${standLooseCards.length} loose`;
+          standSummaryPill = `<span class="stand-meld-pill seq">${standGroupCount} group${standGroupCount > 1 ? 's' : ''} · ${looseLbl}</span>`;
+        } else if (isGroupingPhase) {
+          standSummaryPill = `<span class="stand-meld-pill loose">${standLoosePts} pts loose</span>`;
         } else {
-          protectionBadge = `<span style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;">⚠️ Unprotected (Deadwood)</span>`;
+          standSummaryPill = `<span class="stand-meld-pill loose">${standLooseCards.length} ungrouped</span>`;
         }
       }
-      const gCls = g.type === 'PURE_SEQUENCE' ? 'group-pure' : g.type === 'SEQUENCE' ? 'group-seq' : 'group-set';
-      return `<div class="stand-rack declaration-group locked ${gCls}" id="decl-group-rack-${i}" ondragover="onDeclRackDragOver(event, ${i})" ondragleave="onDeclRackDragLeave(event, ${i})" ondrop="onDeclRackDrop(event, ${i})">
-        <div class="stand-header"><div class="stand-title-box"><span>Group ${i+1}: ${g.typeLabel}</span><span class="stand-count-badge">${g.cards.length} cards • drag or tap to edit</span>${protectionBadge}</div>
-        <button class="stand-close-btn" onclick="ungroupDeclaration(${i})">↩ Disband Group</button></div>
+
+      const cardsContent = stand.length > 0
+        ? segs.map(seg => {
+            if (seg.kind === 'GROUP') {
+              const g = seg.group;
+              const isPure = g.type === 'PURE_SEQUENCE';
+              const isSeq = g.type === 'SEQUENCE';
+              const isTun = declarationIsTunella(g.cards);
+              const isPureProtected = isPure && (!rRule.count3CardPureAsDeadwood || g.cards.length >= 4);
+              const isProtectedInGrouping = !isGroupingPhase || !deadwoodCalc || deadwoodCalc.hasRequiredPure || isPureProtected || isTun;
+
+              let clusterCls = isPure ? 'cluster-pure' : isSeq ? 'cluster-seq' : 'cluster-set';
+              let labelCls = isPure ? 'label-pure' : isSeq ? 'label-seq' : 'label-set';
+              if (isGroupingPhase && !isProtectedInGrouping) {
+                clusterCls += ' cluster-unprotected';
+                labelCls = 'label-unprotected';
+              }
+              const protIcon = isGroupingPhase ? (isProtectedInGrouping ? ' 🛡️' : ' ⚠️') : '';
+              const shortText = `${g.shortLabel || g.typeLabel}${protIcon}`;
+              const innerCards = g.cards.map(c => renderCard(c, getCardTag(c), true, false, null)).join('');
+              return `<div class="stand-group-cluster ${clusterCls}" title="${escapeHtml(g.typeLabel)}">${innerCards}<span class="stand-group-cluster-label ${labelCls}">${shortText}</span></div>`;
+            }
+            const c = seg.card;
+            const isFin = Boolean(finishCardId && c.id === finishCardId);
+            let chip = { text: '', isLoose: true };
+            if (isFin) {
+              chip = { text: isCardHonorValuable(c) ? '🎴 FINISH (0h)' : '🎴 FINISH', isFinish: true, isLoose: true };
+            } else if (isGroupingPhase) {
+              chip = declarationIsWild(c)
+                ? { text: '0p Joker', isWild: true, isLoose: true }
+                : { text: `+${cardDeadwoodVal(c)}p`, isWild: false, isLoose: true };
+            }
+            return renderCard(c, getCardTag(c), true, false, chip);
+          }).join('')
+        : `<div class="empty-stand-hint">Empty stand • Drag a card here or use ▲/▼</div>`;
+
+      const closeBtn = userStands.length > 1
+        ? `<button class="stand-close-btn" onclick="removeStand(${sIdx})" title="Merge Stand ${sIdx + 1} with Stand 1">✕</button>`
+        : '';
+
+      return `<div class="stand-rack is-in-place-grouping" id="stand-rack-${sIdx}" ondragover="onStandDragOver(event,${sIdx})" ondragleave="onStandDragLeave(event,${sIdx})" ondrop="onStandDrop(event,${sIdx})">
+        <div class="stand-header">
+          <div class="stand-title-box">
+            <span>Stand ${sIdx + 1}</span>
+            <span class="stand-count-badge">${stand.length} cards</span>
+            ${standSummaryPill}
+          </div>
+          <div class="stand-header-actions">${closeBtn}</div>
+        </div>
         <div class="stand-scroll-container">
-          <button type="button" class="stand-scroll-btn left" id="decl-scroll-left-${i}" onclick="scrollElement('decl-group-cards-${i}', -1)" onpointerdown="startStandScroll('decl-group-cards-${i}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group left" title="Scroll left">
+          <button type="button" class="stand-scroll-btn left" id="stand-scroll-left-${sIdx}" onclick="scrollStand(${sIdx}, -1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'stand-cards-${sIdx}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx + 1} left" title="Scroll left">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
           </button>
-          <div class="stand-cards grouped-cards" id="decl-group-cards-${i}" onscroll="updateElementScrollButtons('decl-group-cards-${i}', 'decl-scroll-left-${i}', 'decl-scroll-right-${i}')">${g.cards.map(c=>renderCard(c,getCardTag(c),true,false)).join('')}</div>
-          <button type="button" class="stand-scroll-btn right" id="decl-scroll-right-${i}" onclick="scrollElement('decl-group-cards-${i}', 1)" onpointerdown="startStandScroll('decl-group-cards-${i}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-group-cards-${i}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll group right" title="Scroll right">
+          <div class="stand-cards" id="stand-cards-${sIdx}" onscroll="updateStandScrollButtons(${sIdx})">${cardsContent}</div>
+          <button type="button" class="stand-scroll-btn right" id="stand-scroll-right-${sIdx}" onclick="scrollStand(${sIdx}, 1)" onpointerdown="startStandScroll('stand-cards-${sIdx}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'stand-cards-${sIdx}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx + 1} right" title="Scroll right">
             <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
           </button>
         </div>
       </div>`;
     }).join('');
-    const ungroupedRacksHtml = standBuckets.length > 0
-      ? standBuckets.map((bucket, idx) => {
-          const { sIdx, cards } = bucket;
-          let standMeldClass = '';
-          let standMeldPill = '';
-          if (cards.length >= 2) {
-            const det = detectBestGroupType(cards);
-            if (det) {
-              const pCls = det.type === 'PURE_SEQUENCE' ? 'pure' : det.type === 'SEQUENCE' ? 'seq' : det.type === 'SET' ? 'set' : 'double';
-              standMeldClass = det.type === 'PURE_SEQUENCE' ? 'stand-valid-pure' : det.type === 'SEQUENCE' ? 'stand-valid-seq' : det.type === 'SET' ? 'stand-valid-set' : 'stand-valid-double';
-              standMeldPill = `<span class="stand-meld-pill ${pCls}">${det.icon} ${det.label}</span>`;
-            } else {
-              const loosePts = cards.reduce((s, c) => s + cardDeadwoodVal(c), 0);
-              standMeldPill = `<span class="stand-meld-pill loose">${loosePts} pts loose</span>`;
-            }
-          }
-          const standSelCount = cards.filter(c => declarationSelectedIds.has(c.id)).length;
-          return `<div class="stand-rack declaration-ungrouped ${standMeldClass}" id="decl-ungrouped-rack-${sIdx}" data-stand-idx="${sIdx}" ondragover="onDeclRackDragOver(event, -1, ${sIdx})" ondragleave="onDeclRackDragLeave(event, -1, ${sIdx})" ondrop="onDeclRackDrop(event, -1, ${sIdx})">
-            <div class="stand-header">
-              <div class="stand-title-box">
-                <span>Stand ${sIdx + 1}</span>
-                <span class="stand-count-badge" style="${standSelCount > 0 ? 'background:rgba(217,182,92,.22);color:#f1d27a;' : ''}">${cards.length} card${cards.length === 1 ? '' : 's'}${standSelCount > 0 ? ` • ${standSelCount} Selected` : ''}</span>
-                ${standMeldPill}
-              </div>
-              <div class="stand-group-inline-btns">
-                ${idx === 0 && selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
-              </div>
-            </div>
-            <div class="stand-scroll-container">
-              <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left-${sIdx}" onclick="scrollElement('decl-ungrouped-cards-${sIdx}', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards-${sIdx}', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards-${sIdx}', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx + 1} left" title="Scroll left">
-                <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
-              </button>
-              <div class="stand-cards" id="decl-ungrouped-cards-${sIdx}" onscroll="updateElementScrollButtons('decl-ungrouped-cards-${sIdx}', 'decl-ungrouped-left-${sIdx}', 'decl-ungrouped-right-${sIdx}')">${cards.map(c => {
-                const chip = isGroupingPhase
-                  ? (declarationIsWild(c) ? { text: '0p Joker', isWild: true } : { text: `+${cardDeadwoodVal(c)}p`, isWild: false })
-                  : null;
-                return renderCard(c, getCardTag(c), true, false, chip);
-              }).join('')}</div>
-              <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right-${sIdx}" onclick="scrollElement('decl-ungrouped-cards-${sIdx}', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards-${sIdx}', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards-${sIdx}', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll Stand ${sIdx + 1} right" title="Scroll right">
-                <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
-              </button>
-            </div>
-          </div>`;
-        }).join('')
-      : `<div class="stand-rack declaration-ungrouped" id="decl-ungrouped-rack" ondragover="onDeclRackDragOver(event, -1, -1)" ondragleave="onDeclRackDragLeave(event, -1, -1)" ondrop="onDeclRackDrop(event, -1, -1)"><div class="stand-header">
-          <div class="stand-title-box">
-            <span>Cards to Group (0 remaining)</span>
-            <span class="stand-count-badge">Drag any card here to ungroup</span>
-          </div>
-          <div class="stand-group-inline-btns">
-            ${selCount > 0 ? `<button type="button" class="inline-meld-btn" onclick="clearDeclarationSelection()">✕ Clear (${selCount})</button>` : ''}
-          </div></div>
-          <div class="stand-scroll-container">
-            <button type="button" class="stand-scroll-btn left" id="decl-ungrouped-left" onclick="scrollElement('decl-ungrouped-cards', -1)" onpointerdown="startStandScroll('decl-ungrouped-cards', -1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', -1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll left" title="Scroll left">
-              <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="15,4 6,12 15,20" fill="currentColor"/></svg>
-            </button>
-            <div class="stand-cards" id="decl-ungrouped-cards" onscroll="updateElementScrollButtons('decl-ungrouped-cards', 'decl-ungrouped-left', 'decl-ungrouped-right')"><div class="empty-stand-hint">All cards grouped • Drag a card here or tap a grouped card to release it back to its Stand</div></div>
-            <button type="button" class="stand-scroll-btn right" id="decl-ungrouped-right" onclick="scrollElement('decl-ungrouped-cards', 1)" onpointerdown="startStandScroll('decl-ungrouped-cards', 1)" onpointerup="stopStandScroll()" onpointercancel="stopStandScroll()" onpointerleave="stopStandScroll()" ondragover="onScrollBtnDragOver(event, 'decl-ungrouped-cards', 1)" ondragleave="onScrollBtnDragLeave(event)" ondrop="stopStandScroll()" aria-label="Scroll right" title="Scroll right">
-              <svg viewBox="0 0 24 24" class="scroll-arrow-svg"><polygon points="9,4 18,12 9,20" fill="currentColor"/></svg>
-            </button>
-          </div>
-        </div>`;
-    container.innerHTML=`${stickyBarHtml}${ungroupedRacksHtml}${groups}`;
+
+    container.innerHTML = `${stickyBarHtml}${standsHtml}`;
     restoreContainerScrolls();
-    if (lastDeclSelectedCardId) {
-      const targetCard = container.querySelector(`.declaration-ungrouped [data-card-id="${lastDeclSelectedCardId}"]`);
-      const ungroupedTray = targetCard ? targetCard.closest('.stand-cards') : document.getElementById('decl-ungrouped-cards');
-      if (ungroupedTray && targetCard) {
-        const trayRect = ungroupedTray.getBoundingClientRect();
-        const cardRect = targetCard.getBoundingClientRect();
-        const pad = 10;
-        if (cardRect.left < trayRect.left + pad || cardRect.right > trayRect.right - pad) {
-          ungroupedTray.style.scrollBehavior = 'auto';
-          if (cardRect.left < trayRect.left + pad) {
-            ungroupedTray.scrollLeft += (cardRect.left - trayRect.left) - pad;
-          } else {
-            ungroupedTray.scrollLeft += (cardRect.right - trayRect.right) + pad;
-          }
-          void ungroupedTray.offsetLeft;
-          ungroupedTray.style.scrollBehavior = '';
-        }
-      }
+    if (activeStandGlide && activeStandGlide.cardId && Date.now() < activeStandGlide.until) {
+      const slidingCardEl = document.getElementById('card-' + activeStandGlide.cardId);
+      if (slidingCardEl) slidingCardEl.classList.add('card-glide-hidden');
     }
     setTimeout(updateAllStandScrollButtons, 30);
   }
@@ -11221,49 +11338,29 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function autoGroupFromStands(showNotification = true) {
     if (!declarationMode) return;
     lastDeclDragNotice = null;
-    declarationGroups = [];
     declarationSelectedIds.clear();
     guidedCardIds.clear();
     guideMeState = null;
     lastDeclSelectedCardId = null;
 
-    const usedCardIds = new Set();
-    const newGroups = [];
-    if (Array.isArray(userStands)) {
-      for (const stand of userStands) {
-        if (Array.isArray(stand) && stand.length >= 3) {
-          const availableInStand = stand.filter(c => c && !usedCardIds.has(c.id));
-          if (availableInStand.length >= 3) {
-            const detected = detectBestGroupType(availableInStand);
-            if (detected) {
-              newGroups.push({
-                type: detected.type,
-                typeLabel: detected.label,
-                cards: [...availableInStand]
-              });
-              availableInStand.forEach(c => usedCardIds.add(c.id));
-            }
-          }
-        }
-      }
-    }
-    declarationGroups = newGroups;
+    syncInPlaceGroupingState(roomState?.status === 'GROUPING');
     renderAll(null);
 
-    const pureCount = newGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-    const totalGrouped = newGroups.flatMap(g => g.cards).length;
-    const handSize = getConfiguredHandSize();
-    const reqPure = getActiveRules().minPureSequences || 3;
     if (showNotification) {
-      if (newGroups.length > 0) {
+      const pureCount = declarationGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
+      const totalGrouped = declarationGroups.flatMap(g => g.cards).length;
+      const handSize = getConfiguredHandSize();
+      const reqPure = getActiveRules().minPureSequences || 3;
+      if (declarationGroups.length > 0) {
         if (totalGrouped === handSize && pureCount >= reqPure) {
-          alert(`Great! Auto-detected ${newGroups.length} valid groups (${pureCount} Pure Sequences). All ${handSize} cards are grouped and ready to declare!`);
+          lastDeclDragNotice = `Detected ${declarationGroups.length} valid groups (${pureCount} Pure). Ready to declare!`;
         } else {
-          alert(`Auto-detected ${newGroups.length} valid group(s) with ${totalGrouped} cards. Select remaining cards below to finish your show.`);
+          lastDeclDragNotice = `Detected ${declarationGroups.length} group(s) (${totalGrouped} cards). Drag or tap cards to adjust.`;
         }
       } else {
-        alert('None of your table stands formed a complete valid run or set yet. Tap cards below to group them manually.');
+        lastDeclDragNotice = 'No adjacent groups detected yet. Slide matching cards next to each other or tap ⚡ Auto-Arrange.';
       }
+      renderAll(null);
     }
   }
 
@@ -11438,18 +11535,305 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }).map(g => g.cards);
   }
 
-  function autoGroupFullHand(showNotification = true) {
-    if (!declarationMode) declarationMode = true;
-    lastDeclDragNotice = null;
-    declarationGroups = [];
-    declarationSelectedIds.clear();
-    guidedCardIds.clear();
-    guideMeState = null;
-    lastDeclSelectedCardId = null;
+  function detectContiguousMeld(slice) {
+    if (!Array.isArray(slice) || slice.length < 3) return null;
+    const r = getActiveRules();
+    if (declarationPure(slice)) {
+      let shortLabel = `💎 Pure (${slice.length})`;
+      let typeLabel = `Pure Group (${slice.length})`;
+      if (declarationIsMarriage(slice) && r.allowMarriageAsPure !== false) {
+        shortLabel = '💍 Marriage';
+        typeLabel = `Marriage Pure Group (${r.marriagePts} pts)`;
+      } else if (declarationIsThreePoochies(slice) && r.allow3PoochiesAsPure !== false) {
+        shortLabel = '🃏 3 Poochies';
+        typeLabel = '3 Poochies (Tunella)';
+      } else if (declarationIsTunella(slice)) {
+        shortLabel = `🎯 Tunella`;
+        typeLabel = `Tunella (${slice[0].rank}${slice[0].suit} x3)`;
+      }
+      return { type: 'PURE_SEQUENCE', typeLabel, shortLabel, cards: slice };
+    }
+    if (declarationSequence(slice)) {
+      const allWilds = slice.every(declarationIsWild);
+      return {
+        type: 'SEQUENCE',
+        typeLabel: allWilds ? `Joker Group (${slice.length} Jokers)` : `Joker Group (${slice.length})`,
+        shortLabel: allWilds ? `🃏 ${slice.length} Jokers` : `🃏 Joker Seq`,
+        cards: slice
+      };
+    }
+    if (declarationSet(slice)) {
+      return {
+        type: 'SET',
+        typeLabel: `Set (${slice.length})`,
+        shortLabel: `👑 Set (${slice.length})`,
+        cards: slice
+      };
+    }
+    return null;
+  }
 
+  function solveStandContiguousDP(stand, mode, excludeCardId = null, splitAfterIds = null) {
+    const cards = Array.isArray(stand) ? stand.filter(Boolean) : [];
+    const n = cards.length;
+    if (n === 0) {
+      return { segments: [], groups: [], pureCount: 0, exemptPts: 0, unmatchedDeadwood: 0, groupedCount: 0, groupCount: 0 };
+    }
+    const r = getActiveRules();
+    const isBetterScore = (a, b) => {
+      if (mode === 'PROTECT_UNDER_MIN_PURE') {
+        if (a.exemptPts !== b.exemptPts) return a.exemptPts > b.exemptPts;
+        if (a.pureCount !== b.pureCount) return a.pureCount > b.pureCount;
+        if (a.unmatchedDeadwood !== b.unmatchedDeadwood) return a.unmatchedDeadwood < b.unmatchedDeadwood;
+        if (a.groupedCount !== b.groupedCount) return a.groupedCount > b.groupedCount;
+        return a.groupCount < b.groupCount;
+      }
+      if (mode === 'COMPACT_GROUPING') {
+        if (a.unmatchedDeadwood !== b.unmatchedDeadwood) return a.unmatchedDeadwood < b.unmatchedDeadwood;
+        if (a.pureCount !== b.pureCount) return a.pureCount > b.pureCount;
+        if (a.groupedCount !== b.groupedCount) return a.groupedCount > b.groupedCount;
+        return a.groupCount < b.groupCount;
+      }
+      if (mode === 'COMPACT_DECLARE') {
+        if (a.unmatchedDeadwood !== b.unmatchedDeadwood) return a.unmatchedDeadwood < b.unmatchedDeadwood;
+        if (a.groupedCount !== b.groupedCount) return a.groupedCount > b.groupedCount;
+        if (a.pureCount !== b.pureCount) return a.pureCount > b.pureCount;
+        return a.groupCount < b.groupCount;
+      }
+      // Default MAX_PURE: maximize pureCount first, then minimize deadwood, then maximize grouped cards
+      if (a.pureCount !== b.pureCount) return a.pureCount > b.pureCount;
+      if (a.unmatchedDeadwood !== b.unmatchedDeadwood) return a.unmatchedDeadwood < b.unmatchedDeadwood;
+      if (a.groupedCount !== b.groupedCount) return a.groupedCount > b.groupedCount;
+      return a.groupCount < b.groupCount;
+    };
+
+    const dp = Array.from({ length: n + 1 }, () => null);
+    dp[0] = { pureCount: 0, exemptPts: 0, unmatchedDeadwood: 0, groupedCount: 0, groupCount: 0, prev: -1, group: null };
+
+    for (let i = 0; i < n; i++) {
+      const cur = dp[i];
+      if (!cur) continue;
+      // Option 1: leave card[i] ungrouped
+      const cardPts = cardDeadwoodVal(cards[i]);
+      const skipCand = {
+        pureCount: cur.pureCount,
+        exemptPts: cur.exemptPts,
+        unmatchedDeadwood: cur.unmatchedDeadwood + cardPts,
+        groupedCount: cur.groupedCount,
+        groupCount: cur.groupCount,
+        prev: i,
+        group: null
+      };
+      if (!dp[i + 1] || isBetterScore(skipCand, dp[i + 1])) {
+        dp[i + 1] = skipCand;
+      }
+
+      if (excludeCardId && cards[i].id === excludeCardId) continue;
+
+      // Option 2: form a contiguous group [i .. j)
+      for (let j = i + 3; j <= n; j++) {
+        // Check excludeCardId and manual split boundaries inside [i .. j)
+        let blocked = false;
+        for (let k = i; k < j; k++) {
+          if (excludeCardId && cards[k].id === excludeCardId) { blocked = true; break; }
+          if (k < j - 1 && splitAfterIds && splitAfterIds.has(cards[k].id)) { blocked = true; break; }
+        }
+        if (blocked) break;
+
+        const slice = cards.slice(i, j);
+        const meld = detectContiguousMeld(slice);
+        if (!meld) continue;
+
+        const isPure = meld.type === 'PURE_SEQUENCE';
+        const isTun = declarationIsTunella(slice);
+        const slicePts = slice.reduce((sum, c) => sum + cardDeadwoodVal(c), 0);
+        const isExempt = (isPure && (!r.count3CardPureAsDeadwood || slice.length >= 4)) || isTun;
+
+        const takeCand = {
+          pureCount: cur.pureCount + (isPure ? 1 : 0),
+          exemptPts: cur.exemptPts + (isExempt ? slicePts : 0),
+          unmatchedDeadwood: cur.unmatchedDeadwood,
+          groupedCount: cur.groupedCount + slice.length,
+          groupCount: cur.groupCount + 1,
+          prev: i,
+          group: meld
+        };
+        if (!dp[j] || isBetterScore(takeCand, dp[j])) {
+          dp[j] = takeCand;
+        }
+      }
+    }
+
+    // Reconstruct left-to-right segments
+    const segments = [];
+    const groups = [];
+    let pos = n;
+    while (pos > 0) {
+      const node = dp[pos];
+      if (!node || node.prev < 0) break;
+      if (node.group) {
+        segments.push({ kind: 'GROUP', group: node.group });
+        groups.push(node.group);
+      } else {
+        segments.push({ kind: 'LOOSE', card: cards[pos - 1] });
+      }
+      pos = node.prev;
+    }
+    segments.reverse();
+    groups.reverse();
+
+    const end = dp[n];
+    return {
+      segments,
+      groups,
+      pureCount: end.pureCount,
+      exemptPts: end.exemptPts,
+      unmatchedDeadwood: end.unmatchedDeadwood,
+      groupedCount: end.groupedCount,
+      groupCount: end.groupCount
+    };
+  }
+
+  function solveAllStandsInPlace(stands, isGroupingPhase, excludeCardId = null, splitAfterIds = null) {
+    const r = getActiveRules();
+    const reqPure = r.minPureSequences || 3;
+    const maxPureSols = stands.map(st => solveStandContiguousDP(st, 'MAX_PURE', excludeCardId, splitAfterIds));
+    const maxPureTotal = maxPureSols.reduce((s, sol) => s + sol.pureCount, 0);
+
+    let chosenSols;
+    if (maxPureTotal < reqPure) {
+      // Cannot reach minPureSequences: maximize 4+ Pure Runs and Tunellas to save deadwood
+      chosenSols = stands.map(st => solveStandContiguousDP(st, 'PROTECT_UNDER_MIN_PURE', excludeCardId, splitAfterIds));
+    } else {
+      // Can reach minPureSequences: prefer compact layout (e.g., keep 6-card run intact) as long as pure >= reqPure
+      const compactMode = isGroupingPhase ? 'COMPACT_GROUPING' : 'COMPACT_DECLARE';
+      const compactSols = stands.map(st => solveStandContiguousDP(st, compactMode, excludeCardId, splitAfterIds));
+      const compactPureTotal = compactSols.reduce((s, sol) => s + sol.pureCount, 0);
+      if (compactPureTotal >= reqPure) {
+        chosenSols = compactSols;
+      } else {
+        // Hybrid: start from compact and upgrade only the fewest stands to MAX_PURE needed to hit reqPure
+        chosenSols = [...compactSols];
+        let curPure = compactPureTotal;
+        const deltas = stands.map((_, idx) => ({
+          idx,
+          gain: maxPureSols[idx].pureCount - compactSols[idx].pureCount
+        })).filter(d => d.gain > 0).sort((a, b) => b.gain - a.gain);
+        for (const d of deltas) {
+          if (curPure >= reqPure) break;
+          chosenSols[d.idx] = maxPureSols[d.idx];
+          curPure += d.gain;
+        }
+      }
+    }
+
+    const standSegments = chosenSols.map(sol => sol.segments);
+    const groups = chosenSols.flatMap(sol => sol.groups);
+    const ungroupedCards = chosenSols.flatMap(sol => sol.segments.filter(seg => seg.kind === 'LOOSE').map(seg => seg.card));
+    return {
+      standSegments,
+      groups,
+      ungroupedCards,
+      pureCount: chosenSols.reduce((s, sol) => s + sol.pureCount, 0),
+      groupedCount: chosenSols.reduce((s, sol) => s + sol.groupedCount, 0)
+    };
+  }
+
+  function computeInPlaceStandGrouping(stands, options = {}) {
+    const isGroupingPhase = Boolean(options.isGroupingPhase);
+    const safeStands = Array.isArray(stands) ? stands : [];
+    const allCards = safeStands.flat().filter(Boolean);
+    const r = getActiveRules();
+    const handSize = r.cardsPerPlayer || 21;
+    const reqPure = r.minPureSequences || 3;
+    const splitSet = declarationSplitAfterIds;
+
+    // Validate pinned finish card still exists in hand (only applicable during Declarer drawn show)
+    let pinnedFinishId = (!isGroupingPhase && allCards.length >= handSize + 1 && declarationFinishCardId && allCards.some(c => c.id === declarationFinishCardId))
+      ? declarationFinishCardId
+      : null;
+    if (!pinnedFinishId && declarationFinishCardId) {
+      declarationFinishCardId = null;
+    }
+
+    let res = solveAllStandsInPlace(safeStands, isGroupingPhase, pinnedFinishId, splitSet);
+    let resolvedFinishCardId = pinnedFinishId;
+
+    if (!isGroupingPhase && allCards.length >= handSize + 1) {
+      if (pinnedFinishId) {
+        resolvedFinishCardId = pinnedFinishId;
+      } else if (res.ungroupedCards.length === 1) {
+        resolvedFinishCardId = res.ungroupedCards[0].id;
+      } else if (res.ungroupedCards.length === 0 && res.groupedCount === allCards.length) {
+        // All 22 cards grouped cleanly — auto-pick the best 1 card to leave lowered as Finish Discard,
+        // maximizing remaining Honors (never discarding an honors card if a non-honors card works!).
+        let bestCandidate = null;
+        for (const cand of allCards) {
+          const testRes = solveAllStandsInPlace(safeStands, false, cand.id, splitSet);
+          if (testRes.groupedCount === handSize && testRes.pureCount >= reqPure && testRes.ungroupedCards.length === 1) {
+            const remHonors = calculateLocalMaal(allCards.filter(c => c.id !== cand.id))?.total || 0;
+            const isWild = declarationIsWild(cand) ? 1 : 0;
+            const faceVal = cardDeadwoodVal(cand);
+            const score = { remHonors, negWild: -isWild, negFace: -faceVal };
+            if (
+              !bestCandidate ||
+              score.remHonors > bestCandidate.score.remHonors ||
+              (score.remHonors === bestCandidate.score.remHonors && score.negWild > bestCandidate.score.negWild) ||
+              (score.remHonors === bestCandidate.score.remHonors && score.negWild === bestCandidate.score.negWild && score.negFace > bestCandidate.score.negFace)
+            ) {
+              bestCandidate = { card: cand, res: testRes, score };
+            }
+          }
+        }
+        if (bestCandidate) {
+          res = bestCandidate.res;
+          resolvedFinishCardId = bestCandidate.card.id;
+        }
+      } else {
+        // Check if 3 Tunellas or Drawn Doubles instant show is ready; if so, pick a safe non-honors finish card
+        const tInfo = countTunellas(allCards);
+        const dInfo = countDoubles(allCards);
+        const isDrawn3Tun = r.allow3TunellasShow && tInfo.count >= 3;
+        const isDrawnDbl = r.allowDoublesShow && dInfo.count >= r.drawnDoublesForShow;
+        if (isDrawn3Tun || isDrawnDbl) {
+          const tunIds = new Set(tInfo.tunellas.slice(0, 3).flat().map(c => c.id));
+          const dblIds = new Set(dInfo.pairs.slice(0, r.drawnDoublesForShow).flat().map(c => c.id));
+          const pool = res.ungroupedCards.length > 0 ? res.ungroupedCards : allCards;
+          const safeCandidates = pool.filter(c => (!isDrawn3Tun || !tunIds.has(c.id)) && (!isDrawnDbl || !dblIds.has(c.id)));
+          const pickFrom = safeCandidates.length > 0 ? safeCandidates : pool;
+          // Prefer dropping a card that keeps maximum honors
+          let bestPick = pickFrom[0];
+          let bestHonors = -1;
+          for (const c of pickFrom) {
+            const h = calculateLocalMaal(allCards.filter(x => x.id !== c.id))?.total || 0;
+            if (h > bestHonors || (h === bestHonors && !declarationIsWild(c) && declarationIsWild(bestPick))) {
+              bestHonors = h;
+              bestPick = c;
+            }
+          }
+          if (bestPick) resolvedFinishCardId = bestPick.id;
+        }
+      }
+    }
+
+    return {
+      ...res,
+      finishCardId: resolvedFinishCardId
+    };
+  }
+
+  function syncInPlaceGroupingState(isGroupingPhase = (roomState?.status === 'GROUPING')) {
+    ensureUserStandsSyncedWithHand();
+    const res = computeInPlaceStandGrouping(userStands, { isGroupingPhase });
+    lastInPlaceGroupingResult = res;
+    declarationGroups = res.groups;
+    return res;
+  }
+
+  function computeOptimalGroupsForHand(poolCards) {
     const usedCardIds = new Set();
     const newGroups = [];
-    const pool = Array.isArray(myHand) ? [...myHand] : [];
+    const pool = Array.isArray(poolCards) ? poolCards.filter(Boolean) : [];
     const getAvailable = () => pool.filter(c => c && !usedCardIds.has(c.id));
     const rRule = getActiveRules();
     const cut = roomState?.cutCard;
@@ -11628,7 +12012,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 4c. Remaining Tunellas (e.g., unused Joker/Paplu/Taplu Tunellas not needed by incomplete Joker Runs/Sets)
+    // 4c. Remaining Tunellas
     {
       const remTun = countTunellas(getAvailable());
       for (const trio of remTun.tunellas) {
@@ -11644,7 +12028,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 4d. 3-Joker Sequences (any 3 remaining Jokers form a legal Joker Sequence)
+    // 4d. 3-Joker Sequences
     {
       let searchingAllJokerSeq = true;
       while (searchingAllJokerSeq) {
@@ -11663,7 +12047,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 5. Extend consecutive Pure Runs strictly with remaining NON-WILD cards (never swallow a joker)
+    // 5. Extend consecutive Pure Runs strictly with remaining NON-WILD cards
     for (const g of newGroups) {
       if (g.type !== 'PURE_SEQUENCE' || g._kind !== 'RUN') continue;
       const run = g.cards;
@@ -11711,7 +12095,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       }
     }
 
-    // 6. Strict deduplication invariant: ensure no card ID appears in multiple groups
+    // 6. Strict deduplication invariant
     const verifiedGroups = [];
     const claimedIds = new Set();
     for (const g of newGroups) {
@@ -11721,29 +12105,191 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         verifiedGroups.push(cleanG);
       }
     }
-
-    declarationGroups = verifiedGroups;
-    renderAll(null);
-
-    const pureCount = verifiedGroups.filter(g => g.type === 'PURE_SEQUENCE').length;
-    const totalGrouped = verifiedGroups.flatMap(g => g.cards).length;
-    const handSize = getConfiguredHandSize();
-    if (showNotification) {
-      if (verifiedGroups.length > 0) {
-        if (initialTunInfo.count >= 3) {
-          window.alert(`🎉 3 Tunellas detected (${initialTunInfo.count} Tunellas)! Your instant 3-Tunellas Show is grouped and ready to declare!`);
-        } else if (totalGrouped === handSize && pureCount >= rRule.minPureSequences) {
-          window.alert(`🎉 Perfect! Auto-grouped ${verifiedGroups.length} valid groups (${pureCount} Pure Groups). All ${handSize} cards are grouped and ready!`);
-        } else {
-          window.alert(`Auto-detected ${verifiedGroups.length} valid group(s) with ${totalGrouped} cards (${pureCount} Pure Groups). Use Guide Me or tap cards below to adjust.`);
-        }
-      } else {
-        window.alert('Could not find enough matching cards to auto-group. Tap cards below to manually form groups.');
-      }
-    }
+    const remaining = pool.filter(c => !claimedIds.has(c.id));
+    return {
+      groups: verifiedGroups,
+      remaining,
+      pureCount: verifiedGroups.filter(g => g.type === 'PURE_SEQUENCE').length,
+      groupedCount: claimedIds.size,
+      initialTunCount: initialTunInfo.count
+    };
   }
 
+  function getAutoArrangeComparison(inPlaceRes, isGroupingPhase) {
+    const r = getActiveRules();
+    const handSize = r.cardsPerPlayer || 21;
+    const reqPure = r.minPureSequences || 3;
+    const pool = Array.isArray(myHand) ? myHand.filter(Boolean) : [];
+    const autoRes = computeOptimalGroupsForHand(pool);
+
+    if (isGroupingPhase) {
+      const curDw = calculateCurrentDeadwood(inPlaceRes.groups, pool).points;
+      const autoDw = calculateCurrentDeadwood(autoRes.groups, pool).points;
+      return {
+        ptsSaved: Math.max(0, curDw - autoDw),
+        autoDeadwood: autoDw,
+        extraPure: Math.max(0, autoRes.pureCount - inPlaceRes.pureCount),
+        autoPure: autoRes.pureCount,
+        extraGrouped: Math.max(0, autoRes.groupedCount - inPlaceRes.groupedCount),
+        autoIsShowReady: false
+      };
+    }
+
+    const autoIsShowReady = (autoRes.groupedCount === handSize && autoRes.pureCount >= reqPure && autoRes.remaining.length === 1)
+      || (autoRes.groupedCount === pool.length && pool.length === handSize + 1 && autoRes.pureCount >= reqPure);
+    return {
+      ptsSaved: 0,
+      autoDeadwood: 0,
+      extraPure: Math.max(0, autoRes.pureCount - inPlaceRes.pureCount),
+      autoPure: autoRes.pureCount,
+      extraGrouped: Math.max(0, Math.min(handSize, autoRes.groupedCount) - Math.min(handSize, inPlaceRes.groupedCount)),
+      autoIsShowReady
+    };
+  }
+
+  function autoGroupFullHand(showNotification = false) {
+    if (!declarationMode) declarationMode = true;
+    ensureUserStandsSyncedWithHand();
+    const isGroupingPhase = roomState?.status === 'GROUPING';
+    const rRule = getActiveRules();
+    const handSize = rRule.cardsPerPlayer || 21;
+    const reqPure = rRule.minPureSequences || 3;
+    const pool = Array.isArray(myHand) ? myHand.filter(Boolean) : [];
+    if (pool.length === 0) return;
+
+    // Save snapshot once before auto-arranging so user can 1-tap Undo back to their original stands
+    if (!preAutoArrangeStandsSnapshot) {
+      preAutoArrangeStandsSnapshot = userStands.map(st => (st || []).map(c => c.id));
+    }
+
+    let bestOpt = computeOptimalGroupsForHand(pool);
+    let bestFinishCard = null;
+
+    // For Declarer holding 22 cards: if all 22 grouped or not yet a clean 21+1 show, try excluding 1 card
+    // preferring the valid 21-card show that maximizes remaining Honors!
+    if (!isGroupingPhase && pool.length === handSize + 1) {
+      if (bestOpt.remaining.length === 1 && bestOpt.groupedCount === handSize && bestOpt.pureCount >= reqPure) {
+        bestFinishCard = bestOpt.remaining[0];
+      } else {
+        let bestDeclCandidate = null;
+        for (const cand of pool) {
+          const subPool = pool.filter(c => c.id !== cand.id);
+          const testOpt = computeOptimalGroupsForHand(subPool);
+          if (testOpt.groupedCount === handSize && testOpt.pureCount >= reqPure) {
+            const remHonors = calculateLocalMaal(subPool)?.total || 0;
+            const isWild = declarationIsWild(cand) ? 1 : 0;
+            const faceVal = cardDeadwoodVal(cand);
+            const score = { remHonors, negWild: -isWild, negFace: -faceVal };
+            if (
+              !bestDeclCandidate ||
+              score.remHonors > bestDeclCandidate.score.remHonors ||
+              (score.remHonors === bestDeclCandidate.score.remHonors && score.negWild > bestDeclCandidate.score.negWild) ||
+              (score.remHonors === bestDeclCandidate.score.remHonors && score.negWild === bestDeclCandidate.score.negWild && score.negFace > bestDeclCandidate.score.negFace)
+            ) {
+              bestDeclCandidate = { opt: testOpt, finishCard: cand, score };
+            }
+          }
+        }
+        if (bestDeclCandidate) {
+          bestOpt = { ...bestDeclCandidate.opt, remaining: [bestDeclCandidate.finishCard] };
+          bestFinishCard = bestDeclCandidate.finishCard;
+        }
+      }
+    }
+
+    // Place optimal groups contiguously back onto the player's stands in place!
+    const targetStandCount = Math.max(3, Math.min(userStands.length || 3, 6));
+    const newStands = Array.from({ length: targetStandCount }, () => []);
+    const newSplits = new Set();
+
+    // Distribute groups evenly across stands, adding split markers between distinct groups on the same stand
+    bestOpt.groups.forEach((g, idx) => {
+      const sIdx = idx % targetStandCount;
+      if (newStands[sIdx].length > 0) {
+        const lastCard = newStands[sIdx][newStands[sIdx].length - 1];
+        if (lastCard && lastCard.id) newSplits.add(lastCard.id);
+      }
+      newStands[sIdx].push(...g.cards);
+    });
+
+    // Place remaining ungrouped / finish cards cleanly at the end of the last stand (with split boundary)
+    if (bestOpt.remaining.length > 0) {
+      const lastStandIdx = targetStandCount - 1;
+      if (newStands[lastStandIdx].length > 0) {
+        const lastCard = newStands[lastStandIdx][newStands[lastStandIdx].length - 1];
+        if (lastCard && lastCard.id) newSplits.add(lastCard.id);
+      }
+      newStands[lastStandIdx].push(...bestOpt.remaining);
+    }
+
+    userStands = newStands;
+    myHand = userStands.flat();
+    declarationSplitAfterIds = newSplits;
+    declarationFinishCardId = bestFinishCard ? bestFinishCard.id : null;
+    selectedCardId = null;
+    lastDeclDragNotice = bestOpt.groups.length > 0
+      ? `Auto-arranged ${bestOpt.groups.length} group(s) onto your stands (${bestOpt.pureCount} Pure). Tap Undo Arrange to restore.`
+      : 'No additional groups found to auto-arrange.';
+    saveStandsToStorage();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+  }
+
+  function undoAutoArrangeStands() {
+    if (!preAutoArrangeStandsSnapshot || !Array.isArray(preAutoArrangeStandsSnapshot)) return;
+    const cardMap = new Map((myHand || []).map(c => [c.id, c]));
+    const restored = [];
+    const placedIds = new Set();
+    for (const idList of preAutoArrangeStandsSnapshot) {
+      const st = [];
+      for (const id of (idList || [])) {
+        const c = cardMap.get(id);
+        if (c && !placedIds.has(c.id)) {
+          st.push(c);
+          placedIds.add(c.id);
+        }
+      }
+      restored.push(st);
+    }
+    const missing = (myHand || []).filter(c => c && !placedIds.has(c.id));
+    if (restored.length === 0) restored.push([]);
+    if (missing.length > 0) restored[0].push(...missing);
+    userStands = restored;
+    myHand = userStands.flat();
+    preAutoArrangeStandsSnapshot = null;
+    declarationSplitAfterIds = new Set();
+    declarationFinishCardId = null;
+    lastDeclDragNotice = 'Restored your previous stand layout.';
+    saveStandsToStorage();
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+  }
+  window.undoAutoArrangeStands = undoAutoArrangeStands;
+
+  function toggleDeclarationFinishCard(cardId) {
+    if (!declarationMode || roomState?.status === 'GROUPING' || !cardId) return;
+    declarationFinishCardId = (declarationFinishCardId === cardId) ? null : cardId;
+    lastDeclDragNotice = null;
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+  }
+  window.toggleDeclarationFinishCard = toggleDeclarationFinishCard;
+
+  function toggleDeclarationSplitAfter(cardId) {
+    if (!declarationMode || !cardId) return;
+    if (declarationSplitAfterIds.has(cardId)) {
+      declarationSplitAfterIds.delete(cardId);
+    } else {
+      declarationSplitAfterIds.add(cardId);
+    }
+    lastDeclDragNotice = null;
+    try { soundSystem?.playCardSlide?.(); } catch (_) {}
+    renderAll(null);
+  }
+  window.toggleDeclarationSplitAfter = toggleDeclarationSplitAfter;
+
   function submitGroupingMeld(skipConfirm = false) {
+    syncInPlaceGroupingState(true);
     if (!skipConfirm) {
       const r = getActiveRules();
       const deadwoodCalc = calculateCurrentDeadwood(declarationGroups, myHand);
@@ -11753,13 +12299,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       showConfirmModal({
         icon: hasRequiredPure ? '✅' : '⚠️',
         title: hasRequiredPure ? 'Ready to Submit Groups?' : 'Submit Groups with Deadwood?',
-        badgeText: hasRequiredPure ? `${pureCount} Pure Groups (Protected)` : `${pureCount}/${r.minPureSequences} Pure Groups`,
-        badgeClass: hasRequiredPure ? 'success' : 'danger',
+        badgeText: hasRequiredPure ? `${pureCount} Pure Groups (${deadwoodCalc.points} pts)` : `${pureCount}/${r.minPureSequences} Pure Groups`,
+        badgeClass: (hasRequiredPure && deadwoodCalc.points === 0) ? 'success' : 'danger',
         message: hasRequiredPure
-          ? `You have formed <strong>${declarationGroups.length} groups</strong> with <strong>${pureCount} Pure Groups</strong>. All your groups are protected (<strong>0 deadwood pts</strong>).<br><br>Ready to submit your groups and view round results?`
-          : `You currently have <strong>${pureCount} / ${r.minPureSequences} Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to form more groups first?`,
+          ? `You have formed <strong>${declarationGroups.length} groups</strong> with <strong>${pureCount} Pure Groups</strong>. All your groups are protected.<br>Estimated Deadwood: <strong>${deadwoodCalc.points} pts</strong>.<br><br>Ready to submit your groups and view round results?`
+          : `You currently have <strong>${pureCount} / ${r.minPureSequences} Pure Groups</strong>.<br>Estimated Deadwood: <strong style="color:#fca5a5;">${deadwoodCalc.points} pts</strong> (${deadwoodCalc.deadwoodCount} deadwood card(s), Jokers exempt).<br><br>Are you sure you are ready to submit now, or would you like to adjust your stands first?`,
         actionText: 'Submit Groups',
-        actionClass: hasRequiredPure ? 'primary' : 'danger',
+        actionClass: (hasRequiredPure && deadwoodCalc.points === 0) ? 'primary' : 'danger',
         onConfirm: () => submitGroupingMeld(true)
       });
       return;
@@ -11778,9 +12324,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         meP.declaredGroups = declarationGroups;
       }
       declarationMode = false;
-      declarationSelectedIds.clear();
-      guidedCardIds.clear();
-      guideMeState = null;
+      resetDeclarationAuxState();
+      selectedCardId = null;
       isDemoGroupingWait = true;
 
       const waitModal = document.getElementById('groupingWaitModal');
@@ -11828,10 +12373,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       ws.send(JSON.stringify({ type: 'SUBMIT_GROUPS', groups }));
     }
     declarationMode = false;
-    declarationSelectedIds.clear();
-    guidedCardIds.clear();
-    guideMeState = null;
-    lastDeclSelectedCardId = null;
+    resetDeclarationAuxState();
+    selectedCardId = null;
     renderAll(null);
   }
 
@@ -11851,9 +12394,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     hasInitializedGroupingPhase = false;
     declarationMode = true;
     declarationGroups = [];
-    declarationSelectedIds.clear();
-    guidedCardIds.clear();
-    guideMeState = null;
+    resetDeclarationAuxState();
+    selectedCardId = null;
       soundSystem.playDeclarationAccepted();
       renderAll(calculateLocalMaal());
       startGroupingCountdownTracker();
@@ -12159,11 +12701,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function cancelDeclaration() {
     declarationMode = false;
     declarationGroups = [];
-    declarationSelectedIds.clear();
-    guidedCardIds.clear();
-    guideMeState = null;
-    lastDeclSelectedCardId = null;
-    lastDeclDragNotice = null;
+    resetDeclarationAuxState();
+    selectedCardId = null;
     forfeitConfirming = false;
     renderAll(null);
   }
@@ -12189,9 +12728,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const fPen = getActiveRules().forfeitPenalty;
     declarationMode = false;
     declarationGroups = [];
-    declarationSelectedIds.clear();
-    guidedCardIds.clear();
-    guideMeState = null;
+    resetDeclarationAuxState();
+    selectedCardId = null;
 
     const myId = isDemo ? 'p_demo' : getMyPlayerId();
     const meP = roomState?.players?.find(p => p.id === myId);
@@ -12249,33 +12787,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       lastTouchSelectTime = now;
       lastTouchActionTime = now;
     }
-    if (declarationMode) {
-      // Check if this card is currently inside a declaration group
-      const grpIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === cardId));
-      if (grpIdx !== -1) {
-        // Tapping a grouped card releases it back to "Cards to Group" and auto-ungroups if invalid
-        const grp = declarationGroups[grpIdx];
-        grp.cards = grp.cards.filter(c => c && c.id !== cardId);
-        const disbandedCount = reconcileDeclarationGroups();
-        lastDeclDragNotice = disbandedCount > 0
-          ? 'Group automatically ungrouped — remaining cards did not form a valid group.'
-          : null;
-        declarationSelectedIds.delete(cardId);
-        guidedCardIds.clear();
-        guideMeState = null;
-        lastDeclSelectedCardId = cardId;
-        renderAll(null);
-        return;
-      }
-      lastDeclDragNotice = null;
-      guidedCardIds.clear();
-      guideMeState = null;
-      lastDeclSelectedCardId = cardId;
-      if (declarationSelectedIds.has(cardId)) declarationSelectedIds.delete(cardId);
-      else declarationSelectedIds.add(cardId);
-      renderAll(null);
-      return;
-    }
     selectedCardId = selectedCardId === cardId ? null : cardId;
     if (selectedCardId && typeof onGuidedPracticeAction === 'function') {
       onGuidedPracticeAction('SELECT');
@@ -12293,7 +12804,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const standsLabel = document.getElementById('reorderStandsLabel');
     if (!reorderBox) return;
 
-    if (selectedCardId && !declarationMode) {
+    if (selectedCardId) {
       const allCards = [...(userStands ? userStands.flat() : []), ...(myHand || [])];
       const card = allCards.find(c => c && c.id === selectedCardId);
       reorderBox.classList.add('is-active');
@@ -12334,14 +12845,32 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           }
         }
 
-        // When it is a player's turn to draw, the "Discard card" buttons change to "Draw card"
-        const isMyTurn = isCurrentPlayerMe();
-        const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= (getConfiguredHandSize() + 1);
-        const canDraw = canPlayerDraw();
-        if (canDiscard) {
-          html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); discardSelected()" onclick="event.preventDefault(); event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
-        } else if (canDraw) {
-          html += `<button type="button" class="tool-btn stand-move-btn stand-draw-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); drawStock()" onclick="event.preventDefault(); event.stopPropagation(); drawStock()" title="Draw a card from the stock deck">📥 Draw Card</button>`;
+        if (declarationMode) {
+          const isGroupingPhase = roomState?.status === 'GROUPING';
+          const needsFinishCard = !isGroupingPhase && getHandCount() >= (getConfiguredHandSize() + 1);
+          if (needsFinishCard) {
+            const isPinnedFinish = declarationFinishCardId === selectedCardId;
+            html += `<button type="button" class="tool-btn stand-move-btn stand-finish-quick-btn${isPinnedFinish ? ' is-active' : ''}" ontouchend="event.preventDefault(); event.stopPropagation(); toggleDeclarationFinishCard('${selectedCardId}')" onclick="event.preventDefault(); event.stopPropagation(); toggleDeclarationFinishCard('${selectedCardId}')" title="${isPinnedFinish ? 'Unpin this card as your finish discard' : 'Pin this card as your final discard (0 Honors)'}">${isPinnedFinish ? '↩ Unpin Finish' : '🎴 Set Finish Card'}</button>`;
+          }
+
+          const hasManualSplit = declarationSplitAfterIds.has(selectedCardId);
+          const grpContaining = (declarationGroups || []).find(g => Array.isArray(g.cards) && g.cards.some(c => c && c.id === selectedCardId));
+          const canSplitAfter = Boolean(grpContaining && grpContaining.cards[grpContaining.cards.length - 1]?.id !== selectedCardId);
+          if (hasManualSplit) {
+            html += `<button type="button" class="tool-btn stand-move-btn stand-split-quick-btn is-active" ontouchend="event.preventDefault(); event.stopPropagation(); toggleDeclarationSplitAfter('${selectedCardId}')" onclick="event.preventDefault(); event.stopPropagation(); toggleDeclarationSplitAfter('${selectedCardId}')" title="Remove manual group split after this card">🔗 Rejoin</button>`;
+          } else if (canSplitAfter) {
+            html += `<button type="button" class="tool-btn stand-move-btn stand-split-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); toggleDeclarationSplitAfter('${selectedCardId}')" onclick="event.preventDefault(); event.stopPropagation(); toggleDeclarationSplitAfter('${selectedCardId}')" title="Split this raised group right after this card">✂ Split</button>`;
+          }
+        } else {
+          // When it is a player's turn to draw, the "Discard card" buttons change to "Draw card"
+          const isMyTurn = isCurrentPlayerMe();
+          const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= (getConfiguredHandSize() + 1);
+          const canDraw = canPlayerDraw();
+          if (canDiscard) {
+            html += `<button type="button" class="tool-btn stand-move-btn stand-discard-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); discardSelected()" onclick="event.preventDefault(); event.stopPropagation(); discardSelected()" title="Discard this card">🗑 Discard Card</button>`;
+          } else if (canDraw) {
+            html += `<button type="button" class="tool-btn stand-move-btn stand-draw-quick-btn" ontouchend="event.preventDefault(); event.stopPropagation(); drawStock()" onclick="event.preventDefault(); event.stopPropagation(); drawStock()" title="Draw a card from the stock deck">📥 Draw Card</button>`;
+          }
         }
 
         optionsSpan.innerHTML = html;
@@ -12401,6 +12930,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const standSnap = captureStandSnapshot();
     const dragOrigin = getCardGlideOrigin(cardId);
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     // Maintain ordinal position in target stand
     const insertIdx = Math.min(cardIdx, userStands[targetStandIdx].length);
     userStands[targetStandIdx].splice(insertIdx, 0, card);
@@ -12440,6 +12970,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const standSnap = captureStandSnapshot();
     const dragOrigin = getCardGlideOrigin(cardId);
     const [card] = userStands[sourceStandIdx].splice(cardIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     userStands.push([card]);
     myHand = userStands.flat();
     saveStandsToStorage();
@@ -12469,6 +13000,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
 
     const standSnap = captureStandSnapshot();
     const [card] = targetStand.splice(cardIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     targetStand.splice(newIdx, 0, card);
     myHand = userStands.flat();
     saveStandsToStorage();
@@ -12491,6 +13023,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (!targetStand || cardIdx === 0) return;
     const standSnap = captureStandSnapshot();
     const [card] = targetStand.splice(cardIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     targetStand.unshift(card);
     myHand = userStands.flat();
     saveStandsToStorage();
@@ -12513,6 +13046,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (!targetStand || cardIdx === targetStand.length - 1) return;
     const standSnap = captureStandSnapshot();
     const [card] = targetStand.splice(cardIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     targetStand.push(card);
     myHand = userStands.flat();
     saveStandsToStorage();
@@ -12711,18 +13245,6 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const rect = targetEl ? targetEl.getBoundingClientRect() : null;
     const insertAfter = Boolean(rect && (e.clientX >= rect.left + rect.width / 2));
 
-    if (declarationMode) {
-      const targetGroupIdx = declarationGroups.findIndex(g => (g.cards || []).some(c => c && c.id === targetCardId));
-      const targetStandIdx = (targetGroupIdx === -1 && Array.isArray(userStands))
-        ? userStands.findIndex(s => (s || []).some(c => c && c.id === targetCardId))
-        : -1;
-      const movedId = draggedCardId;
-      draggedCardId = null;
-      moveDeclarationCard(movedId, targetGroupIdx, -1, targetCardId, insertAfter, targetStandIdx);
-      onCardDragEnd(e);
-      return;
-    }
-
     let sourceStand = null, targetStand = null;
     let fromIdx = -1, toIdx = -1;
 
@@ -12740,6 +13262,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     if (!sourceStand || !targetStand) return;
 
     const [card] = sourceStand.splice(fromIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     let insertIdx = targetStand.findIndex(c => c.id === targetCardId);
     if (insertAfter) insertIdx += 1;
     targetStand.splice(insertIdx, 0, card);
@@ -12845,103 +13368,17 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
       }
 
-      if (declarationMode) {
-        let targetGroupIdx = null; // -1 = ungrouped stand/tray, 0..N = declaration group
-        let targetStandIdx = -1;
-        const rackUnderPoint = elUnderPoint?.closest?.('.stand-rack');
-        if (rackUnderPoint && rackUnderPoint.id) {
-          if (rackUnderPoint.id === 'decl-ungrouped-rack') {
-            targetGroupIdx = -1;
-            targetStandIdx = -1;
-          } else {
-            const mUngroupedStand = rackUnderPoint.id.match(/^decl-ungrouped-rack-(\d+)$/);
-            const mGroup = rackUnderPoint.id.match(/^decl-group-rack-(\d+)$/);
-            if (mUngroupedStand) {
-              targetGroupIdx = -1;
-              targetStandIdx = parseInt(mUngroupedStand[1], 10);
-            } else if (mGroup) {
-              targetGroupIdx = parseInt(mGroup[1], 10);
-            }
+      // 1. Check Discard Pile (disabled while grouping/declaring so cards drop directly on stands)
+      if (!declarationMode) {
+        const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
+        if (discardEl) {
+          const dRect = discardEl.getBoundingClientRect();
+          if (x >= dRect.left - 25 && x <= dRect.right + 25 &&
+              y >= dRect.top - 25 && y <= dRect.bottom + 25) {
+            document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
+            touchCardState.dropTarget = { type: 'discard' };
+            return;
           }
-        }
-        if (targetGroupIdx === null) {
-          let bestDist = Infinity;
-          const candidateRacks = [
-            { idx: -1, standIdx: -1, el: document.getElementById('decl-ungrouped-rack') },
-            ...(Array.isArray(userStands) ? userStands.map((_, sIdx) => ({ idx: -1, standIdx: sIdx, el: document.getElementById(`decl-ungrouped-rack-${sIdx}`) })) : []),
-            ...declarationGroups.map((_, idx) => ({ idx, standIdx: -1, el: document.getElementById(`decl-group-rack-${idx}`) }))
-          ];
-          for (const item of candidateRacks) {
-            if (!item.el) continue;
-            const rect = item.el.getBoundingClientRect();
-            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-              targetGroupIdx = item.idx;
-              targetStandIdx = item.standIdx;
-              break;
-            }
-            const dx = Math.max(0, rect.left - x, x - rect.right);
-            const dy = Math.max(0, rect.top - y, y - rect.bottom);
-            const dist = Math.hypot(dx, dy);
-            if (dist < bestDist) {
-              bestDist = dist;
-              targetGroupIdx = item.idx;
-              targetStandIdx = item.standIdx;
-            }
-          }
-        }
-        if (targetGroupIdx !== null) {
-          const rackEl = getDeclRackEl(targetGroupIdx, targetStandIdx);
-          if (rackEl) rackEl.classList.add('stand-rack-drop-hover');
-
-          const gIds = new Set(declarationGroups.flatMap(g => (g.cards || []).map(c => c && c.id)));
-          const targetCards = targetGroupIdx === -1
-            ? (targetStandIdx >= 0 && Array.isArray(userStands) && userStands[targetStandIdx]
-                ? userStands[targetStandIdx].filter(c => c && !gIds.has(c.id))
-                : myHand.filter(c => c && !gIds.has(c.id)))
-            : (declarationGroups[targetGroupIdx]?.cards || []);
-          let insertIdx = targetCards.length;
-          let targetCardId = null;
-          let insertAfter = false;
-          for (let i = 0; i < targetCards.length; i++) {
-            const c = targetCards[i];
-            if (!c) continue;
-            const cEl = document.getElementById('card-' + c.id);
-            if (!cEl) continue;
-            const cRect = cEl.getBoundingClientRect();
-            const cCenter = cRect.left + cRect.width / 2;
-            if (x < cCenter) {
-              insertIdx = i;
-              targetCardId = c.id;
-              insertAfter = false;
-              if (c.id !== cardId) cEl.classList.add('drag-over-left');
-              break;
-            } else if (i === targetCards.length - 1) {
-              targetCardId = c.id;
-              insertAfter = true;
-              if (c.id !== cardId) cEl.classList.add('drag-over-right');
-            }
-          }
-          touchCardState.dropTarget = {
-            type: 'decl-group',
-            targetGroupIdx,
-            targetStandIdx,
-            insertIdx,
-            targetCardId,
-            insertAfter
-          };
-        }
-        return;
-      }
-
-      // 1. Check Discard Pile
-      const discardEl = document.getElementById('discardContainer') || document.querySelector('.discard-pile-wrapper');
-      if (discardEl) {
-        const dRect = discardEl.getBoundingClientRect();
-        if (x >= dRect.left - 25 && x <= dRect.right + 25 &&
-            y >= dRect.top - 25 && y <= dRect.bottom + 25) {
-          document.getElementById('discardContainer')?.classList.add('discard-drop-hover');
-          touchCardState.dropTarget = { type: 'discard' };
-          return;
         }
       }
 
@@ -13143,17 +13580,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
 
     if (dropTarget) {
-      if (dropTarget.type === 'decl-group' && declarationMode) {
-        lastTouchSelectTime = now;
-        lastTouchActionTime = now;
-        moveDeclarationCard(cardId, dropTarget.targetGroupIdx, dropTarget.insertIdx, dropTarget.targetCardId, dropTarget.insertAfter, dropTarget.targetStandIdx ?? -1);
-        touchCardState = null;
-        draggedCardId = null;
-        return;
-      }
-
-      // 1. Dropped on Discard Pile
-      if (dropTarget.type === 'discard') {
+      // 1. Dropped on Discard Pile (normal play only)
+      if (dropTarget.type === 'discard' && !declarationMode) {
         const isMyTurn = isCurrentPlayerMe();
         const canDiscard = isMyTurn && roomState?.turnStage === 'DISCARD' && getHandCount() >= (getConfiguredHandSize() + 1);
         if (canDiscard) {
@@ -13189,6 +13617,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
             const dragOrigin = touchDropOrigin || getCardGlideOrigin(cardId);
             let insertIdx = dropTarget.insertIdx;
             const [card] = userStands[sourceStandIdx].splice(fromIdx, 1);
+            if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
 
             if (sourceStandIdx === targetStandIdx) {
               // Reordered in the same stand
@@ -13644,6 +14073,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     const standSnap = captureStandSnapshot();
     const dragOrigin = getPointerGlideOrigin(e, draggedCardId);
     const [card] = sourceStand.splice(fromIdx, 1);
+    if (declarationMode && card?.id) declarationSplitAfterIds.delete(card.id);
     userStands[targetStandIdx].push(card);
     draggedCardId = null;
     selectedCardId = card.id;
@@ -13931,14 +14361,13 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         window.alert(`Please draw a card first. Declaration is made after drawing your ${formatOrdinal(drawnSize)} card (${handSize} cards grouped + 1 final discard)${r.allowDoublesShow ? `, unless you are dealt ${r.dealtDoublesForShow} doubles` : ''}${r.allow3TunellasShow ? ' or 3 Tunellas' : ''}.`);
         return;
       }
+      resetDeclarationAuxState();
       declarationMode = true;
       declarationGroups = [];
-      declarationSelectedIds.clear();
       selectedCardId = null;
       if (typeof onGuidedPracticeAction === 'function') onGuidedPracticeAction('DECLARE_OPEN');
-      // Auto-detect groups from existing user stands first if already formed cleanly
-      autoGroupFromStands(false);
-      // Preserve player's manual stands without silent reshuffling (player can click ⚡ Auto-Group if desired)
+      syncInPlaceGroupingState(false);
+      renderAll(null);
       setTimeout(() => {
         const dp = document.getElementById('declarationPanel');
         if (dp) dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -13957,12 +14386,14 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     }
     myHand = cleanHand;
 
+    const inPlaceRes = syncInPlaceGroupingState(false);
+
     const grouped = declarationGroups.flatMap(g => g.cards);
     const unique = new Set(grouped.map(c => c.id));
 
     // Verify no cards duplicated across groups
     if (unique.size !== grouped.length) {
-      window.alert('One or more cards were assigned to multiple groups. Please undo and re-form your groups cleanly.');
+      window.alert('One or more cards were assigned to multiple groups. Please adjust your stands and try again.');
       return;
     }
 
@@ -13981,18 +14412,34 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         return;
       }
     } else if (isDrawn3TunellasShow || isDoublesShow) {
-      // Drawn 3 Tunellas / Drawn Doubles instant show (22 cards: pick 1 safe final discard preserving the show)
-      if (remaining.length === 1) {
+      // Drawn 3 Tunellas / Drawn Doubles instant show (22 cards: pick 1 safe final discard preserving the show & max Honors)
+      const tunellaIds = new Set(tInfo.tunellas.slice(0, 3).flat().map(c => c.id));
+      const doubleIds = new Set(dInfo.pairs.slice(0, r.drawnDoublesForShow).flat().map(c => c.id));
+      const isSafeInstantDiscard = (c) => Boolean(c) &&
+        (!isDrawn3TunellasShow || !tunellaIds.has(c.id)) &&
+        (!isDoublesShow || !doubleIds.has(c.id));
+      const pinnedOrActiveFinish = inPlaceRes?.finishCardId
+        ? myHand.find(c => c && c.id === inPlaceRes.finishCardId)
+        : null;
+      if (pinnedOrActiveFinish && isSafeInstantDiscard(pinnedOrActiveFinish)) {
+        finalDiscardId = pinnedOrActiveFinish.id;
+        discardedCard = pinnedOrActiveFinish;
+      } else if (remaining.length === 1 && isSafeInstantDiscard(remaining[0])) {
         finalDiscardId = remaining[0].id;
         discardedCard = remaining[0];
       } else {
-        const tunellaIds = new Set(tInfo.tunellas.slice(0, 3).flat().map(c => c.id));
-        const doubleIds = new Set(dInfo.pairs.slice(0, r.drawnDoublesForShow).flat().map(c => c.id));
         const candidatePool = remaining.length > 0 ? remaining : myHand;
-        const safeDiscard = candidatePool.find(c =>
-          (!isDrawn3TunellasShow || !tunellaIds.has(c.id)) &&
-          (!isDoublesShow || !doubleIds.has(c.id))
-        ) || candidatePool[0];
+        const safePool = candidatePool.filter(isSafeInstantDiscard);
+        const pickFrom = safePool.length > 0 ? safePool : candidatePool;
+        let safeDiscard = pickFrom[0];
+        let bestHonors = -1;
+        for (const cand of pickFrom) {
+          const h = calculateLocalMaal(myHand.filter(c => c && c.id !== cand.id))?.total || 0;
+          if (h > bestHonors || (h === bestHonors && !declarationIsWild(cand) && declarationIsWild(safeDiscard))) {
+            bestHonors = h;
+            safeDiscard = cand;
+          }
+        }
         if (!safeDiscard) {
           window.alert('Unable to determine a final discard card for this declaration.');
           return;
@@ -14003,7 +14450,7 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     } else {
       // Normal declaration after drawing (drawnSize cards: handSize grouped + 1 final discard)
       if (remaining.length !== 1 || unique.size !== handSize) {
-        window.alert(`You have grouped ${unique.size}/${handSize} cards (${remaining.length} remaining). Please group ${handSize} cards; the 1 remaining card will automatically be your final discard.`);
+        window.alert(`You have grouped ${unique.size}/${handSize} cards (${remaining.length} remaining). Slide matching cards next to each other on your stands (or tap ⚡ Auto-Arrange) so ${handSize} cards are raised into groups and 1 card remains as your finish discard.`);
         return;
       }
       finalDiscardId = remaining[0].id;
@@ -14031,13 +14478,15 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
         }
       }
       declarationMode = false;
+      resetDeclarationAuxState();
       selectedCardId = null;
       isDemoGroupingWait = true;
       soundSystem.playDeclarationAccepted();
 
-      const winnerMaal = calculateLocalMaal() || {
-        total: 70,
-        details: { marriages: 1, marriagePts: 50, tiplus: 0, tipluPts: 0, poochies: 1, poochiePts: 20, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
+      // Strictly compute winner Honors from post-discard hand (finish card contributes 0 Honors)
+      const winnerMaal = calculateLocalMaal(myHand.filter(c => c && (!discardedCard || c.id !== discardedCard.id))) || {
+        total: 0,
+        details: { marriages: 0, marriagePts: 0, tiplus: 0, tipluPts: 0, poochies: 0, poochiePts: 0, paplus: 0, papluPts: 0, tuplus: 0, tupluPts: 0 }
       };
 
       const waitModal = document.getElementById('groupingWaitModal');
@@ -14188,7 +14637,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     ws.send(JSON.stringify({ type: 'DECLARE', cardId: finalDiscardId, groups }));
     declarationMode = false;
     declarationGroups = [];
-    declarationSelectedIds.clear();
+    resetDeclarationAuxState();
+    selectedCardId = null;
     renderAll(null);
   }
 
@@ -15309,6 +15759,8 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
   function showResultsModal(data) {
     lastRoundResultData = data;
     declarationMode = false;
+    resetDeclarationAuxState();
+    selectedCardId = null;
     hasInitializedGroupingPhase = false;
     if (typeof guidedPractice !== 'undefined' && guidedPractice.active) {
       guidedPractice.active = false;
@@ -15595,11 +16047,12 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
           }
 
           if (p.finalDiscard) {
+            const finishIsHonor = isCardHonorValuable(p.finalDiscard);
             groupsHtml += `
               <div class="revealed-group-block" style="border-color:rgba(217,182,92,0.5);background:rgba(217,182,92,0.08);">
                 <div class="revealed-group-badge" style="color:#f1d27a;">
                   <span>🎴</span>
-                  <span>Final Discard (1)</span>
+                  <span>Final Discard (1${finishIsHonor ? ' • 0 Honors' : ''})</span>
                 </div>
                 <div class="revealed-group-cards">
                   ${renderCard(p.finalDiscard, 'DISCARD', false)}
@@ -15778,30 +16231,82 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
       myHand = [];
       userStands = [[], [], []];
     } else {
-      // Deal demoHandSize cards
-      const newHand = [
-        { id: `c_n_${demoHandNumber}_1`, suit: cutSuit, rank: cutRank, rankValue: cutVal, isPoochie: false },
-        { id: `c_n_${demoHandNumber}_2`, suit: cutSuit, rank: papluRank, rankValue: ranks.indexOf(papluRank) + 1, isPoochie: false },
-        { id: `c_n_${demoHandNumber}_3`, suit: cutSuit, rank: nichluRank, rankValue: ranks.indexOf(nichluRank) + 1, isPoochie: false }
-      ];
-      if (rDemoNext.poochiesPerDeck > 0) {
-        newHand.push({ id: `c_n_${demoHandNumber}_4`, suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true });
-      }
-
+      // Deal varied demoHandSize cards: Marriage, Pure Sequence, Tunella, 2 Sets, Joker Sequence & 3-Joker Sequence
       const s1 = suits[(suits.indexOf(cutSuit) + 1) % 4];
-      newHand.push({ id: `c_n_${demoHandNumber}_5`, suit: s1, rank: '4', rankValue: 4, isPoochie: false });
-      newHand.push({ id: `c_n_${demoHandNumber}_6`, suit: s1, rank: '5', rankValue: 5, isPoochie: false });
-      newHand.push({ id: `c_n_${demoHandNumber}_7`, suit: s1, rank: '6', rankValue: 6, isPoochie: false });
-
       const s2 = suits[(suits.indexOf(cutSuit) + 2) % 4];
-      newHand.push({ id: `c_n_${demoHandNumber}_8`, suit: s2, rank: '9', rankValue: 9, isPoochie: false });
-      newHand.push({ id: `c_n_${demoHandNumber}_9`, suit: s2, rank: '10', rankValue: 10, isPoochie: false });
-      newHand.push({ id: `c_n_${demoHandNumber}_10`, suit: s2, rank: 'J', rankValue: 11, isPoochie: false });
+      const s3 = suits[(suits.indexOf(cutSuit) + 3) % 4];
+      const cutIdx = cutVal - 1;
+      const rankDistMod = (idxA, idxB) => {
+        const d = Math.abs(idxA - idxB);
+        return Math.min(d, 13 - d);
+      };
+      // Pick a 3-card run on s1 and 2-card run on s2 using the same safe rank window (different suits, zero overlap with cutRank)
+      const pureStart = [0, 3, 7, 9, 4, 1].find(idx =>
+        idx !== cutIdx && (idx + 1) !== cutIdx && (idx + 2) !== cutIdx
+      ) ?? 0;
+      const seqStart = pureStart;
+      const blockedRunIdx = new Set([pureStart - 1, pureStart, pureStart + 1, pureStart + 2, pureStart + 3]);
+      // Set #2 includes cutSuit, so keep it >= 3 ranks away from cutIdx (never extends Marriage) and away from s2 run
+      const set2Idx = ranks.findIndex((_, idx) =>
+        rankDistMod(idx, cutIdx) >= 3 && !blockedRunIdx.has(idx)
+      );
+      // Set #1 is on s1, s2, s3 — keep away from cutIdx, runs, and set2Idx
+      const set1Idx = ranks.findIndex((_, idx) =>
+        idx !== cutIdx && !blockedRunIdx.has(idx) && idx !== set2Idx && Math.abs(idx - set2Idx) >= 2
+      );
+      // Tunella is 3x identical cards on s3 — keep away from cutIdx, set1Idx, set2Idx (and not adjacent to them on s3)
+      const tunIdx = ranks.findIndex((_, idx) =>
+        idx !== cutIdx &&
+        idx !== set1Idx && idx !== set2Idx &&
+        Math.abs(idx - set1Idx) >= 2 && Math.abs(idx - set2Idx) >= 2
+      );
+      const set2Rank = ranks[set2Idx >= 0 ? set2Idx : ((cutIdx + 5) % 13)];
+      const set1Rank = ranks[set1Idx >= 0 ? set1Idx : ((cutIdx + 7) % 13)];
+      const tunRank = ranks[tunIdx >= 0 ? tunIdx : ((cutIdx + 9) % 13)];
+
+      const mkDemoCard = (idx, suit, rank, isPoochie = false) => ({
+        id: `c_n_${demoHandNumber}_${idx}`,
+        suit,
+        rank,
+        rankValue: isPoochie ? 0 : (ranks.indexOf(rank) + 1),
+        isPoochie
+      });
+
+      const newHand = [
+        // Pure Sequence #1 (Marriage)
+        mkDemoCard(1, cutSuit, cutRank),
+        mkDemoCard(2, cutSuit, papluRank),
+        mkDemoCard(3, cutSuit, nichluRank),
+        // Pure Sequence #2
+        mkDemoCard(4, s1, ranks[pureStart]),
+        mkDemoCard(5, s1, ranks[pureStart + 1]),
+        mkDemoCard(6, s1, ranks[pureStart + 2]),
+        // Tunella (Pure Group #3)
+        mkDemoCard(7, s3, tunRank),
+        mkDemoCard(8, s3, tunRank),
+        mkDemoCard(9, s3, tunRank),
+        // Joker Sequence (2 consecutive + wild Joker)
+        mkDemoCard(10, s2, ranks[seqStart]),
+        mkDemoCard(11, s2, ranks[seqStart + 1]),
+        mkDemoCard(12, s1, cutRank),
+        // 3-Joker Sequence
+        (rDemoNext.poochiesPerDeck > 0 ? mkDemoCard(13, '★', 'PJ', true) : mkDemoCard(13, s1, cutRank)),
+        mkDemoCard(14, s2, cutRank),
+        mkDemoCard(15, s3, cutRank),
+        // Set #1
+        mkDemoCard(16, s1, set1Rank),
+        mkDemoCard(17, s2, set1Rank),
+        mkDemoCard(18, s3, set1Rank),
+        // Set #2
+        mkDemoCard(19, cutSuit, set2Rank),
+        mkDemoCard(20, s2, set2Rank),
+        mkDemoCard(21, s3, set2Rank)
+      ];
 
       while (newHand.length < demoHandSize) {
         const s = suits[Math.floor(Math.random() * suits.length)];
         const r = ranks[Math.floor(Math.random() * ranks.length)];
-        newHand.push({ id: `c_n_${demoHandNumber}_${newHand.length + 1}`, suit: s, rank: r, rankValue: ranks.indexOf(r) + 1, isPoochie: false });
+        newHand.push(mkDemoCard(newHand.length + 1, s, r, false));
       }
 
       myHand = shuffleCardList(newHand.slice(0, demoHandSize));
@@ -15919,35 +16424,45 @@ body.compact-fit-mode .stands-toolbar { margin-bottom: 3px; }
     };
 
     const baseDemoHand = [
-      { id: 'c_1', suit: '♠', rank: '7', rankValue: 7, isPoochie: false }, // Joker
+      // Pure Sequence #1 (Marriage: 6♠ 7♠ 8♠ — 50 Honors)
+      { id: 'c_1', suit: '♠', rank: '7', rankValue: 7, isPoochie: false }, // Pukka Joker
       { id: 'c_2', suit: '♠', rank: '8', rankValue: 8, isPoochie: false }, // Paplu
-      { id: 'c_3', suit: '♠', rank: '6', rankValue: 6, isPoochie: false }, // Tuplu
-      ...(rDemoInit.poochiesPerDeck > 0 ? [{ id: 'c_4', suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true }] : []),
+      { id: 'c_3', suit: '♠', rank: '6', rankValue: 6, isPoochie: false }, // Taplu
+      // Pure Sequence #2 (A♠ 2♠ 3♠)
       { id: 'c_5', suit: '♠', rank: 'A', rankValue: 1, isPoochie: false },
       { id: 'c_6', suit: '♠', rank: '2', rankValue: 2, isPoochie: false },
       { id: 'c_7', suit: '♠', rank: '3', rankValue: 3, isPoochie: false },
-      { id: 'c_8', suit: '♥', rank: '9', rankValue: 9, isPoochie: false },
-      { id: 'c_9', suit: '♥', rank: '10', rankValue: 10, isPoochie: false },
-      { id: 'c_10', suit: '♥', rank: 'J', rankValue: 11, isPoochie: false },
-      { id: 'c_11', suit: '♥', rank: 'Q', rankValue: 12, isPoochie: false },
-      { id: 'c_12', suit: '♣', rank: '4', rankValue: 4, isPoochie: false },
-      { id: 'c_13', suit: '♣', rank: '5', rankValue: 5, isPoochie: false },
-      { id: 'c_14', suit: '♣', rank: '6', rankValue: 6, isPoochie: false },
-      { id: 'c_15', suit: '♦', rank: '2', rankValue: 2, isPoochie: false },
-      { id: 'c_16', suit: '♦', rank: '3', rankValue: 3, isPoochie: false },
-      { id: 'c_17', suit: '♦', rank: '4', rankValue: 4, isPoochie: false },
-      { id: 'c_18', suit: '♦', rank: '10', rankValue: 10, isPoochie: false },
-      { id: 'c_19', suit: '♦', rank: 'J', rankValue: 11, isPoochie: false },
-      { id: 'c_20', suit: '♦', rank: 'Q', rankValue: 12, isPoochie: false },
-      { id: 'c_21', suit: '♥', rank: 'K', rankValue: 13, isPoochie: false },
-      { id: 'c_22', suit: '♠', rank: '9', rankValue: 9, isPoochie: false },
-      { id: 'c_23', suit: '♠', rank: '10', rankValue: 10, isPoochie: false },
-      { id: 'c_24', suit: '♠', rank: 'J', rankValue: 11, isPoochie: false },
-      { id: 'c_25', suit: '♣', rank: '7', rankValue: 7, isPoochie: false },
-      { id: 'c_26', suit: '♣', rank: '8', rankValue: 8, isPoochie: false },
-      { id: 'c_27', suit: '♣', rank: '9', rankValue: 9, isPoochie: false },
-      { id: 'c_28', suit: '♦', rank: 'K', rankValue: 13, isPoochie: false },
-      { id: 'c_29', suit: '♥', rank: 'A', rankValue: 1, isPoochie: false }
+      // Tunella (Pure Group #3: Q♦ Q♦ Q♦)
+      { id: 'c_8', suit: '♦', rank: 'Q', rankValue: 12, isPoochie: false },
+      { id: 'c_9', suit: '♦', rank: 'Q', rankValue: 12, isPoochie: false },
+      { id: 'c_10', suit: '♦', rank: 'Q', rankValue: 12, isPoochie: false },
+      // Joker Sequence (9♥ 10♥ + 7♣ Joker)
+      { id: 'c_11', suit: '♥', rank: '9', rankValue: 9, isPoochie: false },
+      { id: 'c_12', suit: '♥', rank: '10', rankValue: 10, isPoochie: false },
+      { id: 'c_13', suit: '♣', rank: '7', rankValue: 7, isPoochie: false }, // Joker
+      // 3-Joker Sequence (★ PJ + 7♥ + 7♦)
+      (rDemoInit.poochiesPerDeck > 0
+        ? { id: 'c_4', suit: '★', rank: 'PJ', rankValue: 0, isPoochie: true }
+        : { id: 'c_4', suit: '♥', rank: '7', rankValue: 7, isPoochie: false }),
+      { id: 'c_14', suit: '♥', rank: '7', rankValue: 7, isPoochie: false }, // Joker
+      { id: 'c_15', suit: '♦', rank: '7', rankValue: 7, isPoochie: false }, // Joker
+      // Set #1 (K♠ K♥ K♣)
+      { id: 'c_16', suit: '♠', rank: 'K', rankValue: 13, isPoochie: false },
+      { id: 'c_17', suit: '♥', rank: 'K', rankValue: 13, isPoochie: false },
+      { id: 'c_18', suit: '♣', rank: 'K', rankValue: 13, isPoochie: false },
+      // Set #2 (5♥ 5♣ 5♦)
+      { id: 'c_19', suit: '♥', rank: '5', rankValue: 5, isPoochie: false },
+      { id: 'c_20', suit: '♣', rank: '5', rankValue: 5, isPoochie: false },
+      { id: 'c_21', suit: '♦', rank: '5', rankValue: 5, isPoochie: false },
+      // Extra varied cards for >21-card custom variants
+      { id: 'c_22', suit: '♣', rank: '9', rankValue: 9, isPoochie: false },
+      { id: 'c_23', suit: '♣', rank: '10', rankValue: 10, isPoochie: false },
+      { id: 'c_24', suit: '♣', rank: 'J', rankValue: 11, isPoochie: false },
+      { id: 'c_25', suit: '♠', rank: 'J', rankValue: 11, isPoochie: false },
+      { id: 'c_26', suit: '♦', rank: 'J', rankValue: 11, isPoochie: false },
+      { id: 'c_27', suit: '♥', rank: 'J', rankValue: 11, isPoochie: false },
+      { id: 'c_28', suit: '♦', rank: '3', rankValue: 3, isPoochie: false },
+      { id: 'c_29', suit: '♦', rank: '4', rankValue: 4, isPoochie: false }
     ];
     myHand = shuffleCardList(baseDemoHand.slice(0, demoHandSize));
 
