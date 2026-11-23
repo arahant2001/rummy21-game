@@ -173,6 +173,15 @@ function getSafeRoom(room) {
   };
 }
 
+function getHonorEligibleHand(player) {
+  if (!player) return [];
+  const cards = (Array.isArray(player.hand) && player.hand.length > 0)
+    ? player.hand
+    : (Array.isArray(player._finalHandSnapshot) ? player._finalHandSnapshot : []);
+  const finId = player.finalDiscard && player.finalDiscard.id ? player.finalDiscard.id : null;
+  return finId ? cards.filter(c => c && c.id !== finId) : cards;
+}
+
 function broadcastRoom(room) {
   const safeState = getSafeRoom(room);
   room.players.forEach(p => {
@@ -181,7 +190,7 @@ function broadcastRoom(room) {
         type: 'SYNC',
         room: safeState,
         yourHand: p.hand,
-        yourMaal: room.cutCard ? calculateMaal(p.hand, room.cutCard, room.rules || DEFAULT_RULES) : null
+        yourMaal: room.cutCard ? calculateMaal(getHonorEligibleHand(p), room.cutCard, room.rules || DEFAULT_RULES) : null
       }));
     }
   });
@@ -198,7 +207,7 @@ function finalizeRound(userRoom) {
 
   const rConfig = userRoom.rules || DEFAULT_RULES;
   const winner = userRoom.players.find(p => p.id === userRoom.winnerId) || userRoom.players[0];
-  const winnerMaal = calculateMaal(winner.hand, userRoom.cutCard, rConfig);
+  const winnerMaal = calculateMaal(getHonorEligibleHand(winner), userRoom.cutCard, rConfig);
 
   userRoom.sessionScores = userRoom.sessionScores || {};
   // Paying losers: only active participants in this hand (excluding already-eliminated spectators, winner, and Free Scoots)
@@ -370,7 +379,7 @@ function finalizeRound(userRoom) {
       hand: handCards,
       finalDiscard: pl.finalDiscard || null,
       groups: pl.declaredGroups || [],
-      maal: calculateMaal(handCards, userRoom.cutCard, rConfig),
+      maal: calculateMaal(getHonorEligibleHand(pl), userRoom.cutCard, rConfig),
       deadwood: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT') ? 0 : pl.hasDropped ? (pl.dropPenalty || (pl.dropType === 'MIDDLE_DROP' ? rConfig.middleDrop : rConfig.firstDrop)) : (pl.id === winner.id ? 0 : calculateGroupedDeadwood(pl.declaredGroups, handCards, userRoom.cutCard, rConfig)),
       deadwoodCardIds: (pl.isFreeScoot || pl.dropType === 'FREE_SCOOT' || pl.hasDropped || pl.id === winner.id) ? [] : getDeadwoodCards(pl.declaredGroups, handCards, userRoom.cutCard, rConfig).map(c => c.id)
     };
